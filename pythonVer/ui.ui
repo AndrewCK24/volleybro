@@ -6,31 +6,142 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>878</width>
-    <height>683</height>
+    <width>856</width>
+    <height>666</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>VOLSCO Stats</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">* {
-margin: 0;
-padding: 0;
-}
-</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_12">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_8">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>4</number>
+    </property>
+    <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>200</height>
+       </size>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="landingPage"/>
+      <widget class="QWidget" name="landingPage">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 217, 43);</string>
+       </property>
+       <widget class="QWidget" name="widget_4" native="true">
+        <property name="geometry">
+         <rect>
+          <x>250</x>
+          <y>270</y>
+          <width>360</width>
+          <height>120</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_14">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_11">
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">image: url(:/logo/image/logoYellow.png);</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="minimumSize">
+            <size>
+             <width>240</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>240</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Berlin Sans FB</family>
+             <pointsize>46</pointsize>
+             <bold>true</bold>
+             <underline>false</underline>
+            </font>
+           </property>
+           <property name="text">
+            <string>VOLSCO</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::AutoText</enum>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+        <zorder>label_11</zorder>
+        <zorder>label_12</zorder>
+       </widget>
+      </widget>
       <widget class="QWidget" name="mainPage">
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
@@ -175,7 +286,7 @@ padding: 0;
         <item>
          <widget class="QStackedWidget" name="stackedWidget_2">
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="gameEditPage">
            <layout class="QGridLayout" name="gridLayout_5">
@@ -970,6 +1081,9 @@ padding: 0;
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
+                     <property name="currentIndex">
+                      <number>0</number>
+                     </property>
                      <widget class="QWidget" name="teamB">
                       <property name="font">
                        <font>
@@ -1218,7 +1332,7 @@ padding: 0;
                        <item>
                         <widget class="QStackedWidget" name="recordAChild">
                          <property name="currentIndex">
-                          <number>0</number>
+                          <number>2</number>
                          </property>
                          <widget class="QWidget" name="gainAPage">
                           <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -2748,6 +2862,9 @@ padding: 0;
           </widget>
           <widget class="QWidget" name="teamEditPage">
            <layout class="QGridLayout" name="gridLayout_7">
+            <item row="1" column="3">
+             <widget class="QWidget" name="widget_2" native="true"/>
+            </item>
             <item row="0" column="0">
              <widget class="QWidget" name="player1e" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -2767,18 +2884,43 @@ padding: 0;
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role1e">
+                <widget class="QComboBox" name="role1e">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>44</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <pointsize>14</pointsize>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
@@ -2786,7 +2928,7 @@ padding: 0;
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>180</height>
+                   <height>200</height>
                   </size>
                  </property>
                  <property name="text">
@@ -2796,134 +2938,6 @@ padding: 0;
                </item>
                <item>
                 <widget class="QLabel" name="name1e">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QWidget" name="player2e" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_23">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <property name="leftMargin">
-                <number>8</number>
-               </property>
-               <property name="topMargin">
-                <number>8</number>
-               </property>
-               <property name="rightMargin">
-                <number>8</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="role2_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo2_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>180</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="name2e">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QWidget" name="player3_2" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_24">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <property name="leftMargin">
-                <number>8</number>
-               </property>
-               <property name="topMargin">
-                <number>8</number>
-               </property>
-               <property name="rightMargin">
-                <number>8</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="role3_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo3_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>180</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="name3_2">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2959,18 +2973,43 @@ padding: 0;
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role4_2">
+                <widget class="QComboBox" name="role1e_10">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>44</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <pointsize>14</pointsize>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
@@ -2978,7 +3017,7 @@ padding: 0;
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>180</height>
+                   <height>200</height>
                   </size>
                  </property>
                  <property name="text">
@@ -3023,18 +3062,43 @@ padding: 0;
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role5_2">
+                <widget class="QComboBox" name="role1e_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>44</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <pointsize>14</pointsize>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
@@ -3042,7 +3106,7 @@ padding: 0;
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>180</height>
+                   <height>200</height>
                   </size>
                  </property>
                  <property name="text">
@@ -3068,9 +3132,9 @@ padding: 0;
               </layout>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QWidget" name="player6_2" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_26">
+            <item row="0" column="2">
+             <widget class="QWidget" name="player3_2" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_24">
                <property name="spacing">
                 <number>4</number>
                </property>
@@ -3087,26 +3151,51 @@ padding: 0;
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role6_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo6_2">
+                <widget class="QComboBox" name="role1e_9">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>180</height>
+                   <height>44</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="photo3_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
                   </size>
                  </property>
                  <property name="text">
@@ -3115,7 +3204,7 @@ padding: 0;
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name6_2">
+                <widget class="QLabel" name="name3_2">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -3151,18 +3240,43 @@ padding: 0;
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role7_2">
+                <widget class="QComboBox" name="role1e_4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>44</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <pointsize>14</pointsize>
                   </font>
                  </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
@@ -3170,7 +3284,7 @@ padding: 0;
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>180</height>
+                   <height>200</height>
                   </size>
                  </property>
                  <property name="text">
@@ -3196,8 +3310,183 @@ padding: 0;
               </layout>
              </widget>
             </item>
-            <item row="1" column="3">
-             <widget class="QWidget" name="widget_2" native="true"/>
+            <item row="0" column="1">
+             <widget class="QWidget" name="player2e" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_23">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="role2e">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>44</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="photo2_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="name2e">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QWidget" name="player6_2" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_26">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="role1e_3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>44</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="photo6_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="name6_2">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -3209,8 +3498,9 @@ padding: 0;
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="image.qrc"/>
+ </resources>
  <connections/>
 </ui>
