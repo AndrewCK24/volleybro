@@ -6,8 +6,8 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         super().__init__() # in python3, super(Class, self).xxx = super().xxx
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setup_control()
         self.initialize_homepages()
+        self.setup_control()
 
     # 建立按鈕功能
     def setup_control(self):
@@ -25,7 +25,6 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.ui.browseRegularBtn.clicked.connect(self.show_regularPage)
         self.ui.editBenchBtn.clicked.connect(self.show_benchEdit)
         self.ui.saveBenchBtn.clicked.connect(self.show_benchPage)
-        #TODO: to make sure that there are [regularPage, regularEditPage, benchPage, benchEditPage]
 
     """球員檔案載入、編輯"""
     # def 
