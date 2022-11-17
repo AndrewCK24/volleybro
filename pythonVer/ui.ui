@@ -136,8 +136,6 @@
             </widget>
            </item>
           </layout>
-          <zorder>icon</zorder>
-          <zorder>text</zorder>
          </widget>
         </item>
        </layout>
@@ -263,7 +261,37 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="teamBtn">
+            <widget class="QPushButton" name="dashboardBtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>96</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="mouseTracking">
+              <bool>false</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>資訊總覽</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="rosterBtn">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -368,7 +396,7 @@
         <item>
          <widget class="QStackedWidget" name="mainStack">
           <property name="currentIndex">
-           <number>1</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="gameEditPage">
            <layout class="QGridLayout" name="gridLayout_5">
@@ -2487,10 +2515,10 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="teamPage">
+          <widget class="QWidget" name="memberRegularPage">
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="1" column="1">
-             <widget class="QWidget" name="player6" native="true">
+             <widget class="QWidget" name="regular6" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_17">
                <property name="spacing">
                 <number>4</number>
@@ -2508,7 +2536,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role6">
+                <widget class="QLabel" name="regularRole6">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2523,7 +2551,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo6">
+                <widget class="QLabel" name="regularPhoto6">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -2536,7 +2564,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name6">
+                <widget class="QLabel" name="regularName6">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2554,7 +2582,7 @@
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QWidget" name="player7" native="true">
+             <widget class="QWidget" name="regular7" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_16">
                <property name="spacing">
                 <number>4</number>
@@ -2572,7 +2600,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role7">
+                <widget class="QLabel" name="regularRole7">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2587,7 +2615,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo7">
+                <widget class="QLabel" name="regularPhoto7">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -2600,7 +2628,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name7">
+                <widget class="QLabel" name="regularName7">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2618,7 +2646,7 @@
              </widget>
             </item>
             <item row="0" column="3">
-             <widget class="QWidget" name="player4" native="true">
+             <widget class="QWidget" name="regular4" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_18">
                <property name="spacing">
                 <number>4</number>
@@ -2636,7 +2664,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role4">
+                <widget class="QLabel" name="regularRole4">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2651,7 +2679,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo4">
+                <widget class="QLabel" name="regularPhoto4">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -2664,7 +2692,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name4">
+                <widget class="QLabel" name="regularName4">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2682,7 +2710,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QWidget" name="player5" native="true">
+             <widget class="QWidget" name="regular5" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_19">
                <property name="spacing">
                 <number>4</number>
@@ -2700,7 +2728,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role5">
+                <widget class="QLabel" name="regularRole5">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2715,7 +2743,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo5">
+                <widget class="QLabel" name="regularPhoto5">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -2728,7 +2756,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name5">
+                <widget class="QLabel" name="regularName5">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2746,7 +2774,7 @@
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="QWidget" name="player3" native="true">
+             <widget class="QWidget" name="regular3" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_20">
                <property name="spacing">
                 <number>4</number>
@@ -2764,7 +2792,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role3">
+                <widget class="QLabel" name="regularRole3">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2779,7 +2807,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo3">
+                <widget class="QLabel" name="regularPhoto3">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -2792,7 +2820,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name3">
+                <widget class="QLabel" name="regularName3">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2810,7 +2838,7 @@
              </widget>
             </item>
             <item row="1" column="3">
-             <widget class="QWidget" name="widget" native="true">
+             <widget class="QWidget" name="regularTool" native="true">
               <layout class="QGridLayout" name="gridLayout_10">
                <property name="leftMargin">
                 <number>0</number>
@@ -2827,6 +2855,13 @@
                <property name="spacing">
                 <number>0</number>
                </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="RInfoLabel">
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
                <item row="2" column="0">
                 <widget class="QPushButton" name="browseBenchBtn">
                  <property name="sizePolicy">
@@ -2857,7 +2892,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
+               <item row="3" column="0">
                 <widget class="QPushButton" name="editRegularBtn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -2887,18 +2922,11 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="infoLabel">
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QWidget" name="player1" native="true">
+             <widget class="QWidget" name="regular1" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_14">
                <property name="spacing">
                 <number>4</number>
@@ -2916,7 +2944,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role1">
+                <widget class="QLabel" name="regularRole1">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2931,7 +2959,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo1">
+                <widget class="QLabel" name="regularPhoto1">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -2944,7 +2972,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name1">
+                <widget class="QLabel" name="regularName1">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2962,7 +2990,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QWidget" name="player2" native="true">
+             <widget class="QWidget" name="regular2" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_15">
                <property name="spacing">
                 <number>4</number>
@@ -2980,7 +3008,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QLabel" name="role2">
+                <widget class="QLabel" name="regularRole2">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -2995,7 +3023,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo2">
+                <widget class="QLabel" name="regularPhoto2">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -3008,7 +3036,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name2">
+                <widget class="QLabel" name="regularName2">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -3027,14 +3055,11 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="teamEditPage">
-           <layout class="QGridLayout" name="gridLayout_7">
-            <item row="1" column="3">
-             <widget class="QWidget" name="widget_2" native="true"/>
-            </item>
+          <widget class="QWidget" name="memberBenchPage">
+           <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <widget class="QWidget" name="player1e" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_22">
+             <widget class="QWidget" name="bench1" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_29">
                <property name="spacing">
                 <number>4</number>
                </property>
@@ -3051,60 +3076,7 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QComboBox" name="role1e">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>44</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>14</pointsize>
-                  </font>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>OP</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MB</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo1e">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>200</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="name1e">
+                <widget class="QLabel" name="benchRole1">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -3118,73 +3090,12 @@
                  </property>
                 </widget>
                </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QWidget" name="player4_2" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_25">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <property name="leftMargin">
-                <number>8</number>
-               </property>
-               <property name="topMargin">
-                <number>8</number>
-               </property>
-               <property name="rightMargin">
-                <number>8</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
                <item>
-                <widget class="QComboBox" name="role1e_10">
+                <widget class="QLabel" name="benchPhoto1">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>44</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>14</pointsize>
-                  </font>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>OP</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MB</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo4_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>200</height>
+                   <height>180</height>
                   </size>
                  </property>
                  <property name="text">
@@ -3193,274 +3104,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name4_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QWidget" name="player5_2" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_27">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <property name="leftMargin">
-                <number>8</number>
-               </property>
-               <property name="topMargin">
-                <number>8</number>
-               </property>
-               <property name="rightMargin">
-                <number>8</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="QComboBox" name="role1e_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>44</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>14</pointsize>
-                  </font>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>OP</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MB</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo5_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>200</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="name5_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QWidget" name="player3_2" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_24">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <property name="leftMargin">
-                <number>8</number>
-               </property>
-               <property name="topMargin">
-                <number>8</number>
-               </property>
-               <property name="rightMargin">
-                <number>8</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="QComboBox" name="role3e">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>44</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>14</pointsize>
-                  </font>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>OP</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MB</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo3_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>200</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="name3_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QWidget" name="player7_2" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_21">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <property name="leftMargin">
-                <number>8</number>
-               </property>
-               <property name="topMargin">
-                <number>8</number>
-               </property>
-               <property name="rightMargin">
-                <number>8</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="QComboBox" name="role1e_4">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>44</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>14</pointsize>
-                  </font>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>OP</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MB</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="photo7_2">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>200</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="name7_2">
+                <widget class="QLabel" name="benchName1">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -3478,8 +3122,8 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QWidget" name="player2e" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_23">
+             <widget class="QWidget" name="bench2" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_30">
                <property name="spacing">
                 <number>4</number>
                </property>
@@ -3496,51 +3140,26 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QComboBox" name="role2e">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>44</height>
-                  </size>
-                 </property>
+                <widget class="QLabel" name="benchRole2">
                  <property name="font">
                   <font>
-                   <pointsize>14</pointsize>
+                   <pointsize>12</pointsize>
                   </font>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>OP</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MB</string>
-                  </property>
-                 </item>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo2_2">
+                <widget class="QLabel" name="benchPhoto2">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>200</height>
+                   <height>180</height>
                   </size>
                  </property>
                  <property name="text">
@@ -3549,7 +3168,199 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name2e">
+                <widget class="QLabel" name="benchName2">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QWidget" name="bench3" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_31">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="benchRole3">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhoto3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>180</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchName3">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QWidget" name="bench4" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_33">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="benchRole4">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhoto4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>180</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchName4">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QWidget" name="bench5" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_28">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="benchRole5">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhoto5">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>180</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchName5">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -3567,7 +3378,1402 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QWidget" name="player6_2" native="true">
+             <widget class="QWidget" name="bench6" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_34">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="benchRole6">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhoto6">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>180</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchName6">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QWidget" name="bench7" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_32">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QWidget" name="benchTool" native="true">
+              <layout class="QGridLayout" name="gridLayout_11">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item row="2" column="0">
+                <widget class="QPushButton" name="browseBenchBtn_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>瀏覽正選名單</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="editRegularBtn_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>編輯替補名單</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="BInfoLabel">
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="memberBenchEditPage">
+           <layout class="QGridLayout" name="gridLayout_13">
+            <item row="0" column="0">
+             <widget class="QWidget" name="benchEdit1" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_36">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="benchRoleEdit1">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhotoEdit1">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="7">
+             <widget class="QWidget" name="benchEditTool" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_43">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="BEInfoLabel">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit1_8">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QWidget" name="benchEdit3" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_38">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="benchRoleEdit3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhotoEdit3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="7">
+             <widget class="QWidget" name="benchEdit4" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_39">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="benchRoleEdit4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhotoEdit4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QWidget" name="benchEdit5" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_40">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="benchRoleEdit5">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhotoEdit5">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QWidget" name="benchEdit6" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_41">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="benchRoleEdit6">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhotoEdit6">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit6">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QWidget" name="benchEdit2" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="benchRoleEdit2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="benchPhotoEdit2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="benchNameEdit2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QWidget" name="benchEdit7" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_42">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="memberRegularEditPage">
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="1" column="3">
+             <widget class="QWidget" name="regularEditTool" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_35">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QWidget" name="REInfoLabel" native="true"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="saveRegularBtn">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>儲存正選名單</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QWidget" name="regularEdit1" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_22">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="regularRoleEdit1">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="regularPhotoEdit1">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="regularNameEdit1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QWidget" name="regularEdit4" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_25">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="regularRoleEdit4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="currentIndex">
+                  <number>2</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="regularPhotoEdit4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="regularNameEdit4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QWidget" name="regularEdit5" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_27">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="regularRoleEdit5">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="currentIndex">
+                  <number>3</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="regularPhotoEdit5">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="regularNameEdit5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QWidget" name="regularEdit3" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_24">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="regularRoleEdit3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="currentIndex">
+                  <number>2</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="regularPhotoEdit3">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="regularNameEdit3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QWidget" name="regularEdit7" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_21">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="regularRoleEdit7">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="currentIndex">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="regularPhotoEdit7">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="regularNameEdit7">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QWidget" name="regularEdit2" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_23">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <property name="leftMargin">
+                <number>8</number>
+               </property>
+               <property name="topMargin">
+                <number>8</number>
+               </property>
+               <property name="rightMargin">
+                <number>8</number>
+               </property>
+               <property name="bottomMargin">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QComboBox" name="regularRoleEdit2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                  </font>
+                 </property>
+                 <property name="currentIndex">
+                  <number>1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>S</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OP</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="regularPhotoEdit2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="regularNameEdit2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QWidget" name="regularEdit6" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_26">
                <property name="spacing">
                 <number>4</number>
@@ -3585,11 +4791,11 @@
                 <number>8</number>
                </property>
                <item>
-                <widget class="QComboBox" name="role1e_3">
+                <widget class="QComboBox" name="regularRoleEdit6">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>44</height>
+                   <height>36</height>
                   </size>
                  </property>
                  <property name="font">
@@ -3597,19 +4803,12 @@
                    <pointsize>14</pointsize>
                   </font>
                  </property>
+                 <property name="currentIndex">
+                  <number>3</number>
+                 </property>
                  <item>
                   <property name="text">
                    <string>S</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>WS</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>L </string>
                   </property>
                  </item>
                  <item>
@@ -3619,13 +4818,23 @@
                  </item>
                  <item>
                   <property name="text">
+                   <string>WS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
                    <string>MB</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>L </string>
                   </property>
                  </item>
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="photo6_2">
+                <widget class="QLabel" name="regularPhotoEdit6">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -3638,17 +4847,18 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="name6_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
+                <widget class="QLineEdit" name="regularNameEdit6">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>36</height>
+                  </size>
                  </property>
                 </widget>
                </item>
