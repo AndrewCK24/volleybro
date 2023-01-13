@@ -1,0 +1,14 @@
+{
+    "Student 1": {
+      "Student_id": 126,
+      "Name": "Jack",
+      "Score": 99,
+      "Friends": ["Tim", "Jen", "Ken"]
+   },​
+    "Student 2": {
+      "Student_id": 128,
+      "Name": "Ken",
+      "Score": 99,
+      "Friends": ["Jack", "Jessy", "Cathy"]
+   }
+  }

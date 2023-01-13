@@ -1,11 +1,13 @@
 from PyQt6 import QtWidgets, QtGui, QtCore
 from UI import Ui_MainWindow
+import json
 
 class MainWindow_controller(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__() # in python3, super(Class, self).xxx = super().xxx
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.load_roster_info()
         self.initialize_homepages()
         self.setup_control()
 
@@ -27,14 +29,17 @@ class MainWindow_controller(QtWidgets.QMainWindow):
         self.ui.saveBenchBtn.clicked.connect(self.show_benchPage)
 
     """球員檔案載入、編輯"""
-    # def 
+
+    def load_roster_info(self):
+        with open("roster.json", "w+") as r:
+            roster = r.load()
     
-    """頁面切換"""
     def initialize_homepages(self):
         #TODO: change back to landingPage
         # 可將以下含式改為包含載入所有login後所需之資訊  # self.login()
         self.ui.outerStack.setCurrentWidget(self.ui.mainPage) # 設定程式進入畫面
         self.ui.mainStack.setCurrentWidget(self.ui.memberRegularPage)
+    """頁面切換"""
     def show_dashboard(self):
         self.ui.mainStack.setCurrentWidget(self.ui.dashboardPage)
     def show_historyPage(self):
