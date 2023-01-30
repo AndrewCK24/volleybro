@@ -15,10 +15,6 @@ export default defineConfig({
   },
   plugins: [
     svgr(),
-    react({
-      babel: {
-        plugins: ['babel-plugin-macros', 'babel-plugin-styled-components'],
-      },
-    }),
+    react(),
   ],
 });
