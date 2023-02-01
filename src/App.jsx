@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 import SideNav from './components/SideNav';
-import RecordPage from './components/Pages/RecordPage';
+import RecordPage from './pages/RecordPage';
 
 const Container = styled.div`
   background-color: #F5F5F5;
@@ -11,18 +11,20 @@ const Container = styled.div`
   display: flex;
 `;
 
-const PageContainer = styled.div`
+const PagesContainer = styled.div`
   height: 100%;
   width: 100%;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
 `;
 
 const App = () => {
   return (
     <Container>
       <SideNav />
-      <PageContainer>
+      <PagesContainer>
         <RecordPage />
-      </PageContainer>
+      </PagesContainer>
     </Container>
   )
 };
