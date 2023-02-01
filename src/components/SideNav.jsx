@@ -13,7 +13,6 @@ const NavBar = styled.aside`
   height: 100%;
   padding-top: 5vh;
   padding-bottom: 5vh;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;

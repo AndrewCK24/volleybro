@@ -1,15 +1,37 @@
+:root {
+  --yellow-primary: #FFDE59;
+  --yellow-secondary: #FFEEAA;
+  --white-primary: #F5F5F5;     /* background color */
+  --gray-primary: #A0A0A0;
+  --gray-secondary: #D9D9D9;
+  --black-primary: #121212;     /* toggled */
+  --red-primary: #F45555;       /* alert */
+}
+
 * {
+  color: var(--black-primary);
+  font-family: 'Inter', 'Noto Sans TC', sans-serif;
   font-size: 16px;
+  font-weight: 400;
   padding: 0;
   margin: 0;
 }
 
 body {
+  background-color: var(--white-primary);
   -webkit-text-size-adjust: 100%;
   touch-action: none;
 }
 
-div {
-  /* border: 1px solid rgba(128, 128, 128, 0.334); */
+div, aside, main {
   box-sizing: border-box;
 }
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;             /* Hide scrollbar for Edge */
+  scrollbar-width: none;                /* FireFox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {  /* Chrome, Safari and Opera */
+  display: none;
+};

@@ -12,22 +12,22 @@ const Container = styled.div`
   column-gap: 1rem;
   row-gap: 1rem;
   padding: 0 1rem;
-  background-color: #FFEEAA;
+  background-color: var(--yellow-secondary);
 `;
 
 const RightPart = styled.div`
   height: 100%;
   grid-column-start: 4;
   grid-column-end: 12;
-  background-color: #FFDE59;
+  background-color: var(--yellow-primary);
   display: grid;
   grid-template-rows: 2fr 1fr;
   row-gap: 1.5rem;
   div {
     width: 100%;
-    background-color: #D9D9D9;
+    background-color: var(--white-primary);
     display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-rows: repeat(6, minmax(0, 1fr));
     column-gap: 1rem;
     row-gap: 1rem;
