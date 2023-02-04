@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
+import PlayerBtnSet from "../components/recordPage/PlayerBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
 import { ReactComponent as Logo } from "../images/logo-black.svg";
 import { ReactComponent as StatsIcon } from "../images/file-text.svg";
@@ -26,26 +27,41 @@ const MainPart = styled.div`
   grid-template-rows: 2fr 1fr;
   column-gap: 1.5rem;
   row-gap: 1.5rem;
-  /* TODO: 建立直屬子div的共用屬性 */
-  /* div {
-  }; */
 `;
 
-const CourtLeft = styled.div`
+const Players = styled.div`
   grid-column: 1;
   grid-row: 1;
-  background-color: var(--yellow-primary);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  column-gap: 1rem;
-  row-gap: 1rem;
+  grid-template-areas:
+    "player-5 player-4"
+    "player-6 player-3"
+    "player-1 player-2";
+  grid-gap: 1rem;
+  .player-1 {
+    grid-area: player-1;
+  };
+  .player-2 {
+    grid-area: player-2;
+  };
+  .player-3 {
+    grid-area: player-3;
+  };
+  .player-4 {
+    grid-area: player-4;
+  };
+  .player-5 {
+    grid-area: player-5;
+  };
+  .player-6 {
+    grid-area: player-6;
+  };
 `;
 
 const CourtRight = styled.div`
   grid-column: 2;
   grid-row: 1;
-  background-color: var(--yellow-primary);
+  background-color: var(--gray-secondary);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(6, minmax(0, 1fr));
@@ -99,9 +115,9 @@ const RecordPage = () => {
     <Container>
       <ScoreBar />
       <MainPart>
-        <CourtLeft>
-          CourtLeft
-        </CourtLeft>
+        <Players>
+          <PlayerBtnSet />
+        </Players>
         <CourtRight>
           CourtRight
         </CourtRight>

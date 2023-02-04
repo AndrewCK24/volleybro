@@ -19,7 +19,7 @@
 
 body {
   background-color: var(--white-primary);
-  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   touch-action: none;
 }
 
@@ -34,4 +34,4 @@ div, aside, main {
 
 .scrollbar-hidden::-webkit-scrollbar {  /* Chrome, Safari and Opera */
   display: none;
-};
+}
