@@ -56,6 +56,7 @@ const Players = styled.div`
   .player-6 {
     grid-area: player-6;
   };
+  /* TODO: 在我方發球時 first-of-child 以特殊色顯示 */
 `;
 
 const CourtRight = styled.div`

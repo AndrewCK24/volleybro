@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
 
+import { ReactComponent as PlayerIcon } from "../../images/user.svg";
+
 const PlayerBtn = styled.button`
   border: 1px solid var(--black-primary);
   border-radius: 1rem;
@@ -12,32 +14,49 @@ const PlayerBtn = styled.button`
 const Number = styled.div`
   grid-column: 1;
   grid-row: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 3rem;
   font-weight: 700;
-  text-align: center;
-  margin-top: auto;
 `;
 
 const Name = styled.div`
   grid-column: 1;
   grid-row: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
-  text-align: center;
-  margin: auto;
 `;
 
 const Role = styled.div`
   grid-column: 2;
   grid-row: 2;
-  text-align: center;
-  margin: auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Points = styled.div`
   grid-column: 1;
   grid-row: 3;
-  text-align: center;
-  margin: auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Player = styled.div`
+  grid-column: 2;
+  grid-row: 3;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 
@@ -96,6 +115,7 @@ const PlayerBtnSet = () => {
           <Name>{player.name}</Name>
           <Role>{player.role}</Role>
           <Points>{player.point} pts</Points>
+          <Player><PlayerIcon /></Player>
         </PlayerBtn>
       ))}
     </>
