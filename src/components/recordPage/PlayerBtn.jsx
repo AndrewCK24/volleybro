@@ -8,6 +8,12 @@ const Container = styled.button`
 	display: grid;
 	grid-template-columns: 3fr 2fr;
 	grid-template-rows: 2fr repeat(2, minmax(0, 1fr));
+	&.toggle {
+		background-color: var(--black-primary);
+		div {
+			color: var(--white-primary);
+		}
+	}
 `;
 
 const Number = styled.div`
@@ -58,13 +64,24 @@ const Player = styled.div`
 	justify-content: center;
 `;
 
-const PlayerBtn = ({ player }) => {
+const PlayerBtn = ({ index, player, play, setPlay }) => {
+	const { number, name, role, point } = player;
+	const handleToggle = () => {
+		setPlay({
+			...play,
+			playerNum: index,
+		});
+	};
+
 	return (
-		<Container>
-			<Number>{player.number}</Number>
-			<Name>{player.name}</Name>
-			<Role>{player.role}</Role>
-			<Points>{player.point} pts</Points>
+		<Container
+			className={play.playerNum === index ? "toggle" : ""}
+			onClick={handleToggle}
+		>
+			<Number>{number}</Number>
+			<Name>{name}</Name>
+			<Role>{role}</Role>
+			<Points>{point} pts</Points>
 			<Player>
 				<PlayerIcon />
 			</Player>

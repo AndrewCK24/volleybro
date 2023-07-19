@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 
-const ScoreDiv = styled.div`
+const Container = styled.div`
   height: 100%;
   padding: 1rem 0.5rem;
   background-color: var(--yellow-primary);
@@ -217,7 +217,7 @@ const ScoreCellRight = styled.div`
 
 const ScoreBar = () => {
   return (
-    <ScoreDiv>
+    <Container>
       {playsArr.map((play, index) => (
         <ScoreCellBox key={index}>
           {
@@ -228,7 +228,7 @@ const ScoreBar = () => {
         </ScoreCellBox>
       ))}
       <ScoreCellBox></ScoreCellBox>
-    </ScoreDiv>
+    </Container>
   );
 };
 

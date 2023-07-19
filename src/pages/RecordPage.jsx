@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
@@ -71,12 +72,20 @@ const TeamStats = styled.div`
 `;
 
 const RecordPage = () => {
+  const [play, setPlay] = useState({
+    scoreOurs: 0,
+    scoreOppo: 0,
+    win: false,
+    playerNum: -1,
+    playType: "",
+  });
+  
 	return (
 		<Container>
 			<ScoreBar />
 			<MainPart>
-				<PlayerBtnSet />
-				<RecordBtnSet />
+				<PlayerBtnSet play={play} setPlay={setPlay} />
+				<RecordBtnSet play={play} setPlay={setPlay} />
 				<InfoLeft>
 					<PreviewBar />
 					<Scores></Scores>
