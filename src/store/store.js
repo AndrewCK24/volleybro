@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import teamSlice from "./team-slice";
-import playSlice from "./play-slice";
+import playsSlice from "./plays-slice";
 
 const store = configureStore(
   {
     reducer: {
       team: teamSlice,
-      play: playSlice,
+      plays: playsSlice,
     },
   }
 );

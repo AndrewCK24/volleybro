@@ -21,6 +21,6 @@ const playsSlice = createSlice({
   }
 })
 
-export const playsActions = playSlice.actions;
+export const playsActions = playsSlice.actions;
 
 export default playsSlice.reducer;
