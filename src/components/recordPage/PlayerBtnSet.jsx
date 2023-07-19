@@ -1,64 +1,36 @@
-import React from "react";
 import styled from "@emotion/styled";
 
-import { ReactComponent as PlayerIcon } from "../../images/user.svg";
+import PlayerBtn from "./PlayerBtn";
 
-const PlayerBtn = styled.button`
-  border: 1px solid var(--black-primary);
-  border-radius: 1rem;
-  display: grid;
-  grid-template-columns: 3fr 2fr;
-  grid-template-rows: 2fr repeat(2, minmax(0, 1fr));
-`;
-
-const Number = styled.div`
+const Container = styled.div`
   grid-column: 1;
   grid-row: 1;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  font-weight: 700;
+  display: grid;
+  grid-template-areas:
+    "player-5 player-4"
+    "player-6 player-3"
+    "player-1 player-2";
+  grid-gap: 1rem;
+  .player-1 {
+    grid-area: player-1;
+  };
+  .player-2 {
+    grid-area: player-2;
+  };
+  .player-3 {
+    grid-area: player-3;
+  };
+  .player-4 {
+    grid-area: player-4;
+  };
+  .player-5 {
+    grid-area: player-5;
+  };
+  .player-6 {
+    grid-area: player-6;
+  };
+  /* TODO: 在我方發球時 first-of-child 以特殊色顯示 */
 `;
-
-const Name = styled.div`
-  grid-column: 1;
-  grid-row: 2;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-`;
-
-const Role = styled.div`
-  grid-column: 2;
-  grid-row: 2;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Points = styled.div`
-  grid-column: 1;
-  grid-row: 3;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Player = styled.div`
-  grid-column: 2;
-  grid-row: 3;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 
 // TODO: 將arr的內容引入先發球員名單陣列 包含自由球員
 const playersArr = [
@@ -108,17 +80,11 @@ const playersArr = [
 
 const PlayerBtnSet = () => {
   return (
-    <>
+    <Container>
       {playersArr.map((player, index) => (
-        <PlayerBtn className={player.position} key={index}>
-          <Number>{player.number}</Number>
-          <Name>{player.name}</Name>
-          <Role>{player.role}</Role>
-          <Points>{player.point} pts</Points>
-          <Player><PlayerIcon /></Player>
-        </PlayerBtn>
+        <PlayerBtn className={player.position} key={index} player={player} />
       ))}
-    </>
+    </Container>
   );
 };
 
