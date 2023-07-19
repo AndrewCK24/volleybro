@@ -3,8 +3,7 @@ import styled from "@emotion/styled";
 
 const ScoreDiv = styled.div`
   height: 100%;
-  padding: 1rem 0;
-  grid-column: 1 / span 2;
+  padding: 1rem 0.5rem;
   background-color: var(--yellow-primary);
   border-radius: 0.5rem;
   display: flex;

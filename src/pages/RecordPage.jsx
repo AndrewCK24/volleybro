@@ -1,25 +1,26 @@
-import React from "react";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
 import PlayerBtnSet from "../components/recordPage/PlayerBtnSet";
+import RecordBtnSet from "../components/recordPage/RecordBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
-import { ReactComponent as Logo } from "../images/logo-black.svg";
 import { ReactComponent as StatsIcon } from "../images/file-text.svg";
 
 const Container = styled.div`
   width: 100%;
   height: 100%;
   /* TODO: 檢查 padding */
-  padding-top: 2rem;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: 1rem;
-  row-gap: 1rem;
-  padding: 0 1rem;
+  padding: 2rem 1rem 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1rem;
 `;
 
 const MainPart = styled.div`
+  flex: 1 1 20rem;
   height: 100%;
   grid-column: 4 / span 8;
   display: grid;
@@ -57,17 +58,6 @@ const Players = styled.div`
     grid-area: player-6;
   };
   /* TODO: 在我方發球時 first-of-child 以特殊色顯示 */
-`;
-
-const CourtRight = styled.div`
-  grid-column: 2;
-  grid-row: 1;
-  background-color: var(--gray-secondary);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(6, minmax(0, 1fr));
-  column-gap: 1rem;
-  row-gap: 1rem;
 `;
 
 const InfoLeft = styled.div`
@@ -119,9 +109,7 @@ const RecordPage = () => {
         <Players>
           <PlayerBtnSet />
         </Players>
-        <CourtRight>
-          CourtRight
-        </CourtRight>
+        <RecordBtnSet />
         <InfoLeft>
           <PreviewBar />
           <Scores></Scores>
