@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
@@ -72,9 +73,11 @@ const TeamStats = styled.div`
 `;
 
 const RecordPage = () => {
+  const plays = useSelector((state) => state.plays.plays);
+  const latestPlay = plays[plays.length - 1];
   const [play, setPlay] = useState({
-    scoreOurs: 0,
-    scoreOppo: 0,
+    scoreOurs: latestPlay.scoreOurs,
+    scoreOppo: latestPlay.scoreOppo,
     win: false,
     playerNum: -1,
     playType: "",
