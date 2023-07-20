@@ -9,7 +9,8 @@ const playsSlice = createSlice({
 				scoreOppo: 0,
 				win: false,
 				playerNum: -1,
-				playType: "",
+				type: "",
+				typeNum: -1,
 			},
 		],
 		starters: {
