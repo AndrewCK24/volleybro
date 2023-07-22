@@ -1,4 +1,4 @@
-import React from "react";
+import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 const RecordPreview = styled.div`
@@ -86,14 +86,22 @@ const typeArr = [
 ];
 
 
-const PreviewBar = ({ play }) => {
+const PreviewBar = () => {
+	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
+	const lastPlay = useSelector((state) => state.plays.plays[state.plays.plays.length - 1]);
+
   return (
     <RecordPreview>
       <ScorePreview>
-        24-23 預覽
+				{
+					recordingPlay.typeNum === -1
+					? `${lastPlay.scoreOurs}-${lastPlay.scoreOppo}`
+					: `${recordingPlay.scoreOurs}-${recordingPlay.scoreOppo}`
+				}
       </ScorePreview>
       <ContentPreview>
-        黃震康 {play.typeNum === -1 ? "" : typeArr[play.typeNum].text}
+				{/* TODO: 新增球員名字變換功能 */}
+        黃震康 {recordingPlay.typeNum === -1 ? "" : typeArr[recordingPlay.typeNum].text}
       </ContentPreview>
     </RecordPreview>
   );

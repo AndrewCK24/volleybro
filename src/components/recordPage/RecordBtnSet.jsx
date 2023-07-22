@@ -75,11 +75,11 @@ const typeArr = [
 	}
 ];
 
-const RecordBtnSet = ({ play, setPlay }) => {
+const RecordBtnSet = () => {
 	return (
 		<Container>
 			{typeArr.map((type, index) => (
-				<RecordBtn key={index} type={type} play={play} setPlay={setPlay} />
+				<RecordBtn key={index} type={type} />
 			))}
 		</Container>
 	);

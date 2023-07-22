@@ -85,10 +85,10 @@ const RecordPage = () => {
 		<Container>
 			<ScoreBar />
 			<MainPart>
-				<PlayerBtnSet play={play} setPlay={setPlay} />
-				<RecordBtnSet play={play} setPlay={setPlay} />
+				<PlayerBtnSet />
+				<RecordBtnSet />
 				<InfoLeft>
-					<PreviewBar play={play} />
+					<PreviewBar />
 					<Scores></Scores>
 				</InfoLeft>
 				<InfoRight>

@@ -1,6 +1,7 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
+import { playsActions } from "../../store/plays-slice";
 import { HiOutlinePlusCircle, HiOutlineMinusCircle } from "react-icons/hi";
 
 const Container = styled.button`
@@ -40,40 +41,49 @@ const RecordNum = styled.div`
 	font-size: 1.5rem;
 `;
 
-const RecordBtn = ({ type, play, setPlay }) => {
+const RecordBtn = ({ type }) => {
+	const dispatch = useDispatch();
+	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
 	const plays = useSelector((state) => state.plays.plays);
 
 	const handleClick = () => {
-		if (play.typeNum === type.num) {
-			setPlay({
-				...play,
-				typeNum: -1,
-			});
-			return;
-		}
+		dispatch(
+			playsActions.setRecordOfPlay({
+				typeNum: type.num,
+				type: type.type,
+				win: type.win,
+			})
+		);
+		// if (play.typeNum === type.num) {
+		// 	setPlay({
+		// 		...play,
+		// 		typeNum: -1,
+		// 	});
+		// 	return;
+		// }
 
-		let newScoreOppo = plays[plays.length - 1].scoreOppo;
-		let newScoreOurs = plays[plays.length - 1].scoreOurs;
-		if (type.win) {
-			newScoreOurs++;
-		} else {
-			newScoreOppo++;
-		}
+		// let newScoreOppo = plays[plays.length - 1].scoreOppo;
+		// let newScoreOurs = plays[plays.length - 1].scoreOurs;
+		// if (type.win) {
+		// 	newScoreOurs++;
+		// } else {
+		// 	newScoreOppo++;
+		// }
 
-		setPlay({
-			...play,
-			win: type.win,
-			scoreOurs: newScoreOurs,
-			scoreOppo: newScoreOppo,
-			type: type.type,
-			typeNum: type.num,
-		});
+		// setPlay({
+		// 	...play,
+		// 	win: type.win,
+		// 	scoreOurs: newScoreOurs,
+		// 	scoreOppo: newScoreOppo,
+		// 	type: type.type,
+		// 	typeNum: type.num,
+		// });
 	};
 
 	return (
 		<Container
-			className={play.typeNum === type.num ? "toggle" : ""}
-			disabled={play.playerNum === -1}
+			className={recordingPlay.typeNum === type.num ? "toggle" : ""}
+			disabled={recordingPlay.playerNum === -1}
 			onClick={handleClick}
 		>
 			<RecordType>{type.text}</RecordType>

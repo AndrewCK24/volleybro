@@ -78,7 +78,7 @@ const playersArr = [
 	},
 ];
 
-const PlayerBtnSet = ({ play, setPlay }) => {
+const PlayerBtnSet = () => {
 	return (
 		<Container>
 			{playersArr.map((player, index) => (
@@ -87,8 +87,6 @@ const PlayerBtnSet = ({ play, setPlay }) => {
 					key={index}
           index={index}
 					player={player}
-					play={play}
-					setPlay={setPlay}
 				/>
 			))}
 		</Container>

@@ -1,5 +1,7 @@
+import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
+import { playsActions } from "../../store/plays-slice";
 import { ReactComponent as PlayerIcon } from "../../images/user.svg";
 
 const Container = styled.button`
@@ -12,6 +14,9 @@ const Container = styled.button`
 		background-color: var(--black-primary);
 		div {
 			color: var(--white-primary);
+		}
+		svg {
+			stroke: var(--white-primary);
 		}
 	}
 `;
@@ -64,18 +69,17 @@ const Player = styled.div`
 	justify-content: center;
 `;
 
-const PlayerBtn = ({ index, player, play, setPlay }) => {
+const PlayerBtn = ({ index, player }) => {
+	const dispatch = useDispatch();
+	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
 	const { number, name, role, point } = player;
 	const handleToggle = () => {
-		setPlay({
-			...play,
-			playerNum: index,
-		});
+		dispatch(playsActions.setPlayerOfPlay({ playerNum: index }));
 	};
 
 	return (
 		<Container
-			className={play.playerNum === index ? "toggle" : ""}
+			className={recordingPlay.playerNum === index ? "toggle" : ""}
 			onClick={handleToggle}
 		>
 			<Number>{number}</Number>
