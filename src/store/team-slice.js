@@ -6,7 +6,38 @@ const teamSlice = createSlice({
     infos: {
       name: "",
     },
-    members: [],
+    members: [
+      {
+        number: 7,
+        name: "曾立維",
+        role: "S",
+      },
+      {
+        number: 14,
+        name: "賴博劭",
+        role: "OH",
+      },
+      {
+        number: 17,
+        name: "黃震康",
+        role: "MB",
+      },
+      {
+        number: 2,
+        name: "許瑋哲",
+        role: "OP",
+      },
+      {
+        number: 16,
+        name: "朱易",
+        role: "OH",
+      },
+      {
+        number: 24,
+        name: "莊予樂",
+        role: "MB",
+      },    
+    ],
     matches: [],
   },
   reducers: {

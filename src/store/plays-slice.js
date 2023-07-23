@@ -21,9 +21,46 @@ const playsSlice = createSlice({
 				typeNum: -1,
 			},
 		],
-		starters: {
-			ours: {},
-			opponent: {},
+		lineup: {
+			ours: [
+				{
+					starting: 7,
+					substitute: 0,
+					isSub: false,
+					inOutArr: [0, 0],
+				},
+				{
+					starting: 14,
+					substitute: 0,
+					isSub: false,
+					inOutArr: [0, 0],
+				},
+				{
+					starting: 17,
+					substitute: 0,
+					isSub: false,
+					inOnArr: [0, 0],
+				},
+				{
+					starting: 2,
+					substitute: 0,
+					isSub: false,
+					inOutArr: [0, 0],
+				},
+				{
+					starting: 16,
+					substitute: 0,
+					isSub: false,
+					inOutArr: [0, 0],
+				},
+				{
+					starting: 24,
+					substitute: 0,
+					isSub: false,
+					inOutArr: [0, 0],
+				},
+			],
+			opponent: [],
 		},
 	},
 	reducers: {

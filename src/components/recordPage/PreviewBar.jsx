@@ -89,6 +89,10 @@ const typeArr = [
 const PreviewBar = () => {
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
 	const lastPlay = useSelector((state) => state.plays.plays[state.plays.plays.length - 1]);
+	const memberArr = useSelector((state) => state.team.members);
+	const member = memberArr.find((member) => {
+		return member.number === recordingPlay.playerNum;
+	})
 
   return (
     <RecordPreview>
@@ -100,8 +104,7 @@ const PreviewBar = () => {
 				}
       </ScorePreview>
       <ContentPreview>
-				{/* TODO: 新增球員名字變換功能 */}
-        黃震康 {recordingPlay.typeNum === -1 ? "" : typeArr[recordingPlay.typeNum].text}
+        {recordingPlay.typeNum === -1 ? "" : `${member.name} ${typeArr[recordingPlay.typeNum].text}`}
       </ContentPreview>
     </RecordPreview>
   );

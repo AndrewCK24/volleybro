@@ -69,23 +69,29 @@ const Player = styled.div`
 	justify-content: center;
 `;
 
-const PlayerBtn = ({ index, player }) => {
+const PlayerBtn = ({ player }) => {
 	const dispatch = useDispatch();
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
-	const { number, name, role, point } = player;
+	const memberArr = useSelector((state) => state.team.members);
+	const { starting, substitute, isSub } = player;
+	const { number, name, role } = memberArr.find((member) => {
+		return isSub ? member.number === substitute : member.number === starting;
+		// return member.number === starting;
+	});
 	const handleToggle = () => {
-		dispatch(playsActions.setPlayerOfPlay({ playerNum: index }));
+		dispatch(playsActions.setPlayerOfPlay({ playerNum: number }));
 	};
 
 	return (
 		<Container
-			className={recordingPlay.playerNum === index ? "toggle" : ""}
+			className={recordingPlay.playerNum === number ? "toggle" : ""}
 			onClick={handleToggle}
 		>
 			<Number>{number}</Number>
 			<Name>{name}</Name>
 			<Role>{role}</Role>
-			<Points>{point} pts</Points>
+			{/* TODO: 分數顯示功能 */}
+			<Points>5 pts</Points>
 			<Player>
 				<PlayerIcon />
 			</Player>
