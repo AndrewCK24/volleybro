@@ -44,7 +44,11 @@ const RecordNum = styled.div`
 const RecordBtn = ({ type }) => {
 	const dispatch = useDispatch();
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
+	const player = recordingPlay.playerNum;
 	const plays = useSelector((state) => state.plays.plays);
+	const points = plays.filter(
+		(play) => play.playerNum === player && play.typeNum === type.num
+	).length;
 
 	const handleClick = () => {
 		dispatch(
@@ -54,30 +58,6 @@ const RecordBtn = ({ type }) => {
 				win: type.win,
 			})
 		);
-		// if (play.typeNum === type.num) {
-		// 	setPlay({
-		// 		...play,
-		// 		typeNum: -1,
-		// 	});
-		// 	return;
-		// }
-
-		// let newScoreOppo = plays[plays.length - 1].scoreOppo;
-		// let newScoreOurs = plays[plays.length - 1].scoreOurs;
-		// if (type.win) {
-		// 	newScoreOurs++;
-		// } else {
-		// 	newScoreOppo++;
-		// }
-
-		// setPlay({
-		// 	...play,
-		// 	win: type.win,
-		// 	scoreOurs: newScoreOurs,
-		// 	scoreOppo: newScoreOppo,
-		// 	type: type.type,
-		// 	typeNum: type.num,
-		// });
 	};
 
 	return (
@@ -87,7 +67,7 @@ const RecordBtn = ({ type }) => {
 			onClick={handleClick}
 		>
 			<RecordType>{type.text}</RecordType>
-			<RecordNum>3</RecordNum>
+			<RecordNum>{recordingPlay.playerNum === -1 ? "--" : points}</RecordNum>
 			{type.win ? <HiOutlinePlusCircle /> : <HiOutlineMinusCircle />}
 		</Container>
 	);

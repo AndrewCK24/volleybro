@@ -71,13 +71,17 @@ const Player = styled.div`
 
 const PlayerBtn = ({ player }) => {
 	const dispatch = useDispatch();
+	const plays = useSelector((state) => state.plays.plays);
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
 	const memberArr = useSelector((state) => state.team.members);
 	const { starting, substitute, isSub } = player;
 	const { number, name, role } = memberArr.find((member) => {
 		return isSub ? member.number === substitute : member.number === starting;
-		// return member.number === starting;
 	});
+	const points = [
+		plays.filter((play) => play.playerNum === number && play.win).length,
+		plays.filter((play) => play.playerNum === number && !play.win).length,
+	];
 	const handleToggle = () => {
 		dispatch(playsActions.setPlayerOfPlay({ playerNum: number }));
 	};
@@ -90,8 +94,9 @@ const PlayerBtn = ({ player }) => {
 			<Number>{number}</Number>
 			<Name>{name}</Name>
 			<Role>{role}</Role>
-			{/* TODO: 分數顯示功能 */}
-			<Points>5 pts</Points>
+			<Points>
+				+{points[0]} / -{points[1]}
+			</Points>
 			<Player>
 				<PlayerIcon />
 			</Player>
