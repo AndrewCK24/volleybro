@@ -2,24 +2,24 @@ import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 const RecordPreview = styled.div`
-  grid-row: 1;
-  align-items: center;
-  border: 1px solid var(--black-primary);
-  border-radius: 1rem;
-  display: flex;
+	grid-row: 1;
+	align-items: center;
+	border: 1px solid var(--black-primary);
+	border-radius: 1rem;
+	display: flex;
 `;
 
 const ScorePreview = styled.p`
-  /* FIXME: 使文字垂直置中 需再研究 目前只能單行 */
-  padding-left: 1rem;
-  font-size: 1.2rem;
-  display: inline-block;
+	/* FIXME: 使文字垂直置中 需再研究 目前只能單行 */
+	padding-left: 1rem;
+	font-size: 1.2rem;
+	display: inline-block;
 `;
 
 const ContentPreview = styled.p`
-  padding-left: 0.5rem;
-  font-size: 1.2rem;
-  display: inline-block;
+	padding-left: 0.5rem;
+	font-size: 1.2rem;
+	display: inline-block;
 `;
 
 const typeArr = [
@@ -82,32 +82,54 @@ const typeArr = [
 		type: "fault",
 		win: false,
 		num: 9,
-	}
+	},
 ];
-
 
 const PreviewBar = () => {
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
-	const lastPlay = useSelector((state) => state.plays.plays[state.plays.plays.length - 1]);
+	const lastPlay = useSelector((state) => {
+		return state.plays.plays.length > 0
+			? state.plays.plays[state.plays.plays.length - 1]
+			: {
+					isNewSet: true,
+					scoreOurs: 0,
+					scoreOppo: 0,
+					win: false,
+					playerNum: -1,
+					typeNum: -1,
+			  };
+	});
 	const memberArr = useSelector((state) => state.team.members);
 	const member = memberArr.find((member) => {
-		return member.number === recordingPlay.playerNum;
-	})
+		return recordingPlay.playerNum === -1
+			? member.number === lastPlay?.playerNum
+			: member.number === recordingPlay.playerNum;
+	});
+	const playType =
+		recordingPlay.typeNum === -1
+			? typeArr[lastPlay.typeNum]?.text
+			: typeArr[recordingPlay.typeNum].text;
 
-  return (
-    <RecordPreview>
-      <ScorePreview>
-				{
-					recordingPlay.typeNum === -1
+	return (
+		<RecordPreview>
+			<ScorePreview>
+				{recordingPlay.typeNum === -1
 					? `${lastPlay.scoreOurs}-${lastPlay.scoreOppo}`
-					: `${recordingPlay.scoreOurs}-${recordingPlay.scoreOppo}`
+					: `${recordingPlay.scoreOurs}-${recordingPlay.scoreOppo}`}
+			</ScorePreview>
+			<ContentPreview>
+				{	// TODO: 優化以下邏輯
+					lastPlay?.isNewSet
+						? ``
+						: recordingPlay.playerNum !== -1
+						? recordingPlay.typeNum === -1
+							? `${member.name}`
+							: `${member.name} ${playType}`
+						: `${member.name} ${playType}` // 上球紀錄內容
 				}
-      </ScorePreview>
-      <ContentPreview>
-        {recordingPlay.typeNum === -1 ? "" : `${member.name} ${typeArr[recordingPlay.typeNum].text}`}
-      </ContentPreview>
-    </RecordPreview>
-  );
+			</ContentPreview>
+		</RecordPreview>
+	);
 };
 
 export default PreviewBar;
