@@ -82,8 +82,8 @@ const playsSlice = createSlice({
 				state.recordingPlay = {
 					...state.recordingPlay,
 					...action.payload,
-					scoreOurs: state.recordingPlay.win ? 1 : 0,
-					scoreOppo: state.recordingPlay.win ? 0 : 1,
+					scoreOurs: action.payload.win ? 1 : 0,
+					scoreOppo: action.payload.win ? 0 : 1,
 				};
 				return;
 			}
