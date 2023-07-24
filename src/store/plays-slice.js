@@ -11,16 +11,7 @@ const playsSlice = createSlice({
 			type: "",
 			typeNum: -1,
 		},
-		plays: [
-			{
-				scoreOurs: 0,
-				scoreOppo: 0,
-				win: false,
-				playerNum: -1,
-				type: "",
-				typeNum: -1,
-			},
-		],
+		plays: [],
 		lineup: {
 			ours: [
 				{
@@ -84,28 +75,45 @@ const playsSlice = createSlice({
 				state.recordingPlay = {
 					...state.recordingPlay,
 					typeNum: -1,
-				}
+				};
 				return;
-			} 
+			}
+			if (state.plays.length === 0) {
+				state.recordingPlay = {
+					...state.recordingPlay,
+					...action.payload,
+					scoreOurs: state.recordingPlay.win ? 1 : 0,
+					scoreOppo: state.recordingPlay.win ? 0 : 1,
+				};
+				return;
+			}
 			if (action.payload.win) {
 				state.recordingPlay = {
 					...state.recordingPlay,
 					...action.payload,
 					scoreOurs: state.plays[state.plays.length - 1].scoreOurs + 1,
 					scoreOppo: state.plays[state.plays.length - 1].scoreOppo,
-				}
+				};
 			} else {
 				state.recordingPlay = {
 					...state.recordingPlay,
 					...action.payload,
 					scoreOurs: state.plays[state.plays.length - 1].scoreOurs,
 					scoreOppo: state.plays[state.plays.length - 1].scoreOppo + 1,
-				}
+				};
 			}
 		},
-		recordPlays: (state, action) => {
-			const plays = action.payload;
-			state.plays.push(plays);
+		recordPlays: (state) => {
+			const play = state.recordingPlay;
+			state.plays.push(play);
+			state.recordingPlay = {
+				scoreOurs: 0,
+				scoreOppo: 0,
+				win: false,
+				playerNum: -1,
+				type: "",
+				typeNum: -1,
+			};
 		},
 		editPlays: (state, action) => {
 			const { id, plays } = action.payload;

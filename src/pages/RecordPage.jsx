@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
@@ -6,6 +6,7 @@ import PlayerBtnSet from "../components/recordPage/PlayerBtnSet";
 import RecordBtnSet from "../components/recordPage/RecordBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
 import { ReactComponent as StatsIcon } from "../images/file-text.svg";
+import { playsActions } from "../store/plays-slice";
 
 const Container = styled.div`
 	width: 100%;
@@ -72,15 +73,11 @@ const TeamStats = styled.div`
 `;
 
 const RecordPage = () => {
-  const [play, setPlay] = useState({
-    scoreOurs: 0,
-    scoreOppo: 0,
-    win: false,
-    playerNum: -1,
-    type: "",
-		typeNum: -1,
-  });
-  
+	const dispatch = useDispatch();
+	const handleConfirm = () => {
+		dispatch(playsActions.recordPlays());
+	}
+
 	return (
 		<Container>
 			<ScoreBar />
@@ -92,7 +89,7 @@ const RecordPage = () => {
 					<Scores></Scores>
 				</InfoLeft>
 				<InfoRight>
-					<ConfirmBtn>確認</ConfirmBtn>
+					<ConfirmBtn onClick={handleConfirm}>確認</ConfirmBtn>
 					<TeamStats>
 						<StatsIcon />
 					</TeamStats>
