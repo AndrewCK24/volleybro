@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as HomePageIcon } from '.././images/logo-black.svg';
@@ -8,17 +7,17 @@ import { ReactComponent as HistoryPageIcon } from '.././images/clock.svg';
 import { ReactComponent as SettingPageIcon } from '.././images/settings.svg';
 import { ReactComponent as UserIcon } from '.././images/user.svg';
 
-const NavBar = styled.aside`
-  width: 6rem;
+const Container = styled.aside`
+  flex: 0 0 4rem;
   height: 100%;
-  padding-top: 5vh;
-  padding-bottom: 5vh;
+  padding-top: 5%;
+  padding-bottom: 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
   svg {
-    height: 5rem;
-    width: 5rem;
+    height: 2rem;
+    width: 2rem;
   }
 `;
 
@@ -48,7 +47,7 @@ const UserContainer = styled.div`
 
 const SideNav = () => {
   return (
-    <NavBar>
+    <Container>
       <HomePageIcon />
       <IconContainer>
         <RecordPageIcon />
@@ -59,7 +58,7 @@ const SideNav = () => {
       <UserContainer>
         <UserIcon />
       </UserContainer>
-    </NavBar>
+    </Container>
   );
 };
 

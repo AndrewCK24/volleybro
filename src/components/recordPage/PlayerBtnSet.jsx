@@ -4,8 +4,9 @@ import styled from "@emotion/styled";
 import PlayerBtn from "./PlayerBtn";
 
 const Container = styled.div`
-	grid-column: 1;
-	grid-row: 1;
+	flex: 1 1;
+	/* grid-column: 1;
+	grid-row: 1; */
 	display: grid;
 	grid-template-areas:
 		"p5 p4"

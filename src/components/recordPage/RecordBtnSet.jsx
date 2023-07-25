@@ -3,8 +3,9 @@ import styled from "@emotion/styled";
 import RecordBtn from "./RecordBtn";
 
 const Container = styled.div`
-	width: 100%;
-	height: 100%;
+	/* width: 100%;
+	height: 100%; */
+	flex: 1 1;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: repeat(6, minmax(0, 1fr));

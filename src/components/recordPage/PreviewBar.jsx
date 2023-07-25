@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
-const RecordPreview = styled.div`
-	grid-row: 1;
+const Container = styled.div`
+	flex: 1 1;
 	align-items: center;
 	border: 1px solid var(--black-primary);
 	border-radius: 1rem;
@@ -111,7 +111,7 @@ const PreviewBar = () => {
 			: typeArr[recordingPlay.typeNum].text;
 
 	return (
-		<RecordPreview>
+		<Container>
 			<ScorePreview>
 				{recordingPlay.typeNum === -1
 					? `${lastPlay.scoreOurs}-${lastPlay.scoreOppo}`
@@ -128,7 +128,7 @@ const PreviewBar = () => {
 						: `${member.name} ${playType}` // 上球紀錄內容
 				}
 			</ContentPreview>
-		</RecordPreview>
+		</Container>
 	);
 };
 

@@ -1,60 +1,79 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
 import PlayerBtnSet from "../components/recordPage/PlayerBtnSet";
 import RecordBtnSet from "../components/recordPage/RecordBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
+import ScorePanel from "../components/recordPage/ScorePanel";
 import { ReactComponent as StatsIcon } from "../images/file-text.svg";
 import { playsActions } from "../store/plays-slice";
 
 const Container = styled.div`
-	width: 100%;
+	flex: 1 1;
+	/* width: calc(100% - 2rem); */
 	height: 100%;
-	padding: 2rem 1rem 0;
+	padding: 0 1rem;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: center;
-	align-items: stretch;
 	gap: 1rem;
 `;
 
 const MainPart = styled.div`
-	flex: 1 1 20rem;
+	flex: 1 1;
 	height: 100%;
-	grid-column: 4 / span 8;
-	display: grid;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	/* display: grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 2fr 1fr;
+	grid-template-rows: 3fr 2fr;
 	column-gap: 1.5rem;
-	row-gap: 1.5rem;
+	row-gap: 1.5rem; */
+`;
+
+const ButtonPart = styled.div`
+	flex: 2 1;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+`;
+
+const InfoPart = styled.div`
+	flex: 1 1;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
 `;
 
 const InfoLeft = styled.div`
-	grid-column: 1;
-	grid-row: 2;
-	display: grid;
-	grid-template-rows: repeat(5, minmax(0, 1fr));
-	row-gap: 1rem;
-`;
-
-const Scores = styled.div`
-	grid-row: 2 / -1;
-	border: 1px solid var(--black-primary);
-	border-radius: 1rem;
+	flex: 1 1;
+	/* grid-column: 1;
+	grid-row: 2; */
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	/* display: grid;
+	grid-template-rows: 1fr 5fr;
+	row-gap: 1rem; */
 `;
 
 const InfoRight = styled.div`
-	grid-column: 2;
-	grid-row: 2;
-	display: grid;
-	grid-template-rows: repeat(3, minmax(0, 1fr));
-	row-gap: 1rem;
+	flex: 1 1;
+	/* grid-column: 2;
+	grid-row: 2; */
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	/* display: grid;
+	grid-template-rows: 1fr 3fr;
+	row-gap: 1rem; */
 `;
 
 const ConfirmBtn = styled.button`
-	grid-row: 1;
+	flex: 1 1;
 	border: 1px solid var(--yellow-primary);
 	border-radius: 1rem;
 	background-color: var(--yellow-primary);
@@ -63,7 +82,7 @@ const ConfirmBtn = styled.button`
 `;
 
 const TeamStats = styled.div`
-	grid-row: 2 / -1;
+	flex: 3 1;
 	border-radius: 1rem;
 	background-color: var(--black-primary);
 	color: var(--white-primary);
@@ -76,24 +95,28 @@ const RecordPage = () => {
 	const dispatch = useDispatch();
 	const handleConfirm = () => {
 		dispatch(playsActions.recordPlays());
-	}
+	};
 
 	return (
 		<Container>
 			<ScoreBar />
 			<MainPart>
-				<PlayerBtnSet />
-				<RecordBtnSet />
-				<InfoLeft>
-					<PreviewBar />
-					<Scores></Scores>
-				</InfoLeft>
-				<InfoRight>
-					<ConfirmBtn onClick={handleConfirm}>確認</ConfirmBtn>
-					<TeamStats>
-						<StatsIcon />
-					</TeamStats>
-				</InfoRight>
+				<ButtonPart>
+					<PlayerBtnSet />
+					<RecordBtnSet />
+				</ButtonPart>
+				<InfoPart>
+					<InfoLeft>
+						<PreviewBar />
+						<ScorePanel />
+					</InfoLeft>
+					<InfoRight>
+						<ConfirmBtn onClick={handleConfirm}>確認</ConfirmBtn>
+						<TeamStats>
+							<StatsIcon />
+						</TeamStats>
+					</InfoRight>
+				</InfoPart>
 			</MainPart>
 		</Container>
 	);

@@ -8,8 +8,8 @@ const Container = styled.button`
 	border: 1px solid var(--black-primary);
 	border-radius: 1rem;
 	display: grid;
-	grid-template-columns: 3fr 2fr;
-	grid-template-rows: 2fr repeat(2, minmax(0, 1fr));
+	grid-template-columns: 3fr 1fr;
+	grid-template-rows: 2fr 1fr 1fr;
 	&.toggle {
 		background-color: var(--black-primary);
 		div {

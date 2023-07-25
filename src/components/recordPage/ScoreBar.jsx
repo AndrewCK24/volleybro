@@ -2,7 +2,9 @@ import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 const Container = styled.div`
-	height: 100%;
+	flex: 0 0 6rem;
+	/* height: 100%; */
+	width: fit-content;
 	padding: 1rem 0.5rem;
 	background-color: var(--yellow-primary);
 	border-radius: 0.5rem;
