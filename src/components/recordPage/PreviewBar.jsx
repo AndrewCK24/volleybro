@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
+import { typeArr } from "../../utils/playTypeArr";
+
 const Container = styled.div`
 	flex: 1 1;
 	align-items: center;
@@ -21,69 +23,6 @@ const ContentPreview = styled.p`
 	font-size: 1.2rem;
 	display: inline-block;
 `;
-
-const typeArr = [
-	{
-		text: "發球得分",
-		type: "service",
-		win: true,
-		num: 0,
-	},
-	{
-		text: "發球失誤",
-		type: "service",
-		win: false,
-		num: 1,
-	},
-	{
-		text: "攻擊得分",
-		type: "attack",
-		win: true,
-		num: 2,
-	},
-	{
-		text: "攻擊失誤",
-		type: "attack",
-		win: false,
-		num: 3,
-	},
-	{
-		text: "攔網得分",
-		type: "block",
-		win: true,
-		num: 4,
-	},
-	{
-		text: "攔網失誤",
-		type: "block",
-		win: false,
-		num: 5,
-	},
-	{
-		text: "接發失誤",
-		type: "receive",
-		win: false,
-		num: 6,
-	},
-	{
-		text: "防守失誤",
-		type: "defense",
-		win: false,
-		num: 7,
-	},
-	{
-		text: "二傳失誤",
-		type: "set",
-		win: false,
-		num: 8,
-	},
-	{
-		text: "犯規",
-		type: "fault",
-		win: false,
-		num: 9,
-	},
-];
 
 const PreviewBar = () => {
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
@@ -118,14 +57,14 @@ const PreviewBar = () => {
 					: `${recordingPlay.scoreOurs}-${recordingPlay.scoreOppo}`}
 			</ScorePreview>
 			<ContentPreview>
-				{	// TODO: 優化以下邏輯
-					lastPlay?.isNewSet
-						? ``
+				{
+					recordingPlay.typeNum !== -1
+						? `${member.name}(${member.number}) ${playType}`
 						: recordingPlay.playerNum !== -1
-						? recordingPlay.typeNum === -1
-							? `${member.name}`
-							: `${member.name} ${playType}`
-						: `${member.name} ${playType}` // 上球紀錄內容
+						? `${member.name}(${member.number})` 								// p 有, t 沒有
+						: lastPlay?.isNewSet 																// p 沒有, t 沒有
+						? `` 																								// 上球無紀錄內容
+						: `${member.name}(${member.number}) ${playType}`		// 上球有紀錄內容
 				}
 			</ContentPreview>
 		</Container>
