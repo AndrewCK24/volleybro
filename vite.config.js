@@ -4,6 +4,9 @@ import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	server: {
+		port: 3000,
+	},
 	define: {
 		"process.env.GOOGLE_CLIENT_ID": JSON.stringify(
 			process.env.GOOGLE_CLIENT_ID
