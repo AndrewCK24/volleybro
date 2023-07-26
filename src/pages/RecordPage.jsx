@@ -35,14 +35,14 @@ const MainPart = styled.div`
 `;
 
 const ButtonPart = styled.div`
-	flex: 2 1;
+	flex: 3 1;
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
 `;
 
 const InfoPart = styled.div`
-	flex: 1 1;
+	flex: 2 1;
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;

@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const playsSlice = createSlice({
 	name: "plays",
 	initialState: {
+		serving: false,
 		recordingPlay: {
 			scoreOurs: 0,
 			scoreOppo: 0,

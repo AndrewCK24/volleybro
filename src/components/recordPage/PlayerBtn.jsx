@@ -8,24 +8,30 @@ const Container = styled.button`
 	padding: 0.5rem;
 	border: 1px solid var(--black-primary);
 	border-radius: 1rem;
-	display: grid;
-	grid-template-columns: 3fr 1fr;
-	grid-template-rows: 3fr 1fr;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
 	&.toggle {
 		background-color: var(--black-primary);
 		div {
 			color: var(--white-primary);
 			border-color: var(--white-primary);
 		}
-		svg {
-			stroke: var(--white-primary);
-		}
 	}
 `;
 
+const PlayerInfo = styled.div`
+	flex: 3 1;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+`;
+
 const Number = styled.div`
-	grid-column: 1;
-	grid-row: 1;
+	flex: 3 1;
 	height: 100%;
 	display: flex;
 	align-items: center;
@@ -35,19 +41,8 @@ const Number = styled.div`
 `;
 
 const Name = styled.div`
+	flex: 1 1;
 	font-size: 1.5rem;
-	grid-column: 1;
-	grid-row: 2;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-weight: 500;
-`;
-
-const Role = styled.div`
-	grid-column: 2;
-	grid-row: 2;
 	height: 100%;
 	display: flex;
 	align-items: center;
@@ -56,11 +51,46 @@ const Role = styled.div`
 `;
 
 const SetInfo = styled.div`
+	flex: 1 1;
 	height: 100%;
-	grid-column: 2;
-	grid-row: 1;
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+`;
+
+const Points = styled.div`
+	flex: 3 1;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+`;
+
+const Point = styled.div`
+	flex: 0 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.25rem;
+`;
+
+const Role = styled.div`
+	flex: 1 1;
+	font-size: 1.5rem;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 500;
+`;
+
+const LineupInfo = styled.div`
+	flex: 1 1;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
 `;
 
 const Substitute = styled.div`
@@ -72,13 +102,13 @@ const Substitute = styled.div`
 	justify-content: center;
 	font-size: 2rem;
 	font-weight: 500;
-`;
-
-const Points = styled.div`
-	flex: 1 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	&.hidden {
+		visibility: hidden;
+	}
+	&.unavailable {
+		color: var(--gray-primary);
+		text-decoration: line-through;
+	}
 `;
 
 const PlayerBtn = ({ className, player }) => {
@@ -100,19 +130,35 @@ const PlayerBtn = ({ className, player }) => {
 
 	return (
 		<Container
-			className={`${className} ${
-				recordingPlay.playerNum === number ? "toggle" : ""
-			}`}
+			className={`
+				${className}
+				${recordingPlay.playerNum === number ? "toggle" : ""}
+			`}
 			onClick={handleToggle}
 		>
-			<Number>{number}</Number>
-			<Name>{name}</Name>
+			<PlayerInfo>
+				<Number>{number}</Number>
+				<Name>{name}</Name>
+			</PlayerInfo>
 			<SetInfo>
-				<Substitute>{substitute ? substitute : ""}</Substitute>
-				<Points>+{points[0]}</Points>
-				<Points>-{points[1]}</Points>
+				<Points>
+					<Point>+{points[0]}</Point>
+					<Point>-{points[1]}</Point>
+				</Points>
+				<Role>{role}</Role>
 			</SetInfo>
-			<Role>{role}</Role>
+			<LineupInfo>
+				<Substitute
+					className={`
+						${isSub ? "" : "unavailable"}
+						${substitute ? "" : "hidden"}
+					`}
+				>
+					{substitute}
+				</Substitute>
+				<Substitute></Substitute>
+				{/* <Substitute className="hidden"></Substitute> */}
+			</LineupInfo>
 		</Container>
 	);
 };
