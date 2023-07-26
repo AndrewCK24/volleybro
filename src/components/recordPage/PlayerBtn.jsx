@@ -81,7 +81,7 @@ const Points = styled.div`
 	justify-content: center;
 `;
 
-const PlayerBtn = ({ player }) => {
+const PlayerBtn = ({ className, player }) => {
 	const dispatch = useDispatch();
 	const plays = useSelector((state) => state.plays.plays);
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
@@ -100,7 +100,9 @@ const PlayerBtn = ({ player }) => {
 
 	return (
 		<Container
-			className={recordingPlay.playerNum === number ? "toggle" : ""}
+			className={`${className} ${
+				recordingPlay.playerNum === number ? "toggle" : ""
+			}`}
 			onClick={handleToggle}
 		>
 			<Number>{number}</Number>
