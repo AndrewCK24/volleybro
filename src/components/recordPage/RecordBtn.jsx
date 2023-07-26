@@ -49,11 +49,12 @@ const RecordPts = styled.div`
 
 const RecordBtn = ({ type }) => {
 	const dispatch = useDispatch();
+	const isServing = useSelector((state) => state.plays.isServing);
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
-	const player = recordingPlay.playerNum;
+	const { playerNum, position, typeNum } = recordingPlay;
 	const plays = useSelector((state) => state.plays.plays);
 	const points = plays.filter(
-		(play) => play.playerNum === player && play.typeNum === type.num
+		(play) => play.playerNum === playerNum && play.typeNum === type.num
 	).length;
 
 	const handleClick = () => {
@@ -66,10 +67,35 @@ const RecordBtn = ({ type }) => {
 		);
 	};
 
+	const handleDisabled = (typeNum) => {
+		const disabledArr = [];
+		// if (isServing) {
+		// 	disabledArr.push(6);
+		// 	if (position !== 1) {
+		// 		disabledArr.push(0, 1);
+		// 	}
+		// } else {
+		// 	disabledArr.push(0, 1);
+		// }
+		if (position !== 1) {
+			disabledArr.push(0, 1);
+		}
+		if (isServing) {
+			disabledArr.push(6);
+		} else if (position === 1) {
+			disabledArr.push(0, 1);
+		}
+		if (position === 1 || position >= 5) {
+			disabledArr.push(2, 3);
+		}
+
+		return disabledArr.includes(typeNum);
+	};
+
 	return (
 		<Container
-			className={recordingPlay.typeNum === type.num ? "toggle" : ""}
-			disabled={recordingPlay.playerNum === -1}
+			className={typeNum === type.num ? "toggle" : ""}
+			disabled={handleDisabled(type.num)}
 			onClick={handleClick}
 		>
 			<RecordType>{type.text}</RecordType>

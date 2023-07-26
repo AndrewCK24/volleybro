@@ -1,72 +1,77 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+	isServing: false,
+	recordingPlay: {
+		scoreOurs: 0,
+		scoreOppo: 0,
+		win: false,
+		playerNum: -1,
+		position: -1,
+		type: "",
+		typeNum: -1,
+	},
+	plays: [],
+	lineup: {
+		ours: [
+			{
+				starting: 7,
+				substitute: 0,
+				isSub: false,
+				inOutArr: [0, 0],
+			},
+			{
+				starting: 14,
+				substitute: 0,
+				isSub: false,
+				inOutArr: [0, 0],
+			},
+			{
+				starting: 17,
+				substitute: 0,
+				isSub: false,
+				inOnArr: [0, 0],
+			},
+			{
+				starting: 2,
+				substitute: 0,
+				isSub: false,
+				inOutArr: [0, 0],
+			},
+			{
+				starting: 16,
+				substitute: 0,
+				isSub: false,
+				inOutArr: [0, 0],
+			},
+			{
+				starting: 24,
+				substitute: 0,
+				isSub: false,
+				inOutArr: [0, 0],
+			},
+		],
+		opponent: [],
+	},
+};
+
 const playsSlice = createSlice({
 	name: "plays",
-	initialState: {
-		isServing: false,
-		recordingPlay: {
-			scoreOurs: 0,
-			scoreOppo: 0,
-			win: false,
-			playerNum: -1,
-			type: "",
-			typeNum: -1,
-		},
-		plays: [],
-		lineup: {
-			ours: [
-				{
-					starting: 7,
-					substitute: 0,
-					isSub: false,
-					inOutArr: [0, 0],
-				},
-				{
-					starting: 14,
-					substitute: 0,
-					isSub: false,
-					inOutArr: [0, 0],
-				},
-				{
-					starting: 17,
-					substitute: 0,
-					isSub: false,
-					inOnArr: [0, 0],
-				},
-				{
-					starting: 2,
-					substitute: 0,
-					isSub: false,
-					inOutArr: [0, 0],
-				},
-				{
-					starting: 16,
-					substitute: 0,
-					isSub: false,
-					inOutArr: [0, 0],
-				},
-				{
-					starting: 24,
-					substitute: 0,
-					isSub: false,
-					inOutArr: [0, 0],
-				},
-			],
-			opponent: [],
-		},
-	},
+	initialState,
 	reducers: {
 		setPlayerOfPlay: (state, action) => {
 			if (action.payload.playerNum === state.recordingPlay.playerNum) {
 				state.recordingPlay = {
 					...state.recordingPlay,
 					playerNum: -1,
+					position: -1,
 					typeNum: -1,
 				};
 			} else {
 				state.recordingPlay = {
 					...state.recordingPlay,
 					playerNum: action.payload.playerNum,
+					position: action.payload.position,
 					typeNum: -1,
 				};
 			}

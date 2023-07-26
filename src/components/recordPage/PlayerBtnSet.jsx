@@ -45,6 +45,7 @@ const PlayerBtnSet = () => {
 					className={positionArr[index]}
 					key={index}
 					player={player}
+					position={index + 1}
 				/>
 			))}
 		</Container>

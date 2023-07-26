@@ -111,7 +111,7 @@ const Substitute = styled.div`
 	}
 `;
 
-const PlayerBtn = ({ className, player }) => {
+const PlayerBtn = ({ className, player, position }) => {
 	const dispatch = useDispatch();
 	const plays = useSelector((state) => state.plays.plays);
 	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
@@ -125,7 +125,7 @@ const PlayerBtn = ({ className, player }) => {
 		plays.filter((play) => play.playerNum === number && !play.win).length,
 	];
 	const handleToggle = () => {
-		dispatch(playsActions.setPlayerOfPlay({ playerNum: number }));
+		dispatch(playsActions.setPlayerOfPlay({ playerNum: number, position }));
 	};
 
 	return (
