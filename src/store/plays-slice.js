@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const playsSlice = createSlice({
 	name: "plays",
 	initialState: {
-		serving: false,
+		isServing: false,
 		recordingPlay: {
 			scoreOurs: 0,
 			scoreOppo: 0,
@@ -107,6 +107,14 @@ const playsSlice = createSlice({
 		recordPlays: (state) => {
 			const play = state.recordingPlay;
 			state.plays.push(play);
+			if (play.win && state.isServing === false) {
+				state.isServing = true;
+				const servingPlayer = state.lineup.ours.shift();
+				state.lineup.ours.push(servingPlayer);
+			}
+			if (play.win === false && state.isServing) {
+				state.isServing = false;
+			}
 			state.recordingPlay = {
 				scoreOurs: 0,
 				scoreOppo: 0,
