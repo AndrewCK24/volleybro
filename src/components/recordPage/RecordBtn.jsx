@@ -13,6 +13,10 @@ const Container = styled.button`
 	font-size: 1.5rem;
 	align-items: center;
 	justify-content: center;
+	svg {
+		width: 2rem;
+		height: 2rem;
+	}
 	&:disabled {
 		background-color: var(--gray-secondary);
 		div {
@@ -34,11 +38,13 @@ const Container = styled.button`
 `;
 
 const RecordType = styled.div`
+	font-size: 1.5rem;
 	align-items: center;
 `;
 
-const RecordNum = styled.div`
+const RecordPts = styled.div`
 	font-size: 1.5rem;
+	font-weight: 700;
 `;
 
 const RecordBtn = ({ type }) => {
@@ -67,7 +73,7 @@ const RecordBtn = ({ type }) => {
 			onClick={handleClick}
 		>
 			<RecordType>{type.text}</RecordType>
-			<RecordNum>{recordingPlay.playerNum === -1 ? "--" : points}</RecordNum>
+			<RecordPts>{recordingPlay.playerNum === -1 ? "--" : points}</RecordPts>
 			{type.win ? <HiOutlinePlusCircle /> : <HiOutlineMinusCircle />}
 		</Container>
 	);

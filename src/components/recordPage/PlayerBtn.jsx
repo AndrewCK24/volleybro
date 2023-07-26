@@ -2,18 +2,20 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
 import { playsActions } from "../../store/plays-slice";
-import { ReactComponent as PlayerIcon } from "../../images/user.svg";
 
 const Container = styled.button`
+	min-height: 5.5rem;
+	padding: 0.5rem;
 	border: 1px solid var(--black-primary);
 	border-radius: 1rem;
 	display: grid;
 	grid-template-columns: 3fr 1fr;
-	grid-template-rows: 2fr 1fr 1fr;
+	grid-template-rows: 3fr 1fr;
 	&.toggle {
 		background-color: var(--black-primary);
 		div {
 			color: var(--white-primary);
+			border-color: var(--white-primary);
 		}
 		svg {
 			stroke: var(--white-primary);
@@ -33,13 +35,14 @@ const Number = styled.div`
 `;
 
 const Name = styled.div`
+	font-size: 1.5rem;
 	grid-column: 1;
 	grid-row: 2;
 	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-weight: 700;
+	font-weight: 500;
 `;
 
 const Role = styled.div`
@@ -49,21 +52,30 @@ const Role = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	font-weight: 500;
 `;
 
-const Points = styled.div`
-	grid-column: 1;
-	grid-row: 3;
+const SetInfo = styled.div`
 	height: 100%;
+	grid-column: 2;
+	grid-row: 1;
+	display: flex;
+	flex-direction: column;
+`;
+
+const Substitute = styled.div`
+	flex: 2 1;
+	border: 1px solid var(--black-primary);
+	border-radius: 0.5rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	font-size: 2rem;
+	font-weight: 500;
 `;
 
-const Player = styled.div`
-	grid-column: 2;
-	grid-row: 3;
-	height: 100%;
+const Points = styled.div`
+	flex: 1 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -93,13 +105,12 @@ const PlayerBtn = ({ player }) => {
 		>
 			<Number>{number}</Number>
 			<Name>{name}</Name>
+			<SetInfo>
+				<Substitute>{substitute ? substitute : ""}</Substitute>
+				<Points>+{points[0]}</Points>
+				<Points>-{points[1]}</Points>
+			</SetInfo>
 			<Role>{role}</Role>
-			<Points>
-				+{points[0]} / -{points[1]}
-			</Points>
-			<Player>
-				<PlayerIcon />
-			</Player>
 		</Container>
 	);
 };
