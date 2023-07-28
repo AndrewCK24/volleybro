@@ -6,12 +6,11 @@ import PlayerBtnSet from "../components/recordPage/PlayerBtnSet";
 import RecordBtnSet from "../components/recordPage/RecordBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
 import ScorePanel from "../components/recordPage/ScorePanel";
-import { ReactComponent as StatsIcon } from "../images/file-text.svg";
+import { FiFileText } from "react-icons/fi";
 import { playsActions } from "../store/plays-slice";
 
 const Container = styled.div`
 	flex: 1 1;
-	/* width: calc(100% - 2rem); */
 	height: 100%;
 	padding: 0 1rem;
 	display: flex;
@@ -27,11 +26,6 @@ const MainPart = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-	/* display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 3fr 2fr;
-	column-gap: 1.5rem;
-	row-gap: 1.5rem; */
 `;
 
 const ButtonPart = styled.div`
@@ -48,28 +42,11 @@ const InfoPart = styled.div`
 	gap: 1rem;
 `;
 
-const InfoLeft = styled.div`
+const Info = styled.div`
 	flex: 1 1;
-	/* grid-column: 1;
-	grid-row: 2; */
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-	/* display: grid;
-	grid-template-rows: 1fr 5fr;
-	row-gap: 1rem; */
-`;
-
-const InfoRight = styled.div`
-	flex: 1 1;
-	/* grid-column: 2;
-	grid-row: 2; */
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	/* display: grid;
-	grid-template-rows: 1fr 3fr;
-	row-gap: 1rem; */
 `;
 
 const ConfirmBtn = styled.button`
@@ -83,10 +60,13 @@ const ConfirmBtn = styled.button`
 
 const TeamStats = styled.div`
 	flex: 3 1;
+	padding: 0.5rem;
 	border-radius: 1rem;
 	background-color: var(--black-primary);
 	color: var(--white-primary);
 	svg {
+		width: 1.5rem;
+		height: 1.5rem;
 		stroke: var(--white-primary);
 	}
 `;
@@ -106,16 +86,16 @@ const RecordPage = () => {
 					<RecordBtnSet />
 				</ButtonPart>
 				<InfoPart>
-					<InfoLeft>
+					<Info>
 						<PreviewBar />
 						<ScorePanel />
-					</InfoLeft>
-					<InfoRight>
+					</Info>
+					<Info>
 						<ConfirmBtn onClick={handleConfirm}>確認</ConfirmBtn>
 						<TeamStats>
-							<StatsIcon />
+							<FiFileText />
 						</TeamStats>
-					</InfoRight>
+					</Info>
 				</InfoPart>
 			</MainPart>
 		</Container>
