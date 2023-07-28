@@ -2,30 +2,40 @@ import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 import { ReactComponent as Logo } from "../../images/logo-black.svg";
+import { FaVolleyballBall } from "react-icons/fa";
 
 const Container = styled.div`
 	flex: 5 1;
-	padding: 0.25rem;
+	padding: 0.5rem;
 	border: 1px solid var(--black-primary);
 	border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
-	/* display: grid;
-	grid-template-rows: 1fr 3fr 2fr;
-	row-gap: 0.5rem; */
 `;
 
-const SetIndicator = styled.div`
+const IndicatorsContainer = styled.div`
 	flex: 1 1;
-	font-size: 1.5rem;
-	font-weight: 700;
+	display: flex;
+	flex-direction: row;
 	align-items: center;
-	text-align: center;
 	justify-content: center;
 `;
 
-const ScoreContainer = styled.div`
+const Indicator = styled.div`
+	flex: 1 1;
+	font-size: 1.5rem;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+`;
+
+const ScoresContainer = styled.div`
 	flex: 3 1;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
@@ -40,22 +50,38 @@ const Score = styled.div`
 	justify-content: center;
 `;
 
+const SetsContainer = styled.div`
+	flex: 3 1;
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+`;
+
 const ScorePanel = () => {
+	const isServing = useSelector((state) => state.plays.isServing);
 	const plays = useSelector((state) => state.plays.plays);
-	const scoreArr = plays
-		? [plays[plays.length - 1]?.scoreOurs, plays[plays.length - 1]?.scoreOppo]
-		: [0, 0];
+	const scoreArr =
+		plays.length > 0
+			? [plays[plays.length - 1]?.scoreOurs, plays[plays.length - 1]?.scoreOppo]
+			: [0, 0];
 
 	return (
 		<Container>
-			<SetIndicator>SET 1</SetIndicator>
-			<ScoreContainer>
+			<IndicatorsContainer>
+				<Indicator>{isServing ? <FaVolleyballBall /> : ""}</Indicator>
+				<Indicator>SET 1</Indicator>
+				<Indicator>{isServing ? "" : <FaVolleyballBall />}</Indicator>
+			</IndicatorsContainer>
+			<ScoresContainer>
 				<Score>{scoreArr[0]}</Score>
 				<Score>
 					<Logo />
 				</Score>
 				<Score>{scoreArr[1]}</Score>
-			</ScoreContainer>
+			</ScoresContainer>
+			<SetsContainer>
+
+			</SetsContainer>
 		</Container>
 	);
 };
