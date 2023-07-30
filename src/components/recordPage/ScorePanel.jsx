@@ -11,7 +11,6 @@ const Container = styled.div`
 	border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
 `;
 
 const IndicatorsContainer = styled.div`
@@ -22,10 +21,17 @@ const IndicatorsContainer = styled.div`
 	justify-content: center;
 `;
 
-const Indicator = styled.div`
+const SetIndicator = styled.div`
 	flex: 1 1;
 	font-size: 1.5rem;
 	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`;
+
+const ServeIndicator = styled.div`
+	flex: 2 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -37,12 +43,14 @@ const Indicator = styled.div`
 
 const ScoresContainer = styled.div`
 	flex: 3 1;
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	column-gap: 0.25rem;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 `;
 
 const Score = styled.div`
+	flex: 2 1;
 	font-size: 4.5rem;
 	font-weight: 700;
 	margin: auto;
@@ -50,11 +58,34 @@ const Score = styled.div`
 	justify-content: center;
 `;
 
+const StyledLogo = styled(Logo)`
+	flex: 1 1;
+`;
+
 const SetsContainer = styled.div`
 	flex: 3 1;
+	border: 1px solid var(--black-primary);
+	border-radius: 1rem;
+	padding: 0.25rem 0.5rem;
 	display: flex;
 	flex-direction: row;
 	gap: 0.5rem;
+`;
+
+const CellsContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+`;
+
+const Cell = styled.div`
+	flex: 1 1;
+	font-size: 1.5rem;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
 
 const ScorePanel = () => {
@@ -68,19 +99,32 @@ const ScorePanel = () => {
 	return (
 		<Container>
 			<IndicatorsContainer>
-				<Indicator>{isServing ? <FaVolleyballBall /> : ""}</Indicator>
-				<Indicator>SET 1</Indicator>
-				<Indicator>{isServing ? "" : <FaVolleyballBall />}</Indicator>
+				<ServeIndicator>{isServing ? <FaVolleyballBall /> : ""}</ServeIndicator>
+				<SetIndicator>SET 1</SetIndicator>
+				<ServeIndicator>{isServing ? "" : <FaVolleyballBall />}</ServeIndicator>
 			</IndicatorsContainer>
 			<ScoresContainer>
 				<Score>{scoreArr[0]}</Score>
-				<Score>
-					<Logo />
-				</Score>
+				<StyledLogo />
 				<Score>{scoreArr[1]}</Score>
 			</ScoresContainer>
 			<SetsContainer>
-
+				<CellsContainer>
+					<Cell>台大日劇</Cell>
+					<Cell>台大生傳</Cell>
+				</CellsContainer>
+				<CellsContainer>
+					<Cell>25</Cell>
+					<Cell>23</Cell>
+				</CellsContainer>
+				<CellsContainer>
+					<Cell>25</Cell>
+					<Cell>23</Cell>
+				</CellsContainer>
+				<CellsContainer>
+					<Cell>25</Cell>
+					<Cell>23</Cell>
+				</CellsContainer>
 			</SetsContainer>
 		</Container>
 	);
