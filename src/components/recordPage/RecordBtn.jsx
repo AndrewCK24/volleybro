@@ -6,7 +6,7 @@ import { HiOutlinePlusCircle, HiOutlineMinusCircle } from "react-icons/hi";
 
 const Container = styled.button`
 	border: 1px solid var(--black-primary);
-	border-radius: 1rem;
+	border-radius: 0.5rem;
 	font-size: 1.5rem;
 	align-items: center;
 	justify-content: center;
