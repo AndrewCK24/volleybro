@@ -5,17 +5,22 @@ import { playsActions } from "../../store/plays-slice";
 import { HiOutlinePlusCircle, HiOutlineMinusCircle } from "react-icons/hi";
 
 const Container = styled.button`
-	display: grid;
-	grid-template-columns: 3fr 1fr 1fr;
-	column-gap: 0.25rem;
 	border: 1px solid var(--black-primary);
-	border-radius: 0.5rem;
+	border-radius: 1rem;
 	font-size: 1.5rem;
 	align-items: center;
 	justify-content: center;
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr 1fr;
+	column-gap: 0.25rem;
+	row-gap: 0.25rem;
 	svg {
 		width: 2rem;
 		height: 2rem;
+	}
+	&.recordOppoBtn {
+		grid-template-columns: 2fr 1fr;
+		grid-template-rows: 1fr 1fr;
 	}
 	&:disabled {
 		background-color: var(--gray-secondary);
@@ -38,6 +43,7 @@ const Container = styled.button`
 `;
 
 const RecordType = styled.div`
+	grid-column: 1 / span 2;
 	font-size: 1.5rem;
 	align-items: center;
 `;
@@ -69,19 +75,11 @@ const RecordBtn = ({ type }) => {
 
 	const handleDisabled = (typeNum) => {
 		const disabledArr = [];
-		// if (isServing) {
-		// 	disabledArr.push(6);
-		// 	if (position !== 1) {
-		// 		disabledArr.push(0, 1);
-		// 	}
-		// } else {
-		// 	disabledArr.push(0, 1);
-		// }
 		if (position !== 1) {
 			disabledArr.push(0, 1);
 		}
 		if (isServing) {
-			disabledArr.push(6);
+			disabledArr.push(6, 10);
 		} else if (position === 1) {
 			disabledArr.push(0, 1);
 		}
@@ -94,7 +92,10 @@ const RecordBtn = ({ type }) => {
 
 	return (
 		<Container
-			className={typeNum === type.num ? "toggle" : ""}
+			className={`
+				${typeNum === type.num ? "toggle" : ""} 
+				${playerNum === -1 ? "recordOppoBtn" : ""}
+			`}
 			disabled={handleDisabled(type.num)}
 			onClick={handleClick}
 		>

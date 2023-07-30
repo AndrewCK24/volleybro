@@ -1,4 +1,4 @@
-export const typeArr = [
+export const recordTypeArr = [
 	{
 		text: "發球得分",
 		type: "service",
@@ -13,13 +13,13 @@ export const typeArr = [
 	},
 	{
 		text: "攔網得分",
-		type: "block",
+		type: "blocking",
 		win: true,
 		num: 2,
 	},
 	{
 		text: "攔網失誤",
-		type: "block",
+		type: "blocking",
 		win: false,
 		num: 3,
 	},
@@ -49,7 +49,7 @@ export const typeArr = [
 	},
 	{
 		text: "二傳失誤",
-		type: "set",
+		type: "setting",
 		win: false,
 		num: 8,
 	},
@@ -59,4 +59,32 @@ export const typeArr = [
 		win: false,
 		num: 9,
 	},
+	{
+		text: "對方發球失誤",
+		type: "service",
+		win: true,
+		num: 10,
+	},
+	{
+		text: "對方攻擊失誤",
+		type: "attack",
+		win: true,
+		num: 11,
+	},
+	{
+		text: "對方傳球失誤",
+		type: "defense",
+		win: true,
+		num: 12,
+	},
+	{
+		text: "對方犯規",
+		type: "fault",
+		win: true,
+		num: 13,
+	},
 ];
+
+export const recordTypeOursArr = recordTypeArr.slice(0, 10);
+
+export const recordTypeOppoArr = recordTypeArr.slice(10);

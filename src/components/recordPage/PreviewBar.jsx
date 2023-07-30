@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
-import { typeArr } from "../../utils/playTypeArr";
+import { recordTypeArr } from "../../utils/recordTypeArr";
 
 const Container = styled.div`
 	flex: 1 1;
@@ -46,8 +46,8 @@ const PreviewBar = () => {
 	});
 	const playType =
 		recordingPlay.typeNum === -1
-			? typeArr[lastPlay.typeNum]?.text
-			: typeArr[recordingPlay.typeNum].text;
+			? recordTypeArr[lastPlay.typeNum]?.text
+			: recordTypeArr[recordingPlay.typeNum].text;
 
 	return (
 		<Container>
@@ -58,13 +58,24 @@ const PreviewBar = () => {
 			</ScorePreview>
 			<ContentPreview>
 				{
-					recordingPlay.typeNum !== -1
-						? `${member.name}(${member.number}) ${playType}`
-						: recordingPlay.playerNum !== -1
-						? `${member.name}(${member.number})` 								// p 有, t 沒有
-						: lastPlay?.isNewSet 																// p 沒有, t 沒有
-						? `` 																								// 上球無紀錄內容
-						: `${member.name}(${member.number}) ${playType}`		// 上球有紀錄內容
+					recordingPlay.playerNum === -1
+						? recordingPlay.typeNum === -1
+							? lastPlay.isNewSet
+								? ``
+								: lastPlay.playerNum === -1
+									? `${playType}`
+									: `${member.name}(${member.number}) ${playType}`
+							: `${playType}`
+						: recordingPlay.typeNum === -1
+							? `${member.name}(${member.number})`
+							: `${member.name}(${member.number}) ${playType}`
+					// recordingPlay.typeNum !== -1
+					// 	? `${member.name}(${member.number}) ${playType}`
+					// 	: recordingPlay.playerNum !== -1
+					// 	? `${member.name}(${member.number})` // p 有, t 沒有
+					// 	: lastPlay?.isNewSet // p 沒有, t 沒有
+					// 	? `` // 上球無紀錄內容
+					// 	: `${member.name}(${member.number}) ${playType}` // 上球有紀錄內容
 				}
 			</ContentPreview>
 		</Container>
