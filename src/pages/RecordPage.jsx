@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
 import ScoreBar from "../components/recordPage/ScoreBar";
@@ -73,6 +73,7 @@ const TeamStats = styled.div`
 
 const RecordPage = () => {
 	const dispatch = useDispatch();
+	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
 	const handleConfirm = () => {
 		dispatch(playsActions.recordPlays());
 	};
@@ -91,7 +92,7 @@ const RecordPage = () => {
 						<ScorePanel />
 					</Info>
 					<Info>
-						<ConfirmBtn onClick={handleConfirm}>確認</ConfirmBtn>
+						<ConfirmBtn onClick={handleConfirm} disabled={recordingPlay.typeNum === -1}>確認</ConfirmBtn>
 						<TeamStats>
 							<FiFileText />
 						</TeamStats>
