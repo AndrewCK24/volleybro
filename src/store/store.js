@@ -9,6 +9,10 @@ const store = configureStore(
       team: teamSlice,
       plays: playsSlice,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
   }
 );
 
