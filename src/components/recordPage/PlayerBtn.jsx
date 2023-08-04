@@ -12,7 +12,7 @@ const Container = styled.button`
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem;
+	/* gap: 0.5rem; */
 	&.toggle {
 		background-color: var(--black-primary);
 		div {
@@ -31,7 +31,7 @@ const PlayerInfo = styled.div`
 `;
 
 const Number = styled.div`
-	flex: 3 1;
+	flex: 2 1;
 	height: 100%;
 	display: flex;
 	align-items: center;
@@ -47,20 +47,22 @@ const Name = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-weight: 500;
+	font-weight: 700;
 `;
 
 const SetInfo = styled.div`
 	flex: 1 1;
+	padding-right: 1rem;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
 `;
 
-const Points = styled.div`
-	flex: 3 1;
-	height: 100%;
+const PointsContainer = styled.div`
+	flex: 2 1;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -69,14 +71,33 @@ const Points = styled.div`
 
 const Point = styled.div`
 	flex: 0 1;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.25rem;
+`;
+
+const PointSign = styled.div`
+	flex: 2 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-size: 1.25rem;
 `;
 
+const PointValue = styled.div`
+	flex: 3 1;
+	display: flex;
+	align-items: center;
+	justify-content: right;
+	font-size: 1.25rem;
+`;
+
 const Role = styled.div`
 	flex: 1 1;
+	width: 100%;
 	font-size: 1.5rem;
 	height: 100%;
 	display: flex;
@@ -141,17 +162,23 @@ const PlayerBtn = ({ className, player, position }) => {
 				<Name>{name}</Name>
 			</PlayerInfo>
 			<SetInfo>
-				<Points>
-					<Point>+{points[0]}</Point>
-					<Point>-{points[1]}</Point>
-				</Points>
+				<PointsContainer>
+					<Point>
+						<PointSign>+</PointSign>
+						<PointValue>{points[0]}</PointValue>
+					</Point>
+					<Point>
+						<PointSign>-</PointSign>
+						<PointValue>{points[1]}</PointValue>
+					</Point>
+				</PointsContainer>
 				<Role>{role}</Role>
 			</SetInfo>
 			<LineupInfo>
 				<Substitute
 					className={`
 						${isSub ? "" : "unavailable"}
-						${substitute ? "" : "hidden"}
+						${substitute !== -1 ? "" : "hidden"}
 					`}
 				>
 					{substitute}
