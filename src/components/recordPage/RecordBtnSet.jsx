@@ -20,16 +20,36 @@ const Container = styled.div`
 `;
 
 const RecordBtnSet = () => {
-	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
+	const { records } = useSelector((state) => state.record.setData);
+	const { playerNum } = useSelector((state) => state.record.data);
 	const recordTypeArr =
-		recordingPlay.playerNum === -1 ? recordTypeOppoArr : recordTypeOursArr;
+		playerNum === null ? recordTypeOppoArr : recordTypeOursArr;
+	const handleDisabled = (typeNum, position, isServing) => {
+		const disabledArr = [];
+		if (position !== 1) {
+			disabledArr.push(1, 2);
+		}
+		if (isServing) {
+			disabledArr.push(7, 11);
+		} else if (position === 1) {
+			disabledArr.push(1, 2);
+		}
+		if (position === 1 || position >= 5) {
+			disabledArr.push(3, 4);
+		}
+
+		return disabledArr.includes(typeNum);
+	};
+
 	return (
-		<Container className={recordingPlay.playerNum === -1 ? "recordOppoBtnSet" : ""}>
+		<Container className={playerNum === null ? "recordOppoBtnSet" : ""}>
 			{recordTypeArr.map((type) => (
 				<RecordBtn
 					key={type.num}
 					type={type}
-					layout={recordingPlay.playerNum === -1}
+					records={records}
+					handleDisabled={handleDisabled}
+					// layout={playerNum === null}
 				/>
 			))}
 		</Container>

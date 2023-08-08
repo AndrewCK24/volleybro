@@ -36,7 +36,12 @@ const teamSlice = createSlice({
         number: 24,
         name: "莊予樂",
         role: "MB",
-      },    
+      },
+      {
+        number: 12,
+        name: "許凱勛",
+        role: "L",
+      }
     ],
     matches: [],
   },

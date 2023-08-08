@@ -41,32 +41,31 @@ const ContentPreview = styled.div`
 `;
 
 const PreviewBar = () => {
-	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
-	const lastPlay = useSelector((state) => {
-		return state.plays.plays.length > 0
-			? state.plays.plays[state.plays.plays.length - 1]
+	const recordingData = useSelector((state) => state.record.data);
+	const { records } = useSelector((state) => state.record.setData);
+	const lastRecord = records.length > 0
+			? records[records.length - 1]
 			: {
 					isNewSet: true,
 					scoreOurs: 0,
 					scoreOppo: 0,
 					win: false,
-					playerNum: -1,
-					typeNum: -1,
+					playerNum: null,
+					typeNum: 0,
 			  };
-	});
 	const memberArr = useSelector((state) => state.team.members);
 	const member = memberArr.find((member) => {
-		return recordingPlay.playerNum === -1
-			? member.number === lastPlay?.playerNum
-			: member.number === recordingPlay.playerNum;
+		return recordingData.playerNum === null
+			? member.number === lastRecord?.playerNum
+			: member.number === recordingData.playerNum;
 	});
 	const { name, number } = member || { name: "", number: "" };
 	const { scoreOurs, scoreOppo } =
-		recordingPlay.typeNum === -1 ? lastPlay : recordingPlay;
+		recordingData.typeNum ? recordingData : lastRecord;
 	const playType =
-		recordingPlay.typeNum === -1
-			? recordTypeArr[lastPlay.typeNum]?.text
-			: recordTypeArr[recordingPlay.typeNum].text;
+		recordingData.typeNum
+			? recordTypeArr[recordingData.typeNum - 1]?.text
+			: recordTypeArr[lastRecord.typeNum - 1]?.text;
 
 	return (
 		<Container>
@@ -74,17 +73,17 @@ const PreviewBar = () => {
 				<Score>{scoreOurs}</Score>:<Score>{scoreOppo}</Score>
 			</ScorePreview>
 			<ContentPreview>
-				{recordingPlay.playerNum === -1
-					? recordingPlay.typeNum === -1
-						? lastPlay.isNewSet
+				{recordingData.playerNum === null
+					? recordingData.typeNum === 0
+						? lastRecord.isNewSet
 							? ``
-							: lastPlay.playerNum === -1
+							: lastRecord.playerNum === null
 							? `${playType}`
 							: `${name.padStart(4, "　")}(${numberFormatter(
 									number
 							  )}) ${playType}`
 						: `${playType}`
-					: recordingPlay.typeNum === -1
+					: recordingData.typeNum === 0
 					? `${name.padStart(4, "　")}(${numberFormatter(number)})`
 					: `${name.padStart(4, "　")}(${numberFormatter(number)}) ${playType}`}
 			</ContentPreview>

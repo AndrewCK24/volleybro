@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import { playsActions } from "../../store/plays-slice";
+import { recordActions } from "../../store/record-slice";
 import { HiOutlinePlusCircle, HiOutlineMinusCircle } from "react-icons/hi";
 
 const Container = styled.button`
@@ -53,54 +53,36 @@ const RecordPts = styled.div`
 	font-weight: 700;
 `;
 
-const RecordBtn = ({ type }) => {
+const RecordBtn = ({ type, records, handleDisabled }) => {
 	const dispatch = useDispatch();
-	const isServing = useSelector((state) => state.plays.isServing);
-	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
-	const { playerNum, position, typeNum } = recordingPlay;
-	const plays = useSelector((state) => state.plays.plays);
-	const points = plays.filter(
-		(play) => play.playerNum === playerNum && play.typeNum === type.num
+	// const isServing = useSelector((state) => state.plays.isServing);
+	const { playerNum, typeNum } = useSelector((state) => state.record.data);
+	const { position, isServing } = useSelector((state) => state.record.status);
+	// const plays = useSelector((state) => state.plays.plays);
+	const points = records.filter(
+		(record) => record.playerNum === playerNum && record.typeNum === type.num
 	).length;
+	// const points = plays.filter(
+	// 	(play) => play.playerNum === playerNum && play.typeNum === type.num
+	// ).length;
 
 	const handleClick = () => {
 		dispatch(
-			playsActions.setRecordOfPlay({
-				typeNum: type.num,
-				type: type.type,
-				win: type.win,
-			})
+			recordActions.setRecordingDetail({ typeNum: type.num, win: type.win })
 		);
-	};
-
-	const handleDisabled = (typeNum) => {
-		const disabledArr = [];
-		if (position !== 1) {
-			disabledArr.push(0, 1);
-		}
-		if (isServing) {
-			disabledArr.push(6, 10);
-		} else if (position === 1) {
-			disabledArr.push(0, 1);
-		}
-		if (position === 1 || position >= 5) {
-			disabledArr.push(2, 3);
-		}
-
-		return disabledArr.includes(typeNum);
 	};
 
 	return (
 		<Container
 			className={`
 				${typeNum === type.num ? "toggle" : ""} 
-				${playerNum === -1 ? "recordOppoBtn" : ""}
+				${playerNum === null ? "recordOppoBtn" : ""}
 			`}
-			disabled={handleDisabled(type.num)}
+			disabled={handleDisabled(type.num, position, isServing)}
 			onClick={handleClick}
 		>
 			<RecordType>{type.text}</RecordType>
-			<RecordPts>{recordingPlay.playerNum === -1 ? "--" : points}</RecordPts>
+			<RecordPts>{playerNum === null ? "--" : points}</RecordPts>
 			{type.win ? <HiOutlinePlusCircle /> : <HiOutlineMinusCircle />}
 		</Container>
 	);

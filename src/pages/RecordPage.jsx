@@ -7,7 +7,7 @@ import RecordBtnSet from "../components/recordPage/RecordBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
 import ScorePanel from "../components/recordPage/ScorePanel";
 import { FiFileText } from "react-icons/fi";
-import { playsActions } from "../store/plays-slice";
+import { recordActions } from "../store/record-slice";
 
 const Container = styled.div`
 	flex: 1 1;
@@ -73,9 +73,9 @@ const TeamStats = styled.div`
 
 const RecordPage = () => {
 	const dispatch = useDispatch();
-	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
+	const { typeNum } = useSelector((state) => state.record.data);
 	const handleConfirm = () => {
-		dispatch(playsActions.recordPlays());
+		dispatch(recordActions.createRecord());
 	};
 
 	return (
@@ -92,7 +92,9 @@ const RecordPage = () => {
 						<ScorePanel />
 					</Info>
 					<Info>
-						<ConfirmBtn onClick={handleConfirm} disabled={recordingPlay.typeNum === -1}>確認</ConfirmBtn>
+						<ConfirmBtn onClick={handleConfirm} disabled={!typeNum}>
+							確認
+						</ConfirmBtn>
 						<TeamStats>
 							<FiFileText />
 						</TeamStats>

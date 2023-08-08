@@ -25,169 +25,6 @@ const Container = styled.div`
 	}
 `;
 
-// const playsArr = [
-//   {
-//     playNum: 1,
-//     scoreOur: 1,
-//     scoreOpo: 0,
-//     win: true,
-//     playerNum: 7,
-//     playType: "serve",
-//   },
-//   {
-//     playNum: 2,
-//     scoreOur: 1,
-//     scoreOpo: 1,
-//     win: false,
-//     playerNum: 17,
-//     playType: "defense",
-//   },
-//   {
-//     playNum: 3,
-//     scoreOur: 2,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 16,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 4,
-//     scoreOur: 3,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 7,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 1,
-//     scoreOur: 1,
-//     scoreOpo: 0,
-//     win: true,
-//     playerNum: 7,
-//     playType: "serve",
-//   },
-//   {
-//     playNum: 2,
-//     scoreOur: 1,
-//     scoreOpo: 1,
-//     win: false,
-//     playerNum: 17,
-//     playType: "defense",
-//   },
-//   {
-//     playNum: 3,
-//     scoreOur: 2,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 16,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 4,
-//     scoreOur: 3,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 7,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 1,
-//     scoreOur: 1,
-//     scoreOpo: 0,
-//     win: true,
-//     playerNum: 7,
-//     playType: "serve",
-//   },
-//   {
-//     playNum: 2,
-//     scoreOur: 1,
-//     scoreOpo: 1,
-//     win: false,
-//     playerNum: 17,
-//     playType: "defense",
-//   },
-//   {
-//     playNum: 3,
-//     scoreOur: 2,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 16,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 4,
-//     scoreOur: 3,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 7,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 1,
-//     scoreOur: 1,
-//     scoreOpo: 0,
-//     win: true,
-//     playerNum: 7,
-//     playType: "serve",
-//   },
-//   {
-//     playNum: 2,
-//     scoreOur: 1,
-//     scoreOpo: 1,
-//     win: false,
-//     playerNum: 17,
-//     playType: "defense",
-//   },
-//   {
-//     playNum: 3,
-//     scoreOur: 2,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 16,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 4,
-//     scoreOur: 3,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 7,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 1,
-//     scoreOur: 1,
-//     scoreOpo: 0,
-//     win: true,
-//     playerNum: 7,
-//     playType: "serve",
-//   },
-//   {
-//     playNum: 2,
-//     scoreOur: 1,
-//     scoreOpo: 1,
-//     win: false,
-//     playerNum: 17,
-//     playType: "defense",
-//   },
-//   {
-//     playNum: 3,
-//     scoreOur: 2,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 16,
-//     playType: "attack",
-//   },
-//   {
-//     playNum: 4,
-//     scoreOur: 3,
-//     scoreOpo: 1,
-//     win: true,
-//     playerNum: 7,
-//     playType: "attack",
-//   },
-// ];
-
 const ScoreCellBox = styled.div`
 	width: 5rem;
 	display: grid;
@@ -212,16 +49,16 @@ const ScoreCell = styled.div`
 `;
 
 const ScoreBar = () => {
-	const playsArr = useSelector((state) => state.plays.plays);
+	const { records } = useSelector((state) => state.record.setData);
 
 	return (
 		<Container>
-			{playsArr.map((play, index) => (
+			{records.map((record, index) => (
 				<ScoreCellBox key={index}>
-					{play.win ? (
-						<ScoreCell className="winOurs">{play.scoreOurs}</ScoreCell>
+					{record.win ? (
+						<ScoreCell className="winOurs">{record.scoreOurs}</ScoreCell>
 					) : (
-						<ScoreCell className="winOppo">{play.scoreOppo}</ScoreCell>
+						<ScoreCell className="winOppo">{record.scoreOppo}</ScoreCell>
 					)}
 				</ScoreCellBox>
 			))}

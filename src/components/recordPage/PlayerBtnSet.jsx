@@ -5,8 +5,6 @@ import PlayerBtn from "./PlayerBtn";
 
 const Container = styled.div`
 	flex: 1 1;
-	/* grid-column: 1;
-	grid-row: 1; */
 	display: grid;
 	grid-template-areas:
 		"p5 p4"
@@ -36,11 +34,11 @@ const Container = styled.div`
 
 const PlayerBtnSet = () => {
 	const positionArr = ["p1", "p2", "p3", "p4", "p5", "p6"];
-	const lineupArr = useSelector((state) => state.plays.lineup.ours);
+	const lineup = useSelector((state) => state.record.setData.lineup.ours);
 
 	return (
 		<Container>
-			{lineupArr.map((player, index) => (
+			{lineup.map((player, index) => (
 				<PlayerBtn
 					className={positionArr[index]}
 					key={index}

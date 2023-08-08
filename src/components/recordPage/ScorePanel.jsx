@@ -89,11 +89,11 @@ const Cell = styled.div`
 `;
 
 const ScorePanel = () => {
-	const isServing = useSelector((state) => state.plays.isServing);
-	const plays = useSelector((state) => state.plays.plays);
+	const { isServing } = useSelector((state) => state.record.status);
+	const { records } = useSelector((state) => state.record.setData);
 	const scoreArr =
-		plays.length > 0
-			? [plays[plays.length - 1]?.scoreOurs, plays[plays.length - 1]?.scoreOppo]
+		records.length > 0
+			? [records[records.length - 1]?.scoreOurs, records[records.length - 1]?.scoreOppo]
 			: [0, 0];
 
 	return (

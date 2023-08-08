@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import { playsActions } from "../../store/plays-slice";
+import { recordActions } from "../../store/record-slice";
 
 const Container = styled.button`
 	min-height: 5.5rem;
@@ -134,26 +134,28 @@ const Substitute = styled.div`
 
 const PlayerBtn = ({ className, player, position }) => {
 	const dispatch = useDispatch();
-	const plays = useSelector((state) => state.plays.plays);
-	const recordingPlay = useSelector((state) => state.plays.recordingPlay);
-	const memberArr = useSelector((state) => state.team.members);
 	const { starting, substitute, isSub } = player;
+	const { playerNum } = useSelector((state) => state.record.data);
+	const { records } = useSelector((state) => state.record.setData);
+	const memberArr = useSelector((state) => state.team.members);
 	const { number, name, role } = memberArr.find((member) => {
 		return isSub ? member.number === substitute : member.number === starting;
 	});
 	const points = [
-		plays.filter((play) => play.playerNum === number && play.win).length,
-		plays.filter((play) => play.playerNum === number && !play.win).length,
+		records.filter((record) => record.playerNum === number && record.win)
+			.length,
+		records.filter((record) => record.playerNum === number && !record.win)
+			.length,
 	];
 	const handleToggle = () => {
-		dispatch(playsActions.setPlayerOfPlay({ playerNum: number, position }));
+		dispatch(recordActions.setRecordingPlayer({ playerNum: number, position }));
 	};
 
 	return (
 		<Container
 			className={`
 				${className}
-				${recordingPlay.playerNum === number ? "toggle" : ""}
+				${playerNum === number ? "toggle" : ""}
 			`}
 			onClick={handleToggle}
 		>
@@ -178,7 +180,7 @@ const PlayerBtn = ({ className, player, position }) => {
 				<Substitute
 					className={`
 						${isSub ? "" : "unavailable"}
-						${substitute !== -1 ? "" : "hidden"}
+						${substitute === null ? "hidden" : ""}
 					`}
 				>
 					{substitute}
