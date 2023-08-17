@@ -1,36 +1,27 @@
-import styled from "@emotion/styled";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import SideNav from "./components/SideNav";
-import RecordPage from "./pages/RecordPage";
+import RootLayout from "./pages/Root";
+import RecordPage from "./pages/Record";
 
-const Container = styled.div`
-	background-color: var(--white-primary);
-	height: 100vh;
-	width: 100vw;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-`;
-
-const PagesContainer = styled.main`
-	flex: 1 1;
-	display: flex;
-	flex-wrap: nowrap;
-	height: 100%;
-	/* width: 100%; */
-	padding-top: 5%;
-	padding-bottom: 5%;
-`;
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      // {
+      //   index: true,
+      //   element:
+      // },
+      {
+        path: "record",
+        element: <RecordPage />,
+      },
+    ],
+  },
+]);
 
 const App = () => {
-	return (
-		<Container>
-			<SideNav />
-			<PagesContainer>
-				<RecordPage />
-			</PagesContainer>
-		</Container>
-	);
+  return <RouterProvider router={router} />;
 };
 
 export default App;

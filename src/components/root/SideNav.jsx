@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 
-import { ReactComponent as HomePageIcon } from '.././images/logo-black.svg';
-import { ReactComponent as RecordPageIcon } from '.././images/play-circle.svg';
-import { ReactComponent as TeamPageIcon } from '.././images/users.svg';
-import { ReactComponent as HistoryPageIcon } from '.././images/clock.svg';
-import { ReactComponent as SettingPageIcon } from '.././images/settings.svg';
-import { ReactComponent as UserIcon } from '.././images/user.svg';
+import { ReactComponent as HomePageIcon } from '../../images/logo-black.svg';
+import { ReactComponent as RecordPageIcon } from '../../images/play-circle.svg';
+import { ReactComponent as TeamPageIcon } from '../../images/users.svg';
+import { ReactComponent as HistoryPageIcon } from '../../images/clock.svg';
+import { ReactComponent as SettingPageIcon } from '../../images/settings.svg';
+import { ReactComponent as UserIcon } from '../../images/user.svg';
 
 const Container = styled.aside`
   flex: 0 0 4rem;
