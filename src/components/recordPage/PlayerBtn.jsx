@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import { recordActions } from "../../store/record-slice";
+import { recordActions } from "./record-slice";
 
 const Container = styled.button`
   min-height: 5.5rem;

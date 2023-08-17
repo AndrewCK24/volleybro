@@ -7,7 +7,7 @@ import RecordBtnSet from "../components/recordPage/RecordBtnSet";
 import PreviewBar from "../components/recordPage/PreviewBar";
 import ScorePanel from "../components/recordPage/ScorePanel";
 import { FiFileText } from "react-icons/fi";
-import { recordActions } from "../store/record-slice";
+import { recordActions } from "../components/recordPage/record-slice";
 
 const Container = styled.div`
   flex: 1 1;

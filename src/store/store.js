@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import teamSlice from "./team-slice";
-import recordSlice from "./record-slice";
+import recordSlice from "../components/recordPage/record-slice";
 
 const store = configureStore({
 	reducer: {

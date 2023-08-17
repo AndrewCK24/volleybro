@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import { recordActions } from "../../store/record-slice";
+import { recordActions } from "./record-slice";
 import { HiOutlinePlusCircle, HiOutlineMinusCircle } from "react-icons/hi";
 
 const Container = styled.button`
