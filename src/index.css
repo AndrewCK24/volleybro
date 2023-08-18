@@ -6,6 +6,16 @@
   --gray-secondary: #D9D9D9;
   --black-primary: #121212;     /* toggled */
   --red-primary: #F45555;       /* alert */
+
+  --color-primary-100: #cfd2d6;
+  --color-primary-200: #b7bcc2;
+  --color-primary-300: #9fa5ae;
+  --color-primary-400: #888f9a;
+  --color-primary-500: #707885;
+  --color-primary-600: #586271;
+  --color-primary-700: #404b5d;
+  --color-primary-800: #283548;
+  --color-primary-900: #101e34;
 }
 
 * {

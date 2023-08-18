@@ -1,10 +1,12 @@
-import { Outlet } from "react-router-dom";
+import { Suspense } from "react";
+import { Await, Outlet } from "react-router-dom";
 import styled from "@emotion/styled";
 
+import Loading from "../components/root/Loading";
 import SideNav from "../components/root/SideNav";
 
 const Container = styled.div`
-  background-color: var(--white-primary);
+  background-color: var(--color-primary-900);
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -24,10 +26,11 @@ const PagesContainer = styled.main`
 const RootLayout = () => {
   return (
     <Container>
-      <SideNav />
+      <Loading />
+      {/* <SideNav />
       <PagesContainer>
         <Outlet />
-      </PagesContainer>
+      </PagesContainer> */}
     </Container>
   );
 };
