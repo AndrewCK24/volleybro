@@ -21,8 +21,8 @@ const Container = styled.aside`
   justify-content: center;
   svg {
     stroke: var(--white-primary);
-    height: 3rem;
-    width: 3rem;
+    height: 2.5rem;
+    width: 2.5rem;
     padding: 0.5rem;
   }
 `;

@@ -27,7 +27,7 @@ const Container = styled.div`
     border: none;
     text-shadow: none;
     box-shadow: none;
-    font-size: 3rem;
+    font-size: 2rem;
   }
 `;
 
