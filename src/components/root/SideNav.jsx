@@ -1,11 +1,14 @@
+import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import { ReactComponent as HomePageIcon } from '../../images/logo-black.svg';
-import { ReactComponent as RecordPageIcon } from '../../images/play-circle.svg';
-import { ReactComponent as TeamPageIcon } from '../../images/users.svg';
-import { ReactComponent as HistoryPageIcon } from '../../images/clock.svg';
-import { ReactComponent as SettingPageIcon } from '../../images/settings.svg';
-import { ReactComponent as UserIcon } from '../../images/user.svg';
+import Logo from "../general/Logo";
+import {
+  FiHome as HomeIcon,
+  FiUsers as TeamIcon,
+  FiClock as HistoryIcon,
+  FiSettings as SettingIcon,
+  FiUser as UserIcon,
+} from "react-icons/fi";
 
 const Container = styled.aside`
   flex: 0 0 4rem;
@@ -15,45 +18,51 @@ const Container = styled.aside`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   svg {
-    height: 2rem;
-    width: 2rem;
+    stroke: var(--white-primary);
+    height: 3rem;
+    width: 3rem;
+    padding: 0.5rem;
   }
 `;
 
 const IconContainer = styled.div`
   height: 100%;
   padding-top: 2rem;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  svg {
-    height: 2rem;
-    width: 2rem;
-    padding-top: 1.5rem;
-  }
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
 `;
 
 const UserContainer = styled.div`
-  box-sizing: border-box;
   display: flex;
   align-items: center;
-  svg {
-    height: 2rem;
-    width: 2rem;
-  }
 `;
 
 const SideNav = () => {
   return (
     <Container>
-      <HomePageIcon />
       <IconContainer>
-        <RecordPageIcon />
-        <TeamPageIcon />
-        <HistoryPageIcon />
-        <SettingPageIcon />
+        <StyledLink to="/">
+          <HomeIcon />
+        </StyledLink>
+        <StyledLink to="/team">
+          <TeamIcon />
+        </StyledLink>
+        <StyledLink to="/record">
+          <Logo small={true} />
+        </StyledLink>
+        <StyledLink to="/history">
+          <HistoryIcon />
+        </StyledLink>
+        <StyledLink to="/setting">
+          <SettingIcon />
+        </StyledLink>
       </IconContainer>
       <UserContainer>
         <UserIcon />
