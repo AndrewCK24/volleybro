@@ -17,20 +17,24 @@ const Container = styled.div`
 const PagesContainer = styled.main`
   flex: 1 1;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-wrap: nowrap;
   height: 100%;
-  padding-top: 5%;
-  padding-bottom: 5%;
+  padding: 5% 0.5rem;
 `;
 
 const RootLayout = () => {
   return (
     <Container>
-      <Loading />
-      {/* <SideNav />
-      <PagesContainer>
-        <Outlet />
-      </PagesContainer> */}
+      <Suspense fallback={<Loading />}>
+        <Await>
+          <SideNav />
+          <PagesContainer>
+            <Outlet />
+          </PagesContainer>
+        </Await>
+      </Suspense>
     </Container>
   );
 };
