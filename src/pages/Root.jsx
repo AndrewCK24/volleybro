@@ -8,6 +8,7 @@ import SideNav from "../components/root/SideNav";
 const Container = styled.div`
   background-color: var(--color-primary-900);
   height: 100vh;
+  max-height: -webkit-fill-available;
   width: 100vw;
   display: flex;
   flex-direction: row;
@@ -20,6 +21,7 @@ const PagesContainer = styled.main`
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
+  overflow: hidden;
   height: 100%;
   padding: 5% 0.5rem;
 `;
