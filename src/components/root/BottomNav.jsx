@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 
 const Container = styled.aside`
-  flex: 0 0 3rem;
+  flex: 0 0 4rem;
   height: 100%;
   padding: 1rem 5%;
   display: flex;

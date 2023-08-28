@@ -3,6 +3,7 @@ import { Await, Outlet } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import Loading from "../components/root/Loading";
+import Header from "../components/root/Header";
 import BottomNav from "../components/root/BottomNav";
 
 const Container = styled.div`
@@ -12,7 +13,7 @@ const Container = styled.div`
   max-height: -webkit-fill-available;
   display: flex;
   /* flex-direction: row; */
-  flex-direction: column-reverse;
+  flex-direction: column;
   flex-wrap: nowrap;
 `;
 
@@ -24,7 +25,7 @@ const PagesContainer = styled.main`
   flex-wrap: nowrap;
   overflow: hidden;
   height: 100%;
-  padding: 1rem;
+  padding: 1rem 5%;
   /* padding: 5% 0.5rem; */
 `;
 
@@ -33,10 +34,11 @@ const RootLayout = () => {
     <Container>
       <Suspense fallback={<Loading />}>
         <Await>
-          <BottomNav />
+          <Header />
           <PagesContainer>
             <Outlet />
           </PagesContainer>
+          <BottomNav />
         </Await>
       </Suspense>
     </Container>
