@@ -3,7 +3,7 @@ import { Await, Outlet } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import Loading from "../components/root/Loading";
-import SideNav from "../components/root/SideNav";
+import BottomNav from "../components/root/BottomNav";
 
 const Container = styled.div`
   background-color: var(--color-primary-100);
@@ -33,7 +33,7 @@ const RootLayout = () => {
     <Container>
       <Suspense fallback={<Loading />}>
         <Await>
-          <SideNav />
+          <BottomNav />
           <PagesContainer>
             <Outlet />
           </PagesContainer>

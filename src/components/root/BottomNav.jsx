@@ -33,7 +33,7 @@ const StyledLink = styled(Link)`
   text-decoration: none;
 `;
 
-const SideNav = () => {
+const BottomNav = () => {
   return (
     <Container>
       <StyledLink to="/">
@@ -52,4 +52,4 @@ const SideNav = () => {
   );
 };
 
-export default SideNav;
+export default BottomNav;
