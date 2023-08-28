@@ -1,21 +1,35 @@
 :root {
-  --yellow-primary: #FFDE59;
-  --yellow-secondary: #FFEEAA;
-  --white-primary: #F5F5F5;     /* background color */
-  --gray-primary: #A0A0A0;
-  --gray-secondary: #D9D9D9;
-  --black-primary: #121212;     /* toggled */
-  --red-primary: #F45555;       /* alert */
+  --color-primary-100: #f6f4f5;   /* black text */
+  --color-primary-200: #dddcdd;   /* black text */
+  --color-primary-300: #c5c3c4;   /* black text */
+  --color-primary-400: #949293;   /* black text */
+  --color-primary-500: #626262;   /* white text */
+  --color-primary-600: #4a4949;   /* white text */
+  --color-primary-700: #313131;   /* white text */
+  --color-primary-800: #191818;   /* white text */
+  --color-primary-900: #000000;   /* white text */
 
-  --color-primary-100: #cfd2d6;
-  --color-primary-200: #b7bcc2;
-  --color-primary-300: #9fa5ae;
-  --color-primary-400: #888f9a;
-  --color-primary-500: #707885;
-  --color-primary-600: #586271;
-  --color-primary-700: #404b5d;
-  --color-primary-800: #283548;
-  --color-primary-900: #101e34;
+  --color-secondary-100: #cbcaee; /* black text */
+  --color-secondary-200: #a8a7e3; /* black text */
+  --color-secondary-300: #8583d7; /* black text */
+  --color-secondary-400: #6260cc; /* white text */
+  --color-secondary-500: #504ec6; /* white text */
+  --color-secondary-600: #403e9e; /* white text */
+  --color-secondary-700: #302f77; /* white text */
+  --color-secondary-800: #201f4f; /* white text */
+  --color-secondary-900: #101028; /* white text */
+
+  --color-tertiary-100: #f9c1cd;  /* black text */
+  --color-tertiary-200: #f598ab;  /* black text */
+  --color-tertiary-300: #f16f89;  /* black text */
+  --color-tertiary-400: #ed4668;  /* white text */
+  --color-tertiary-500: #eb3157;  /* white text */
+  --color-tertiary-600: #bc2746;  /* white text */
+  --color-tertiary-700: #8d1d34;  /* white text */
+  --color-tertiary-800: #5e1423;  /* white text */
+  --color-tertiary-900: #2f0a11;  /* white text */
+
+  background-color: var(--color-primary-100);
 }
 
 * {
@@ -33,13 +47,9 @@
 }
 
 body {
-  background-color: var(--white-primary);
+  background-color: var(--color-primary-100);
   text-size-adjust: 100%;
   touch-action: none;
-}
-
-div, aside, main {
-  box-sizing: border-box;
 }
 
 .scrollbar-hidden {

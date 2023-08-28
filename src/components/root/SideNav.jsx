@@ -1,41 +1,36 @@
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import Logo from "../general/Logo";
 import {
   FiHome as HomeIcon,
   FiUsers as TeamIcon,
   FiClock as HistoryIcon,
-  FiSettings as SettingIcon,
   FiUser as UserIcon,
 } from "react-icons/fi";
 
 const Container = styled.aside`
   flex: 0 0 4rem;
   height: 100%;
-  padding-top: 5%;
-  padding-bottom: 5%;
+  padding: 1rem 2.5%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  /* flex-direction: column; */
   align-items: center;
   justify-content: center;
+  background-color: var(--color-secondary-500);
   svg {
-    stroke: var(--white-primary);
-    height: 2.5rem;
-    width: 2.5rem;
+    stroke: var(--color-primary-100);
+    height: 4rem;
+    width: 4rem;
     padding: 0.5rem;
   }
 `;
 
-const IconContainer = styled.div`
-  height: 100%;
-  padding-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
 const StyledLink = styled(Link)`
+  flex: 1 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
 `;
 
@@ -47,26 +42,18 @@ const UserContainer = styled.div`
 const SideNav = () => {
   return (
     <Container>
-      <IconContainer>
-        <StyledLink to="/">
-          <HomeIcon />
-        </StyledLink>
-        <StyledLink to="/team">
-          <TeamIcon />
-        </StyledLink>
-        <StyledLink to="/record">
-          <Logo small={true} />
-        </StyledLink>
-        <StyledLink to="/history">
-          <HistoryIcon />
-        </StyledLink>
-        <StyledLink to="/setting">
-          <SettingIcon />
-        </StyledLink>
-      </IconContainer>
-      <UserContainer>
+      <StyledLink to="/">
+        <HomeIcon />
+      </StyledLink>
+      <StyledLink to="/members">
+        <TeamIcon />
+      </StyledLink>
+      <StyledLink to="/history">
+        <HistoryIcon />
+      </StyledLink>
+      <StyledLink to="/user">
         <UserIcon />
-      </UserContainer>
+      </StyledLink>
     </Container>
   );
 };
