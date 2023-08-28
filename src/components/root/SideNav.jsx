@@ -9,9 +9,9 @@ import {
 } from "react-icons/fi";
 
 const Container = styled.aside`
-  flex: 0 0 4rem;
+  flex: 0 0 3rem;
   height: 100%;
-  padding: 1rem 2.5%;
+  padding: 1rem 5%;
   display: flex;
   flex-direction: row;
   /* flex-direction: column; */
@@ -20,9 +20,8 @@ const Container = styled.aside`
   background-color: var(--color-secondary-500);
   svg {
     stroke: var(--color-primary-100);
-    height: 4rem;
-    width: 4rem;
-    padding: 0.5rem;
+    height: 2rem;
+    width: 2rem;
   }
 `;
 
@@ -32,11 +31,6 @@ const StyledLink = styled(Link)`
   align-items: center;
   justify-content: center;
   text-decoration: none;
-`;
-
-const UserContainer = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 const SideNav = () => {

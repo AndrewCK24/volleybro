@@ -8,7 +8,7 @@ import {
 } from "../../utils/recordTypeArr";
 
 const Container = styled.div`
-	flex: 1 1;
+	flex: 2 1;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: repeat(6, minmax(0, 1fr));

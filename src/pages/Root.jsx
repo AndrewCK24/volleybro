@@ -6,12 +6,13 @@ import Loading from "../components/root/Loading";
 import SideNav from "../components/root/SideNav";
 
 const Container = styled.div`
-  background-color: var(--color-primary-900);
+  background-color: var(--color-primary-100);
+  width: 100vw;
   height: 100vh;
   max-height: -webkit-fill-available;
-  width: 100vw;
   display: flex;
-  flex-direction: row;
+  /* flex-direction: row; */
+  flex-direction: column-reverse;
   flex-wrap: nowrap;
 `;
 
@@ -23,7 +24,8 @@ const PagesContainer = styled.main`
   flex-wrap: nowrap;
   overflow: hidden;
   height: 100%;
-  padding: 5% 0.5rem;
+  padding: 1rem;
+  /* padding: 5% 0.5rem; */
 `;
 
 const RootLayout = () => {

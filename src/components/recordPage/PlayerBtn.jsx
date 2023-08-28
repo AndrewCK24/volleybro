@@ -6,18 +6,21 @@ import { recordActions } from "./record-slice";
 const Container = styled.button`
   min-height: 5.5rem;
   padding: 0.5rem;
-  border: 1px solid var(--black-primary);
-  border-radius: 1rem;
+  border: none;
+  border-radius: 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  /* gap: 0.5rem; */
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   &.toggle {
-    background-color: var(--black-primary);
+    background-color: var(--color-secondary-500);
     div {
-      color: var(--white-primary);
-      border-color: var(--white-primary);
+      color: var(--color-primary-100);
     }
   }
 `;
@@ -25,18 +28,13 @@ const Container = styled.button`
 const PlayerInfo = styled.div`
   flex: 3 1;
   height: 100%;
-  display: flex;
   flex-direction: column;
-  align-items: center;
 `;
 
 const Number = styled.div`
   flex: 2 1;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 700;
 `;
 
@@ -44,9 +42,6 @@ const Name = styled.div`
   flex: 1 1;
   font-size: 1.5rem;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-weight: 700;
 `;
 
@@ -54,43 +49,29 @@ const SetInfo = styled.div`
   flex: 1 1;
   padding-right: 1rem;
   height: 100%;
-  display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 `;
 
 const PointsContainer = styled.div`
   flex: 2 1;
   width: 100%;
-  display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 `;
 
 const Point = styled.div`
   flex: 0 1;
   width: 100%;
-  display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
   font-size: 1.25rem;
 `;
 
 const PointSign = styled.div`
   flex: 2 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 1.25rem;
 `;
 
 const PointValue = styled.div`
   flex: 3 1;
-  display: flex;
-  align-items: center;
   justify-content: right;
   font-size: 1.25rem;
 `;
@@ -100,16 +81,12 @@ const Role = styled.div`
   width: 100%;
   font-size: 1.5rem;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-weight: 500;
 `;
 
 const LineupInfo = styled.div`
   flex: 1 1;
   height: 100%;
-  display: flex;
   flex-direction: column;
   gap: 0.25rem;
 `;
@@ -118,9 +95,6 @@ const Substitute = styled.div`
   flex: 2 1;
   border: 1px solid var(--black-primary);
   border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 2rem;
   font-weight: 500;
   &.hidden {

@@ -8,7 +8,8 @@ const Container = styled.div`
 	flex: 5 1;
 	padding: 0.5rem;
 	border: 1px solid var(--black-primary);
-	border-radius: 1rem;
+	border-radius: 0.5rem;
+	background-color: var(--white-primary);
 	display: flex;
 	flex-direction: column;
 `;

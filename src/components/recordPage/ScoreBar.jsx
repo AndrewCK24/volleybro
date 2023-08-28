@@ -6,7 +6,8 @@ const Container = styled.div`
 	/* height: 100%; */
 	width: fit-content;
 	padding: 1rem 0.5rem;
-	background-color: var(--yellow-primary);
+	color: var(--color-primary-100);
+	background-color: var(--color-secondary-500);
 	border-radius: 0.5rem;
 	display: flex;
 	flex-direction: column;
@@ -33,7 +34,7 @@ const ScoreCellBox = styled.div`
 
 const ScoreCell = styled.div`
 	height: 2.5rem;
-	border: 2px solid black;
+	border: 2px solid var(--color-primary-100);
 	border-radius: 1rem;
 	display: flex;
 	align-items: center;
