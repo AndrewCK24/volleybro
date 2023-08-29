@@ -10,14 +10,14 @@ const Container = styled.div`
   border: solid 1px var(--color-primary-100);
   border-radius: 1.5rem;
   box-shadow: 0 0 1rem var(--color-primary-100);
-  color: var(--color-primary-100);
   font-family: "Orbitron";
   font-size: 6rem;
   font-weight: 500;
+  color: var(--color-secondary-700);
   text-shadow: 0 0 1rem var(--color-primary-100);
   /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
   &.dark {
-    color: var(--color-primary-900);
+    color: var(--color-secondary-800);
     border: none;
     text-shadow: none;
     box-shadow: none;
