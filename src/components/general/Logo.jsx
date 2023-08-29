@@ -7,14 +7,14 @@ const Container = styled.div`
   justify-content: center;
   padding: 1.5rem;
   aspect-ratio: 1 / 1;
-  border: solid 1px var(--white-primary);
+  border: solid 1px var(--color-primary-100);
   border-radius: 1.5rem;
-  box-shadow: 0 0 1rem var(--white-primary);
-  color: var(--white-primary);
+  box-shadow: 0 0 1rem var(--color-primary-100);
+  color: var(--color-primary-100);
   font-family: "Orbitron";
   font-size: 6rem;
   font-weight: 500;
-  text-shadow: 0 0 1rem var(--white-primary);
+  text-shadow: 0 0 1rem var(--color-primary-100);
   /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
   &.dark {
     color: var(--color-primary-900);

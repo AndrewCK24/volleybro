@@ -9,6 +9,7 @@ export default defineConfig({
       process.env.GOOGLE_CLIENT_ID
     ),
     "process.env.MONGODB_URI": JSON.stringify(process.env.MONGODB_URI),
+    "process.env.JWT_SECRET_KEY": JSON.stringify(process.env.JWT_SECRET_KEY),
   },
   build: {
     commonjsOptions: { include: [] },
