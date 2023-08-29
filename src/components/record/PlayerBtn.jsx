@@ -6,6 +6,7 @@ import { recordActions } from "./record-slice";
 const Container = styled.button`
   min-height: 5.5rem;
   padding: 0.5rem;
+  /* margin: 0.5rem; */
   border: none;
   border-radius: 0.5rem;
   display: flex;

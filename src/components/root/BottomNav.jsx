@@ -39,7 +39,7 @@ const BottomNav = () => {
       <StyledLink to="/">
         <HomeIcon />
       </StyledLink>
-      <StyledLink to="/members">
+      <StyledLink to="/team">
         <TeamIcon />
       </StyledLink>
       <StyledLink to="/history">

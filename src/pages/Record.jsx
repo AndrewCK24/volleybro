@@ -1,13 +1,13 @@
 import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import ScoreBar from "../components/recordPage/ScoreBar";
-import PlayerBtnSet from "../components/recordPage/PlayerBtnSet";
-import RecordBtnSet from "../components/recordPage/RecordBtnSet";
-import PreviewBar from "../components/recordPage/PreviewBar";
-import ScorePanel from "../components/recordPage/ScorePanel";
+import ScoreBar from "../components/record/ScoreBar";
+import PlayerBtnSet from "../components/record/PlayerBtnSet";
+import RecordBtnSet from "../components/record/RecordBtnSet";
+import PreviewBar from "../components/record/PreviewBar";
+import ScorePanel from "../components/record/ScorePanel";
 import { FiFileText } from "react-icons/fi";
-import { recordActions } from "../components/recordPage/record-slice";
+import { recordActions } from "../components/record/record-slice";
 
 const Container = styled.div`
   flex: 1 1;
@@ -54,18 +54,23 @@ const Info = styled.div`
 const ConfirmBtn = styled.button`
   flex: 1 1;
   border: none;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   color: var(--color-primary-100);
-  background-color: var(--color-tertiary-500);
+  background-color: var(--color-danger-500);
   font-size: 2rem;
   font-weight: 700;
+  &:disabled {
+    color: var(--color-primary-100);
+    background-color: var(--color-primary-400);
+  }
 `;
 
 const TeamStats = styled.div`
   flex: 3 1;
   padding: 0.5rem;
-  border-radius: 1rem;
-  background-color: var(--black-primary);
+  border: 2px solid var(--color-primary-800);
+  border-radius: 0.5rem;
+  /* background-color: var(--color-primary-800); */
   color: var(--white-primary);
   svg {
     width: 1.5rem;

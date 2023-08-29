@@ -5,12 +5,15 @@ import PlayerBtn from "./PlayerBtn";
 
 const Container = styled.div`
 	flex: 3 1;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	background-color: var(--color-primary-200);
 	display: grid;
 	grid-template-areas:
 		"p4 p3 p2"
 		"p5 p6 p1"
-		"l null btn";
-	grid-gap: 1rem;
+		"l btn btn";
+	grid-gap: 0.5rem;
 	.p1 {
 		grid-area: p1;
 	}
