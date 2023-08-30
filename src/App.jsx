@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import RootLayout from "./pages/Root";
+import { jwtLoader } from "./utils/auth";
 import AuthPage, {
   // loader as authLoader,
   action as authAction,
@@ -8,34 +9,6 @@ import AuthPage, {
 import MembersPage from "./pages/Team";
 import { action as teamAction } from "./components/team/MemberCard";
 import RecordPage from "./pages/Record";
-
-const jwtLoader = async ({ request }) => {
-  console.log("loader started");
-  try {
-    const response = await fetch("/.netlify/functions/validate-jwt", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      credentials: "include",
-    });
-    const { status } = await response.json();
-
-    switch (status) {
-      case 200:
-        return null;
-      case 400:
-      case 401:
-        return redirect("/auth");
-      default:
-        return null;
-    }
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
 
 const router = createBrowserRouter([
   {
