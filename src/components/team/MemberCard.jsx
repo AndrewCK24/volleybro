@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Form } from "react-router-dom";
 import styled from "@emotion/styled";
 
@@ -11,7 +11,7 @@ export const CardContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
   background-color: var(--color-primary-200);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   display: flex;
   flex-direction: row;
@@ -19,8 +19,8 @@ export const CardContainer = styled.div`
   justify-content: center;
   gap: 1rem;
   svg {
-    width: 3rem;
-    height: 3rem;
+    width: 2rem;
+    height: 2rem;
   }
 `;
 
@@ -45,6 +45,7 @@ const InfoContainer = styled.div`
 
 const Number = styled(InfoContainer)`
   flex: 0 0 4rem;
+  justify-content: flex-end;
 `;
 
 const StyledForm = styled(Form)`
@@ -71,7 +72,7 @@ const StyledInput = styled.input`
   flex: 1 1 16rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: solid 1px var(--gray-primary);
+  border: solid 1px var(--color-primary-400);
   font-size: 1.5rem;
   font-weight: 500;
 `;
@@ -81,7 +82,7 @@ const StyledSelect = styled.select`
   flex: 1 1 12rem;
   padding: 0 0.25rem;
   border-radius: 0.5rem;
-  border: solid 1px var(--gray-primary);
+  border: solid 1px var(--color-primary-400);
   font-size: 1.5rem;
   font-weight: 500;
 `;
@@ -89,43 +90,22 @@ const StyledSelect = styled.select`
 const StyledOption = styled.option`
   padding: 0.5rem;
   &:disabled {
-    color: var(--gray-primary);
+    color: var(--color-primary-400);
   }
 `;
 
-const StyledButton = styled.button`
+const PrimaryButton = styled.button`
   flex: 0 0 3rem;
   height: 3rem;
   padding: 0.5rem;
   border: none;
-  /* border-radius: 0.5rem; */
   background-color: transparent;
   svg {
     color: var(--color-secondary-500);
-    width: 2rem;
-    height: 2rem;
   }
 `;
 
-const EditButton = styled(StyledButton)`
-  svg {
-    color: var(--color-primary-500);
-  }
-`;
-
-const DeleteButton = styled(StyledButton)`
-  svg {
-    color: var(--color-danger-400);
-  }
-`;
-
-const SaveButton = styled(StyledButton)`
-  svg {
-    color: var(--color-secondary-500);
-  }
-`;
-
-const CancelButton = styled(StyledButton)`
+const DangerButton = styled(PrimaryButton)`
   svg {
     color: var(--color-danger-400);
   }
@@ -202,32 +182,32 @@ const MemberCard = ({ index, member }) => {
               name="email"
             />
           </InputContainer>
-          <SaveButton type="submit" title="save">
+          <PrimaryButton type="submit" title="save">
             <FaSave />
-          </SaveButton>
-          <CancelButton
+          </PrimaryButton>
+          <DangerButton
             // onClick={() => handleEdit()}
             type="button"
             title="cancel"
           >
             <MdCancel />
-          </CancelButton>
+          </DangerButton>
         </StyledForm>
       ) : (
         <Contents>
           <Number>{number}</Number>
           <InfoContainer>{name}</InfoContainer>
           <InfoContainer>{role}</InfoContainer>
-          <EditButton onClick={() => handleEdit()} type="button" title="edit">
+          <PrimaryButton onClick={() => handleEdit()} type="button" title="edit">
             <FiEdit2 />
-          </EditButton>
-          <DeleteButton
+          </PrimaryButton>
+          <DangerButton
             onClick={() => handleDelete()}
             type="button"
             title="delete"
           >
             <MdDelete />
-          </DeleteButton>
+          </DangerButton>
         </Contents>
       )}
     </CardContainer>
