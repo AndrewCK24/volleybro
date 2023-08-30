@@ -5,7 +5,6 @@ import { recordActions } from "./record-slice";
 import { HiOutlinePlusCircle, HiOutlineMinusCircle } from "react-icons/hi";
 
 const Container = styled.button`
-  border: 1px solid var(--black-primary);
   border-radius: 0.5rem;
   font-size: 1.5rem;
   align-items: center;
@@ -14,6 +13,7 @@ const Container = styled.button`
   grid-template-columns: 2fr 1fr 1fr 1fr;
   column-gap: 0.25rem;
   row-gap: 0.25rem;
+  color: var(--color-primary-900);
   svg {
     width: 2rem;
     height: 2rem;

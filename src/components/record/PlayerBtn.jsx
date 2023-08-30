@@ -6,13 +6,13 @@ import { recordActions } from "./record-slice";
 const Container = styled.button`
   min-height: 5.5rem;
   padding: 0.5rem;
-  /* margin: 0.5rem; */
   border: none;
   border-radius: 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  color: var(--color-primary-900);
   div {
     display: flex;
     align-items: center;
