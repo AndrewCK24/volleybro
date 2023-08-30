@@ -1,9 +1,6 @@
-import store from "../store/store";
-import { userActions } from "../components/user/user-slice";
+import { redirect } from "react-router-dom";
 
-export const jwtLoader = async ({ request }) => {
-  console.log("loader started");
-  const isLogin = store.getState().user.login;
+export const jwtLoader = async () => {
   try {
     const response = await fetch("/.netlify/functions/validate-jwt", {
       method: "GET",
@@ -15,10 +12,11 @@ export const jwtLoader = async ({ request }) => {
     });
     const { status } = await response.json();
 
-    // FIXME: 自動跳轉功能需要修復
     switch (status) {
       case 200:
         return null;
+      case 201:
+        return redirect("/team/new");
       case 400:
       case 401:
         return redirect("/auth");

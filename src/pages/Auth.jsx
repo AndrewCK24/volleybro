@@ -50,7 +50,7 @@ export const action = async ({ request }) => {
 
     switch (status) {
       case 200:
-        return redirect("/home");
+        return redirect("/");
       case 201:
         return redirect("/team");
       case 401:
@@ -63,5 +63,3 @@ export const action = async ({ request }) => {
     return redirect("/auth");
   }
 };
-
-export const loader = async ({ request }) => {};
