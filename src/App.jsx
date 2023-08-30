@@ -2,11 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import RootLayout from "./pages/Root";
 import { jwtLoader } from "./utils/auth";
-import AuthPage, {
-  // loader as authLoader,
-  action as authAction,
-} from "./pages/Auth";
-import MembersPage from "./pages/Team";
+import AuthPage, { action as authAction } from "./pages/Auth";
+import TeamPage from "./pages/Team";
+import TeamMembersPage from "./pages/TeamMembers";
 import { action as teamAction } from "./components/team/MemberCard";
 import RecordPage from "./pages/Record";
 
@@ -29,8 +27,24 @@ const router = createBrowserRouter([
       },
       {
         path: "team",
-        element: <MembersPage />,
+        element: <TeamPage />,
         action: teamAction,
+        children: [
+          {
+            index: true,
+            element: <TeamMembersPage />,
+            action: teamAction,
+          },
+          // {
+          //   path: "invitation/:id",
+          //   element: <InvitationPage />,
+          //   loader: invitationLoader,
+          // },
+          // {
+          //   path: "new",
+          //   element: < />,
+          // }
+        ],
       },
       {
         path: "record",

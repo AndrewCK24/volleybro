@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
@@ -20,22 +21,23 @@ const Container = styled.div`
   overscroll-behavior-x: none;
 `;
 
-const MembersPage = () => {
+const TeamPage = () => {
   const members = useSelector((state) => state.team.members);
 
   return (
     <Container>
-      {members.map((member, index) => (
+      <Outlet />
+      {/* {members.map((member, index) => (
         <MemberCard key={index} index={index} member={member} />
       ))}
       <NewMemberBtn
       // disabled={members.slice(-1)[0]?.isNew}
-      />
+      /> */}
     </Container>
   );
 };
 
-export default MembersPage;
+export default TeamPage;
 
 export const loader = async (dispatch) => {
   dispatch(teamActions.loadMembers());
