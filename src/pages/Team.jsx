@@ -4,8 +4,6 @@ import styled from "@emotion/styled";
 const Container = styled.div`
   flex: 1 1;
   height: 100%;
-  border-radius: 1rem;
-  background-color: var(--color-primary-100);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +12,14 @@ const Container = styled.div`
   flex-wrap: nowrap;
   overflow: scroll;
   overscroll-behavior-x: none;
+`;
+
+export const Title = styled.h1`
+  width: 100%;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary-800);
 `;
 
 const TeamPage = () => {
