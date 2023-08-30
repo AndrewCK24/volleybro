@@ -29,7 +29,7 @@
   --color-danger-800: #5e1423;    /* white text */
   --color-danger-900: #2f0a11;    /* white text */
 
-  background-color: var(--color-secondary-100);
+  background-color: var(--color-primary-100);
 }
 
 * {
