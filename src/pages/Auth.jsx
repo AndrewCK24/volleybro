@@ -1,14 +1,14 @@
-import { redirect, Form } from "react-router-dom";
+import { redirect, Form, Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import store from "../store/store";
 import Logo from "../components/general/Logo";
 
 const Container = styled.div`
   flex: 0 1 25rem;
-  background-color: var(--color-primary-200);
+  background-color: var(--color-primary-100);
   border-radius: 0.5rem;
-  height: 100%;
+  box-shadow: 0 0 0.25rem var(--color-primary-400);
+  height: 80%;
   padding: 4rem 2rem;
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@ const Container = styled.div`
 
 const StyledForm = styled(Form)`
   flex: 0.8 1;
-  width: 80%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -122,5 +122,4 @@ export const action = async ({ request }) => {
   }
 };
 
-export const loader = async ({ request }) => {
-};
+export const loader = async ({ request }) => {};

@@ -7,7 +7,7 @@ import Header from "../components/root/Header";
 import BottomNav from "../components/root/BottomNav";
 
 const Container = styled.div`
-  background-color: var(--color-primary-100);
+  /* background-color: var(--color-primary-100); */
   width: 100vw;
   height: 100vh;
   max-height: -webkit-fill-available;

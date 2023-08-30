@@ -29,7 +29,7 @@
   --color-danger-800: #5e1423;    /* white text */
   --color-danger-900: #2f0a11;    /* white text */
 
-  background-color: var(--color-primary-100);
+  background-color: var(--color-secondary-100);
 }
 
 * {
@@ -37,9 +37,8 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 
-  color: var(--black-primary);
-  font-family: sans-serif;
-  /* font-family: 'Saira Condensed', 'Inter', 'Noto Sans TC', sans-serif; */
+  color: var(--color-primary-900);
+  font-family: 'Saira Condensed', 'Inter', 'Noto Sans TC', sans-serif;
   font-size: 16px;
   font-weight: 400;
   padding: 0;
