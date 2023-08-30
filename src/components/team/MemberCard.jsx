@@ -60,16 +60,17 @@ const StyledForm = styled(Form)`
 const InputContainer = styled.div`
   flex: 1 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: stretch;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
 const StyledInput = styled.input`
-  height: 3rem;
-  flex: 1 1 16rem;
+  width: 50%;
+  flex: 1 1;
+  display: block;
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: solid 1px var(--color-primary-400);
@@ -78,13 +79,17 @@ const StyledInput = styled.input`
 `;
 
 const StyledSelect = styled.select`
-  height: 3rem;
-  flex: 1 1 12rem;
-  padding: 0 0.25rem;
+  width: 50%;
+  flex: 1 1;
+  display: block;
+  padding: 0.5rem;
   border-radius: 0.5rem;
   border: solid 1px var(--color-primary-400);
   font-size: 1.5rem;
   font-weight: 500;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
 `;
 
 const StyledOption = styled.option`
