@@ -3,7 +3,12 @@ import { Form } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import { teamActions } from "./team-slice";
-import { PrimaryButton, DangerButton, CancelButton } from "./MemberCard";
+import {
+  PrimaryButton,
+  DangerButton,
+  CancelButton,
+  ButtonContainer,
+} from "./MemberCard";
 import { MdDelete, MdCancel } from "react-icons/md";
 import { FaSave } from "react-icons/fa";
 
@@ -11,7 +16,7 @@ const StyledForm = styled(Form)`
   flex: 1 1;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 1rem;
 `;
@@ -20,14 +25,15 @@ const InputContainer = styled.div`
   flex: 1 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: left;
+  justify-content: flex-start;
+  font-size: 1.5rem;
   gap: 0.5rem;
 `;
 
 const StyledInput = styled.input`
-  width: 50%;
-  flex: 1 1;
+  width: 100%;
+  /* flex: 1 1; */
   display: block;
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -38,8 +44,8 @@ const StyledInput = styled.input`
 `;
 
 const StyledSelect = styled.select`
-  width: 50%;
-  flex: 1 1;
+  width: 100%;
+  /* flex: 1 1; */
   display: block;
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -50,6 +56,7 @@ const StyledSelect = styled.select`
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
+  color: var(--color-primary-400);
 `;
 
 const StyledOption = styled.option`
@@ -66,6 +73,11 @@ const roleArr = [
   { value: "OP", text: "Opposite (OP)" },
   { value: "L", text: "Libero (L)" },
   { value: "M", text: "Manager (M)" },
+];
+
+const adminArr = [
+  { value: true, text: "管理者" },
+  { value: false, text: "一般成員" },
 ];
 
 const MemberCardEdit = ({ index, member }) => {
@@ -95,6 +107,7 @@ const MemberCardEdit = ({ index, member }) => {
   return (
     <StyledForm method="post" action="/team">
       <InputContainer>
+        隊員資料
         <StyledInput
           type="number"
           placeholder="背號"
@@ -121,21 +134,40 @@ const MemberCardEdit = ({ index, member }) => {
             </StyledOption>
           ))}
         </StyledSelect>
-        <StyledInput type="email" placeholder="信箱" id="email" name="email" />
       </InputContainer>
-      <PrimaryButton type="submit" title="save">
-        <FaSave />
-      </PrimaryButton>
-      <CancelButton
-        onClick={() => handleCancel()}
-        type="button"
-        title="cancel"
-      >
-        <MdCancel />
-      </CancelButton>
-      <DangerButton onClick={() => handleDelete()} type="button" title="delete">
-        <MdDelete />
-      </DangerButton>
+      <InputContainer>
+        邀請與權限
+        <StyledInput type="email" placeholder="信箱" id="email" name="email" />
+        <StyledSelect id="admin" name="admin" defaultValue="" required>
+          <StyledOption value="" disabled>
+            權限
+          </StyledOption>
+          {adminArr.map((item, index) => (
+            <StyledOption key={index} value={item.value}>
+              {item.text}
+            </StyledOption>
+          ))}
+        </StyledSelect>
+      </InputContainer>
+      <ButtonContainer>
+        <PrimaryButton type="submit" title="save">
+          <FaSave />
+        </PrimaryButton>
+        <CancelButton
+          onClick={() => handleCancel()}
+          type="button"
+          title="cancel"
+        >
+          <MdCancel />
+        </CancelButton>
+        <DangerButton
+          onClick={() => handleDelete()}
+          type="button"
+          title="delete"
+        >
+          <MdDelete />
+        </DangerButton>
+      </ButtonContainer>
     </StyledForm>
   );
 };

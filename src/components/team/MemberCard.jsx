@@ -46,12 +46,19 @@ const Number = styled(InfoContainer)`
   justify-content: flex-end;
 `;
 
+export const ButtonContainer = styled(InfoContainer)`
+  flex: 0 0;
+  justify-content: center;
+  gap: 1rem;
+`;
+
 export const PrimaryButton = styled.button`
   flex: 0 0 3rem;
   height: 3rem;
   padding: 0.5rem;
   border: none;
   background-color: transparent;
+  aspect-ratio: 1;
   svg {
     color: var(--color-secondary-500);
   }
@@ -107,6 +114,8 @@ export const action = async ({ request }) => {
     number: formData.get("number"),
     name: formData.get("name"),
     role: formData.get("role"),
+    email: formData.get("email"),
+    admin: formData.get("admin"),
   };
 
   try {
@@ -118,7 +127,7 @@ export const action = async ({ request }) => {
       },
       body: JSON.stringify(memberData),
     });
-    const { status, message } = await response.json();
+    const { status, message, members } = await response.json();
 
     dispatch(teamActions.saveMember({ index }));
 
