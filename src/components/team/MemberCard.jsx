@@ -74,12 +74,12 @@ const MemberCard = ({ index, member }) => {
   const { number, name, role } = member;
   const isEditing = member?.isEditing;
   const handleEdit = () => {
-    dispatch(teamActions.updateMember({ index }));
+    dispatch(teamActions.setMemberEditMode({ index, isEditing: true }));
   };
 
   return (
     <CardContainer>
-      {isEditing || number === null ? (
+      {isEditing ? (
         <MemberCardEdit index={index} member={member} />
       ) : (
         <Contents>

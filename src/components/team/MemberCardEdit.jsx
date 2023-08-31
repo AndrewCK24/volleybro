@@ -1,6 +1,8 @@
+import { useDispatch } from "react-redux";
 import { Form } from "react-router-dom";
 import styled from "@emotion/styled";
 
+import { teamActions } from "./team-slice";
 import { PrimaryButton, DangerButton, CancelButton } from "./MemberCard";
 import { MdDelete, MdCancel } from "react-icons/md";
 import { FaSave } from "react-icons/fa";
@@ -25,13 +27,11 @@ const InputContainer = styled.div`
 
 const StyledInput = styled.input`
   width: 50%;
-  /* height: 2rem; */
   flex: 1 1;
   display: block;
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: none;
-  /* border: solid 1px var(--color-primary-400); */
   line-height: 2rem;
   font-size: 1.5rem;
   font-weight: 500;
@@ -39,13 +39,11 @@ const StyledInput = styled.input`
 
 const StyledSelect = styled.select`
   width: 50%;
-  /* height: 3rem; */
   flex: 1 1;
   display: block;
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: none;
-  /* border: solid 1px var(--color-primary-400); */
   line-height: 2rem;
   font-size: 1.5rem;
   font-weight: 500;
@@ -71,7 +69,12 @@ const roleArr = [
 ];
 
 const MemberCardEdit = ({ index, member }) => {
+  const dispatch = useDispatch();
   const { number, name, role } = member;
+
+  const handleCancel = () => {
+    dispatch(teamActions.setMemberEditMode({ index, isEditing: false }));
+  };
 
   const handleDelete = async () => {
     try {
@@ -124,7 +127,7 @@ const MemberCardEdit = ({ index, member }) => {
         <FaSave />
       </PrimaryButton>
       <CancelButton
-        // onClick={() => handleEdit()}
+        onClick={() => handleCancel()}
         type="button"
         title="cancel"
       >

@@ -61,15 +61,22 @@ const teamSlice = createSlice({
         name: "",
         role: "",
         isNew: true,
+        isEditing: true,
       });
     },
-    updateMember: (state, action) => {
-      const { index } = action.payload;
-      state.members[index].isEditing = true;
-    },
-    saveMember: (state, action) => {
-      const { index } = action.payload;
-      state.members[index].isEditing = false;
+    setMemberEditMode: (state, action) => {
+      const { index, isEditing } = action.payload;
+      const { isNew } = state.members[index];
+      if (!isEditing && isNew) {
+        console.log("delete new member")
+        return {
+          ...state,
+          members: [
+            ...state.members.slice(0, index),
+          ],
+        };  
+      }
+      state.members[index].isEditing = isEditing;
     },
     deleteMember: (state, action) => {
       const { index } = action.payload;
