@@ -13,9 +13,7 @@ const TeamMembersPage = () => {
       {members.map((member, index) => (
         <MemberCard key={index} index={index} member={member} />
       ))}
-      <NewMemberBtn
-      // disabled={members.slice(-1)[0]?.isNew}
-      />
+      {members[members.length - 1]?.isNew || <NewMemberBtn />}
     </>
   );
 };

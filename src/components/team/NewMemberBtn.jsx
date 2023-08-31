@@ -9,6 +9,8 @@ const StyledContainer = styled(CardContainer)`
   padding: 0;
   svg {
     color: var(--color-primary-100);
+    width: 2.5rem;
+    height: 2.5rem;
   }
 `;
 
