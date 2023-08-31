@@ -12,14 +12,11 @@ import { recordActions } from "../components/record/record-slice";
 const Container = styled.div`
   flex: 1 1;
   height: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: center;
   gap: 1rem;
-  background-color: var(--color-primary-100);
 `;
 
 const MainPart = styled.div`
