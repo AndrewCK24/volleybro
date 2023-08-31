@@ -5,6 +5,7 @@ import { jwtLoader } from "./utils/auth";
 import AuthPage, { action as authAction } from "./pages/Auth";
 import TeamPage from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
+import TeamListPage from "./pages/TeamList";
 import { action as teamAction } from "./components/team/MemberCard";
 import RecordPage from "./pages/Record";
 
@@ -35,11 +36,10 @@ const router = createBrowserRouter([
             element: <TeamMembersPage />,
             action: teamAction,
           },
-          // {
-          //   path: "invitation/:id",
-          //   element: <InvitationPage />,
-          //   loader: invitationLoader,
-          // },
+          {
+            path: "list",
+            element: <TeamListPage />,
+          },
           // {
           //   path: "new",
           //   element: < />,
