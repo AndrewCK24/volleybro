@@ -6,6 +6,7 @@ import AuthPage, { action as authAction } from "./pages/Auth";
 import TeamPage from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";
+import TeamCreatePage from "./pages/TeamCreate";
 import { action as teamAction } from "./components/team/MemberCard";
 import RecordPage from "./pages/Record";
 
@@ -40,10 +41,10 @@ const router = createBrowserRouter([
             path: "list",
             element: <TeamListPage />,
           },
-          // {
-          //   path: "new",
-          //   element: < />,
-          // }
+          {
+            path: "new",
+            element: <TeamCreatePage />,
+          },
         ],
       },
       {

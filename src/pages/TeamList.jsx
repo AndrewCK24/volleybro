@@ -10,7 +10,7 @@ const TeamListPage = () => {
       <CardContainer></CardContainer>
       <p>沒看到你的隊伍嗎？</p>
       <p>
-        請聯絡你的隊伍管理者，或是<Link to="new">按此新增隊伍</Link>。
+        請聯絡你的隊伍管理者，或是<Link to="/team/new">按此新增隊伍</Link>。
       </p>
     </>
   );
