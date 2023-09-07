@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
 import styled from "@emotion/styled";
 
+import store from "../store/store";
+
 const Container = styled.div`
   flex: 1 1;
   height: 100%;
@@ -32,6 +34,8 @@ const TeamPage = () => {
 
 export default TeamPage;
 
-export const loader = async (dispatch) => {
-  dispatch(teamActions.loadMembers());
+export const loader = async () => {
+  const defaultTeam = store.getState().user.teamIds[0];
+  const viewingTeam = store.getState().team._id;
+  
 };

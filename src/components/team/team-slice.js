@@ -1,9 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  infos: {
-    name: "",
-  },
+  _id: "",
+  name: "",
   members: [
     {
       number: 7,
@@ -41,18 +40,21 @@ const initialState = {
       role: "L",
     },
   ],
-  matches: [],
+  matchIds: [],
+  stats: {},
 };
 
 const teamSlice = createSlice({
   name: "team",
   initialState,
   reducers: {
-    loadMembers: (state, action) => {
-      const { members } = action.payload;
+    loadTeamData: (state, action) => {
       return {
         ...state,
-        members,
+        name: action.payload.name,
+        members: action.payload.members,
+        matchIds: action.payload.matchIds,
+        stats: action.payload.stats,
       };
     },
     createMember: (state) => {
@@ -68,13 +70,11 @@ const teamSlice = createSlice({
       const { index, isEditing } = action.payload;
       const { isNew } = state.members[index];
       if (!isEditing && isNew) {
-        console.log("delete new member")
+        console.log("delete new member");
         return {
           ...state,
-          members: [
-            ...state.members.slice(0, index),
-          ],
-        };  
+          members: [...state.members.slice(0, index)],
+        };
       }
       state.members[index].isEditing = isEditing;
     },

@@ -1,5 +1,7 @@
-import { Form } from "react-router-dom";
+import { Form, redirect } from "react-router-dom";
 import styled from "@emotion/styled";
+
+import store from "../store/store";
 
 const Container = styled.div`
   flex: 1 1;
@@ -74,12 +76,16 @@ const StyledButton = styled.button`
 const TeamCreatePage = () => {
   return (
     <Container>
-      <StyledForm>
-        <StyledLabel >
-          輸入要建立的隊伍名稱
-        </StyledLabel>
+      <StyledForm method="post" path="/team/new">
+        <StyledLabel>輸入要建立的隊伍名稱</StyledLabel>
         <InputContainer>
-          <StyledInput type="text" placeholder="隊伍名稱" />
+          <StyledInput
+            type="text"
+            placeholder="隊伍名稱"
+            id="name"
+            name="name"
+            required
+          />
           <StyledButton type="submit">建立</StyledButton>
         </InputContainer>
       </StyledForm>
@@ -88,3 +94,39 @@ const TeamCreatePage = () => {
 };
 
 export default TeamCreatePage;
+
+export const action = async ({ request }) => {
+  console.log("team create action started");
+  const formData = await request.formData();
+  const reqData = {
+    name: formData.get("name"),
+  };
+
+  try {
+    const response = await fetch("/.netlify/functions/create-team", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(reqData),
+    });
+    const { status, userData, teamData } = await response.json();
+    console.log("team create action finished");
+
+    if (status === 200) {
+      store.dispatch({ type: "user/signIn", payload: userData });
+      store.dispatch({ type: "team/loadTeamData", payload: teamData });
+      store.dispatch({
+        type: "team/setMemberEditMode",
+        payload: { index: 0, isEditing: true },
+      });
+      return redirect("/team");
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
