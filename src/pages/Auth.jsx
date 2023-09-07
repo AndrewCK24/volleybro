@@ -2,6 +2,7 @@ import { redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import store from "../store/store";
+import { getJwtInfo } from "../utils/auth";
 import { Container, PagesContainer } from "./Root";
 import Logo from "../components/general/Logo";
 import AuthForm from "../components/auth/AuthForm";
@@ -35,6 +36,20 @@ const AuthPage = () => {
 
 export default AuthPage;
 
+export const loader = async () => {
+  const isSignIn = store.getState().user.signIn;
+  if (isSignIn) {
+    const teamIds = store.getState().user.info.teamIds;
+    if (teamIds.length > 0) {
+      return redirect("/");
+    } else {
+      return redirect("/team/new");
+    }
+  } else {
+    return null;
+  }
+};
+
 export const action = async ({ request }) => {
   console.log("auth action started");
   const formData = await request.formData();
@@ -56,10 +71,10 @@ export const action = async ({ request }) => {
     console.log("auth action finished", userData);
 
     if (status === 200) {
-      store.dispatch({ type: "user/signIn", payload: userData });
+      store.dispatch({ type: "user/loadUser", payload: userData });
       return redirect("/");
     } else if (status === 201) {
-      store.dispatch({ type: "user/signIn", payload: userData });
+      store.dispatch({ type: "user/loadUser", payload: userData });
       return redirect("/team/new");
     } else {
       return null;

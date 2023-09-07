@@ -48,7 +48,7 @@ export const loader = async () => {
 
   if (status === 200) {
     console.log("jwtLoader succeed", userData);
-    store.dispatch({ type: "user/signIn", payload: userData });
+    store.dispatch({ type: "user/loadUser", payload: userData });
     if (userData.teamIds.length > 0) {
       return null;
     } else {

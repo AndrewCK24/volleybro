@@ -11,7 +11,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    signIn(state, action) {
+    loadUser(state, action) {
       state.email = action.payload.email;
       state.info = action.payload.info;
       state._id = action.payload._id;
