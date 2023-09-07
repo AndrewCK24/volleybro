@@ -8,11 +8,14 @@ exports.handler = async (event) => {
   try {
     await connectMongoDB.handler();
     const { email, password } = JSON.parse(event.body);
+    console.log(`[AUTH] USER ${email} trying to sign in...`);
     const user = await User.findOne({ email });
     if (user) {
+      console.log(`[AUTH] USER ${email} found.`)
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (isPasswordValid) {
+        console.log(`[AUTH] USER ${email} (${user._id}) signed in.`);
         const token = signJWT.handler(user);
         const resData = userResData.handler(user);
         return {
@@ -29,6 +32,7 @@ exports.handler = async (event) => {
           }),
         };
       } else {
+        console.log(`[AUTH] USER ${email} wrong password.`);
         return {
           statusCode: 401,
           body: JSON.stringify({ status: 401, error: "wrong password" }),
@@ -36,9 +40,11 @@ exports.handler = async (event) => {
       }
     }
 
+    console.log(`[AUTH] USER ${email} not found, creating new user...`);
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
+    console.log(`[AUTH] USER ${email} created.`);
     const token = signJWT.handler(newUser);
     const resData = userResData.handler(newUser);
     return {
@@ -53,6 +59,7 @@ exports.handler = async (event) => {
       }),
     };
   } catch (error) {
+    console.log(`[AUTH] ${error.message}`);
     return {
       statusCode: 500,
       body: JSON.stringify({ status: 500, error: "server error" }),
