@@ -1,6 +1,6 @@
 export const getJwtInfo = async () => {
   try {
-    const response = await fetch("/.netlify/functions/validate-jwt", {
+    const response = await fetch("/.netlify/functions/fetch-user-by-jwt", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

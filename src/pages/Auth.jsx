@@ -71,7 +71,7 @@ export const action = async ({ request }) => {
   };
 
   try {
-    const response = await fetch("/.netlify/functions/auth", {
+    const response = await fetch("/.netlify/functions/fetch-user-by-form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
