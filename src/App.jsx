@@ -2,9 +2,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import RootLayout, { loader as infoLoader } from "./pages/Root";
 import RootNavLayout from "./pages/RootNav";
-import { authLoader } from "./utils/auth";
 import Dashboard from "./pages/DashBoard";
-import AuthPage, { action as authAction } from "./pages/Auth";
+import AuthPage, {
+  loader as authLoader,
+  action as authAction,
+} from "./pages/Auth";
 import TeamPage from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";

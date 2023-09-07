@@ -39,14 +39,26 @@ export default AuthPage;
 export const loader = async () => {
   const isSignIn = store.getState().user.signIn;
   if (isSignIn) {
-    const teamIds = store.getState().user.info.teamIds;
+    const teamIds = store.getState().user.teamIds;
     if (teamIds.length > 0) {
       return redirect("/");
     } else {
       return redirect("/team/new");
     }
   } else {
-    return null;
+    const { status, userData } = await getJwtInfo();
+
+    if (status === 200) {
+      console.log("jwtLoader succeed", userData);
+      store.dispatch({ type: "user/loadUser", payload: userData });
+      if (userData.teamIds.length > 0) {
+        return redirect("/");
+      } else {
+        return redirect("/team/new");
+      }
+    } else {
+      return null;
+    }
   }
 };
 
