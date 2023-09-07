@@ -1,15 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  login: false,
+  signIn: false,
+  email: "",
+  teamIds: [],
+  _id: "",
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setLogin(state, action) {
-      state.login = action.payload;
+    signIn(state, action) {
+      state.email = action.payload.email;
+      state.info = action.payload.info;
+      state._id = action.payload._id;
+      state.signIn = true;
+    },
+    signOut(state) {
+      state.email = "";
+      state.info = {
+        teamIds: [],
+        memberIds: [],
+      };
+      state._id = "";
+      state.signIn = false;
     },
   },
 });

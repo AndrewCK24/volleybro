@@ -1,12 +1,14 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import RootLayout from "./pages/Root";
-import { jwtLoader } from "./utils/auth";
+import RootLayout, { loader as infoLoader } from "./pages/Root";
+import RootNavLayout from "./pages/RootNav";
+import { authLoader } from "./utils/auth";
+import Dashboard from "./pages/DashBoard";
 import AuthPage, { action as authAction } from "./pages/Auth";
 import TeamPage from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";
-import TeamCreatePage from "./pages/TeamCreate";
+import TeamCreatePage, { action as teamCreateAction } from "./pages/TeamCreate";
 import { action as teamAction } from "./components/team/MemberCard";
 import RecordPage from "./pages/Record";
 
@@ -15,35 +17,36 @@ const router = createBrowserRouter([
     path: "/",
     element: <RootLayout />,
     id: "root",
-    loader: jwtLoader,
+    loader: infoLoader,
     children: [
-      // {
-      //   index: true,
-      //   element:
-      // },
       {
-        path: "auth",
-        element: <AuthPage />,
-        action: authAction,
-        // loader: authLoader,
-      },
-      {
-        path: "team",
-        element: <TeamPage />,
-        action: teamAction,
+        path: "/",
+        element: <RootNavLayout />,
         children: [
           {
             index: true,
-            element: <TeamMembersPage />,
+            element: <Dashboard />,
+          },
+          {
+            path: "team",
+            element: <TeamPage />,
             action: teamAction,
-          },
-          {
-            path: "list",
-            element: <TeamListPage />,
-          },
-          {
-            path: "new",
-            element: <TeamCreatePage />,
+            children: [
+              {
+                index: true,
+                element: <TeamMembersPage />,
+                action: teamAction,
+              },
+              {
+                path: "list",
+                element: <TeamListPage />,
+              },
+              {
+                path: "new",
+                element: <TeamCreatePage />,
+                action: teamCreateAction,
+              },
+            ],
           },
         ],
       },
@@ -52,6 +55,12 @@ const router = createBrowserRouter([
         element: <RecordPage />,
       },
     ],
+  },
+  {
+    path: "/auth",
+    element: <AuthPage />,
+    action: authAction,
+    loader: authLoader,
   },
 ]);
 

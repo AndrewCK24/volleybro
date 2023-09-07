@@ -1,23 +1,21 @@
 import { Suspense } from "react";
-import { Await, Outlet } from "react-router-dom";
+import { Await, Outlet, redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import Loading from "../components/root/Loading";
-import Header from "../components/root/Header";
-import BottomNav from "../components/root/BottomNav";
+import store from "../store/store";
+import { getJwtInfo } from "../utils/auth";
 
-const Container = styled.div`
-  /* background-color: var(--color-primary-100); */
+export const Container = styled.div`
   width: 100vw;
   height: 100vh;
   max-height: -webkit-fill-available;
   display: flex;
-  /* flex-direction: row; */
   flex-direction: column;
   flex-wrap: nowrap;
 `;
 
-const PagesContainer = styled.main`
+export const PagesContainer = styled.main`
   flex: 1 1;
   display: flex;
   align-items: center;
@@ -26,7 +24,6 @@ const PagesContainer = styled.main`
   overflow: hidden;
   height: 100%;
   padding: 1rem 5%;
-  /* padding: 5% 0.5rem; */
 `;
 
 const RootLayout = () => {
@@ -34,11 +31,7 @@ const RootLayout = () => {
     <Container>
       <Suspense fallback={<Loading />}>
         <Await>
-          <Header />
-          <PagesContainer>
-            <Outlet />
-          </PagesContainer>
-          <BottomNav />
+          <Outlet />
         </Await>
       </Suspense>
     </Container>
@@ -46,3 +39,22 @@ const RootLayout = () => {
 };
 
 export default RootLayout;
+
+export const loader = async () => {
+  const isSignIn = store.getState().user.signIn;
+  if (isSignIn) return null;
+  
+  const { status, userData } = await getJwtInfo();
+
+  if (status === 200) {
+    console.log("jwtLoader succeed", userData);
+    store.dispatch({ type: "user/signIn", payload: userData });
+    if (userData.teamIds.length > 0) {
+      return null;
+    } else {
+      return redirect("/team/new");
+    }
+  } else {
+    return redirect("/auth");
+  }
+};

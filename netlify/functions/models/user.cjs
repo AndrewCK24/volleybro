@@ -9,20 +9,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  session: {
-    type: String,
-    required: false,
-  },
-  teams: [
+  teamIds: [
     {
-      type: String,
-      required: false,
-    },
-  ],
-  playerIds: [
-    {
-      type: String,
-      required: false,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+      required: true,
     },
   ],
 });

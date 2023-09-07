@@ -1,6 +1,7 @@
 import { redirect } from "react-router-dom";
+import store from "../store/store";
 
-export const jwtLoader = async () => {
+export const getJwtInfo = async () => {
   try {
     const response = await fetch("/.netlify/functions/validate-jwt", {
       method: "GET",
@@ -10,21 +11,24 @@ export const jwtLoader = async () => {
       },
       credentials: "include",
     });
-    const { status } = await response.json();
+    const { status, userData } = await response.json();
 
-    switch (status) {
-      case 200:
-        return null;
-      case 201:
-        return redirect("/team/new");
-      case 400:
-      case 401:
-        return redirect("/auth");
-      default:
-        return null;
-    }
+    return { status, userData };
   } catch (error) {
-    console.log(error);
+    return { status: 400, userData: null };
+  }
+};
+
+export const authLoader = async () => {
+  const isSignIn = store.getState().user.signIn;
+  if (isSignIn) {
+    const teamIds = store.getState().user.info.teamIds;
+    if (teamIds.length > 0) {
+      return redirect("/");
+    } else {
+      return redirect("/team/new");
+    }
+  } else {
     return null;
   }
 };

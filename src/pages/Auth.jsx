@@ -1,10 +1,12 @@
 import { redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
+import store from "../store/store";
+import { Container, PagesContainer } from "./Root";
 import Logo from "../components/general/Logo";
 import AuthForm from "../components/auth/AuthForm";
 
-export const Container = styled.div`
+export const AuthContainer = styled.div`
   flex: 0 1 25rem;
   background-color: var(--color-primary-100);
   border-radius: 0.5rem;
@@ -21,8 +23,12 @@ export const Container = styled.div`
 const AuthPage = () => {
   return (
     <Container>
-      <Logo dark={true} name={true} />
-      <AuthForm />
+      <PagesContainer>
+        <AuthContainer>
+          <Logo dark={true} name={true} />
+          <AuthForm />
+        </AuthContainer>
+      </PagesContainer>
     </Container>
   );
 };
@@ -32,7 +38,7 @@ export default AuthPage;
 export const action = async ({ request }) => {
   console.log("auth action started");
   const formData = await request.formData();
-  const userData = {
+  const reqData = {
     email: formData.get("email"),
     password: formData.get("password"),
   };
@@ -44,22 +50,22 @@ export const action = async ({ request }) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify(reqData),
     });
-    const { status } = await response.json();
+    const { status, userData } = await response.json();
+    console.log("auth action finished", userData);
 
-    switch (status) {
-      case 200:
-        return redirect("/");
-      case 201:
-        return redirect("/team");
-      case 401:
-        return redirect("/auth");
-      default:
-        return null;
+    if (status === 200) {
+      store.dispatch({ type: "user/signIn", payload: userData });
+      return redirect("/");
+    } else if (status === 201) {
+      store.dispatch({ type: "user/signIn", payload: userData });
+      return redirect("/team/new");
+    } else {
+      return null;
     }
   } catch (error) {
     console.log(error);
-    return redirect("/auth");
+    return null;
   }
 };
