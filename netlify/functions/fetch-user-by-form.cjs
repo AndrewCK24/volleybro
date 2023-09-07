@@ -40,6 +40,7 @@ exports.handler = async (event) => {
       }
     }
 
+    // TODO: 考慮將 新增使用者 功能拆分成兩個 function
     console.log(`[AUTH] USER ${email} not found, creating new user...`);
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ email, password: hashedPassword });

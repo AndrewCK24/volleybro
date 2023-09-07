@@ -7,28 +7,28 @@ const userResData = require("./user-res-data.cjs");
 const User = require("../models/user.cjs");
 
 exports.handler = async (event) => {
-  console.log("validate-auth started");
+  console.log("[AUTH] validate-auth started");
   const cookies = cookie.parse(event.headers.cookie || "");
   const token = cookies.token;
 
   if (!token) {
+    console.log("[AUTH] token not found");
     return {
       status: 401,
       error: "Token not found",
     };
   }
-  console.log("token found");
 
   try {
     const cookie = jwt.verify(token, JWT_SECRET_KEY);
     const cookieUser = cookie._doc;
-    console.log("cookieUser", cookieUser);
+    console.log(`[AUTH] token verified for USER ${cookieUser.email} (${cookieUser._id})`);
 
     await connectMongoDB.handler();
     const dbUser = await User.findById(cookieUser._id);
-    console.log("dbUser found", dbUser);
+    console.log(`[AUTH] dbUser found for USER ${cookieUser.email} (${cookieUser._id})`);
     if (cookieUser.password === dbUser.password) {
-      console.log("user passwords matched");
+      console.log(`[AUTH] passwords match for USER ${cookieUser.email} (${cookieUser._id})`);
       const newToken = signJWT.handler(dbUser);
       const userData = userResData.handler(dbUser);
       return {
@@ -37,12 +37,14 @@ exports.handler = async (event) => {
         newToken,
       };
     } else {
+      console.log(`[AUTH] passwords do not match for USER ${cookieUser.email} (${cookieUser._id})`);
       return {
-        status: 400, 
+        status: 400,
         error: "Token validation failed",
       };
     }
   } catch (err) {
+    console.log(`[AUTH] token validation failed`);
     return {
       status: 400,
       error: "Token validation failed",
