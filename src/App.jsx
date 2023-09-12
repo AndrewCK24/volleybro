@@ -7,11 +7,11 @@ import AuthPage, {
   loader as authLoader,
   action as authAction,
 } from "./pages/Auth";
-import TeamPage from "./pages/Team";
+import TeamPage, { loader as teamLoader } from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";
 import TeamCreatePage, { action as teamCreateAction } from "./pages/TeamCreate";
-import { action as teamAction } from "./components/team/MemberCard";
+import { action as memberEditAction } from "./components/team/MemberCard";
 import RecordPage from "./pages/Record";
 
 const router = createBrowserRouter([
@@ -32,12 +32,12 @@ const router = createBrowserRouter([
           {
             path: "team",
             element: <TeamPage />,
-            action: teamAction,
+            loader: teamLoader,
+            action: memberEditAction,
             children: [
               {
                 index: true,
                 element: <TeamMembersPage />,
-                action: teamAction,
               },
               {
                 path: "list",

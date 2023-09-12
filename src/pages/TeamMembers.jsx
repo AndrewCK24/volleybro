@@ -5,11 +5,12 @@ import MemberCard from "../components/team/MemberCard";
 import NewMemberBtn from "../components/team/NewMemberBtn";
 
 const TeamMembersPage = () => {
-  const members = useSelector((state) => state.team.members);
+  const { name, members } = useSelector((state) => state.team);
+  // const members = useSelector((state) => state.team.members);
 
   return (
     <>
-      <Title>Team Members</Title>
+      <Title>{name} | Team Members</Title>
       {members.map((member, index) => (
         <MemberCard key={index} index={index} member={member} />
       ))}

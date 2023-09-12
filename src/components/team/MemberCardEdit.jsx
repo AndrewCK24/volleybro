@@ -82,7 +82,7 @@ const adminArr = [
 
 const MemberCardEdit = ({ index, member }) => {
   const dispatch = useDispatch();
-  const { number, name, role } = member;
+  const { info, number, name, role, isNew } = member;
 
   const handleCancel = () => {
     dispatch(teamActions.setMemberEditMode({ index, isEditing: false }));
@@ -137,8 +137,19 @@ const MemberCardEdit = ({ index, member }) => {
       </InputContainer>
       <InputContainer>
         邀請與權限
-        <StyledInput type="email" placeholder="信箱" id="email" name="email" />
-        <StyledSelect id="admin" name="admin" defaultValue="" required>
+        <StyledInput
+          type="email"
+          placeholder="信箱"
+          id="email"
+          name="email"
+          defaultValue={info.email}
+        />
+        <StyledSelect
+          id="admin"
+          name="admin"
+          defaultValue={info.admin}
+          required
+        >
           <StyledOption value="" disabled>
             權限
           </StyledOption>
@@ -160,13 +171,15 @@ const MemberCardEdit = ({ index, member }) => {
         >
           <MdCancel />
         </CancelButton>
-        <DangerButton
-          onClick={() => handleDelete()}
-          type="button"
-          title="delete"
-        >
-          <MdDelete />
-        </DangerButton>
+        {!isNew && (
+          <DangerButton
+            onClick={() => handleDelete()}
+            type="button"
+            title="delete"
+          >
+            <MdDelete />
+          </DangerButton>
+        )}
       </ButtonContainer>
     </StyledForm>
   );

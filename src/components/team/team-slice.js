@@ -3,43 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   _id: "",
   name: "",
-  members: [
-    {
-      number: 7,
-      name: "曾立維",
-      role: "S",
-    },
-    {
-      number: 14,
-      name: "賴博劭",
-      role: "OH",
-    },
-    {
-      number: 17,
-      name: "黃震康",
-      role: "MB",
-    },
-    {
-      number: 2,
-      name: "許瑋哲",
-      role: "OP",
-    },
-    {
-      number: 16,
-      name: "朱易",
-      role: "OH",
-    },
-    {
-      number: 24,
-      name: "莊予樂",
-      role: "MB",
-    },
-    {
-      number: 12,
-      name: "許凱勛",
-      role: "L",
-    },
-  ],
+  members: [],
   matchIds: [],
   stats: {},
 };
@@ -51,6 +15,7 @@ const teamSlice = createSlice({
     loadTeamData: (state, action) => {
       return {
         ...state,
+        _id: action.payload._id,
         name: action.payload.name,
         members: action.payload.members,
         matchIds: action.payload.matchIds,
@@ -59,9 +24,15 @@ const teamSlice = createSlice({
     },
     createMember: (state) => {
       state.members.push({
-        number: null,
+        info: {
+          admin: false,
+          email: "",
+          userId: "",
+        },
         name: "",
+        number: null,
         role: "",
+        stats: {},
         isNew: true,
         isEditing: true,
       });

@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
+import store from "../../store/store";
 import { teamActions } from "./team-slice";
 import MemberCardEdit from "./MemberCardEdit";
 import { FiEdit2 } from "react-icons/fi";
@@ -48,6 +49,7 @@ const Number = styled(InfoContainer)`
 
 export const ButtonContainer = styled(InfoContainer)`
   flex: 0 0;
+  flex-direction: column;
   justify-content: center;
   gap: 1rem;
 `;
@@ -78,7 +80,15 @@ export const CancelButton = styled(PrimaryButton)`
 
 const MemberCard = ({ index, member }) => {
   const dispatch = useDispatch();
-  const { number, name, role } = member;
+  const { info, number, name, role } = member;
+  const { admin, email, userId } = info;
+  const identity = admin
+    ? "管理者"
+    : userId
+    ? "一般成員"
+    : email
+    ? "邀請中"
+    : "未邀請";
   const isEditing = member?.isEditing;
   const handleEdit = () => {
     dispatch(teamActions.setMemberEditMode({ index, isEditing: true }));
@@ -93,6 +103,7 @@ const MemberCard = ({ index, member }) => {
           <Number>{number}</Number>
           <InfoContainer>{name}</InfoContainer>
           <InfoContainer>{role}</InfoContainer>
+          <InfoContainer>{identity}</InfoContainer>
           <PrimaryButton
             onClick={() => handleEdit()}
             type="button"
@@ -109,28 +120,40 @@ const MemberCard = ({ index, member }) => {
 export default MemberCard;
 
 export const action = async ({ request }) => {
+  const teamId = store.getState().team._id;
+  const members = store.getState().team.members;
+  const memberData = members.find((member) => member.isEditing);
+  const method = memberData.isNew ? "create-member" : "update-member";
+
   const formData = await request.formData();
-  const memberData = {
-    number: formData.get("number"),
+  const editingData = {
+    info: {
+      admin: formData.get("admin"),
+      email: formData.get("email"),
+    },
     name: formData.get("name"),
+    number: formData.get("number"),
     role: formData.get("role"),
-    email: formData.get("email"),
-    admin: formData.get("admin"),
   };
 
   try {
-    const response = await fetch("/.netlify/functions/create-member", {
+    const response = await fetch(`/.netlify/functions/${method}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify(memberData),
+      body: JSON.stringify({
+        teamId,
+        editingData,
+        memberData, // for giving _id of the member when updating
+      }),
     });
-    const { status, message, members } = await response.json();
 
-    dispatch(teamActions.saveMember({ index }));
-
+    const { status, teamData } = await response.json();
+    if (status === 200) {
+      store.dispatch({ type: "team/loadTeamData", payload: teamData });
+    }
     return null;
   } catch (error) {
     console.log(error);
