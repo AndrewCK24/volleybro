@@ -18,7 +18,7 @@ const StyledBtn = styled.button`
   width: 100%;
   height: 100%;
   border: none;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   background-color: var(--color-primary-400);
   cursor: pointer;
 `;
