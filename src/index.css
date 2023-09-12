@@ -9,25 +9,25 @@
   --color-primary-800: #191818;   /* white text */
   --color-primary-900: #000000;   /* white text */
 
-  --color-secondary-100: #cbcaee; /* black text */
-  --color-secondary-200: #a8a7e3; /* black text */
-  --color-secondary-300: #8583d7; /* black text */
-  --color-secondary-400: #6260cc; /* white text */
-  --color-secondary-500: #504ec6; /* white text */
-  --color-secondary-600: #403e9e; /* white text */
-  --color-secondary-700: #302f77; /* white text */
-  --color-secondary-800: #201f4f; /* white text */
-  --color-secondary-900: #101028; /* white text */
+  --color-secondary-100: #e7f0f2; /* black text */
+  --color-secondary-200: #b7d2d8; /* black text */
+  --color-secondary-300: #88b4bf; /* black text */
+  --color-secondary-400: #408698; /* white text */
+  --color-secondary-500: #10687e; /* white text */
+  --color-secondary-600: #0d5365; /* white text */
+  --color-secondary-700: #0a3e4c; /* white text */
+  --color-secondary-800: #062a32; /* white text */
+  --color-secondary-900: #031519; /* white text */
 
-  --color-danger-100: #f9c1cd;    /* black text */
-  --color-danger-200: #f598ab;    /* black text */
-  --color-danger-300: #f16f89;    /* black text */
-  --color-danger-400: #ed4668;    /* white text */
-  --color-danger-500: #eb3157;    /* white text */
-  --color-danger-600: #bc2746;    /* white text */
-  --color-danger-700: #8d1d34;    /* white text */
-  --color-danger-800: #5e1423;    /* white text */
-  --color-danger-900: #2f0a11;    /* white text */
+  --color-danger-100: #fff2ee;    /* black text */
+  --color-danger-200: #fed7cc;    /* black text */
+  --color-danger-300: #febdab;    /* black text */
+  --color-danger-400: #fda289;    /* black text */
+  --color-danger-500: #fc7a56;    /* black text */
+  --color-danger-600: #ca6245;    /* white text */
+  --color-danger-700: #974934;    /* white text */
+  --color-danger-800: #653122;    /* white text */
+  --color-danger-900: #321811;    /* white text */
 
   background-color: var(--color-primary-100);
 }

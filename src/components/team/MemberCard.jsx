@@ -68,7 +68,7 @@ export const PrimaryButton = styled.button`
 
 export const DangerButton = styled(PrimaryButton)`
   svg {
-    color: var(--color-danger-400);
+    color: var(--color-danger-500);
   }
 `;
 
