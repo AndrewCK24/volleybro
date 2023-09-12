@@ -35,6 +35,8 @@ const TeamPage = () => {
 export default TeamPage;
 
 export const loader = async () => {
+  const { _id: teamId } = store.getState().team;
+  if (teamId) return null;
   try {
     const response = await fetch(
       "/.netlify/functions/fetch-team-by-default",
@@ -46,7 +48,7 @@ export const loader = async () => {
         },
       }
     );
-    const { status, teamData } = await response.json();
+    const { teamData } = await response.json();
     store.dispatch({ type: "team/loadTeamData", payload: teamData });
 
     return null;
