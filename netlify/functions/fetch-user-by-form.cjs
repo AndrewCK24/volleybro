@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("./models/user.cjs");
 const connectMongoDB = require("./utils/connect-mongodb.cjs");
-const signJWT = require("./utils/sign-jwt.cjs");
+const jwtSignIn = require("./utils/jwt-sign-in.cjs");
 const userResData = require("./utils/user-res-data.cjs");
 
 exports.handler = async (event) => {
@@ -11,12 +11,12 @@ exports.handler = async (event) => {
     console.log(`[AUTH] USER ${email} trying to sign in...`);
     const user = await User.findOne({ email });
     if (user) {
-      console.log(`[AUTH] USER ${email} found.`)
+      console.log(`[AUTH] USER ${email} found.`);
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (isPasswordValid) {
         console.log(`[AUTH] USER ${email} (${user._id}) signed in.`);
-        const token = signJWT.handler(user);
+        const token = jwtSignIn.handler(user);
         const resData = userResData.handler(user);
         return {
           statusCode: 200,
@@ -46,7 +46,7 @@ exports.handler = async (event) => {
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
     console.log(`[AUTH] USER ${email} created.`);
-    const token = signJWT.handler(newUser);
+    const token = jwtSignIn.handler(newUser);
     const resData = userResData.handler(newUser);
     return {
       statusCode: 201,
