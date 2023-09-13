@@ -3,7 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   signIn: false,
   email: "",
-  teamIds: [],
+  info:{
+    teamIds: [],
+    memberIds: [],
+  },
   _id: "",
 };
 

@@ -12,6 +12,7 @@ import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";
 import TeamCreatePage, { action as teamCreateAction } from "./pages/TeamCreate";
 import { action as memberEditAction } from "./components/team/MemberCard";
+import MenuPage from "./components/user/Menu";
 import RecordPage from "./pages/Record";
 
 const router = createBrowserRouter([
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
                 action: teamCreateAction,
               },
             ],
+          },
+          {
+            path: "user",
+            element: <MenuPage />,
           },
         ],
       },
