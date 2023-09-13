@@ -3,10 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   signIn: false,
   email: "",
-  info:{
-    teamIds: [],
-    memberIds: [],
-  },
+  teamIds: [],
   _id: "",
 };
 
@@ -15,19 +12,16 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     loadUserData(state, action) {
-      state.email = action.payload.email;
-      state.info = action.payload.info;
-      state._id = action.payload._id;
       state.signIn = true;
+      state.email = action.payload.email;
+      state.teamIds = action.payload.teamIds;
+      state._id = action.payload._id;
     },
     signOut(state) {
-      state.email = "";
-      state.info = {
-        teamIds: [],
-        memberIds: [],
-      };
-      state._id = "";
       state.signIn = false;
+      state.email = "";
+      state.teamIds = [];
+      state._id = "";
     },
   },
 });
