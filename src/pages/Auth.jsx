@@ -46,12 +46,13 @@ export const loader = async () => {
       return redirect("/team/new");
     }
   } else {
-    const { status, userData } = await getJwtInfo();
+    const { status, userData, teamData } = await getJwtInfo();
 
     if (status === 200) {
-      console.log("jwtLoader succeed", userData);
-      store.dispatch({ type: "user/loadUser", payload: userData });
-      if (userData.teamIds.length > 0) {
+      // console.log("jwtLoader succeed", userData);
+      store.dispatch({ type: "user/loadUserData", payload: userData });
+      if (teamData) {
+        store.dispatch({ type: "team/loadTeamData", payload: teamData });
         return redirect("/");
       } else {
         return redirect("/team/new");
@@ -82,6 +83,7 @@ export const action = async ({ request }) => {
     const { status, userData } = await response.json();
     console.log("auth action finished", userData);
 
+    // FIXME: userData 載入可能重工
     if (status === 200) {
       store.dispatch({ type: "user/loadUser", payload: userData });
       return redirect("/");
