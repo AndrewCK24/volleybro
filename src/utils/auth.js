@@ -8,9 +8,9 @@ export const getJwtInfo = async () => {
       },
       credentials: "include",
     });
-    const { status, userData } = await response.json();
+    const { status, userData, teamData } = await response.json();
 
-    return { status, userData };
+    return { status, userData, teamData };
   } catch (error) {
     return { status: 400, userData: null };
   }

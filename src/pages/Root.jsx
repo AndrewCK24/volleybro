@@ -47,12 +47,13 @@ export const loader = async () => {
   const isSignIn = store.getState().user.signIn;
   if (isSignIn) return null;
   
-  const { status, userData } = await getJwtInfo();
+  const { status, userData, teamData } = await getJwtInfo();
 
   if (status === 200) {
-    console.log("jwtLoader succeed", userData);
-    store.dispatch({ type: "user/loadUser", payload: userData });
-    if (userData.teamIds.length > 0) {
+    // console.log("jwtLoader succeed", userData);
+    store.dispatch({ type: "user/loadUserData", payload: userData });
+    if (teamData) {
+      store.dispatch({ type: "team/loadTeamData", payload: teamData });
       return null;
     } else {
       return redirect("/team/new");
