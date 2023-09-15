@@ -1,8 +1,6 @@
-import { Suspense } from "react";
-import { Await, Outlet, redirect, useRouteLoaderData } from "react-router-dom";
+import { Outlet, redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import Loading from "../components/root/Loading";
 import store from "../store/store";
 import { getJwtInfo } from "../utils/auth";
 
@@ -27,16 +25,16 @@ export const PagesContainer = styled.main`
 `;
 
 const RootLayout = () => {
-  const userData = useRouteLoaderData("root");
+  // const userData = useRouteLoaderData("root");
   // FIXME: Loading component is not working
 
   return (
     <Container>
-      <Suspense fallback={<Loading />}>
-        <Await resolve={userData}>
+      {/* <Suspense fallback={<Loading />}>
+        <Await resolve={userData}> */}
           <Outlet />
-        </Await>
-      </Suspense>
+        {/* </Await>
+      </Suspense> */}
     </Container>
   );
 };

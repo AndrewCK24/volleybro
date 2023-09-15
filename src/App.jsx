@@ -7,7 +7,7 @@ import AuthPage, {
   loader as authLoader,
   action as authAction,
 } from "./pages/Auth";
-import TeamPage, { loader as teamLoader } from "./pages/Team";
+import TeamPage from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";
 import TeamCreatePage, { action as teamCreateAction } from "./pages/TeamCreate";
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
           {
             path: "team",
             element: <TeamPage />,
-            loader: teamLoader,
+            // loader: teamLoader,
             action: memberEditAction,
             children: [
               {
