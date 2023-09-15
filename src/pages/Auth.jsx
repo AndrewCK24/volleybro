@@ -8,12 +8,13 @@ import Logo from "../components/general/Logo";
 import AuthForm from "../components/auth/AuthForm";
 
 export const AuthContainer = styled.div`
-  flex: 0 1 25rem;
-  background-color: var(--color-primary-100);
-  border-radius: 0.5rem;
+  flex: 1 1;
+  background-image: url("../court-background.jpg");
+  background-size: cover;
+  /* border-radius: 1rem; */
   box-shadow: 0 0 0.25rem var(--color-primary-400);
-  height: 80%;
-  padding: 4rem 2rem;
+  height: 100%;
+  /* padding: 4rem 2rem; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,12 +25,12 @@ export const AuthContainer = styled.div`
 const AuthPage = () => {
   return (
     <Container>
-      <PagesContainer>
+      {/* <PagesContainer> */}
         <AuthContainer>
-          <Logo dark={true} name={true} />
+          <Logo />
           <AuthForm />
         </AuthContainer>
-      </PagesContainer>
+      {/* </PagesContainer> */}
     </Container>
   );
 };

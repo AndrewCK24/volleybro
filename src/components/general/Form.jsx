@@ -2,12 +2,16 @@ import { Form, Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
 export const StyledForm = styled(Form)`
-  flex: 0.8 1;
+  flex: 2 1;
+  border-radius: 1rem 1rem 0 0;
+  background-color: var(--color-primary-100);
+  /* opacity: 0.9; */
+  padding: 2rem;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: right;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.5rem;
 `;
 
