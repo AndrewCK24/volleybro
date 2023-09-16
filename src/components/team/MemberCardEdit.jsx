@@ -56,13 +56,13 @@ const StyledSelect = styled.select`
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
-  color: var(--color-primary-400);
+  color: var(--color-secondary-400);
 `;
 
 const StyledOption = styled.option`
   padding: 0.5rem;
   &:disabled {
-    color: var(--color-primary-400);
+    color: var(--color-secondary-400);
   }
 `;
 

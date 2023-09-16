@@ -4,9 +4,8 @@ import styled from "@emotion/styled";
 export const StyledForm = styled(Form)`
   flex: 2 1;
   border-radius: 1rem 1rem 0 0;
-  background-color: var(--color-primary-100);
-  /* opacity: 0.9; */
-  padding: 2rem;
+  background-color: var(--color-secondary-100);
+  padding: 2rem 5%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -32,9 +31,9 @@ export const StyledInput = styled.input`
   font-weight: 500;
   &:focus {
     outline: none;
-    -webkit-box-shadow:inset 0 0 0.25rem var(--color-primary-400);
-       -moz-box-shadow:inset 0 0 0.25rem var(--color-primary-400);
-            box-shadow:inset 0 0 0.25rem var(--color-primary-400);
+    -webkit-box-shadow: inset 0 0 0.25rem var(--color-secondary-400);
+    -moz-box-shadow: inset 0 0 0.25rem var(--color-secondary-400);
+    box-shadow: inset 0 0 0.25rem var(--color-secondary-400);
   }
 `;
 
@@ -42,8 +41,8 @@ export const StyledButton = styled.button`
   height: 2.5rem;
   width: 100%;
   padding: 0.5rem;
-  color: var(--color-primary-100);
-  background-color: var(--color-secondary-500);
+  color: var(--color-secondary-100);
+  background-color: var(--color-primary-500);
   border: none;
   border-radius: 0.5rem;
   font-size: 1.25rem;
@@ -54,7 +53,7 @@ export const StyledLink = styled(Link)`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  color: var(--color-secondary-500);
+  color: var(--color-primary-500);
   padding: 0.5rem 0.5rem;
   font-size: 1rem;
   font-weight: 500;

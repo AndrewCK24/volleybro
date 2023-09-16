@@ -20,7 +20,7 @@ const Container = styled.div`
 const CardContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
-  background-color: var(--color-primary-200);
+  background-color: var(--color-secondary-200);
   border-radius: 0.5rem;
   padding: 0;
   display: flex;

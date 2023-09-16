@@ -12,16 +12,16 @@ const Container = styled.button`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary-900);
+  color: var(--color-secondary-900);
   div {
     display: flex;
     align-items: center;
     justify-content: center;
   }
   &.toggle {
-    background-color: var(--color-secondary-500);
+    background-color: var(--color-primary-500);
     div {
-      color: var(--color-primary-100);
+      color: var(--color-secondary-100);
     }
   }
 `;

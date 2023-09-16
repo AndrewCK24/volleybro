@@ -8,7 +8,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 const StyledContainer = styled(CardContainer)`
   padding: 0;
   svg {
-    color: var(--color-primary-100);
+    color: var(--color-secondary-100);
     width: 2.5rem;
     height: 2.5rem;
   }
@@ -19,7 +19,7 @@ const StyledBtn = styled.button`
   height: 100%;
   border: none;
   border-radius: 0.5rem;
-  background-color: var(--color-primary-400);
+  background-color: var(--color-secondary-400);
   cursor: pointer;
 `;
 

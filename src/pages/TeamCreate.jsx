@@ -17,7 +17,7 @@ const StyledForm = styled(Form)`
   height: 40%;
   padding: 2rem;
   border-radius: 0.5rem;
-  background-color: var(--color-primary-200);
+  background-color: var(--color-secondary-200);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -63,13 +63,13 @@ const StyledButton = styled.button`
   line-height: 2rem;
   font-size: 1.75rem;
   font-weight: 500;
-  background-color: var(--color-secondary-400);
-  color: var(--color-primary-100);
+  background-color: var(--color-primary-400);
+  color: var(--color-secondary-100);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   &:hover {
     font-weight: 700;
-    background-color: var(--color-secondary-500);
+    background-color: var(--color-primary-500);
   }
 `;
 

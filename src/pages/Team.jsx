@@ -21,7 +21,7 @@ export const Title = styled.h1`
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  color: var(--color-primary-800);
+  color: var(--color-secondary-800);
 `;
 
 const TeamPage = () => {
@@ -38,16 +38,13 @@ export const loader = async () => {
   const { _id: teamId } = store.getState().team;
   if (teamId) return null;
   try {
-    const response = await fetch(
-      "/.netlify/functions/fetch-team-by-default",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
-    );
+    const response = await fetch("/.netlify/functions/fetch-team-by-default", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
     const { teamData } = await response.json();
     store.dispatch({ type: "team/loadTeamData", payload: teamData });
 
