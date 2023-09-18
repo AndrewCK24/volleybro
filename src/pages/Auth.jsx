@@ -1,7 +1,7 @@
 import { redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import store from "../store/store";
+import store from "../store";
 import { getJwtInfo } from "../utils/auth";
 import { Container, PagesContainer } from "./Root";
 import Logo from "../components/general/Logo";

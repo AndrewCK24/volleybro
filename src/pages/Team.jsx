@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import store from "../store/store";
+import store from "../store";
 
 const Container = styled.div`
   flex: 1 1;

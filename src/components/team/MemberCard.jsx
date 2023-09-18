@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import store from "../../store/store";
+import store from "../../store";
 import { teamActions } from "./team-slice";
 import MemberCardEdit from "./MemberCardEdit";
 import { FiEdit2 } from "react-icons/fi";

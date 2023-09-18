@@ -5,10 +5,10 @@ import { Provider } from "react-redux";
 import "./index.css";
 import "normalize.css";
 import App from "./App";
-import store from "./store/store";
+import store from "./store";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-	<Provider store={store}>
-		<App />
-	</Provider>
+  <Provider store={store}>
+    <App />
+  </Provider>
 );

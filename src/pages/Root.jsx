@@ -1,7 +1,7 @@
 import { Outlet, redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import store from "../store/store";
+import store from "../store";
 import { getJwtInfo } from "../utils/auth";
 
 export const Container = styled.div`
@@ -32,8 +32,8 @@ const RootLayout = () => {
     <Container>
       {/* <Suspense fallback={<Loading />}>
         <Await resolve={userData}> */}
-          <Outlet />
-        {/* </Await>
+      <Outlet />
+      {/* </Await>
       </Suspense> */}
     </Container>
   );
@@ -44,7 +44,7 @@ export default RootLayout;
 export const loader = async () => {
   const isSignIn = store.getState().user.signIn;
   if (isSignIn) return null;
-  
+
   const { status, userData, teamData } = await getJwtInfo();
 
   if (status === 200) {
