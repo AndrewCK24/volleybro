@@ -1,5 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "@emotion/react";
 
+import { theme } from "./theme";
 import RootLayout, { loader as infoLoader } from "./pages/Root";
 import RootNavLayout from "./pages/RootNav";
 import Dashboard from "./pages/DashBoard";
@@ -72,7 +74,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  );
 };
 
 export default App;
