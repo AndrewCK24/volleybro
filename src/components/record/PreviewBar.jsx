@@ -7,7 +7,7 @@ import numberFormatter from "../../utils/numberFormatter";
 const Container = styled.div`
   flex: 1 1;
   padding: 0 1rem;
-  border: 2px solid var(--color-secondary-800);
+  border: 2px solid var(--color-primary-800);
   border-radius: 0.5rem;
   background-color: var(--white-primary);
   display: flex;

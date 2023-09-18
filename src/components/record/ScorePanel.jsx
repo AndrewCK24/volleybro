@@ -7,7 +7,7 @@ import { FaVolleyballBall } from "react-icons/fa";
 const Container = styled.div`
   flex: 5 1;
   padding: 0.5rem;
-  border: 2px solid var(--color-secondary-800);
+  border: 2px solid var(--color-primary-800);
   border-radius: 0.5rem;
   background-color: var(--white-primary);
   display: flex;

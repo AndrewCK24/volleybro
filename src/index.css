@@ -1,23 +1,23 @@
 :root {
-  --color-primary-100: #e7f0f2; /* black text */
-  --color-primary-200: #b7d2d8; /* black text */
-  --color-primary-300: #88b4bf; /* black text */
-  --color-primary-400: #408698; /* white text */
-  --color-primary-500: #10687e; /* white text */
-  --color-primary-600: #0d5365; /* white text */
-  --color-primary-700: #0a3e4c; /* white text */
-  --color-primary-800: #062a32; /* white text */
-  --color-primary-900: #031519; /* white text */
+  --color-secondary-100: #e7f0f2; /* black text */
+  --color-secondary-200: #b7d2d8; /* black text */
+  --color-secondary-300: #88b4bf; /* black text */
+  --color-secondary-400: #408698; /* white text */
+  --color-secondary-500: #10687e; /* white text */
+  --color-secondary-600: #0d5365; /* white text */
+  --color-secondary-700: #0a3e4c; /* white text */
+  --color-secondary-800: #062a32; /* white text */
+  --color-secondary-900: #031519; /* white text */
 
-  --color-secondary-100: #f6f4f5; /* black text */
-  --color-secondary-200: #dddcdd; /* black text */
-  --color-secondary-300: #c5c3c4; /* black text */
-  --color-secondary-400: #949293; /* black text */
-  --color-secondary-500: #626262; /* white text */
-  --color-secondary-600: #4a4949; /* white text */
-  --color-secondary-700: #313131; /* white text */
-  --color-secondary-800: #191818; /* white text */
-  --color-secondary-900: #000000; /* white text */
+  --color-primary-100: #f6f4f5; /* black text */
+  --color-primary-200: #dddcdd; /* black text */
+  --color-primary-300: #c5c3c4; /* black text */
+  --color-primary-400: #949293; /* black text */
+  --color-primary-500: #626262; /* white text */
+  --color-primary-600: #4a4949; /* white text */
+  --color-primary-700: #313131; /* white text */
+  --color-primary-800: #191818; /* white text */
+  --color-primary-900: #000000; /* white text */
 
   --color-danger-100: #fff2ee; /* black text */
   --color-danger-200: #fed7cc; /* black text */
@@ -29,7 +29,7 @@
   --color-danger-800: #653122; /* white text */
   --color-danger-900: #321811; /* white text */
 
-  background-color: var(--color-secondary-100);
+  background-color: var(--color-primary-100);
 }
 
 * {
@@ -37,7 +37,7 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 
-  /* color: var(--color-secondary-900); */
+  /* color: var(--color-primary-900); */
   font-family: "Saira Condensed", "Inter", "Noto Sans TC", sans-serif;
   font-size: 16px;
   font-weight: 400;

@@ -13,7 +13,7 @@ const Container = styled.button`
   grid-template-columns: 2fr 1fr 1fr 1fr;
   column-gap: 0.25rem;
   row-gap: 0.25rem;
-  color: var(--color-secondary-900);
+  color: var(--color-primary-900);
   svg {
     width: 2rem;
     height: 2rem;

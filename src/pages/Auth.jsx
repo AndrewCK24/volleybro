@@ -12,7 +12,7 @@ export const AuthContainer = styled.div`
   background-image: url("../court-background.jpg");
   background-size: cover;
   /* border-radius: 1rem; */
-  box-shadow: 0 0 0.25rem var(--color-secondary-400);
+  box-shadow: 0 0 0.25rem var(--color-primary-400);
   height: 100%;
   /* padding: 4rem 2rem; */
   display: flex;

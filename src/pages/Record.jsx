@@ -53,22 +53,22 @@ const ConfirmBtn = styled.button`
   flex: 1 1;
   border: none;
   border-radius: 0.5rem;
-  color: var(--color-secondary-100);
+  color: var(--color-primary-100);
   background-color: var(--color-danger-500);
   font-size: 2rem;
   font-weight: 700;
   &:disabled {
-    color: var(--color-secondary-100);
-    background-color: var(--color-secondary-400);
+    color: var(--color-primary-100);
+    background-color: var(--color-primary-400);
   }
 `;
 
 const TeamStats = styled.div`
   flex: 3 1;
   padding: 0.5rem;
-  border: 2px solid var(--color-secondary-800);
+  border: 2px solid var(--color-primary-800);
   border-radius: 0.5rem;
-  /* background-color: var(--color-secondary-800); */
+  /* background-color: var(--color-primary-800); */
   color: var(--white-primary);
   svg {
     width: 1.5rem;

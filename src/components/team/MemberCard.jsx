@@ -9,7 +9,7 @@ import { FiEdit2 } from "react-icons/fi";
 export const CardContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
-  background-color: var(--color-secondary-200);
+  background-color: var(--color-primary-200);
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   display: flex;
@@ -62,7 +62,7 @@ export const PrimaryButton = styled.button`
   background-color: transparent;
   aspect-ratio: 1;
   svg {
-    color: var(--color-primary-500);
+    color: var(--color-secondary-500);
   }
 `;
 
@@ -74,7 +74,7 @@ export const DangerButton = styled(PrimaryButton)`
 
 export const CancelButton = styled(PrimaryButton)`
   svg {
-    color: var(--color-secondary-400);
+    color: var(--color-primary-400);
   }
 `;
 

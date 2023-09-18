@@ -1,5 +1,16 @@
 import styled from "@emotion/styled";
+import { css } from "@emotion/react";
 import PropTypes from "prop-types";
+
+const variantMap = {
+  contained: containedStyle,
+  outlined: outlinedStyle,
+  text: textStyle,
+};
+
+const containedStyle = css`
+  background-color: ${({ theme }) => theme.colors.primary};
+`;
 
 const StyledButton = styled.button`
   display: flex;
@@ -24,6 +35,8 @@ const StyledButton = styled.button`
 `;
 
 const Button = (props) => {
+  const { children, variant } = props;
+
   <StyledButton {...props}>
     <span>{children}</span>
   </StyledButton>;

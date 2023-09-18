@@ -21,7 +21,7 @@ export const Title = styled.h1`
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  color: var(--color-secondary-800);
+  color: var(--color-primary-800);
 `;
 
 const TeamPage = () => {

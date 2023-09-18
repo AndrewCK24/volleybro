@@ -17,9 +17,9 @@ const Container = styled.aside`
   /* flex-direction: column; */
   align-items: center;
   justify-content: center;
-  background-color: var(--color-primary-500);
+  background-color: var(--color-secondary-500);
   svg {
-    stroke: var(--color-secondary-100);
+    stroke: var(--color-primary-100);
     height: 2rem;
     width: 2rem;
   }

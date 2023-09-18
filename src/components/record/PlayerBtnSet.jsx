@@ -7,7 +7,7 @@ const Container = styled.div`
   flex: 3 1;
   padding: 1rem;
   border-radius: 0.5rem;
-  background-color: var(--color-secondary-200);
+  background-color: var(--color-primary-200);
   display: grid;
   grid-template-areas:
     "p4 p3 p2"
