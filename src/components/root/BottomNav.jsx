@@ -5,16 +5,14 @@ import {
   FiHome as HomeIcon,
   FiUsers as TeamIcon,
   FiClock as HistoryIcon,
-  FiUser as UserIcon,
+  FiMenu as MenuIcon,
 } from "react-icons/fi";
 
 const Container = styled.aside`
   flex: 0 0 4rem;
-  height: 100%;
   padding: 1rem 5%;
   display: flex;
   flex-direction: row;
-  /* flex-direction: column; */
   align-items: center;
   justify-content: center;
   background-color: var(--color-secondary-500);
@@ -31,22 +29,25 @@ const StyledLink = styled(Link)`
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  color: var(--color-primary-100);
+  font-size: 1.25rem;
+  gap: 0.5rem;
 `;
 
 const BottomNav = () => {
   return (
     <Container>
       <StyledLink to="/">
-        <HomeIcon />
+        <HomeIcon />首頁
       </StyledLink>
       <StyledLink to="/team">
-        <TeamIcon />
+        <TeamIcon />隊伍
       </StyledLink>
       <StyledLink to="/history">
-        <HistoryIcon />
+        <HistoryIcon />紀錄
       </StyledLink>
       <StyledLink to="/user">
-        <UserIcon />
+        <MenuIcon />選項
       </StyledLink>
     </Container>
   );
