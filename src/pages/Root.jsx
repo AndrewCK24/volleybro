@@ -50,12 +50,16 @@ export const loader = async () => {
   if (status === 200) {
     // console.log("jwtLoader succeed", userData);
     store.dispatch({ type: "user/loadUserData", payload: userData });
-    if (teamData) {
-      store.dispatch({ type: "team/loadTeamData", payload: teamData });
-      return null;
-    } else {
-      return redirect("/team/new");
-    }
+    // if (userData.name) {
+      if (teamData) {
+        store.dispatch({ type: "team/loadTeamData", payload: teamData });
+        return null;
+      } else {
+        return redirect("/team/new");
+      }
+    // } else {
+    //   return redirect("/auth/signUp");
+    // }
   } else {
     return redirect("/auth");
   }

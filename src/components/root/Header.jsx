@@ -1,7 +1,5 @@
-import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-import { FiEdit2 } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 
 const Container = styled.header`
@@ -29,35 +27,10 @@ const BtnContainer = styled.div`
   justify-content: flex-start;
 `;
 
-const StyledLink = styled(Link)`
-  flex: 0 0 10rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  text-decoration: none;
-  border-radius: 0.5rem;
-  background-color: var(--color-secondary-500);
-  color: var(--color-primary-100);
-  font-size: 1.5rem;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  gap: 0.5rem;
-  svg {
-    color: var(--color-primary-100);
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-`;
-
 const Header = () => {
   return (
     <Container>
       <BtnContainer>
-        <StyledLink to="/record">
-          <FiEdit2 />
-          比賽紀錄
-        </StyledLink>
       </BtnContainer>
       <IoNotificationsSharp />
     </Container>

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 
 import Header from "../components/root/Header";
 import BottomNav from "../components/root/BottomNav";
+import StartRecordBtn from "../components/root/StartRecordBtn";
 
 const RootNavLayout = () => {
   return (
@@ -11,6 +12,7 @@ const RootNavLayout = () => {
       <PagesContainer>
         <Outlet />
       </PagesContainer>
+      <StartRecordBtn />
       <BottomNav />
     </Container>
   );
