@@ -56,6 +56,16 @@ const router = createBrowserRouter([
           {
             path: "user",
             element: <MenuPage />,
+            // children: [
+            //   {
+            //     index: true,
+            //     element: <MenuPage />,
+            //   },
+            //   {
+            //     path: "edit",
+            //     element: <UserEditPage />,
+            //   }
+            // ],
           },
         ],
       },
