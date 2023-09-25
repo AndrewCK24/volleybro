@@ -86,10 +86,10 @@ export const action = async ({ request }) => {
 
     // FIXME: userData 載入可能重工
     if (status === 200) {
-      store.dispatch({ type: "user/loadUser", payload: userData });
+      store.dispatch({ type: "user/loadUserData", payload: userData });
       return redirect("/");
     } else if (status === 201) {
-      store.dispatch({ type: "user/loadUser", payload: userData });
+      store.dispatch({ type: "user/loadUserData", payload: userData });
       return redirect("/team/new");
     } else {
       return null;
