@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { userActions } from "./user-slice";
 
@@ -48,6 +48,7 @@ const StyledBtn = styled.button`
 const MenuPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userName = useSelector((state) => state.user.name);
 
   const signOutUser = async () => {
     try {
@@ -61,7 +62,7 @@ const MenuPage = () => {
 
   return (
     <Container>
-      <CardContainer>1</CardContainer>
+      <CardContainer>{userName}</CardContainer>
       <CardContainer>
         <StyledBtn onClick={() => signOutUser()}>登出</StyledBtn>
       </CardContainer>
