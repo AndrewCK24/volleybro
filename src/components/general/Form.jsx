@@ -42,7 +42,7 @@ const FormInputContainer = styled.div`
   flex-direction: column;
   align-items: left;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 `;
 
 const FormLabel = styled.label`
@@ -63,10 +63,11 @@ const FormRequiredSymbol = styled.span`
 `;
 
 const FormHelperText = styled.span`
-  width: fit-content;
-  display: inline-flex;
+  width: 100%;
+  height: 1.25rem;
+  display: flex;
   align-items: center;
-  justify-content: left;
+  justify-content: right;
   padding: 0 0.5rem;
   font-size: 1rem;
   font-weight: 400;
@@ -107,7 +108,6 @@ export const FormControl = (props) => {
           {labelText}
           {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
         </FormLabel>
-        <FormHelperText>{warn}</FormHelperText>
       </div>
       <FormInput
         type={type}
@@ -118,6 +118,7 @@ export const FormControl = (props) => {
         onChange={(e) => onChange(e.target.value)}
         autoComplete="on"
       />
+      <FormHelperText>{warn}</FormHelperText>
     </FormInputContainer>
   );
 };
@@ -145,7 +146,7 @@ export const FormButton = (props) => {
     <StyledButton type="submit" disabled={hasError}>
       {children}
     </StyledButton>
-  )
+  );
 };
 
 export const StyledLink = styled(Link)`
