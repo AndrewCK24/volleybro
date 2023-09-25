@@ -5,6 +5,10 @@ const teamSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  nickname: {
+    type: String,
+    required: false,
+  },
   members: [
     {
       info: {

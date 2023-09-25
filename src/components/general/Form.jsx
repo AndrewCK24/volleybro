@@ -1,27 +1,79 @@
 import { Form, Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-export const StyledForm = styled(Form)`
-  flex: 2 1;
-  border-radius: 1rem 1rem 0 0;
+export const FormContainer = styled(Form)`
+  margin: 5%;
+  border-radius: 1rem;
   background-color: var(--color-primary-100);
-  padding: 2rem 5%;
+  padding: 10% 5%;
+  height: 100%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+`;
+
+export const FormTitle = styled.h1`
+  width: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary-800);
+`;
+
+export const FormContents = styled.div`
+  flex: 1 1;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: right;
-  justify-content: flex-start;
+  align-items: left;
+  justify-content: center;
+  gap: 1rem;
+`;
+
+const FormInputContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
   gap: 0.5rem;
 `;
 
-export const StyledLabel = styled.label`
-  width: 100%;
-  padding: 0.5rem 0.5rem 0;
+const FormLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  justify-content: left;
+  padding-left: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
 `;
 
-export const StyledInput = styled.input`
+const FormRequiredSymbol = styled.span`
+  width: fit-content;
+  display: inline-flex;
+  color: var(--color-danger-500);
+  font-size: 1rem;
+  font-weight: 500;
+`;
+
+const FormHelperText = styled.span`
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: left;
+  padding: 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-danger-500);
+`;
+
+const FormInput = styled.input`
   height: 2.5rem;
   width: 100%;
   padding: 0.5rem;
@@ -37,6 +89,39 @@ export const StyledInput = styled.input`
   }
 `;
 
+export const FormControl = (props) => {
+  const {
+    name,
+    labelText,
+    type = "text",
+    placeholder = "",
+    required = false,
+    warn = "",
+    onChange,
+  } = props;
+
+  return (
+    <FormInputContainer>
+      <div>
+        <FormLabel htmlFor={name}>
+          {labelText}
+          {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
+        </FormLabel>
+        <FormHelperText>{warn}</FormHelperText>
+      </div>
+      <FormInput
+        type={type}
+        placeholder={placeholder}
+        id={name}
+        name={name}
+        required={required}
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete="on"
+      />
+    </FormInputContainer>
+  );
+};
+
 export const StyledButton = styled.button`
   height: 2.5rem;
   width: 100%;
@@ -47,7 +132,21 @@ export const StyledButton = styled.button`
   border-radius: 0.5rem;
   font-size: 1.25rem;
   font-weight: 700;
+  &:disabled {
+    background-color: var(--color-secondary-300);
+  }
 `;
+
+export const FormButton = (props) => {
+  const { children, errorArr } = props;
+  const hasError = errorArr.some((error) => error);
+
+  return (
+    <StyledButton type="submit" disabled={hasError}>
+      {children}
+    </StyledButton>
+  )
+};
 
 export const StyledLink = styled(Link)`
   display: flex;

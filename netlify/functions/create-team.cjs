@@ -12,14 +12,14 @@ exports.handler = async (event) => {
       body: JSON.stringify({ status, error }),
     };
   }
-  const { _id: userId, email } = validateAuthRes.userData;
+  const { name: userName, _id: userId, email } = validateAuthRes.userData;
   console.log(`[CREATE-TEAM] USER ${email} (${userId}) validated.`);
 
   try {
     // create new team object
     await connectMongoDB.handler();
-    const { name } = JSON.parse(event.body);
-    const newTeam = new Team({ name });
+    const { name, nickname } = JSON.parse(event.body);
+    const newTeam = new Team({ name, nickname });
 
     // add user as an admin(member) to team
     const newMember = {
@@ -28,6 +28,7 @@ exports.handler = async (event) => {
         admin: true,
         userId,
       },
+      name: userName,
     };
     newTeam.members.push(newMember);
     await newTeam.save();
