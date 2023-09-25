@@ -22,6 +22,11 @@ const teamSlice = createSlice({
         stats: action.payload.stats,
       };
     },
+    resetTeamData: () => {
+      return {
+        ...initialState,
+      };
+    },
     createMember: (state) => {
       state.members.push({
         info: {

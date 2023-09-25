@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { userActions } from "./user-slice";
+import { teamActions } from "../team/team-slice";
 
 const Container = styled.div`
   flex: 1 1;
@@ -54,6 +55,7 @@ const MenuPage = () => {
     try {
       await fetch("/.netlify/functions/sign-out-user");
       dispatch(userActions.signOut());
+      dispatch(teamActions.resetTeamData());
       navigate("/auth");
     } catch (error) {
       console.error(error);
