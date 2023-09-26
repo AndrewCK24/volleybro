@@ -73,6 +73,7 @@ export const action = async ({ request }) => {
   };
 
   try {
+    // TODO: fetch-user-by-form 應檢討改名，因其除返回 userData 外，也返回 teamData (如果有的話)
     const response = await fetch("/.netlify/functions/fetch-user-by-form", {
       method: "POST",
       headers: {
@@ -81,12 +82,13 @@ export const action = async ({ request }) => {
       },
       body: JSON.stringify(reqData),
     });
-    const { status, userData } = await response.json();
+    const { status, userData, teamData } = await response.json();
     console.log("auth action finished", userData);
 
     // FIXME: userData 載入可能重工
     if (status === 200) {
       store.dispatch({ type: "user/loadUserData", payload: userData });
+      store.dispatch({ type: "team/loadTeamData", payload: teamData });
       return redirect("/");
     } else if (status === 201) {
       store.dispatch({ type: "user/loadUserData", payload: userData });
