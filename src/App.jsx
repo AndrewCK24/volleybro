@@ -90,6 +90,7 @@ const router = createBrowserRouter([
         index: true,
         element: <SignInForm />,
         action: signInAction,
+        loader: authLoader,
       },
       {
         path: "sign-up",
@@ -97,8 +98,6 @@ const router = createBrowserRouter([
         action: signUpAction,
       },
     ],
-    // action: authAction,
-    // loader: authLoader,
   },
 ]);
 
