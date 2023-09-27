@@ -1,11 +1,9 @@
-import { redirect } from "react-router-dom";
+import { Outlet, redirect } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import store from "../store";
 import { getJwtInfo } from "../utils/auth";
 import { Container, PagesContainer } from "./Root";
-import Logo from "../components/general/Logo";
-import AuthForm from "../components/auth/AuthForm";
 
 export const AuthContainer = styled.div`
   flex: 1 1;
@@ -27,8 +25,8 @@ const AuthPage = () => {
     <Container>
       {/* <PagesContainer> */}
       <AuthContainer>
-        <Logo />
-        <AuthForm />
+        {/* <Logo /> */}
+        <Outlet />
       </AuthContainer>
       {/* </PagesContainer> */}
     </Container>
@@ -61,43 +59,5 @@ export const loader = async () => {
     } else {
       return null;
     }
-  }
-};
-
-export const action = async ({ request }) => {
-  console.log("auth action started");
-  const formData = await request.formData();
-  const reqData = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-  };
-
-  try {
-    // TODO: fetch-user-by-form 應檢討改名，因其除返回 userData 外，也返回 teamData (如果有的話)
-    const response = await fetch("/.netlify/functions/fetch-user-by-form", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify(reqData),
-    });
-    const { status, userData, teamData } = await response.json();
-    console.log("auth action finished", userData);
-
-    // FIXME: userData 載入可能重工
-    if (status === 200) {
-      store.dispatch({ type: "user/loadUserData", payload: userData });
-      store.dispatch({ type: "team/loadTeamData", payload: teamData });
-      return redirect("/");
-    } else if (status === 201) {
-      store.dispatch({ type: "user/loadUserData", payload: userData });
-      return redirect("/team/new");
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.log(error);
-    return null;
   }
 };

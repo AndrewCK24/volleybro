@@ -18,6 +18,15 @@ const userSlice = createSlice({
       state.email = action.payload.email;
       state.teamIds = action.payload.teamIds;
       state._id = action.payload._id;
+      delete state.password;
+    },
+    startSignUp(state, action) {
+      state.email = action.payload.email;
+      state.password = action.payload.password;
+    },
+    cancelSignUp(state) {
+      state.email = "";
+      delete state.password;
     },
     signOut(state) {
       state.signIn = false;

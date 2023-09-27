@@ -63,9 +63,8 @@ const FormRequiredSymbol = styled.span`
 `;
 
 const FormHelperText = styled.span`
-  width: 100%;
-  height: 1.25rem;
-  display: flex;
+  /* width: 100%; */
+  display: inline-flex;
   align-items: center;
   justify-content: right;
   padding: 0 0.5rem;
@@ -95,8 +94,10 @@ export const FormControl = (props) => {
     name,
     labelText,
     type = "text",
+    defaultValue = "",
     placeholder = "",
     required = false,
+    disabled = false,
     warn = "",
     onChange,
   } = props;
@@ -107,18 +108,20 @@ export const FormControl = (props) => {
         <FormLabel htmlFor={name}>
           {labelText}
           {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
+      <FormHelperText>{warn}</FormHelperText>
         </FormLabel>
       </div>
       <FormInput
         type={type}
+        defaultValue={defaultValue}
         placeholder={placeholder}
         id={name}
         name={name}
         required={required}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="on"
       />
-      <FormHelperText>{warn}</FormHelperText>
     </FormInputContainer>
   );
 };

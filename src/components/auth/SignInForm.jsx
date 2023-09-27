@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { redirect } from "react-router-dom";
+
+import store from "../../store";
 import {
   FormContainer,
   FormTitle,
@@ -8,7 +11,7 @@ import {
   StyledLink,
 } from "../general/Form";
 
-const AuthForm = () => {
+const SignInForm = () => {
   const [emailError, setEmailError] = useState(" ");
   const [passwordError, setPasswordError] = useState(" ");
   const errorArr = [emailError, passwordError];
@@ -35,8 +38,8 @@ const AuthForm = () => {
   };
 
   return (
-    <FormContainer method="post" action="/auth">
-      <FormTitle>歡迎回來 V-Stats</FormTitle>
+    <FormContainer method="post">
+      <FormTitle>歡迎使用 V-Stats</FormTitle>
       <FormContents>
         <FormControl
           name="email"
@@ -63,4 +66,44 @@ const AuthForm = () => {
   );
 };
 
-export default AuthForm;
+export default SignInForm;
+
+export const action = async ({ request }) => {
+  const formData = await request.formData();
+  const reqData = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
+
+  try {
+    // TODO: fetch-user-by-form 應檢討改名，因其除返回 userData 外，也返回 teamData
+    const response = await fetch("/.netlify/functions/fetch-user-by-form", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(reqData),
+    });
+    const { status, userData, teamData } = await response.json();
+    console.log("auth action finished", userData);
+
+    // TODO: 新增密碼錯誤提示 (401)，可能需搭配新的 redux state
+    if (status === 200) {
+      store.dispatch({ type: "user/loadUserData", payload: userData });
+      store.dispatch({ type: "team/loadTeamData", payload: teamData });
+      return redirect("/");
+    } else if (status === 201) {
+      store.dispatch({ type: "user/loadUserData", payload: userData });
+      return redirect("/team/new");
+    } else if (status === 210) {
+      store.dispatch({ type: "user/startSignUp", payload: reqData });
+      return redirect("/auth/sign-up");
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

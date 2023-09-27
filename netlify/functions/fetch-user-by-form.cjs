@@ -47,7 +47,7 @@ exports.handler = async (event) => {
             },
             body: JSON.stringify({
               status: 201,
-              message: "sign-up started",
+              message: "start creating team",
               userData: resData,
             }),
           };
@@ -59,27 +59,13 @@ exports.handler = async (event) => {
           body: JSON.stringify({ status: 401, error: "wrong password" }),
         };
       }
+    } else {
+      console.log(`[AUTH] USER ${email} not found, turning to sign-up page...`);
+      return {
+        statusCode: 210,
+        body: JSON.stringify({ status: 210, message: "sign-up started" }),
+      };
     }
-
-    // TODO: 考慮將 新增使用者 功能拆分成兩個 function
-    console.log(`[AUTH] USER ${email} not found, creating new user...`);
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
-    await newUser.save();
-    console.log(`[AUTH] USER ${email} created.`);
-    const token = jwtSignIn.handler(newUser);
-    const resData = userResData.handler(newUser);
-    return {
-      statusCode: 201,
-      headers: {
-        "Set-Cookie": `token=${token}; HttpOnly; Max-Age=${30 * 24 * 60 * 60}`,
-      },
-      body: JSON.stringify({
-        status: 201,
-        message: "sign-up started",
-        userData: resData,
-      }),
-    };
   } catch (error) {
     console.log(`[AUTH] ${error.message}`);
     return {

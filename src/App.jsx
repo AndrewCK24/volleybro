@@ -7,8 +7,13 @@ import RootNavLayout from "./pages/RootNav";
 import Dashboard from "./pages/DashBoard";
 import AuthPage, {
   loader as authLoader,
-  action as authAction,
 } from "./pages/Auth";
+import SignInForm, {
+  action as signInAction,
+} from "./components/auth/SignInForm";
+import SignUpForm, {
+  action as signUpAction,
+} from "./components/auth/SignUpForm";
 import TeamPage from "./pages/Team";
 import TeamMembersPage from "./pages/TeamMembers";
 import TeamListPage from "./pages/TeamList";
@@ -80,8 +85,20 @@ const router = createBrowserRouter([
   {
     path: "/auth",
     element: <AuthPage />,
-    action: authAction,
-    loader: authLoader,
+    children: [
+      {
+        index: true,
+        element: <SignInForm />,
+        action: signInAction,
+      },
+      {
+        path: "sign-up",
+        element: <SignUpForm />,
+        action: signUpAction,
+      },
+    ],
+    // action: authAction,
+    // loader: authLoader,
   },
 ]);
 
