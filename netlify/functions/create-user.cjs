@@ -10,15 +10,30 @@ exports.handler = async (event) => {
     await connectMongoDB.handler();
     const { email, password, name } = JSON.parse(event.body);
     console.log(`[AUTH] USER ${email} trying to sign up...`);
+
+    const foundUser = await User.findOne({ email });
+    console.log(foundUser);
+    if (foundUser) {
+      console.log(`[AUTH] USER ${email} already exists.`);
+      return {
+        statusCode: 409,
+        body: JSON.stringify({ status: 409, error: "user already exists" }),
+      };
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
+    const foundTeams = await Team.find({ "members.info.email": email });
+    const invitedTeamIds = foundTeams.map((team) => team._id);
     const user = new User({
       name,
       email,
       password: hashedPassword,
       teamIds: [],
+      invitedTeamIds,
     });
     await user.save();
     console.log(`[AUTH] USER ${email} created.`);
+
     const token = jwtSignIn.handler(user);
     const resData = userResData.handler(user);
     return {

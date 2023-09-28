@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  invitedTeamIds: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+      required: true,
+    },
+  ],
 });
 
 const User = mongoose.model("User", userSchema, "users");

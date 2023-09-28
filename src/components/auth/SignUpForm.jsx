@@ -134,6 +134,9 @@ export const action = async ({ request }) => {
     if (status === 201) {
       store.dispatch({ type: "user/loadUserData", payload: userData });
       return redirect("/team/new");
+    } else if (status === 409) {
+      // 顯示使用者已存在訊息
+      return null;
     } else {
       return null;
     }
