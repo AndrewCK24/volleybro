@@ -5,7 +5,7 @@ const initialState = {
   name: "",
   email: "",
   teamIds: [],
-  invitedTeamIds: [],
+  invitingTeamIds: [],
   _id: "",
 };
 
@@ -18,7 +18,7 @@ const userSlice = createSlice({
       state.name = action.payload.name;
       state.email = action.payload.email;
       state.teamIds = action.payload.teamIds;
-      state.invitedTeamIds = action.payload.invitedTeamIds;
+      state.invitingTeamIds = action.payload.invitingTeamIds;
       state._id = action.payload._id;
       delete state.password;
     },
@@ -35,7 +35,7 @@ const userSlice = createSlice({
       state.name = "";
       state.email = "";
       state.teamIds = [];
-      state.invitedTeamIds = [];
+      state.invitingTeamIds = [];
       state._id = "";
     },
   },

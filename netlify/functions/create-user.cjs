@@ -23,13 +23,13 @@ exports.handler = async (event) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const foundTeams = await Team.find({ "members.info.email": email });
-    const invitedTeamIds = foundTeams.map((team) => team._id);
+    const invitingTeamIds = foundTeams.map((team) => team._id);
     const user = new User({
       name,
       email,
       password: hashedPassword,
       teamIds: [],
-      invitedTeamIds,
+      invitingTeamIds,
     });
     await user.save();
     console.log(`[AUTH] USER ${email} created.`);
@@ -47,7 +47,6 @@ exports.handler = async (event) => {
         userData: resData,
       }),
     };
-
   } catch (error) {
     console.log(error);
     return {

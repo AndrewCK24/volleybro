@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  invitedTeamIds: [
+  invitingTeamIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Team",
