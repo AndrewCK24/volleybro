@@ -10,7 +10,7 @@ export const CardContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
   background-color: var(--color-primary-200);
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   padding: 0.5rem;
   display: flex;
   flex-direction: row;
