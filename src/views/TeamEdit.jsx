@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { redirect } from "react-router-dom";
 
 import store from "../store";
-import { rootActions } from "../components/root/root-slice";
 import {
   FormContainer,
   FormTitle,
@@ -13,9 +11,6 @@ import {
 } from "../components/common/Form";
 
 const TeamCreatePage = () => {
-  const dispatch = useDispatch();
-  dispatch(rootActions.setTitle(""));
-  
   const [nameError, setNameError] = useState(" ");
   const [nicknameError, setNicknameError] = useState(" ");
   const errorArr = [nameError, nicknameError];
@@ -69,6 +64,11 @@ const TeamCreatePage = () => {
 };
 
 export default TeamCreatePage;
+
+export const loader = () => {
+  store.dispatch({ type: "root/setTitle", payload: "" });
+  return null;
+};
 
 export const action = async ({ request }) => {
   console.log("team create action started");

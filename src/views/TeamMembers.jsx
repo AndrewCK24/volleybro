@@ -1,6 +1,6 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { rootActions } from "../components/root/root-slice";
+import store from "../store";
 import {
   ListContainer,
   ListHeader,
@@ -15,8 +15,6 @@ import { FiEdit3 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 
 const TeamMembersPage = () => {
-  const dispatch = useDispatch();
-  dispatch(rootActions.setTitle("隊員名單"));
   const { name, members } = useSelector((state) => state.team);
 
   return (
@@ -46,3 +44,8 @@ const TeamMembersPage = () => {
 };
 
 export default TeamMembersPage;
+
+export const loader = () => {
+  store.dispatch({ type: "root/setTitle", payload: "隊員名單" });
+  return null;
+};

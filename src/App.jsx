@@ -16,9 +16,11 @@ import SignUpForm, {
 import Dashboard from "./pages/DashBoard";
 
 import TeamPage from "./pages/Team";
-import TeamMembersPage from "./views/TeamMembers";
-import TeamListPage from "./views/TeamList";
-import TeamCreatePage, { action as teamCreateAction } from "./views/TeamEdit";
+import TeamMembersPage, {
+  loader as teamMembersLoader,
+} from "./views/TeamMembers";
+import TeamListPage, { loader as teamListLoader } from "./views/TeamList";
+import TeamCreatePage, { loader as teamCreateLoader, action as teamCreateAction } from "./views/TeamEdit";
 import { action as memberEditAction } from "./components/team/MemberCard";
 
 import MenuPage from "./pages/Menu";
@@ -49,14 +51,17 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <TeamMembersPage />,
+                loader: teamMembersLoader,
               },
               {
                 path: "list",
                 element: <TeamListPage />,
+                loader: teamListLoader,
               },
               {
                 path: "new",
                 element: <TeamCreatePage />,
+                loader: teamCreateLoader,
                 action: teamCreateAction,
               },
             ],
