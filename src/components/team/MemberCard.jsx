@@ -11,7 +11,7 @@ export const CardContainer = styled.div`
   width: 100%;
   background-color: var(--color-primary-200);
   border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -39,7 +39,7 @@ const InfoContainer = styled.div`
 `;
 
 const Number = styled(InfoContainer)`
-  flex: 0 0 4rem;
+  flex: 0 0 2rem;
   justify-content: flex-end;
 `;
 
