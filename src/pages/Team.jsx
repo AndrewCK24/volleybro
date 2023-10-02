@@ -16,11 +16,16 @@ const Container = styled.div`
   overscroll-behavior-x: none;
 `;
 
-export const Title = styled.h1`
+export const Title = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 3rem;
   width: 100%;
   margin: 0;
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 500;
+  line-height: 3rem;
   color: var(--color-primary-800);
 `;
 

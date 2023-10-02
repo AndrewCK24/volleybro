@@ -1,11 +1,13 @@
 import styled from "@emotion/styled";
 
+import { LinkButton } from "../common/List";
+import { FiArrowLeft } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 
 const Container = styled.header`
   flex: 0 0 4rem;
   width: 100%;
-  padding: 2.5% 5% 0.5rem;
+  padding: 1rem 5% 0rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -18,20 +20,36 @@ const Container = styled.header`
   }
 `;
 
-const BtnContainer = styled.div`
+const Title = styled.h1`
   flex: 1 1;
-  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 3rem;
 `;
 
-const Header = () => {
+const CenteredTitle = styled(Title)`
+  justify-content: center;
+  font-size: 1.75rem;
+`;
+
+const Header = ({ title, index }) => {
   return (
     <Container>
-      <BtnContainer>
-      </BtnContainer>
+      {index ? (
+        <>
+          <LinkButton to={index}>
+            <FiArrowLeft />
+          </LinkButton>
+          <CenteredTitle>{title}</CenteredTitle>
+        </>
+      ) : (
+        <Title>{title}</Title>
+      )}
       <IoNotificationsSharp />
     </Container>
   );

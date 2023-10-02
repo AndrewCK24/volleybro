@@ -10,13 +10,13 @@ import {
   FormControl,
   FormButton,
   StyledLink,
-} from "../general/Form";
+} from "../common/Form";
 
 const SignUpForm = () => {
   const { email, password } = useSelector((state) => state.user);
-  const [emailError, setEmailError] = useState("");         // 預設沒有錯誤
+  const [emailError, setEmailError] = useState(""); // 預設沒有錯誤
   const [inputPassword, setInputPassword] = useState(password);
-  const [passwordError, setPasswordError] = useState("");   // 預設沒有錯誤
+  const [passwordError, setPasswordError] = useState(""); // 預設沒有錯誤
   const [passwordConfirmError, setPasswordConfirmError] = useState(" ");
   const [nameError, setNameError] = useState(" ");
   const errorArr = [passwordError, passwordConfirmError, nameError];
@@ -59,7 +59,7 @@ const SignUpForm = () => {
     } else {
       setNameError("");
     }
-  }
+  };
 
   return (
     <FormContainer method="post" action="/auth/sign-up">

@@ -17,10 +17,6 @@ export const CardContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  svg {
-    width: 2rem;
-    height: 2rem;
-  }
 `;
 
 const Contents = styled.div`
@@ -62,6 +58,8 @@ export const PrimaryButton = styled.button`
   background-color: transparent;
   aspect-ratio: 1;
   svg {
+    width: 2rem;
+    height: 2rem;
     color: var(--color-secondary-500);
   }
 `;

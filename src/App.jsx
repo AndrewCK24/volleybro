@@ -3,25 +3,26 @@ import { ThemeProvider } from "@emotion/react";
 
 import { theme } from "./theme";
 import RootLayout, { loader as infoLoader } from "./pages/Root";
-import RootNavLayout from "./pages/RootNav";
-import Dashboard from "./pages/DashBoard";
-import AuthPage, {
-  loader as authLoader,
-} from "./pages/Auth";
+import RootNavLayout from "./components/root/RootNav";
+
+import AuthPage, { loader as authLoader } from "./pages/Auth";
 import SignInForm, {
   action as signInAction,
 } from "./components/auth/SignInForm";
 import SignUpForm, {
   action as signUpAction,
 } from "./components/auth/SignUpForm";
+
+import Dashboard from "./pages/DashBoard";
+
 import TeamPage from "./pages/Team";
-import TeamMembersPage from "./pages/TeamMembers";
-import TeamListPage from "./pages/TeamList";
-import TeamCreatePage, {
-  action as teamCreateAction,
-} from "./components/team/TeamEdit";
+import TeamMembersPage from "./views/TeamMembers";
+import TeamListPage from "./views/TeamList";
+import TeamCreatePage, { action as teamCreateAction } from "./views/TeamEdit";
 import { action as memberEditAction } from "./components/team/MemberCard";
-import MenuPage from "./components/user/Menu";
+
+import MenuPage from "./pages/Menu";
+
 import RecordPage from "./pages/Record";
 
 const router = createBrowserRouter([

@@ -2,8 +2,8 @@ import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { userActions } from "./user-slice";
-import { teamActions } from "../team/team-slice";
+import { userActions } from "../components/user/user-slice";
+import { teamActions } from "../components/team/team-slice";
 
 const Container = styled.div`
   flex: 1 1;

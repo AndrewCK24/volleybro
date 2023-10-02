@@ -9,7 +9,7 @@ import {
   FormControl,
   FormButton,
   StyledLink,
-} from "../general/Form";
+} from "../common/Form";
 
 const SignInForm = () => {
   const [emailError, setEmailError] = useState(" ");

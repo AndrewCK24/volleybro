@@ -1,16 +1,21 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { redirect } from "react-router-dom";
 
-import store from "../../store";
+import store from "../store";
+import { rootActions } from "../components/root/root-slice";
 import {
   FormContainer,
   FormTitle,
   FormContents,
   FormControl,
   FormButton,
-} from "../general/Form";
+} from "../components/common/Form";
 
 const TeamCreatePage = () => {
+  const dispatch = useDispatch();
+  dispatch(rootActions.setTitle(""));
+  
   const [nameError, setNameError] = useState(" ");
   const [nicknameError, setNicknameError] = useState(" ");
   const errorArr = [nameError, nicknameError];
