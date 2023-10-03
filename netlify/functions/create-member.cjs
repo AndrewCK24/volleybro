@@ -1,5 +1,6 @@
 const validateAuth = require("./utils/validate-auth.cjs");
 const Team = require("./models/team.cjs");
+const User = require("./models/user.cjs");
 
 exports.handler = async (event) => {
   const validateAuthRes = await validateAuth.handler(event);
@@ -32,7 +33,9 @@ exports.handler = async (event) => {
     }
 
     // Only admin can create a member.
-    const editor = team.members.find((member) => member.info.userId == userId.toString());
+    const editor = team.members.find(
+      (member) => member.info.userId == userId.toString()
+    );
     const isAdmin = editor && editor.info.admin;
     if (!isAdmin) {
       console.log(
@@ -47,6 +50,33 @@ exports.handler = async (event) => {
       };
     }
 
+    // Handle team invitation.
+    if (editingData.info.email) {
+      const duplicateMember = team.members.find((member) => member.info.email === editingData.info.email);
+      if (duplicateMember) {
+        console.log(`[CREATE-MEMBER] already invited this USER ${editingData.info.email} with other member.`);
+        return {
+          statusCode: 409,
+          body: JSON.stringify({
+            status: 409,
+            error: "User already invited.",
+          }),
+        };
+      }
+      
+      const invitedUser = await User.findOne({ email: editingData.info.email });
+      if (invitedUser) {
+        invitedUser.invitingTeams.push({
+          _id: teamId,
+          name: team.name,
+        });
+        await invitedUser.save();
+        console.log(
+          `[CREATE-MEMBER] USER ${email} (${userId}) invited USER ${invitedUser.email} (${invitedUser._id}).`
+        );
+      }
+    }
+
     const newMember = {
       info: {
         admin: editingData.info.admin,
@@ -59,10 +89,10 @@ exports.handler = async (event) => {
     };
     team.members.push(newMember);
     await team.save();
-
     console.log(
       `[CREATE-MEMBER] USER ${email} (${userId}) created MEMBER ${newMember._id} in TEAM ${teamId}.`
     );
+    
     return {
       statusCode: 200,
       body: JSON.stringify({

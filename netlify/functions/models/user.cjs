@@ -14,18 +14,30 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    teamIds: [
+    teams: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Team",
-        required: true,
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Team",
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
       },
     ],
-    invitingTeamIds: [
+    invitingTeams: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Team",
-        required: true,
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Team",
+          required: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
       },
     ],
   },

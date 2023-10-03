@@ -1,10 +1,10 @@
 exports.handler = (user) => {
-  const { _id, name, email, teamIds, invitingTeamIds } = user;
+  const { _id, name, email, teams, invitingTeams } = user;
   return {
     _id,
     name,
     email,
-    teamIds,
-    invitingTeamIds,
+    teams,
+    invitingTeams,
   };
 };

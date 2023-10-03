@@ -17,9 +17,10 @@ exports.handler = async (event) => {
 
       if (isPasswordValid) {
         console.log(`[AUTH] USER ${email} (${user._id}) signed in.`);
+        console.log("user", user.teams[0]._id);
         const token = jwtSignIn.handler(user);
         const resData = userResData.handler(user);
-        const defaultTeamId = user.teamIds[0];
+        const defaultTeamId = user.teams[0]._id;
         console.log(`[AUTH] USER ${email} default team: ${defaultTeamId}`);
         if (defaultTeamId) {
           const team = await Team.findById(defaultTeamId);

@@ -134,7 +134,7 @@ export const StyledButton = styled.button`
   background-color: var(--color-secondary-500);
   border: none;
   border-radius: 0.5rem;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   &:disabled {
     background-color: var(--color-secondary-300);

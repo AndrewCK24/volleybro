@@ -1,5 +1,6 @@
 const validateAuth = require("./utils/validate-auth.cjs");
 const Team = require("./models/team.cjs");
+const User = require("./models/user.cjs");
 
 exports.handler = async (event) => {
   const validateAuthRes = await validateAuth.handler(event);
@@ -32,7 +33,9 @@ exports.handler = async (event) => {
     }
 
     // Only admin can update a member.
-    const editor = team.members.find((member) => member.info.userId == userId.toString());
+    const editor = team.members.find(
+      (member) => member.info.userId == userId.toString()
+    );
     const isAdmin = editor && editor.info.admin;
     if (!isAdmin) {
       console.log(
@@ -48,20 +51,76 @@ exports.handler = async (event) => {
     }
 
     // Find the member to update.
-    console.log(`[UPDATE-MEMBER] memberData: ${JSON.stringify(memberData._id)}`);
-    console.log(`[UPDATE-MEMBER] team.members: ${JSON.stringify(team.members)}`);
+    console.log(
+      `[UPDATE-MEMBER] memberData: ${JSON.stringify(memberData._id)}`
+    );
+    console.log(
+      `[UPDATE-MEMBER] team.members: ${JSON.stringify(team.members)}`
+    );
     const memberIndex = team.members.findIndex(
       (member) => member._id.toString() === memberData._id
     );
     if (memberIndex === -1) {
       console.log(`[UPDATE-MEMBER] MEMBER ${memberData._id} not found.`);
-      return { 
+      return {
         statusCode: 404,
         body: JSON.stringify({
           status: 404,
           error: "Member not found.",
         }),
       };
+    }
+
+    // Handle team invitation.
+    if (editingData.info.email !== team.members[memberIndex].info.email) {
+      const duplicateMember = editingData.info.email && team.members.find(
+        (member) => member.info.email === editingData.info.email
+      );
+      if (duplicateMember) {
+        console.log(
+          `[UPDATE-MEMBER] already invited this USER ${editingData.info.email} with other member.`
+        );
+        return {
+          statusCode: 409,
+          body: JSON.stringify({
+            status: 409,
+            error: "User already invited.",
+          }),
+        };
+      }
+
+      if (team.members[memberIndex].info.userId) {
+        const originalMember = await User.findById(
+          team.members[memberIndex].info.userId
+        );
+        originalMember.teams = originalMember.teams.filter(
+          (originalTeam) => originalTeam._id.toString() !== team._id.toString()
+        );
+        delete team.members[memberIndex].info.userId;
+        await originalMember.save();
+      } else if (team.members[memberIndex].info.email) {
+        const originalMember = await User.findOne({
+          email: team.members[memberIndex].info.email,
+        });
+        originalMember.invitingTeams = originalMember.invitingTeams.filter(
+          (originalInvitingTeam) =>
+            originalInvitingTeam._id.toString() !== team._id.toString()
+        );
+        await originalMember.save();
+      }
+
+      if (editingData.info.email) {
+        const invitedMember = await User.findOne({
+          email: editingData.info.email,
+        });
+        if (invitedMember) {
+          invitedMember.invitingTeams.push({
+            _id: team._id,
+            name: team.name,
+          });
+          await invitedMember.save();
+        }
+      }
     }
 
     // Update the member.
@@ -71,6 +130,7 @@ exports.handler = async (event) => {
         ...team.members[memberIndex].info,
         admin: editingData.info.admin,
         email: editingData.info.email,
+        // TODO: 之後新增自動同意邀請功能
       },
       name: editingData.name,
       number: editingData.number,

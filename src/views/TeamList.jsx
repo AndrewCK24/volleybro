@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import store from "../store";
@@ -10,6 +11,8 @@ import {
 } from "../components/common/List";
 
 const TeamListPage = () => {
+  const { teams, invitingTeams } = useSelector((state) => state.user);
+
   return (
     <>
       <ListContainer>
@@ -17,20 +20,26 @@ const TeamListPage = () => {
           <ListTitle>已加入的隊伍</ListTitle>
         </ListHeader>
         <ListItemContainer>
-          <ListItem>台大日文戲劇男排</ListItem>
-          <ListItem>台大日文戲劇男排</ListItem>
-          <ListItem>台大日文戲劇男排</ListItem>
+          {teams.map((team) => (
+            <ListItem key={team._id}>{team.name}</ListItem>
+          ))}
         </ListItemContainer>
       </ListContainer>
       <ListContainer>
         <ListHeader>
           <ListTitle>已受邀的隊伍</ListTitle>
         </ListHeader>
+        <ListItemContainer>
+          {invitingTeams.map((invitingTeam) => (
+            <ListItem key={invitingTeam._id}>{invitingTeam.name}</ListItem>
+          ))}
+        </ListItemContainer>
       </ListContainer>
-      <p>沒看到你的隊伍嗎？</p>
-      <p>
+      <div />
+      <div>沒看到你的隊伍嗎？</div>
+      <div>
         請聯絡你的隊伍管理者，或是<Link to="/team/new">按此新增隊伍</Link>。
-      </p>
+      </div>
     </>
   );
 };

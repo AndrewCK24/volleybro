@@ -31,8 +31,8 @@ export default AuthPage;
 export const loader = async () => {
   const isSignIn = store.getState().user.signIn;
   if (isSignIn) {
-    const teamIds = store.getState().user.teamIds;
-    if (teamIds.length > 0) {
+    const teams = store.getState().user.teams;
+    if (teams.length > 0) {
       return redirect("/");
     } else {
       return redirect("/team/new");

@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   console.log(`[FETCH-TEAM] USER ${email} (${userId}) validated.`);
 
   try {
-    const teamId = validateAuthRes.userData.teamIds[0];
+    const teamId = validateAuthRes.userData.teams[0]._id;
     console.log(
       `[FETCH-TEAM] USER ${email} (${userId}) fetching TEAM ${teamId}.`
     );

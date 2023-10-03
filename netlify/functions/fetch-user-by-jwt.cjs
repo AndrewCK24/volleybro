@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   const validateAuthRes = await validateAuth.handler(event);
   if (validateAuthRes.status === 200) {
     const { status, userData, newToken } = validateAuthRes;
-    const defaultTeamId = userData.teamIds[0];
+    const defaultTeamId = userData.teams[0]._id;
     try {
       let teamData;
       if (defaultTeamId) {

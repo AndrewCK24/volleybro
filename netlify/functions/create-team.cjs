@@ -36,7 +36,10 @@ exports.handler = async (event) => {
     // add teamId to user
     const { _id: teamId } = newTeam;
     const user = await User.findById(userId);
-    user.teamIds.push(teamId);
+    user.teams.push({
+      _id: teamId,
+      name,
+    });
     await user.save();
     console.log(`[CREATE-TEAM] USER ${email} (${userId}) created TEAM ${name}(${teamId}).`);
 
