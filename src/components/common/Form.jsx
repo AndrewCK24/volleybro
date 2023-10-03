@@ -2,7 +2,7 @@ import { Form, Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
 export const FormContainer = styled(Form)`
-  margin: 5%;
+  margin: 20% 5%;
   border-radius: 1rem;
   background-color: var(--color-primary-100);
   padding: 10% 5%;
@@ -12,7 +12,7 @@ export const FormContainer = styled(Form)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 2rem;
 `;
 
 export const FormTitle = styled.h1`

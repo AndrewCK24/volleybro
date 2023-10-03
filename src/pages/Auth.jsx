@@ -3,16 +3,12 @@ import styled from "@emotion/styled";
 
 import store from "../store";
 import { getJwtInfo } from "../utils/auth";
-import { Container, PagesContainer } from "./Root";
+import { RootContainer } from "./Root";
 
 export const AuthContainer = styled.div`
   flex: 1 1;
   background-image: url("../court-background.jpg");
   background-size: cover;
-  /* border-radius: 1rem; */
-  box-shadow: 0 0 0.25rem var(--color-primary-400);
-  height: 100%;
-  /* padding: 4rem 2rem; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,14 +18,11 @@ export const AuthContainer = styled.div`
 
 const AuthPage = () => {
   return (
-    <Container>
-      {/* <PagesContainer> */}
+    <RootContainer>
       <AuthContainer>
-        {/* <Logo /> */}
         <Outlet />
       </AuthContainer>
-      {/* </PagesContainer> */}
-    </Container>
+    </RootContainer>
   );
 };
 

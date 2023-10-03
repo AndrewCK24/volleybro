@@ -9,7 +9,7 @@ import Header from "../components/root/Header";
 import BottomNav from "../components/root/BottomNav";
 import StartRecordBtn from "../components/root/StartRecordBtn";
 
-export const Container = styled.div`
+export const RootContainer = styled.div`
   width: 100vw;
   height: 100vh;
   max-height: -webkit-fill-available;
@@ -18,15 +18,22 @@ export const Container = styled.div`
   flex-wrap: nowrap;
 `;
 
-export const PagesContainer = styled.main`
+const MainContainer = styled.main`
   flex: 1 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: nowrap;
-  overflow: hidden;
-  height: 100%;
   padding: 1rem 5% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  overflow: scroll;
+  /* overscroll-behavior-x: none; */
+`;
+
+const Footer = styled.footer` // TODO: put ads here
+  flex: 0 0 5rem;
+  width: 100%;
 `;
 
 const RootLayout = () => {
@@ -43,21 +50,22 @@ const RootLayout = () => {
   // FIXME: Loading component is not working
   // (with React.suspense and Await component)
   return pathArr[0] === "record" ? (
-    <Container>
+    <RootContainer>
       <Header title={title} index="/" />
-      <PagesContainer>
+      <MainContainer>
         <Outlet />
-      </PagesContainer>
-    </Container>
+      </MainContainer>
+    </RootContainer>
   ) : (
-    <Container>
+    <RootContainer>
       <Header title={title} index={index} />
-      <PagesContainer>
+      <MainContainer>
         <Outlet />
-      </PagesContainer>
+        <Footer />
+      </MainContainer>
       {teamId && <StartRecordBtn />}
       <BottomNav />
-    </Container>
+    </RootContainer>
   );
 };
 

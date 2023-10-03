@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { redirect } from "react-router-dom";
 
 import store from "../../store";
+import Logo from "../common/Logo";
 import {
   FormContainer,
   FormTitle,
@@ -63,6 +64,7 @@ const SignUpForm = () => {
 
   return (
     <FormContainer method="post" action="/auth/sign-up">
+      <Logo />
       <FormTitle>確認使用者資訊</FormTitle>
       <FormContents>
         <FormControl

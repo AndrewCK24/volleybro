@@ -2,6 +2,7 @@ import { useState } from "react";
 import { redirect } from "react-router-dom";
 
 import store from "../../store";
+import Logo from "../common/Logo";
 import {
   FormContainer,
   FormTitle,
@@ -39,6 +40,7 @@ const SignInForm = () => {
 
   return (
     <FormContainer method="post">
+      <Logo />
       <FormTitle>歡迎使用 V-Stats</FormTitle>
       <FormContents>
         <FormControl

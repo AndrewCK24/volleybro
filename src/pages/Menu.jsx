@@ -5,19 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../components/user/user-slice";
 import { teamActions } from "../components/team/team-slice";
 
-const Container = styled.div`
-  flex: 1 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  flex-wrap: nowrap;
-  overflow: scroll;
-  overscroll-behavior-x: none;
-`;
-
 const CardContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
@@ -63,12 +50,12 @@ const MenuPage = () => {
   };
 
   return (
-    <Container>
+    <>
       <CardContainer>{userName}</CardContainer>
       <CardContainer>
         <StyledBtn onClick={() => signOutUser()}>登出</StyledBtn>
       </CardContainer>
-    </Container>
+    </>
   );
 };
 

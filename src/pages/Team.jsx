@@ -1,40 +1,9 @@
 import { Outlet } from "react-router-dom";
-import styled from "@emotion/styled";
 
 import store from "../store";
 
-const Container = styled.div`
-  flex: 1 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  flex-wrap: nowrap;
-  overflow: scroll;
-  overscroll-behavior-x: none;
-`;
-
-export const Title = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 3rem;
-  width: 100%;
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 3rem;
-  color: var(--color-primary-800);
-`;
-
 const TeamPage = () => {
-  return (
-    <Container>
-      <Outlet />
-    </Container>
-  );
+  return <Outlet />;
 };
 
 export default TeamPage;

@@ -1,20 +1,16 @@
 import styled from "@emotion/styled";
 
 const Container = styled.div`
-  flex: 1 1;
+  flex: 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  /* aspect-ratio: 1 / 1; */
-  /* border: solid 1px var(--color-primary-100);
-  border-radius: 1.5rem;
-  box-shadow: 0 0 1rem var(--color-primary-100); */
   font-family: "Orbitron";
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-primary-100);
-  text-shadow: 0 0 1rem var(--color-primary-100);
+  color: var(--color-secondary-500);
+  text-shadow: 0 0 0.25rem var(--color-secondary-600);
   /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
   /* &.dark {
     color: var(--color-secondary-800);

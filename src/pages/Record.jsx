@@ -11,7 +11,7 @@ import { recordActions } from "../components/record/record-slice";
 
 const Container = styled.div`
   flex: 1 1;
-  height: 100%;
+  width: 100%;
   padding-bottom: 1rem;
   display: flex;
   flex-direction: column;
