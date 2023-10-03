@@ -41,7 +41,6 @@ export const loader = async () => {
     const { status, userData, teamData } = await getJwtInfo();
 
     if (status === 200) {
-      // console.log("jwtLoader succeed", userData);
       store.dispatch({ type: "user/loadUserData", payload: userData });
       if (teamData) {
         store.dispatch({ type: "team/loadTeamData", payload: teamData });

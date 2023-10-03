@@ -39,7 +39,6 @@ const PlayerBtnSet = () => {
   const positionArr = ["p1", "p2", "p3", "p4", "p5", "p6"];
   const lineup = useSelector((state) => state.record.setData.lineup.ours);
   const libero = useSelector((state) => state.record.setData.libero.ours);
-  console.log("libero", libero);
 
   return (
     <Container>

@@ -71,7 +71,6 @@ export const loader = () => {
 };
 
 export const action = async ({ request }) => {
-  console.log("team create action started");
   const formData = await request.formData();
   const reqData = {
     name: formData.get("name"),
@@ -88,7 +87,6 @@ export const action = async ({ request }) => {
       body: JSON.stringify(reqData),
     });
     const { status, userData, teamData } = await response.json();
-    console.log("team create action finished", userData);
 
     if (status === 200) {
       store.dispatch({ type: "user/signIn", payload: userData });

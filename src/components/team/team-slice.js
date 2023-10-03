@@ -46,7 +46,6 @@ const teamSlice = createSlice({
       const { index, isEditing } = action.payload;
       const { isNew } = state.members[index];
       if (!isEditing && isNew) {
-        console.log("delete new member");
         return {
           ...state,
           members: [...state.members.slice(0, index)],

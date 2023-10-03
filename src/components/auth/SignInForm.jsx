@@ -88,7 +88,6 @@ export const action = async ({ request }) => {
       body: JSON.stringify(reqData),
     });
     const { status, userData, teamData } = await response.json();
-    console.log("auth action finished", userData);
 
     // TODO: 新增密碼錯誤提示 (401)，可能需搭配新的 redux state
     if (status === 200) {
