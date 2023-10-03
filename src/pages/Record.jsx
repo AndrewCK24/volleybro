@@ -1,7 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
-import { PagesContainer } from "./Root";
 import ScoreBar from "../components/record/ScoreBar";
 import PlayerBtnSet from "../components/record/PlayerBtnSet";
 import RecordBtnSet from "../components/record/RecordBtnSet";
@@ -13,6 +12,7 @@ import { recordActions } from "../components/record/record-slice";
 const Container = styled.div`
   flex: 1 1;
   height: 100%;
+  padding-bottom: 1rem;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -85,31 +85,29 @@ const RecordPage = () => {
   };
 
   return (
-    <PagesContainer>
-      <Container>
-        <MainPart>
-          <ScoreBar />
-          <ButtonPart>
-            <PlayerBtnSet />
-            <RecordBtnSet />
-          </ButtonPart>
-        </MainPart>
-        <InfoPart>
-          <Info>
-            <PreviewBar />
-            <ScorePanel />
-          </Info>
-          <Info>
-            <ConfirmBtn onClick={handleConfirm} disabled={!typeNum}>
-              確認
-            </ConfirmBtn>
-            <TeamStats>
-              <FiFileText />
-            </TeamStats>
-          </Info>
-        </InfoPart>
-      </Container>
-    </PagesContainer>
+    <Container>
+      <MainPart>
+        <ScoreBar />
+        <ButtonPart>
+          <PlayerBtnSet />
+          <RecordBtnSet />
+        </ButtonPart>
+      </MainPart>
+      <InfoPart>
+        <Info>
+          <PreviewBar />
+          <ScorePanel />
+        </Info>
+        <Info>
+          <ConfirmBtn onClick={handleConfirm} disabled={!typeNum}>
+            確認
+          </ConfirmBtn>
+          <TeamStats>
+            <FiFileText />
+          </TeamStats>
+        </Info>
+      </InfoPart>
+    </Container>
   );
 };
 

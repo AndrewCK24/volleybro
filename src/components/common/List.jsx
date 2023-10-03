@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-export const ListContainer = styled.div`
+export const ListContainer = styled.section`
   flex: 0 0;
   width: 100%;
   border-radius: 1.5rem;
@@ -61,21 +61,29 @@ export const LinkButton = styled(Link)`
 export const ListItemContainer = styled.div`
   flex: 0 0;
   width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  background-color: var(--color-primary-200);
+  gap: 0;
 `;
 
 export const ListItem = styled.div`
-  flex: 1 1;
+  flex: 1 1 3rem;
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 500;
+  line-height: 3.5rem;
   color: var(--color-primary-800);
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-primary-500);
+  }
 `;

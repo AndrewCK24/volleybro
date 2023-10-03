@@ -3,7 +3,6 @@ import { ThemeProvider } from "@emotion/react";
 
 import { theme } from "./theme";
 import RootLayout, { loader as infoLoader } from "./pages/Root";
-import RootNavLayout from "./components/root/RootNav";
 
 import AuthPage, { loader as authLoader } from "./pages/Auth";
 import SignInForm, {
@@ -20,7 +19,10 @@ import TeamMembersPage, {
   loader as teamMembersLoader,
 } from "./views/TeamMembers";
 import TeamListPage, { loader as teamListLoader } from "./views/TeamList";
-import TeamCreatePage, { loader as teamCreateLoader, action as teamCreateAction } from "./views/TeamEdit";
+import TeamCreatePage, {
+  loader as teamCreateLoader,
+  action as teamCreateAction,
+} from "./views/TeamEdit";
 import { action as memberEditAction } from "./components/team/MemberCard";
 
 import MenuPage from "./pages/Menu";
@@ -35,52 +37,46 @@ const router = createBrowserRouter([
     loader: infoLoader,
     children: [
       {
-        path: "/",
-        element: <RootNavLayout />,
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: "team",
+        element: <TeamPage />,
+        // loader: teamLoader,
+        action: memberEditAction,
         children: [
           {
             index: true,
-            element: <Dashboard />,
+            element: <TeamMembersPage />,
+            loader: teamMembersLoader,
           },
           {
-            path: "team",
-            element: <TeamPage />,
-            // loader: teamLoader,
-            action: memberEditAction,
-            children: [
-              {
-                index: true,
-                element: <TeamMembersPage />,
-                loader: teamMembersLoader,
-              },
-              {
-                path: "list",
-                element: <TeamListPage />,
-                loader: teamListLoader,
-              },
-              {
-                path: "new",
-                element: <TeamCreatePage />,
-                loader: teamCreateLoader,
-                action: teamCreateAction,
-              },
-            ],
+            path: "list",
+            element: <TeamListPage />,
+            loader: teamListLoader,
           },
           {
-            path: "user",
-            element: <MenuPage />,
-            // children: [
-            //   {
-            //     index: true,
-            //     element: <MenuPage />,
-            //   },
-            //   {
-            //     path: "edit",
-            //     element: <UserEditPage />,
-            //   }
-            // ],
+            path: "new",
+            element: <TeamCreatePage />,
+            loader: teamCreateLoader,
+            action: teamCreateAction,
           },
         ],
+      },
+      {
+        path: "user",
+        element: <MenuPage />,
+        // children: [
+        //   {
+        //     index: true,
+        //     element: <MenuPage />,
+        //   },
+        //   {
+        //     path: "edit",
+        //     element: <UserEditPage />,
+        //   }
+        // ],
       },
       {
         path: "record",
