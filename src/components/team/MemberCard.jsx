@@ -73,7 +73,7 @@ export const action = async ({ request }) => {
   const teamId = store.getState().team._id;
   const members = store.getState().team.members;
   const memberData = members.find((member) => member.isEditing);
-  const method = memberData.isNew ? "create-member" : "update-member";
+  const method = memberData._id ? "update-member" : "create-member";
 
   const formData = await request.formData();
   const editingData = {

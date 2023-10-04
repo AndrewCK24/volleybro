@@ -77,7 +77,7 @@ const adminArr = [
 
 const MemberCardEdit = ({ index, member }) => {
   const dispatch = useDispatch();
-  const { info, number, name, role, isNew } = member;
+  const { info, number, name, role, _id } = member;
 
   const handleCancel = () => {
     dispatch(teamActions.setMemberEditMode({ index, isEditing: false }));
@@ -167,7 +167,7 @@ const MemberCardEdit = ({ index, member }) => {
         >
           <MdCancel />
         </IconButton>
-        {!isNew && (
+        {_id && (
           <IconButton
             onClick={() => handleDelete()}
             type="button"

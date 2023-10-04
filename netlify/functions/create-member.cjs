@@ -90,7 +90,7 @@ exports.handler = async (event) => {
     team.members.push(newMember);
     await team.save();
     console.log(
-      `[CREATE-MEMBER] USER ${email} (${userId}) created MEMBER ${newMember._id} in TEAM ${teamId}.`
+      `[CREATE-MEMBER] USER ${email} (${userId}) created MEMBER ${newMember.name} in TEAM ${teamId}.`
     );
     
     return {

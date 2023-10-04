@@ -38,7 +38,6 @@ const teamSlice = createSlice({
         number: null,
         role: "",
         stats: {},
-        isNew: true,
         isEditing: true,
       });
     },
