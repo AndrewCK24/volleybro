@@ -72,8 +72,18 @@ export const ListItemContainer = styled.div`
   font-size: 1.5rem;
 `;
 
+export const ListItemContentContainer = styled.div`
+  flex: 1 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+`;
+
 const StyledContent = styled.div`
   flex: 1 1;
+  max-width: 10rem;
   display: flex;
   flex-direction: row;
   align-items: center;
