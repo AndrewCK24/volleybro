@@ -72,6 +72,24 @@ export const ListItemContainer = styled.div`
   font-size: 1.5rem;
 `;
 
+const StyledContent = styled.div`
+  flex: 1 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 1.5rem;
+
+  &.small {
+    flex: 0 0 2rem;
+    justify-content: flex-end;
+  }
+`;
+
+export const ListItemContent = ({ children, className }) => {
+  return <StyledContent className={className}>{children}</StyledContent>;
+};
+
 const StyledIndicator = styled.div`
   flex: 0 0 6.5rem;
   height: 2rem;
@@ -93,18 +111,21 @@ const StyledIndicator = styled.div`
     height: 1.25rem;
   }
 
-  &.primary {         // joined
+  &.primary {
+    // joined
     background-color: var(--color-secondary-600);
     color: var(--color-primary-100);
   }
 
-  &.secondary {       // not invited
+  &.secondary {
+    // not invited
     border-color: var(--color-primary-400);
     background-color: var(--color-primary-400);
     color: var(--color-primary-100);
   }
 
-  &.danger {          // admin
+  &.danger {
+    // admin
     border-color: var(--color-danger-500);
     background-color: var(--color-danger-500);
     color: var(--color-primary-100);
@@ -115,21 +136,11 @@ export const ListIndicator = ({ children, className }) => {
   switch (className) {
     case "secondary":
       return (
-        <StyledIndicator className="secondary">
-          {children}
-        </StyledIndicator>
+        <StyledIndicator className="secondary">{children}</StyledIndicator>
       );
     case "danger":
-      return (
-        <StyledIndicator className="danger">
-          {children}
-        </StyledIndicator>
-      );
+      return <StyledIndicator className="danger">{children}</StyledIndicator>;
     default:
-      return (
-        <StyledIndicator>
-          {children}
-        </StyledIndicator>
-      );
+      return <StyledIndicator>{children}</StyledIndicator>;
   }
-}
+};

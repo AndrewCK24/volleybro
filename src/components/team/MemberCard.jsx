@@ -3,7 +3,11 @@ import styled from "@emotion/styled";
 
 import store from "../../store";
 import { teamActions } from "./team-slice";
-import { ListItemContainer, ListIndicator } from "../common/List";
+import {
+  ListItemContainer,
+  ListItemContent,
+  ListIndicator,
+} from "../common/List";
 import MemberCardEdit from "./MemberCardEdit";
 import { FiEdit2 } from "react-icons/fi";
 import {
@@ -13,35 +17,14 @@ import {
   MdOutlineHighlightOff,
 } from "react-icons/md";
 
-const Contents = styled.div`
-  flex: 1 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-`;
-
-const InfoContainer = styled.div`
-  flex: 1 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  font-size: 1.5rem;
-  font-weight: 500;
-`;
-
-const Number = styled(InfoContainer)`
-  flex: 0 0 2rem;
-  justify-content: flex-end;
-`;
-
-export const ButtonContainer = styled(InfoContainer)`
+export const ButtonContainer = styled.div`
   flex: 0 0;
+  display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: 1rem;
+  font-size: 1.5rem;
 `;
 
 export const PrimaryButton = styled.button`
@@ -103,10 +86,10 @@ const MemberCard = ({ index, member }) => {
       {isEditing ? (
         <MemberCardEdit index={index} member={member} />
       ) : (
-        <Contents>
-          <Number>{number}</Number>
-          <InfoContainer>{name}</InfoContainer>
-          <InfoContainer>{role}</InfoContainer>
+        <>
+          <ListItemContent className="small">{number}</ListItemContent>
+          <ListItemContent>{name}</ListItemContent>
+          <ListItemContent>{role}</ListItemContent>
           <ListIndicator className={status.className}>
             {status.icon}
             {status.text}
@@ -118,7 +101,7 @@ const MemberCard = ({ index, member }) => {
           >
             <FiEdit2 />
           </PrimaryButton>
-        </Contents>
+        </>
       )}
     </ListItemContainer>
   );
