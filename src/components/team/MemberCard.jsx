@@ -53,7 +53,7 @@ const MemberCard = ({ index, member }) => {
         <>
           <ListItemContent className="small">{number}</ListItemContent>
           <ListItemContent>{name}</ListItemContent>
-          <ListItemContent>{role}</ListItemContent>
+          <ListItemContent className="small">{role}</ListItemContent>
           <ListIndicator className={status.className}>
             {status.icon}
             {status.text}
