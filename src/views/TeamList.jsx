@@ -7,7 +7,6 @@ import {
   ListHeader,
   ListTitle,
   ListItemContainer,
-  ListItem,
 } from "../components/common/List";
 
 const TeamListPage = () => {
@@ -19,26 +18,24 @@ const TeamListPage = () => {
         <ListHeader>
           <ListTitle>已加入的隊伍</ListTitle>
         </ListHeader>
-        <ListItemContainer>
-          {teams.map((team) => (
-            <ListItem key={team._id}>{team.name}</ListItem>
-          ))}
-        </ListItemContainer>
+        {teams.map((team) => (
+          <ListItemContainer key={team._id}>{team.name}</ListItemContainer>
+        ))}
       </ListContainer>
       <ListContainer>
         <ListHeader>
           <ListTitle>已受邀的隊伍</ListTitle>
         </ListHeader>
-        <ListItemContainer>
-          {invitingTeams.map((invitingTeam) => (
-            <ListItem key={invitingTeam._id}>{invitingTeam.name}</ListItem>
-          ))}
-        </ListItemContainer>
+        {invitingTeams.map((invitingTeam) => (
+          <ListItemContainer key={invitingTeam._id}>
+            {invitingTeam.name}
+          </ListItemContainer>
+        ))}
       </ListContainer>
       <div />
-      <div>沒看到你的隊伍嗎？</div>
+      <div>沒看到正在尋找的隊伍嗎？</div>
       <div>
-        請聯絡你的隊伍管理者，或是<Link to="/team/new">按此新增隊伍</Link>。
+        請聯絡隊伍管理者，或是<Link to="/team/new">按此新增隊伍</Link>。
       </div>
     </>
   );

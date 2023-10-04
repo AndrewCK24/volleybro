@@ -3,21 +3,9 @@ import styled from "@emotion/styled";
 
 import store from "../../store";
 import { teamActions } from "./team-slice";
+import { ListItemContainer } from "../common/List";
 import MemberCardEdit from "./MemberCardEdit";
 import { FiEdit2 } from "react-icons/fi";
-
-export const CardContainer = styled.div`
-  flex: 0 0 4rem;
-  width: 100%;
-  background-color: var(--color-primary-200);
-  border-radius: 1rem;
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-`;
 
 const Contents = styled.div`
   flex: 1 1;
@@ -93,7 +81,7 @@ const MemberCard = ({ index, member }) => {
   };
 
   return (
-    <CardContainer>
+    <ListItemContainer>
       {isEditing ? (
         <MemberCardEdit index={index} member={member} />
       ) : (
@@ -111,7 +99,7 @@ const MemberCard = ({ index, member }) => {
           </PrimaryButton>
         </Contents>
       )}
-    </CardContainer>
+    </ListItemContainer>
   );
 };
 
