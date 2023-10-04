@@ -33,7 +33,7 @@ const MainContainer = styled.main`
 
 const Footer = styled.footer`
   // TODO: put ads here
-  flex: 0 0 5rem;
+  flex: 0 0 4rem;
   width: 100%;
 `;
 
