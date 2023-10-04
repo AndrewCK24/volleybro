@@ -3,9 +3,15 @@ import styled from "@emotion/styled";
 
 import store from "../../store";
 import { teamActions } from "./team-slice";
-import { ListItemContainer } from "../common/List";
+import { ListItemContainer, ListIndicator } from "../common/List";
 import MemberCardEdit from "./MemberCardEdit";
 import { FiEdit2 } from "react-icons/fi";
+import {
+  MdOutlineAdminPanelSettings,
+  MdCheckCircleOutline,
+  MdOutlineAccessTime,
+  MdOutlineHighlightOff,
+} from "react-icons/md";
 
 const Contents = styled.div`
   flex: 1 1;
@@ -68,13 +74,25 @@ const MemberCard = ({ index, member }) => {
   const dispatch = useDispatch();
   const { info, number, name, role } = member;
   const { admin, email, userId } = info;
-  const identity = admin
-    ? "管理者"
+  const status = admin
+    ? {
+        text: "管理者",
+        className: "danger",
+        icon: <MdOutlineAdminPanelSettings />,
+      }
     : userId
-    ? "一般成員"
+    ? {
+        text: "已加入",
+        className: "primary",
+        icon: <MdCheckCircleOutline />,
+      }
     : email
-    ? "邀請中"
-    : "未邀請";
+    ? { text: "邀請中", className: "", icon: <MdOutlineAccessTime /> }
+    : {
+        text: "未邀請",
+        className: "secondary",
+        icon: <MdOutlineHighlightOff />,
+      };
   const isEditing = member?.isEditing;
   const handleEdit = () => {
     dispatch(teamActions.setMemberEditMode({ index, isEditing: true }));
@@ -89,7 +107,10 @@ const MemberCard = ({ index, member }) => {
           <Number>{number}</Number>
           <InfoContainer>{name}</InfoContainer>
           <InfoContainer>{role}</InfoContainer>
-          <InfoContainer>{identity}</InfoContainer>
+          <ListIndicator className={status.className}>
+            {status.icon}
+            {status.text}
+          </ListIndicator>
           <PrimaryButton
             onClick={() => handleEdit()}
             type="button"

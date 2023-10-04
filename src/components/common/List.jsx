@@ -71,3 +71,65 @@ export const ListItemContainer = styled.div`
   gap: 1rem;
   font-size: 1.5rem;
 `;
+
+const StyledIndicator = styled.div`
+  flex: 0 0 6.5rem;
+  height: 2rem;
+  padding: 0rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-secondary-600);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: transparent;
+  color: var(--color-secondary-600);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.5rem;
+  gap: 0.25rem;
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &.primary {         // joined
+    background-color: var(--color-secondary-600);
+    color: var(--color-primary-100);
+  }
+
+  &.secondary {       // not invited
+    border-color: var(--color-primary-400);
+    background-color: var(--color-primary-400);
+    color: var(--color-primary-100);
+  }
+
+  &.danger {          // admin
+    border-color: var(--color-danger-500);
+    background-color: var(--color-danger-500);
+    color: var(--color-primary-100);
+  }
+`;
+
+export const ListIndicator = ({ children, className }) => {
+  switch (className) {
+    case "secondary":
+      return (
+        <StyledIndicator className="secondary">
+          {children}
+        </StyledIndicator>
+      );
+    case "danger":
+      return (
+        <StyledIndicator className="danger">
+          {children}
+        </StyledIndicator>
+      );
+    default:
+      return (
+        <StyledIndicator>
+          {children}
+        </StyledIndicator>
+      );
+  }
+}
