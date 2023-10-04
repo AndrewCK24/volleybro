@@ -1,5 +1,4 @@
 import { useDispatch } from "react-redux";
-import styled from "@emotion/styled";
 
 import store from "../../store";
 import { teamActions } from "./team-slice";
@@ -8,6 +7,7 @@ import {
   ListItemContent,
   ListIndicator,
 } from "../common/List";
+import { IconButton } from "../common/Button";
 import MemberCardEdit from "./MemberCardEdit";
 import { FiEdit2 } from "react-icons/fi";
 import {
@@ -16,42 +16,6 @@ import {
   MdOutlineAccessTime,
   MdOutlineHighlightOff,
 } from "react-icons/md";
-
-export const ButtonContainer = styled.div`
-  flex: 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  font-size: 1.5rem;
-`;
-
-export const PrimaryButton = styled.button`
-  flex: 0 0 3rem;
-  height: 3rem;
-  padding: 0.5rem;
-  border: none;
-  background-color: transparent;
-  aspect-ratio: 1;
-  svg {
-    width: 2rem;
-    height: 2rem;
-    color: var(--color-secondary-500);
-  }
-`;
-
-export const DangerButton = styled(PrimaryButton)`
-  svg {
-    color: var(--color-danger-500);
-  }
-`;
-
-export const CancelButton = styled(PrimaryButton)`
-  svg {
-    color: var(--color-primary-400);
-  }
-`;
 
 const MemberCard = ({ index, member }) => {
   const dispatch = useDispatch();
@@ -94,13 +58,9 @@ const MemberCard = ({ index, member }) => {
             {status.icon}
             {status.text}
           </ListIndicator>
-          <PrimaryButton
-            onClick={() => handleEdit()}
-            type="button"
-            title="edit"
-          >
+          <IconButton onClick={() => handleEdit()} type="button" title="edit">
             <FiEdit2 />
-          </PrimaryButton>
+          </IconButton>
         </>
       )}
     </ListItemContainer>

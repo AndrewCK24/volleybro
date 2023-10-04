@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
-import PropTypes from "prop-types";
 
 const containedStyle = css`
   background-color: ${({ theme }) => theme.colors.secondary[4]};

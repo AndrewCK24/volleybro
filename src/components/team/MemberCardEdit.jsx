@@ -3,12 +3,7 @@ import { Form } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import { teamActions } from "./team-slice";
-import {
-  PrimaryButton,
-  DangerButton,
-  CancelButton,
-  ButtonContainer,
-} from "./MemberCard";
+import { ButtonContainer, IconButton } from "../common/Button";
 import { MdDelete, MdCancel } from "react-icons/md";
 import { FaSave } from "react-icons/fa";
 
@@ -161,24 +156,26 @@ const MemberCardEdit = ({ index, member }) => {
         </StyledSelect>
       </InputContainer>
       <ButtonContainer>
-        <PrimaryButton type="submit" title="save">
+        <IconButton type="submit" title="save">
           <FaSave />
-        </PrimaryButton>
-        <CancelButton
+        </IconButton>
+        <IconButton
           onClick={() => handleCancel()}
           type="button"
           title="cancel"
+          className="secondary"
         >
           <MdCancel />
-        </CancelButton>
+        </IconButton>
         {!isNew && (
-          <DangerButton
+          <IconButton
             onClick={() => handleDelete()}
             type="button"
             title="delete"
+            className="danger"
           >
             <MdDelete />
-          </DangerButton>
+          </IconButton>
         )}
       </ButtonContainer>
     </StyledForm>
