@@ -15,7 +15,13 @@ import { FiEdit3 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 
 const TeamMembersPage = () => {
-  const { name, members } = useSelector((state) => state.team);
+  const { name, members, editingMember } = useSelector((state) => state.team);
+  const isNewBtnVisible = editingMember
+    ? false
+    : members[members.length - 1]._id
+    ? true
+    : false;
+  console.log(members[members.length - 1]._id);
 
   return (
     <ListContainer>
@@ -38,7 +44,7 @@ const TeamMembersPage = () => {
       {members.map((member, index) => (
         <MemberCard key={index} index={index} member={member} />
       ))}
-      {members[members.length - 1]?.isNew || <NewMemberBtn />}
+      {isNewBtnVisible && <NewMemberBtn />}
     </ListContainer>
   );
 };

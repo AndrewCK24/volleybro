@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Form } from "react-router-dom";
 import styled from "@emotion/styled";
 
@@ -77,23 +77,29 @@ const adminArr = [
 
 const MemberCardEdit = ({ index, member }) => {
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user._id);
+  const { _id: teamId, editingMember } = useSelector((state) => state.team);
   const { info, number, name, role, _id } = member;
 
   const handleCancel = () => {
-    dispatch(teamActions.setMemberEditMode({ index, isEditing: false }));
+    dispatch(teamActions.setMemberEditMode({ _id: "" }));
   };
 
   const handleDelete = async () => {
     try {
-      await fetch("/.netlify/functions/delete-member", {
+      const response = await fetch("/.netlify/functions/delete-member", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
         },
-        body: JSON.stringify(number),
+        body: JSON.stringify({
+          teamId,
+          editingMember,
+        }),
       });
-      dispatch(teamActions.deleteMember({ index }));
+      const { teamData } = await response.json();
+      dispatch(teamActions.loadTeamData(teamData));
     } catch (error) {
       console.log(error);
     }
@@ -167,7 +173,7 @@ const MemberCardEdit = ({ index, member }) => {
         >
           <MdCancel />
         </IconButton>
-        {_id && (
+        {(_id && info.userId !== userId) && (
           <IconButton
             onClick={() => handleDelete()}
             type="button"

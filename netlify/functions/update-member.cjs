@@ -16,7 +16,7 @@ exports.handler = async (event) => {
   console.log(`[UPDATE-MEMBER] USER ${email} (${userId}) validated.`);
 
   try {
-    const { teamId, editingData, memberData } = JSON.parse(event.body);
+    const { teamId, editingData, editingMember } = JSON.parse(event.body);
     console.log(
       `[UPDATE-MEMBER] USER ${email} (${userId}) editing TEAM ${teamId}.`
     );
@@ -51,17 +51,11 @@ exports.handler = async (event) => {
     }
 
     // Find the member to update.
-    console.log(
-      `[UPDATE-MEMBER] memberData: ${JSON.stringify(memberData._id)}`
-    );
-    console.log(
-      `[UPDATE-MEMBER] team.members: ${JSON.stringify(team.members)}`
-    );
     const memberIndex = team.members.findIndex(
-      (member) => member._id.toString() === memberData._id
+      (member) => member._id.toString() === editingMember
     );
     if (memberIndex === -1) {
-      console.log(`[UPDATE-MEMBER] MEMBER ${memberData._id} not found.`);
+      console.log(`[UPDATE-MEMBER] MEMBER ${editingMember} not found.`);
       return {
         statusCode: 404,
         body: JSON.stringify({
@@ -139,7 +133,7 @@ exports.handler = async (event) => {
     await team.save();
 
     console.log(
-      `[UPDATE-MEMBER] USER ${email} (${userId}) updated MEMBER ${memberData._id} in TEAM ${teamId}.`
+      `[UPDATE-MEMBER] USER ${email} (${userId}) updated MEMBER ${editingMember} in TEAM ${teamId}.`
     );
     return {
       statusCode: 200,

@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import store from "../../store";
 import { teamActions } from "./team-slice";
@@ -20,7 +20,8 @@ import {
 
 const MemberCard = ({ index, member }) => {
   const dispatch = useDispatch();
-  const { info, number, name, role } = member;
+  const { editingMember } = useSelector((state) => state.team);
+  const { info, number, name, role, _id = "" } = member;
   const { admin, email, userId } = info;
   const status = admin
     ? {
@@ -41,9 +42,9 @@ const MemberCard = ({ index, member }) => {
         className: "secondary",
         icon: <MdOutlineHighlightOff />,
       };
-  const isEditing = member?.isEditing;
+  const isEditing = (editingMember === _id);
   const handleEdit = () => {
-    dispatch(teamActions.setMemberEditMode({ index, isEditing: true }));
+    dispatch(teamActions.setMemberEditMode({ _id }));
   };
 
   return (
@@ -74,9 +75,8 @@ export default MemberCard;
 
 export const action = async ({ request }) => {
   const teamId = store.getState().team._id;
-  const members = store.getState().team.members;
-  const memberData = members.find((member) => member.isEditing);
-  const method = memberData._id ? "update-member" : "create-member";
+  const { editingMember } = store.getState().team;
+  const method = editingMember ? "update-member" : "create-member";
 
   const formData = await request.formData();
   const editingData = {
@@ -99,7 +99,7 @@ export const action = async ({ request }) => {
       body: JSON.stringify({
         teamId,
         editingData,
-        memberData, // for giving _id of the member when updating
+        editingMember,  // for giving _id of the member when updating
       }),
     });
 

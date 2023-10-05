@@ -10,7 +10,7 @@ import {
   FormButton,
 } from "../components/common/Form";
 
-const TeamCreatePage = () => {
+const TeamInfoForm = () => {
   const [nameError, setNameError] = useState(" ");
   const [nicknameError, setNicknameError] = useState(" ");
   const errorArr = [nameError, nicknameError];
@@ -63,7 +63,7 @@ const TeamCreatePage = () => {
   );
 };
 
-export default TeamCreatePage;
+export default TeamInfoForm;
 
 export const loader = () => {
   store.dispatch({ type: "root/setTitle", payload: "" });

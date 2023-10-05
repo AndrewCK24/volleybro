@@ -19,10 +19,10 @@ import TeamMembersPage, {
   loader as teamMembersLoader,
 } from "./views/TeamMembers";
 import TeamListPage, { loader as teamListLoader } from "./views/TeamList";
-import TeamCreatePage, {
+import TeamInfoForm, {
   loader as teamCreateLoader,
   action as teamCreateAction,
-} from "./views/TeamEdit";
+} from "./views/TeamInfoForm";
 import { action as memberEditAction } from "./components/team/MemberCard";
 
 import MenuPage from "./pages/Menu";
@@ -57,8 +57,13 @@ const router = createBrowserRouter([
             loader: teamListLoader,
           },
           {
+            path: "edit",
+            element: <TeamInfoForm />,
+            loader: teamCreateLoader,
+          },
+          {
             path: "new",
-            element: <TeamCreatePage />,
+            element: <TeamInfoForm />,
             loader: teamCreateLoader,
             action: teamCreateAction,
           },

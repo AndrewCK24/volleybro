@@ -6,6 +6,7 @@ const initialState = {
   members: [],
   matchIds: [],
   stats: {},
+  editingMember: "",
 };
 
 const teamSlice = createSlice({
@@ -20,6 +21,7 @@ const teamSlice = createSlice({
         members: action.payload.members,
         matchIds: action.payload.matchIds,
         stats: action.payload.stats,
+        editingMember: "",
       };
     },
     resetTeamData: () => {
@@ -28,6 +30,7 @@ const teamSlice = createSlice({
       };
     },
     createMember: (state) => {
+      state.members = state.members.filter((member) => member._id !== "");
       state.members.push({
         info: {
           admin: false,
@@ -38,29 +41,14 @@ const teamSlice = createSlice({
         number: null,
         role: "",
         stats: {},
-        isEditing: true,
+        _id: "",
       });
+      state.editingMember = "";
     },
     setMemberEditMode: (state, action) => {
-      const { index, isEditing } = action.payload;
-      const { isNew } = state.members[index];
-      if (!isEditing && isNew) {
-        return {
-          ...state,
-          members: [...state.members.slice(0, index)],
-        };
-      }
-      state.members[index].isEditing = isEditing;
-    },
-    deleteMember: (state, action) => {
-      const { index } = action.payload;
-      return {
-        ...state,
-        members: [
-          ...state.members.slice(0, index),
-          ...state.members.slice(index + 1),
-        ],
-      };
+      state.members = state.members.filter((member) => member._id !== "");
+      const { _id } = action.payload;
+      state.editingMember = _id;
     },
   },
 });
