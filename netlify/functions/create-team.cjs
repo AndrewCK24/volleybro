@@ -36,7 +36,7 @@ exports.handler = async (event) => {
     // add teamId to user
     const { _id: teamId } = newTeam;
     const user = await User.findById(userId);
-    user.teams.push({
+    user.teams.unshift({
       _id: teamId,
       name,
     });
