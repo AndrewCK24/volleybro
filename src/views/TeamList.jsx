@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import store from "../store";
 import { userActions } from "../components/user/user-slice";
@@ -16,6 +16,7 @@ import { FiChevronRight, FiCheck, FiX } from "react-icons/fi";
 
 const TeamListPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { teams, invitingTeams } = useSelector((state) => state.user);
 
   const switchTeam = async (teamId) => {
@@ -32,6 +33,7 @@ const TeamListPage = () => {
       if (status === 200) {
         dispatch(userActions.loadUserData(userData));
         dispatch(teamActions.loadTeamData(teamData));
+        navigate("/team");
       }
     } catch (error) {
       console.log(error);
