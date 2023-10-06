@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   _id: "",
   name: "",
+  nickname: "",
   members: [],
   matchIds: [],
   stats: {},
@@ -18,6 +19,7 @@ const teamSlice = createSlice({
         ...state,
         _id: action.payload._id,
         name: action.payload.name,
+        nickname: action.payload.nickname,
         members: action.payload.members,
         matchIds: action.payload.matchIds,
         stats: action.payload.stats,
