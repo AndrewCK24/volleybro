@@ -24,15 +24,21 @@ const StyledItem = styled(ListItemContainer)`
 `;
 
 const TeamMembersPage = () => {
+  const { _id: userId } = useSelector((state) => state.user);
   const { name, members, editingMember } = useSelector((state) => state.team);
-  const isNewBtnVisible = editingMember
+  const isAdmin = members.find(
+    (member) => member.info.userId === userId && member.info.admin
+  );
+  const isNewBtnVisible = !isAdmin
+    ? false
+    : editingMember
     ? false
     : members[members.length - 1]._id
     ? true
     : false;
   const hasSixPlayers =
-    members.filter((member) => member.number && member.role !== "M")
-      .length >= 6;
+    members.filter((member) => member.number && member.role !== "M").length >=
+    6;
 
   return (
     <ListContainer>
@@ -54,7 +60,13 @@ const TeamMembersPage = () => {
       </ListHeader>
       {hasSixPlayers || <StyledItem>*球員不足6人，請先完成球員登錄</StyledItem>}
       {members.map((member, index) => (
-        <MemberCard key={index} index={index} member={member} />
+        <MemberCard
+          key={index}
+          index={index}
+          member={member}
+          isAdmin={isAdmin}
+          userId={userId}
+        />
       ))}
       {isNewBtnVisible && <NewMemberBtn />}
     </ListContainer>

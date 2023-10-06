@@ -32,12 +32,12 @@ exports.handler = async (event) => {
       };
     }
 
-    // Only admin can update a member.
+    // Only admin or member himself/herself can update a member.
     const editor = team.members.find(
       (member) => member.info.userId == userId.toString()
     );
-    const isAdmin = editor && editor.info.admin;
-    if (!isAdmin) {
+    const isAuthorized = editor.info.admin || editor._id.toString() === editingMember;
+    if (!isAuthorized) {
       console.log(
         `[UPDATE-MEMBER] USER ${email} (${userId}) not authorized to edit TEAM ${teamId}.`
       );

@@ -75,7 +75,7 @@ const adminArr = [
   { value: false, text: "一般成員" },
 ];
 
-const MemberCardEdit = ({ index, member }) => {
+const MemberCardEdit = ({ index, member, isAdmin }) => {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user._id);
   const { _id: teamId, editingMember } = useSelector((state) => state.team);
@@ -144,12 +144,14 @@ const MemberCardEdit = ({ index, member }) => {
           id="email"
           name="email"
           defaultValue={info.email}
+          disabled={!isAdmin}
         />
         <StyledSelect
           id="admin"
           name="admin"
           defaultValue={info.admin}
           required
+          disabled={!isAdmin}
         >
           <StyledOption value="" disabled>
             權限

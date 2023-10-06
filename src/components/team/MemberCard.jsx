@@ -18,31 +18,30 @@ import {
   MdOutlineHighlightOff,
 } from "react-icons/md";
 
-const MemberCard = ({ index, member }) => {
+const MemberCard = ({ index, member, isAdmin, userId }) => {
   const dispatch = useDispatch();
   const { editingMember } = useSelector((state) => state.team);
   const { info, number, name, role, _id = "" } = member;
-  const { admin, email, userId } = info;
-  const status = admin
+  const status = info.admin
     ? {
         text: "管理者",
         className: "danger",
         icon: <MdOutlineAdminPanelSettings />,
       }
-    : userId
+    : info.userId
     ? {
         text: "已加入",
         className: "primary",
         icon: <MdCheckCircleOutline />,
       }
-    : email
+    : info.email
     ? { text: "邀請中", className: "", icon: <MdOutlineAccessTime /> }
     : {
         text: "未邀請",
         className: "secondary",
         icon: <MdOutlineHighlightOff />,
       };
-  const isEditing = (editingMember === _id);
+  const isEditing = editingMember === _id;
   const handleEdit = () => {
     dispatch(teamActions.setMemberEditMode(_id));
   };
@@ -50,7 +49,7 @@ const MemberCard = ({ index, member }) => {
   return (
     <ListItemContainer>
       {isEditing ? (
-        <MemberCardEdit index={index} member={member} />
+        <MemberCardEdit index={index} member={member} isAdmin={isAdmin} />
       ) : (
         <>
           <ListItemContentContainer>
@@ -62,9 +61,13 @@ const MemberCard = ({ index, member }) => {
             {status.icon}
             {status.text}
           </ListIndicator>
-          <IconButton onClick={() => handleEdit()} type="button" title="edit">
-            <FiEdit2 />
-          </IconButton>
+          {isAdmin || info.userId === userId ? (
+            <IconButton onClick={() => handleEdit()} type="button" title="edit">
+              <FiEdit2 />
+            </IconButton>
+          ) : (
+            <IconButton disabled type="button" title="edit" />
+          )}
         </>
       )}
     </ListItemContainer>
@@ -99,7 +102,7 @@ export const action = async ({ request }) => {
       body: JSON.stringify({
         teamId,
         editingData,
-        editingMember,  // for giving _id of the member when updating
+        editingMember, // for giving _id of the member when updating
       }),
     });
 
