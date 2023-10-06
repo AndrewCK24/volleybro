@@ -21,7 +21,8 @@ import TeamMembersPage, {
 import TeamListPage, { loader as teamListLoader } from "./views/TeamList";
 import TeamInfoForm, {
   loader as teamCreateLoader,
-  action as teamCreateAction,
+  teamCreateAction,
+  teamNameUpdateAction,
 } from "./views/TeamInfoForm";
 import { action as memberEditAction } from "./components/team/MemberCard";
 
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
             path: "edit",
             element: <TeamInfoForm />,
             loader: teamCreateLoader,
+            action: teamNameUpdateAction,
           },
           {
             path: "new",

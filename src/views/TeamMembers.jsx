@@ -47,7 +47,7 @@ const TeamMembersPage = () => {
           <LinkButton to="/team/list">
             <BsGrid3X2Gap />
           </LinkButton>
-          <LinkButton to="/team/new">
+          <LinkButton to="/team/edit">
             <FiEdit3 />
           </LinkButton>
         </LinkSet>

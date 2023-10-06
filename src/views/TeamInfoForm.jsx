@@ -16,8 +16,8 @@ const TeamInfoForm = () => {
   const isEdit = pathArr[1] === "edit";
   const actionPath = isEdit ? "/team/edit" : "/team/new";
 
-  const [nameError, setNameError] = useState(" ");
-  const [nicknameError, setNicknameError] = useState(" ");
+  const [nameError, setNameError] = useState(isEdit ? "" : " ");
+  const [nicknameError, setNicknameError] = useState(isEdit ? "" : " ");
   const errorArr = [nameError, nicknameError];
 
   const handleNameChange = (value) => {
@@ -40,12 +40,13 @@ const TeamInfoForm = () => {
 
   return (
     <FormContainer method="post" path={actionPath}>
-      <FormTitle>建立隊伍</FormTitle>
+      <FormTitle>{isEdit ? "修改隊伍資訊" : "建立隊伍"}</FormTitle>
       <FormContents>
         <FormControl
           name="name"
           labelText="隊伍名稱"
           type="text"
+          defaultValue={isEdit ? store.getState().team.name : ""}
           placeholder="請輸入隊伍全名"
           required={true}
           onChange={handleNameChange}
@@ -55,13 +56,16 @@ const TeamInfoForm = () => {
           name="nickname"
           labelText="隊伍簡稱"
           type="text"
+          defaultValue={isEdit ? store.getState().team.nickname : ""}
           placeholder="請輸入隊伍簡稱 (8字以內)"
           required={true}
           onChange={handleNicknameChange}
           warn={nicknameError}
         />
       </FormContents>
-      <FormButton errorArr={errorArr}>建立隊伍</FormButton>
+      <FormButton errorArr={errorArr}>
+        {isEdit ? "儲存修改" : "建立隊伍"}
+      </FormButton>
     </FormContainer>
   );
 };
@@ -73,7 +77,7 @@ export const loader = () => {
   return null;
 };
 
-export const action = async ({ request }) => {
+export const teamCreateAction = async ({ request }) => {
   const formData = await request.formData();
   const reqData = {
     name: formData.get("name"),
@@ -98,6 +102,41 @@ export const action = async ({ request }) => {
         type: "team/setMemberEditMode",
         payload: teamData.members[0]._id,
       });
+      return redirect("/team");
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const teamNameUpdateAction = async ({ request }) => {
+  const { editingMember, ...teamData } = store.getState().team;
+  const formData = await request.formData();
+  const reqData = {
+    ...teamData,
+    name: formData.get("name"),
+    nickname: formData.get("nickname"),
+  };
+  const isSameName = reqData.name === store.getState().team.name;
+  const isSameNickname = reqData.nickname === store.getState().team.nickname;
+  if (isSameName && isSameNickname) return redirect("/team");
+
+  try {
+    const response = await fetch("/.netlify/functions/update-team", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(reqData),
+    });
+    const { status, teamData } = await response.json();
+
+    if (status === 200) {
+      store.dispatch({ type: "team/loadTeamData", payload: teamData });
       return redirect("/team");
     } else {
       return null;
