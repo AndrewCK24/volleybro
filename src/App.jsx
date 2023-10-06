@@ -19,6 +19,7 @@ import TeamMembersPage, {
   loader as teamMembersLoader,
 } from "./views/TeamMembers";
 import TeamListPage, { loader as teamListLoader } from "./views/TeamList";
+import TeamLineupPage, { loader as teamLineupLoader } from "./views/TeamLineup";
 import TeamInfoForm, {
   loader as teamCreateLoader,
   teamCreateAction,
@@ -56,6 +57,11 @@ const router = createBrowserRouter([
             path: "list",
             element: <TeamListPage />,
             loader: teamListLoader,
+          },
+          {
+            path: "lineup",
+            element: <TeamLineupPage />,
+            loader: teamLineupLoader,
           },
           {
             path: "edit",

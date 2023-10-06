@@ -44,7 +44,7 @@ const TeamMembersPage = () => {
           </LinkButton>
         </ListTitle>
         <LinkSet>
-          <LinkButton to="/team/list">
+          <LinkButton to="/team/lineup">
             <BsGrid3X2Gap />
           </LinkButton>
           <LinkButton to="/team/edit">
