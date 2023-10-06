@@ -38,6 +38,11 @@ const Footer = styled.footer`
 `;
 
 const RootLayout = () => {
+  const { members } = useSelector((state) => state.team);
+  const hasSixPlayers =
+    members.filter((member) => member.number && member.role !== "M")
+      .length >= 6;
+
   const { pathname } = useLocation();
   const pathArr = pathname.split("/").filter(Boolean);
   const index = pathArr.length > 1 ? `/${pathArr[0]}` : "";
@@ -64,7 +69,7 @@ const RootLayout = () => {
         <Outlet />
         <Footer />
       </MainContainer>
-      {teamId && <StartRecordBtn />}
+      {teamId && hasSixPlayers && <StartRecordBtn />}
       <BottomNav />
     </RootContainer>
   );
