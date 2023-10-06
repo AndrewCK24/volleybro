@@ -44,7 +44,7 @@ const MemberCard = ({ index, member }) => {
       };
   const isEditing = (editingMember === _id);
   const handleEdit = () => {
-    dispatch(teamActions.setMemberEditMode({ _id }));
+    dispatch(teamActions.setMemberEditMode(_id));
   };
 
   return (

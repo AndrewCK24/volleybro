@@ -47,8 +47,7 @@ const teamSlice = createSlice({
     },
     setMemberEditMode: (state, action) => {
       state.members = state.members.filter((member) => member._id !== "");
-      const { _id } = action.payload;
-      state.editingMember = _id;
+      state.editingMember = action.payload;
     },
   },
 });

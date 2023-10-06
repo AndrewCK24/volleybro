@@ -82,7 +82,7 @@ const MemberCardEdit = ({ index, member }) => {
   const { info, number, name, role, _id } = member;
 
   const handleCancel = () => {
-    dispatch(teamActions.setMemberEditMode({ _id: "" }));
+    dispatch(teamActions.setMemberEditMode(""));
   };
 
   const handleDelete = async () => {

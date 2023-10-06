@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { redirect } from "react-router-dom";
+import { redirect, useLocation } from "react-router-dom";
 
 import store from "../store";
 import {
@@ -11,6 +11,11 @@ import {
 } from "../components/common/Form";
 
 const TeamInfoForm = () => {
+  const { pathname } = useLocation();
+  const pathArr = pathname.split("/").filter(Boolean);
+  const isEdit = pathArr[1] === "edit";
+  const actionPath = isEdit ? "/team/edit" : "/team/new";
+
   const [nameError, setNameError] = useState(" ");
   const [nicknameError, setNicknameError] = useState(" ");
   const errorArr = [nameError, nicknameError];
@@ -18,8 +23,6 @@ const TeamInfoForm = () => {
   const handleNameChange = (value) => {
     if (value.length === 0) {
       setNameError("隊伍名稱不得為空");
-    } else if (value.length > 20) {
-      setNameError("隊伍名稱不得超過20字");
     } else {
       setNameError("");
     }
@@ -36,7 +39,7 @@ const TeamInfoForm = () => {
   };
 
   return (
-    <FormContainer method="post" path="/team/new">
+    <FormContainer method="post" path={actionPath}>
       <FormTitle>建立隊伍</FormTitle>
       <FormContents>
         <FormControl
@@ -89,11 +92,11 @@ export const action = async ({ request }) => {
     const { status, userData, teamData } = await response.json();
 
     if (status === 200) {
-      store.dispatch({ type: "user/signIn", payload: userData });
+      store.dispatch({ type: "user/loadUserData", payload: userData });
       store.dispatch({ type: "team/loadTeamData", payload: teamData });
       store.dispatch({
         type: "team/setMemberEditMode",
-        payload: { index: 0, isEditing: true },
+        payload: teamData.members[0]._id,
       });
       return redirect("/team");
     } else {
