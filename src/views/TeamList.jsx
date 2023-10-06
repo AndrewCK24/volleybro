@@ -12,26 +12,55 @@ import {
   ListItemContentContainer,
 } from "../components/common/List";
 import { IconButton } from "../components/common/Button";
-import { FiChevronRight } from "react-icons/fi";
+import { FiChevronRight, FiCheck, FiX } from "react-icons/fi";
 
 const TeamListPage = () => {
   const dispatch = useDispatch();
   const { teams, invitingTeams } = useSelector((state) => state.user);
 
-  const fetchTeamData = async (teamId) => {
-    console.log("teamId", teamId)
-    const response = await fetch("/.netlify/functions/fetch-team-by-id", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({ teamId }),
-    });
-    const { status, userData, teamData } = await response.json();
-    if (status === 200) {
-      dispatch(userActions.loadUserData(userData));
-      dispatch(teamActions.loadTeamData(teamData));
+  const switchTeam = async (teamId) => {
+    try {
+      const response = await fetch("/.netlify/functions/fetch-team-by-id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ teamId }),
+      });
+      const { status, userData, teamData } = await response.json();
+      if (status === 200) {
+        dispatch(userActions.loadUserData(userData));
+        dispatch(teamActions.loadTeamData(teamData));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleInvitation = async (teamId, accept) => {
+    try {
+      const response = await fetch(
+        "/.netlify/functions/update-team-invitation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify({ teamId, accept }),
+        }
+      );
+      const { status, userData } = await response.json();
+      if (status === 200) {
+        if (accept) {
+          dispatch(userActions.loadUserData(userData));
+        } else {
+          dispatch(userActions.loadUserData(userData));
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -45,8 +74,7 @@ const TeamListPage = () => {
           <ListItemContainer key={team._id}>
             <ListItemContentContainer>{team.name}</ListItemContentContainer>
             {index === 0 || (
-              // <IconButton>
-              <IconButton onClick={() => fetchTeamData(team._id)} >
+              <IconButton onClick={() => switchTeam(team._id)}>
                 <FiChevronRight />
               </IconButton>
             )}
@@ -59,7 +87,20 @@ const TeamListPage = () => {
         </ListHeader>
         {invitingTeams.map((invitingTeam) => (
           <ListItemContainer key={invitingTeam._id}>
-            {invitingTeam.name}
+            <ListItemContentContainer>
+              {invitingTeam.name}
+            </ListItemContentContainer>
+            <IconButton
+              onClick={() => handleInvitation(invitingTeam._id, true)}
+            >
+              <FiCheck />
+            </IconButton>
+            <IconButton
+              className="danger"
+              onClick={() => handleInvitation(invitingTeam._id, false)}
+            >
+              <FiX />
+            </IconButton>
           </ListItemContainer>
         ))}
       </ListContainer>
