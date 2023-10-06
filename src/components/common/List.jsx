@@ -79,6 +79,7 @@ export const ListItemContentContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
+  font-size: 1.5rem;
 `;
 
 const StyledContent = styled.div`
@@ -144,6 +145,8 @@ const StyledIndicator = styled.div`
 
 export const ListIndicator = ({ children, className }) => {
   switch (className) {
+    case "primary":
+      return <StyledIndicator className="primary">{children}</StyledIndicator>;
     case "secondary":
       return (
         <StyledIndicator className="secondary">{children}</StyledIndicator>

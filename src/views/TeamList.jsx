@@ -1,16 +1,39 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import store from "../store";
+import { userActions } from "../components/user/user-slice";
+import { teamActions } from "../components/team/team-slice";
 import {
   ListContainer,
   ListHeader,
   ListTitle,
   ListItemContainer,
+  ListItemContentContainer,
 } from "../components/common/List";
+import { IconButton } from "../components/common/Button";
+import { FiChevronRight } from "react-icons/fi";
 
 const TeamListPage = () => {
+  const dispatch = useDispatch();
   const { teams, invitingTeams } = useSelector((state) => state.user);
+
+  const fetchTeamData = async (teamId) => {
+    console.log("teamId", teamId)
+    const response = await fetch("/.netlify/functions/fetch-team-by-id", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ teamId }),
+    });
+    const { status, userData, teamData } = await response.json();
+    if (status === 200) {
+      dispatch(userActions.loadUserData(userData));
+      dispatch(teamActions.loadTeamData(teamData));
+    }
+  };
 
   return (
     <>
@@ -18,8 +41,16 @@ const TeamListPage = () => {
         <ListHeader>
           <ListTitle>已加入的隊伍</ListTitle>
         </ListHeader>
-        {teams.map((team) => (
-          <ListItemContainer key={team._id}>{team.name}</ListItemContainer>
+        {teams.map((team, index) => (
+          <ListItemContainer key={team._id}>
+            <ListItemContentContainer>{team.name}</ListItemContentContainer>
+            {index === 0 || (
+              // <IconButton>
+              <IconButton onClick={() => fetchTeamData(team._id)} >
+                <FiChevronRight />
+              </IconButton>
+            )}
+          </ListItemContainer>
         ))}
       </ListContainer>
       <ListContainer>
