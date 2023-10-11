@@ -23,7 +23,6 @@ export const ListHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  gap: 1rem;
 `;
 
 export const ListTitleGroup = styled.h2`
@@ -37,16 +36,13 @@ export const ListTitleGroup = styled.h2`
 `;
 
 export const ListTitle = styled.h2`
-  max-width: 15.5rem;
+  max-width: calc(100vw - 11rem);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 1.75rem;
   font-weight: 500;
   color: var(--color-primary-800);
-  @media screen and (min-width: 768px) {
-    max-width: 32rem;
-  }
 `;
 
 export const LinkSet = styled.div`
