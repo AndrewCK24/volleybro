@@ -2,17 +2,22 @@ import { Form, Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
 export const FormContainer = styled(Form)`
-  margin: 20% 5%;
+  margin: 10% 5%;
   border-radius: 1rem;
   background-color: var(--color-primary-100);
   padding: 10% 5%;
   height: 100%;
-  width: 60%;
+  width: 90%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2rem;
+
+  @media screen and (min-width: 768px) {
+    margin: 20% 5%;
+    width: 60%;
+  }
 `;
 
 export const FormTitle = styled.h1`
