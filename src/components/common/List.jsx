@@ -25,7 +25,7 @@ export const ListHeader = styled.div`
   justify-content: flex-start;
 `;
 
-export const ListTitleGroup = styled.h2`
+export const ListTitleGroup = styled.div`
   flex: 1 1;
   display: flex;
   flex-direction: row;
