@@ -14,6 +14,8 @@ export const ListContainer = styled.section`
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
+  /* FIXME: 高度動畫無法正常顯示 */
+  transition: height 0.2s ease-in-out;
 `;
 
 export const ListHeader = styled.div`
@@ -36,6 +38,7 @@ export const ListTitleGroup = styled.div`
 `;
 
 export const ListTitle = styled.h2`
+  /* TODO: 新增 subtitle */
   max-width: calc(100vw - 11rem);
   overflow: hidden;
   white-space: nowrap;
@@ -83,6 +86,8 @@ export const ListItemContainer = styled.div`
   &.toggled {
     box-shadow: 0 0 1rem var(--color-primary-400);
   }
+  /* FIXME: 高度動畫無法正常顯示 */
+  transition: height 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 `;
 
 export const ListItemContentContainer = styled.div`
