@@ -128,7 +128,6 @@ exports.handler = async (event) => {
       },
       name: editingData.name,
       number: editingData.number,
-      role: editingData.role,
     };
     await team.save();
 

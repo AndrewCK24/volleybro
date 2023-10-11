@@ -1,7 +1,12 @@
 import store from "../store";
+import { Court } from "../components/common/Court";
 
 const TeamLineupPage = () => {
-  return <></>;
+  return (
+    <>
+      <Court />
+    </>
+  );
 };
 
 export default TeamLineupPage;

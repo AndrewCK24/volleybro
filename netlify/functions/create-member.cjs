@@ -84,7 +84,7 @@ exports.handler = async (event) => {
       },
       name: editingData.name,
       number: editingData.number,
-      role: editingData.role,
+      role: "",
       stats: {},
     };
     team.members.push(newMember);

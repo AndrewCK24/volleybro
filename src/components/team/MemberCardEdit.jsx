@@ -3,76 +3,44 @@ import { Form } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import { teamActions } from "./team-slice";
+import { FormControl, FormSelect } from "../common/Form";
 import { ButtonContainer, IconButton } from "../common/Button";
 import { MdDelete, MdCancel } from "react-icons/md";
 import { FaSave } from "react-icons/fa";
 
 const StyledForm = styled(Form)`
   flex: 1 1;
+  padding: 1rem;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: stretch;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
-const InputContainer = styled.div`
-  flex: 1 1;
+const FormSection = styled.section`
+  flex: 1 1 15rem;
   display: flex;
   flex-direction: column;
   align-items: left;
-  justify-content: flex-start;
+  justify-content: center;
   font-size: 1.5rem;
   gap: 0.5rem;
 `;
 
-const StyledInput = styled.input`
-  width: 100%;
-  /* flex: 1 1; */
-  display: block;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: none;
-  line-height: 2rem;
-  font-size: 1.5rem;
-  font-weight: 500;
-`;
-
-const StyledSelect = styled.select`
-  width: 100%;
-  /* flex: 1 1; */
-  display: block;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: none;
-  line-height: 2rem;
-  font-size: 1.5rem;
-  font-weight: 500;
-  appearance: none;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  color: var(--color-primary-400);
-`;
-
-const StyledOption = styled.option`
-  padding: 0.5rem;
-  &:disabled {
-    color: var(--color-primary-400);
-  }
-`;
-
 const roleArr = [
-  { value: "S", text: "Setter (S)" },
-  { value: "MB", text: "Middle Blocker (MB)" },
-  { value: "OH", text: "Outside Hitter (OH)" },
-  { value: "OP", text: "Opposite (OP)" },
-  { value: "L", text: "Libero (L)" },
-  { value: "M", text: "Manager (M)" },
+  { value: "S", text: "舉球 (S)" },
+  { value: "MB", text: "攔中 (MB)" },
+  { value: "OH", text: "主攻 (OH)" },
+  { value: "OP", text: "舉對 (OP)" },
+  { value: "L", text: "自由 (L)" },
+  { value: "M", text: "球經 (M)" },
 ];
 
 const adminArr = [
-  { value: true, text: "管理者" },
-  { value: false, text: "一般成員" },
+  { id: "admin", value: true, text: "管理者" },
+  { id: "member", value: false, text: "一般成員" },
 ];
 
 const MemberCardEdit = ({ index, member, isAdmin }) => {
@@ -107,62 +75,43 @@ const MemberCardEdit = ({ index, member, isAdmin }) => {
 
   return (
     <StyledForm method="post" action="/team">
-      <InputContainer>
-        隊員資料
-        <StyledInput
-          type="number"
-          placeholder="背號"
-          id="number"
+      <FormSection>
+        <FormControl
           name="number"
+          labelText="背號"
+          type="number"
+          placeholder="請輸入球員背號"
+          required={true}
           defaultValue={number}
-          required
         />
-        <StyledInput
-          type="text"
-          placeholder="姓名"
-          id="name"
+        <FormControl
           name="name"
+          labelText="姓名"
+          type="text"
+          placeholder="請輸入球員姓名"
+          required={true}
           defaultValue={name}
-          required
         />
-        <StyledSelect id="role" name="role" defaultValue={role || ""} required>
-          <StyledOption value="" disabled>
-            位置
-          </StyledOption>
-          {roleArr.map((item, index) => (
-            <StyledOption key={index} value={item.value}>
-              {item.text}
-            </StyledOption>
-          ))}
-        </StyledSelect>
-      </InputContainer>
-      <InputContainer>
-        邀請與權限
-        <StyledInput
-          type="email"
-          placeholder="信箱"
-          id="email"
+      </FormSection>
+      <FormSection>
+        <FormControl
           name="email"
+          labelText="電子信箱"
+          type="email"
+          placeholder="請輸入球員電子信箱"
+          required={true}
           defaultValue={info.email}
           disabled={!isAdmin}
         />
-        <StyledSelect
-          id="admin"
+        <FormSelect
           name="admin"
+          labelText="權限"
+          options={adminArr}
+          required={true}
           defaultValue={info.admin}
-          required
           disabled={!isAdmin}
-        >
-          <StyledOption value="" disabled>
-            權限
-          </StyledOption>
-          {adminArr.map((item, index) => (
-            <StyledOption key={index} value={item.value}>
-              {item.text}
-            </StyledOption>
-          ))}
-        </StyledSelect>
-      </InputContainer>
+        />
+      </FormSection>
       <ButtonContainer>
         <IconButton type="submit" title="save">
           <FaSave />
@@ -175,7 +124,7 @@ const MemberCardEdit = ({ index, member, isAdmin }) => {
         >
           <MdCancel />
         </IconButton>
-        {(_id && info.userId !== userId) && (
+        {_id && info.userId !== userId && (
           <IconButton
             onClick={() => handleDelete()}
             type="button"

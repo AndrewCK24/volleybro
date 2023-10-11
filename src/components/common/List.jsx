@@ -6,7 +6,9 @@ export const ListContainer = styled.section`
   width: 100%;
   border-radius: 1.5rem;
   padding: 1rem;
-  background-color: var(--color-secondary-300);
+  /* background-color: var(--color-secondary-300); */
+  background-color: var(--color-primary-100);
+  box-shadow: 0 0 1rem var(--color-primary-300);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,15 +63,19 @@ export const LinkButton = styled(Link)`
 export const ListItemContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
-  background-color: var(--color-primary-200);
+  /* background-color: var(--color-primary-200); */
+  background-color: var(--color-primary-100);
+  box-shadow: 0 0 0.5rem var(--color-primary-300);
   border-radius: 1rem;
-  padding: 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
   font-size: 1.5rem;
+  &.toggled {
+    box-shadow: 0 0 1rem var(--color-primary-400);
+  }
 `;
 
 export const ListItemContentContainer = styled.div`

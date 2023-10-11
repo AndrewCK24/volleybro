@@ -47,7 +47,7 @@ const MemberCard = ({ index, member, isAdmin, userId }) => {
   };
 
   return (
-    <ListItemContainer>
+    <ListItemContainer className={isEditing && "toggled"}>
       {isEditing ? (
         <MemberCardEdit index={index} member={member} isAdmin={isAdmin} />
       ) : (
@@ -89,7 +89,6 @@ export const action = async ({ request }) => {
     },
     name: formData.get("name"),
     number: formData.get("number"),
-    role: formData.get("role"),
   };
 
   try {

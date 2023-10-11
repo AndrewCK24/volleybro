@@ -74,13 +74,14 @@ const FormHelperText = styled.span`
 `;
 
 const FormInput = styled.input`
-  height: 2.5rem;
+  height: 3rem;
   width: 100%;
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: solid 1px var(--gray-primary);
   font-size: 1.5rem;
   font-weight: 500;
+  line-height: 2rem;
   &:focus {
     outline: none;
     -webkit-box-shadow: inset 0 0 0.25rem var(--color-primary-400);
@@ -108,7 +109,7 @@ export const FormControl = (props) => {
         <FormLabel htmlFor={name}>
           {labelText}
           {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
-      <FormHelperText>{warn}</FormHelperText>
+          <FormHelperText>{warn}</FormHelperText>
         </FormLabel>
       </div>
       <FormInput
@@ -122,6 +123,98 @@ export const FormControl = (props) => {
         onChange={(e) => onChange(e.target.value)}
         autoComplete="on"
       />
+    </FormInputContainer>
+  );
+};
+
+const FormRadioSet = styled.div`
+  width: 100%;
+  padding: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: left;
+  border: none;
+  gap: 0.5rem;
+`;
+
+const FormRadioGroup = styled.div`
+  flex: 1 1 3rem;
+`;
+
+const FormRadioInput = styled.input`
+  display: none;
+  &:disabled ~ label {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-500);
+  }
+  &:checked ~ label {
+    background-color: var(--color-secondary-600);
+    color: var(--color-primary-100);
+  }
+  &:checked:disabled ~ label {
+    background-color: var(--color-primary-500);
+  }
+`;
+
+const FormRadioLabel = styled.label`
+  width: 100%;
+  height: 3rem;
+  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: solid 1px var(--color-secondary-600);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 2rem;
+  color: var(--color-secondary-600);
+`;
+
+export const FormSelect = (props) => {
+  const {
+    name,
+    labelText,
+    options = [],
+    required = false,
+    defaultValue = "",
+    disabled = false,
+    warn = "",
+    onChange,
+  } = props;
+
+  return (
+    <FormInputContainer>
+      <div>
+        <FormLabel>
+          {labelText}
+          {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
+          <FormHelperText>{warn}</FormHelperText>
+        </FormLabel>
+      </div>
+      <FormRadioSet>
+        {options.map((option, index) => {
+          const { id, value, text } = option;
+          return (
+            <FormRadioGroup key={index}>
+              <FormRadioInput
+                key={id}
+                type="radio"
+                id={id}
+                name={name}
+                value={value}
+                disabled={disabled}
+                defaultChecked={defaultValue === value}
+              />
+              <FormRadioLabel key={index} htmlFor={id}>
+                {text}
+              </FormRadioLabel>
+            </FormRadioGroup>
+          );
+        })}
+      </FormRadioSet>
     </FormInputContainer>
   );
 };

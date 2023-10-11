@@ -13,6 +13,12 @@ const StyledButtonContainer = styled.div`
   &.row {
     flex-direction: row;
   }
+
+  @media screen and (max-width: 768px) {
+    flex: 1 1;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
 `;
 
 export const ButtonContainer = ({ children, className }) => {
