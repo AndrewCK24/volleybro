@@ -2,11 +2,11 @@ import styled from "@emotion/styled";
 import { css } from "@emotion/react";
 
 const StyledButtonContainer = styled.div`
-  flex: 0 0;
+  flex: 1 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 0.5rem;
   font-size: 1.5rem;
 
@@ -14,10 +14,10 @@ const StyledButtonContainer = styled.div`
     flex-direction: row;
   }
 
-  @media screen and (max-width: 768px) {
-    flex: 1 1;
-    flex-direction: row;
-    justify-content: flex-end;
+  @media screen and (min-width: 768px) {
+    flex: 0 0;
+    flex-direction: column;
+    justify-content: center;
   }
 `;
 

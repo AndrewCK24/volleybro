@@ -12,15 +12,18 @@ const StyledForm = styled(Form)`
   flex: 1 1;
   padding: 1rem;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: stretch;
   justify-content: center;
   gap: 0.5rem;
+
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const FormSection = styled.section`
-  flex: 1 1 15rem;
+  flex: 1 1;
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -116,14 +119,6 @@ const MemberCardEdit = ({ index, member, isAdmin }) => {
         <IconButton type="submit" title="save">
           <FaSave />
         </IconButton>
-        <IconButton
-          onClick={() => handleCancel()}
-          type="button"
-          title="cancel"
-          className="secondary"
-        >
-          <MdCancel />
-        </IconButton>
         {_id && info.userId !== userId && (
           <IconButton
             onClick={() => handleDelete()}
@@ -134,6 +129,14 @@ const MemberCardEdit = ({ index, member, isAdmin }) => {
             <MdDelete />
           </IconButton>
         )}
+        <IconButton
+          onClick={() => handleCancel()}
+          type="button"
+          title="cancel"
+          className="secondary"
+        >
+          <MdCancel />
+        </IconButton>
       </ButtonContainer>
     </StyledForm>
   );
