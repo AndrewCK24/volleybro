@@ -20,7 +20,7 @@ export const RootContainer = styled.div`
 
 const MainContainer = styled.main`
   flex: 1 1;
-  padding: 1rem 5% 0;
+  padding: 1rem 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,6 +29,11 @@ const MainContainer = styled.main`
   flex-wrap: nowrap;
   overflow: scroll;
   /* overscroll-behavior-x: none; */
+  overscroll-behavior-y: contain;
+
+  @media screen and (min-width: 768px) {
+    padding: 1rem 5% 0;
+  }
 `;
 
 const Footer = styled.footer`
