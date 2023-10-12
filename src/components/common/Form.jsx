@@ -50,13 +50,21 @@ const FormInputContainer = styled.div`
   gap: 0.25rem;
 `;
 
+const FormLabelGroup = styled.div`
+  height: 1rem;
+  display: flex;
+  flex-direction: row;
+`;
+
 const FormLabel = styled.label`
+  height: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: left;
   padding-left: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
+  line-height: 1rem;
 `;
 
 const FormRequiredSymbol = styled.span`
@@ -110,13 +118,13 @@ export const FormControl = (props) => {
 
   return (
     <FormInputContainer>
-      <div>
+      <FormLabelGroup>
         <FormLabel htmlFor={name}>
           {labelText}
           {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
           <FormHelperText>{warn}</FormHelperText>
         </FormLabel>
-      </div>
+      </FormLabelGroup>
       <FormInput
         type={type}
         defaultValue={defaultValue}
@@ -192,13 +200,13 @@ export const FormSelect = (props) => {
 
   return (
     <FormInputContainer>
-      <div>
+      <FormLabelGroup>
         <FormLabel>
           {labelText}
           {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
           <FormHelperText>{warn}</FormHelperText>
         </FormLabel>
-      </div>
+      </FormLabelGroup>
       <FormRadioSet>
         {options.map((option, index) => {
           const { id, value, text } = option;

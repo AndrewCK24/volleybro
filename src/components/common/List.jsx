@@ -14,8 +14,6 @@ export const ListContainer = styled.section`
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
-  /* FIXME: 高度動畫無法正常顯示 */
-  transition: height 0.2s ease-in-out;
 `;
 
 export const ListHeader = styled.div`
@@ -73,6 +71,7 @@ export const LinkButton = styled(Link)`
 export const ListItemContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
+  /* height: 4rem; */
   /* background-color: var(--color-primary-200); */
   background-color: var(--color-primary-100);
   box-shadow: 0 0 0.5rem var(--color-primary-300);
@@ -83,11 +82,14 @@ export const ListItemContainer = styled.div`
   justify-content: flex-start;
   gap: 1rem;
   font-size: 1.5rem;
+  /* FIXME: 高度動畫無法正常顯示 */
+  /* TODO: 改以 framer-motion 顯示進場動畫 */
+  transition: box-shadow 0.2s ease-in-out;
+  /* transition: height 0.2s ease-in-out, box-shadow 0.2s ease-in-out; */
   &.toggled {
+    /* height: 23rem; */
     box-shadow: 0 0 1rem var(--color-primary-400);
   }
-  /* FIXME: 高度動畫無法正常顯示 */
-  transition: height 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 `;
 
 export const ListItemContentContainer = styled.div`
