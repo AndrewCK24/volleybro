@@ -10,7 +10,7 @@ import {
 
 const Container = styled.aside`
   flex: 0 0 4rem;
-  padding: 1rem 5%;
+  padding: 0 5% 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -20,6 +20,8 @@ const Container = styled.aside`
 
 const NavBtn = styled(NavLink)`
   flex: 1 1;
+  height: 100%;
+  padding: 0.5rem 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,9 +36,11 @@ const NavBtn = styled(NavLink)`
     width: 2rem;
   }
 
-  transition: color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out, border 0.2s ease-in-out;
 
   &.active {
+    border-top: 0.25rem solid var(--color-primary-100);
+    padding: 0.25rem 0 0;
     color: var(--color-primary-100);
     font-weight: 700;
     svg {
