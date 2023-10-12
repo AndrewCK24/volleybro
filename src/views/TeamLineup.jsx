@@ -9,7 +9,6 @@ import {
   ListInfoGroup,
   ListTitle,
   ListItemContainer,
-  StyledListItemContainer,
   ListItemContent,
 } from "../components/common/List";
 
@@ -25,7 +24,7 @@ const TransparentContainer = styled(ListContainer)`
   box-shadow: none;
 `;
 
-const SaveBtn = styled(StyledListItemContainer)`
+const SaveBtn = styled(ListItemContainer)`
   justify-content: center;
   background-color: var(--color-secondary-500);
   color: var(--color-primary-100);

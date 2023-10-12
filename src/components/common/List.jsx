@@ -69,14 +69,13 @@ export const LinkButton = styled(Link)`
   }
 `;
 
-export const StyledListItemContainer = styled.button`
+export const ListItemContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
   /* height: 4rem; */
   /* background-color: var(--color-primary-200); */
   background-color: var(--color-primary-100);
   box-shadow: 0 0 0.5rem var(--color-primary-300);
-  border: none;
   border-radius: 1rem;
   display: flex;
   flex-direction: row;
@@ -94,19 +93,7 @@ export const StyledListItemContainer = styled.button`
     /* height: 23rem; */
     box-shadow: 0 0 1rem var(--color-primary-400);
   }
-
-  &:disabled {
-    color: var(--color-primary-900);
-  }
 `;
-
-export const ListItemContainer = ({ disabled = true, children }) => {
-  return (
-    <StyledListItemContainer disabled={disabled}>
-      {children}
-    </StyledListItemContainer>
-  );
-};
 
 export const ListItemContentContainer = styled.div`
   flex: 1 1;
