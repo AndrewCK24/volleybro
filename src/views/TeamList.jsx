@@ -88,9 +88,9 @@ const TeamListPage = () => {
       </ListContainer>
       <ListContainer>
         <ListHeader>
-          <ListTitleGroup>
+          <ListInfoGroup>
             <ListTitle>已受邀的隊伍</ListTitle>
-          </ListTitleGroup>
+          </ListInfoGroup>
         </ListHeader>
         {invitingTeams.map((invitingTeam) => (
           <ListItemContainer key={invitingTeam._id}>
