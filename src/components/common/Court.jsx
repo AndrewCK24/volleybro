@@ -7,7 +7,7 @@ const CourtContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   background-color: var(--color-secondary-500);
   padding: 0.5rem;
 `;
@@ -59,24 +59,6 @@ const MainZone = styled.div`
     "p5 p6 p1";
   grid-column-gap: 1rem;
   grid-row-gap: 10%;
-  .p1 {
-    grid-area: p1;
-  }
-  .p2 {
-    grid-area: p2;
-  }
-  .p3 {
-    grid-area: p3;
-  }
-  .p4 {
-    grid-area: p4;
-  }
-  .p5 {
-    grid-area: p5;
-  }
-  .p6 {
-    grid-area: p6;
-  }
   z-index: 1;
 `;
 
@@ -94,7 +76,7 @@ const Dock = styled.div`
   color: var(--color-primary-100);
 `;
 
-export const Court = () => {
+export const Court = ({ members }) => {
   const positionArr = ["p1", "p2", "p3", "p4", "p5", "p6"];
 
   return (
@@ -107,7 +89,7 @@ export const Court = () => {
         <AttackLine />
         <MainZone>
           {positionArr.map((position, index) => (
-            <Dock className={position} key={index}>
+            <Dock key={index} style={{gridArea: position}}>
               {index + 1}
             </Dock>
           ))}

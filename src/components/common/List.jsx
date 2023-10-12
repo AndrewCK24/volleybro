@@ -23,6 +23,7 @@ export const ListHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  background-color: var(--color-primary-100);
 `;
 
 export const ListInfoGroup = styled.div`
@@ -68,29 +69,44 @@ export const LinkButton = styled(Link)`
   }
 `;
 
-export const ListItemContainer = styled.div`
+export const StyledListItemContainer = styled.button`
   flex: 0 0 4rem;
   width: 100%;
   /* height: 4rem; */
   /* background-color: var(--color-primary-200); */
   background-color: var(--color-primary-100);
   box-shadow: 0 0 0.5rem var(--color-primary-300);
+  border: none;
   border-radius: 1rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
+  color: var(--color-primary-900);
   font-size: 1.5rem;
   /* FIXME: 高度動畫無法正常顯示 */
   /* TODO: 改以 framer-motion 顯示進場動畫 */
   transition: box-shadow 0.2s ease-in-out;
   /* transition: height 0.2s ease-in-out, box-shadow 0.2s ease-in-out; */
+
   &.toggled {
     /* height: 23rem; */
     box-shadow: 0 0 1rem var(--color-primary-400);
   }
+
+  &:disabled {
+    color: var(--color-primary-900);
+  }
 `;
+
+export const ListItemContainer = ({ disabled = true, children }) => {
+  return (
+    <StyledListItemContainer disabled={disabled}>
+      {children}
+    </StyledListItemContainer>
+  );
+};
 
 export const ListItemContentContainer = styled.div`
   flex: 1 1;

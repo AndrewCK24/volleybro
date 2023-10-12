@@ -31,6 +31,12 @@ const MainContainer = styled.main`
   /* overscroll-behavior-x: none; */
   overscroll-behavior-y: contain;
 
+  &.fixed {
+    padding-bottom: 0.5rem;
+    overflow: hidden;
+    overscroll-behavior-y: none;
+  }
+
   @media screen and (min-width: 768px) {
     padding: 1rem 5% 0;
   }
@@ -45,8 +51,8 @@ const Footer = styled.footer`
 const RootLayout = () => {
   const { members } = useSelector((state) => state.team);
   const hasSixPlayers =
-    members.filter((member) => member.number && member.role !== "M")
-      .length >= 6;
+    members.filter((member) => member.number && member.role !== "M").length >=
+    6;
 
   const { pathname } = useLocation();
   const pathArr = pathname.split("/").filter(Boolean);
@@ -70,9 +76,9 @@ const RootLayout = () => {
   ) : (
     <RootContainer>
       <Header title={title} index={index} />
-      <MainContainer>
+      <MainContainer className={pathArr[1] === "lineup" ? "fixed" : ""}>
         <Outlet />
-        <Footer />
+        {pathArr[1] !== "lineup" && <Footer />}
       </MainContainer>
       {teamId && hasSixPlayers && <StartRecordBtn />}
       <BottomNav />
