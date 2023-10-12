@@ -7,7 +7,7 @@ import { IoNotificationsSharp } from "react-icons/io5";
 const Container = styled.header`
   flex: 0 0 4rem;
   width: 100%;
-  padding: 1rem 5% 0rem;
+  padding: 0 5%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -34,7 +34,6 @@ const Title = styled.h1`
 
 const CenteredTitle = styled(Title)`
   justify-content: center;
-  font-size: 1.75rem;
 `;
 
 const Header = ({ title, index }) => {

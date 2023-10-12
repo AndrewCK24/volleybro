@@ -20,7 +20,7 @@ export const RootContainer = styled.div`
 
 const MainContainer = styled.main`
   flex: 1 1;
-  padding: 1rem 0 0;
+  padding: 0.5rem 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
