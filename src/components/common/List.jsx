@@ -103,17 +103,17 @@ export const ListItemContentContainer = styled.div`
 `;
 
 const StyledContent = styled.div`
-  flex: 1 1;
+  flex: 0 0 2rem;
   /* max-width: 10rem; */
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
   font-size: 1.5rem;
 
-  &.small {
-    flex: 0 0 2rem;
-    justify-content: flex-end;
+  &.extend {
+    flex: 1 1;
+    justify-content: flex-start;
   }
 
   &.bold {

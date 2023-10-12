@@ -53,9 +53,9 @@ const MemberCard = ({ index, member, isAdmin, userId }) => {
       ) : (
         <>
           <ListItemContentContainer>
-            <ListItemContent className="small bold">{number}</ListItemContent>
-            <ListItemContent className="small">{role}</ListItemContent>
-            <ListItemContent>{name}</ListItemContent>
+            <ListItemContent className="bold">{number}</ListItemContent>
+            <ListItemContent>{role}</ListItemContent>
+            <ListItemContent className="extend">{name}</ListItemContent>
           </ListItemContentContainer>
           <ListIndicator className={status.className}>
             {status.icon}
