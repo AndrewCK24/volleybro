@@ -25,7 +25,7 @@ export const ListHeader = styled.div`
   justify-content: flex-start;
 `;
 
-export const ListTitleGroup = styled.div`
+export const ListInfoGroup = styled.div`
   flex: 1 1;
   display: flex;
   flex-direction: row;
@@ -104,7 +104,7 @@ export const ListItemContentContainer = styled.div`
 
 const StyledContent = styled.div`
   flex: 1 1;
-  max-width: 10rem;
+  /* max-width: 10rem; */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -114,6 +114,10 @@ const StyledContent = styled.div`
   &.small {
     flex: 0 0 2rem;
     justify-content: flex-end;
+  }
+
+  &.bold {
+    font-weight: 600;
   }
 `;
 

@@ -7,7 +7,7 @@ import { teamActions } from "../components/team/team-slice";
 import {
   ListContainer,
   ListHeader,
-  ListTitleGroup,
+  ListInfoGroup,
   ListTitle,
   ListItemContainer,
   ListItemContentContainer,
@@ -71,11 +71,9 @@ const TeamListPage = () => {
     <>
       <ListContainer>
         <ListHeader>
-          <ListTitleGroup>
-            <ListTitle>
-            已加入的隊伍
-            </ListTitle>
-            </ListTitleGroup>
+          <ListInfoGroup>
+            <ListTitle>已加入的隊伍</ListTitle>
+          </ListInfoGroup>
         </ListHeader>
         {teams.map((team, index) => (
           <ListItemContainer key={team._id}>

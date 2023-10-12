@@ -5,7 +5,7 @@ import store from "../store";
 import {
   ListContainer,
   ListHeader,
-  ListTitleGroup,
+  ListInfoGroup,
   ListTitle,
   LinkSet,
   ListItemContainer,
@@ -44,12 +44,12 @@ const TeamMembersPage = () => {
   return (
     <ListContainer>
       <ListHeader>
-        <ListTitleGroup>
+        <ListInfoGroup>
           <ListTitle>{name}</ListTitle>
           <LinkButton to="/team/list">
             <GoArrowSwitch />
           </LinkButton>
-        </ListTitleGroup>
+        </ListInfoGroup>
         <LinkSet>
           <LinkButton to="/team/lineup">
             <BsGrid3X2Gap />
