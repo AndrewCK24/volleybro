@@ -5,7 +5,6 @@ import store from "../store";
 import { Section } from "../components/common/Section";
 import {
   FormContainer,
-  FormTitle,
   FormContents,
   FormControl,
   FormButton,

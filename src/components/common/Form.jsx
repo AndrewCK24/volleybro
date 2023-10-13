@@ -7,11 +7,11 @@ export const FormContainer = styled(Form)`
   background-color: var(--color-primary-100);
   padding: 10% 5%;
   height: 100%;
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 2rem;
 
   @media screen and (min-width: 768px) {
@@ -37,7 +37,7 @@ export const FormContents = styled.div`
   display: flex;
   flex-direction: column;
   align-items: left;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem;
 `;
 
