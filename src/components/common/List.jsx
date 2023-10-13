@@ -15,7 +15,7 @@ export const ListHeader = styled.div`
   background-color: var(--color-primary-100);
 `;
 
-export const ListInfoGroup = styled.div`
+export const ListInfo = styled.div`
   flex: 1 1;
   display: flex;
   flex-direction: row;
@@ -73,6 +73,7 @@ export const ListItem = styled.button`
   gap: 1rem;
   color: var(--color-primary-900);
   font-size: 1.5rem;
+  user-select: none;
   transition: box-shadow 0.2s ease-in-out, background-color 0.1s ease-in-out;
   svg {
     width: 2.5rem;

@@ -6,7 +6,7 @@ import { teamActions } from "../components/team/team-slice";
 import {
   List,
   ListHeader,
-  ListInfoGroup,
+  ListInfo,
   ListTitle,
   LinkSet,
   ListItem,
@@ -49,12 +49,12 @@ const TeamMembersPage = () => {
   return (
     <List>
       <ListHeader>
-        <ListInfoGroup>
+        <ListInfo>
           <ListTitle>{name}</ListTitle>
           <LinkButton to="/team/list">
             <GoArrowSwitch />
           </LinkButton>
-        </ListInfoGroup>
+        </ListInfo>
         <LinkSet>
           <LinkButton to="/team/lineup">
             <BsGrid3X2Gap />
