@@ -59,9 +59,9 @@ const MenuPage = () => {
       });
       const { status, userData, teamData } = await response.json();
       if (status === 200) {
+        navigate("/team");
         dispatch(userActions.loadUserData(userData));
         dispatch(teamActions.loadTeamData(teamData));
-        navigate("/team");
       }
     } catch (error) {
       console.log(error);
