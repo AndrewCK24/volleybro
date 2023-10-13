@@ -3,12 +3,12 @@ import styled from "@emotion/styled";
 
 import store from "../store";
 import {
-  ListContainer,
+  List,
   ListHeader,
   ListInfoGroup,
   ListTitle,
   LinkSet,
-  ListItemContainer,
+  ListItem,
   LinkButton,
 } from "../components/common/List";
 import MemberCard from "../components/team/MemberCard";
@@ -17,7 +17,7 @@ import { BsGrid3X2Gap } from "react-icons/bs";
 import { FiEdit3 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 
-const StyledItem = styled(ListItemContainer)`
+const StyledItem = styled(ListItem)`
   padding: 0.5rem 1.5rem;
   color: var(--color-danger-500);
   font-size: 1.25rem;
@@ -42,7 +42,7 @@ const TeamMembersPage = () => {
     6;
 
   return (
-    <ListContainer>
+    <List>
       <ListHeader>
         <ListInfoGroup>
           <ListTitle>{name}</ListTitle>
@@ -70,7 +70,7 @@ const TeamMembersPage = () => {
         />
       ))}
       {isNewBtnVisible && <NewMemberBtn />}
-    </ListContainer>
+    </List>
   );
 };
 

@@ -5,11 +5,11 @@ import store from "../store";
 import { userActions } from "../components/user/user-slice";
 import { teamActions } from "../components/team/team-slice";
 import {
-  ListContainer,
+  List,
   ListHeader,
   ListInfoGroup,
   ListTitle,
-  ListItemContainer,
+  ListItem,
   ListItemContentContainer,
 } from "../components/common/List";
 import { IconButton } from "../components/common/Button";
@@ -69,31 +69,31 @@ const TeamListPage = () => {
 
   return (
     <>
-      <ListContainer>
+      <List>
         <ListHeader>
           <ListInfoGroup>
             <ListTitle>已加入的隊伍</ListTitle>
           </ListInfoGroup>
         </ListHeader>
         {teams.map((team, index) => (
-          <ListItemContainer key={team._id}>
+          <ListItem key={team._id}>
             <ListItemContentContainer>{team.name}</ListItemContentContainer>
             {index === 0 || (
               <IconButton onClick={() => switchTeam(team._id)}>
                 <FiChevronRight />
               </IconButton>
             )}
-          </ListItemContainer>
+          </ListItem>
         ))}
-      </ListContainer>
-      <ListContainer>
+      </List>
+      <List>
         <ListHeader>
           <ListInfoGroup>
             <ListTitle>已受邀的隊伍</ListTitle>
           </ListInfoGroup>
         </ListHeader>
         {invitingTeams.map((invitingTeam) => (
-          <ListItemContainer key={invitingTeam._id}>
+          <ListItem key={invitingTeam._id}>
             <ListItemContentContainer>
               {invitingTeam.name}
             </ListItemContentContainer>
@@ -108,9 +108,9 @@ const TeamListPage = () => {
             >
               <FiX />
             </IconButton>
-          </ListItemContainer>
+          </ListItem>
         ))}
-      </ListContainer>
+      </List>
       <div />
       <div>沒看到正在尋找的隊伍嗎？</div>
       <div>

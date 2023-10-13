@@ -5,6 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../components/user/user-slice";
 import { teamActions } from "../components/team/team-slice";
 
+import { Section } from "../components/common/Section";
+import {
+  ListItem,
+  ListItemContent,
+} from "../components/common/List";
+
 const CardContainer = styled.div`
   flex: 0 0 4rem;
   width: 100%;
@@ -51,10 +57,14 @@ const MenuPage = () => {
 
   return (
     <>
-      <CardContainer>{userName}</CardContainer>
-      <CardContainer>
-        <StyledBtn onClick={() => signOutUser()}>登出</StyledBtn>
-      </CardContainer>
+      <Section>
+        <ListItem>
+          <ListItemContent className="extend">{userName}</ListItemContent>
+        </ListItem>
+      </Section>
+      <Section className="transparent">
+        <ListItem className="button danger" onClick={() => signOutUser()}>登出</ListItem>
+      </Section>
     </>
   );
 };

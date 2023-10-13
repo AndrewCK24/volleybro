@@ -2,10 +2,10 @@ import { useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 
 import { teamActions } from "./team-slice";
-import { ListItemContainer } from "../common/List";
+import { ListItem } from "../common/List";
 import { AiOutlinePlus } from "react-icons/ai";
 
-const StyledContainer = styled(ListItemContainer)`
+const StyledContainer = styled(ListItem)`
   padding: 0;
   svg {
     color: var(--color-primary-100);

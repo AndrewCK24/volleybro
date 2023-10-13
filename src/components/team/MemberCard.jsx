@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import store from "../../store";
 import { teamActions } from "./team-slice";
 import {
-  ListItemContainer,
+  ListItem,
   ListItemContentContainer,
   ListItemContent,
   ListIndicator,
@@ -47,7 +47,7 @@ const MemberCard = ({ index, member, isAdmin, userId }) => {
   };
 
   return (
-    <ListItemContainer className={isEditing && "toggled"}>
+    <ListItem className={isEditing && "toggled"}>
       {isEditing ? (
         <MemberCardEdit index={index} member={member} isAdmin={isAdmin} />
       ) : (
@@ -70,7 +70,7 @@ const MemberCard = ({ index, member, isAdmin, userId }) => {
           )}
         </>
       )}
-    </ListItemContainer>
+    </ListItem>
   );
 };
 

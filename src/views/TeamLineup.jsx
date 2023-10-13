@@ -4,12 +4,9 @@ import styled from "@emotion/styled";
 import store from "../store";
 import { Section } from "../components/common/Section";
 import { Court } from "../components/common/Court";
-import {
-  ListItemContainer,
-  ListItemContent,
-} from "../components/common/List";
+import { ListItem, ListItemContent } from "../components/common/List";
 
-const SaveBtn = styled(ListItemContainer)`
+const SaveBtn = styled(ListItem)`
   justify-content: center;
   background-color: var(--color-secondary-500);
   color: var(--color-primary-100);
@@ -27,7 +24,7 @@ const TeamLineupPage = () => {
         {members.map(
           (member, index) =>
             member._id && (
-              <ListItemContainer key={index} disabled={false}>
+              <ListItem key={index} disabled={false}>
                 <ListItemContent className="bold">
                   {member.number}
                 </ListItemContent>
@@ -35,7 +32,7 @@ const TeamLineupPage = () => {
                 <ListItemContent className="extend">
                   {member.name}
                 </ListItemContent>
-              </ListItemContainer>
+              </ListItem>
             )
         )}
       </Section>

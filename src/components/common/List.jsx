@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 
 import { Section } from "./Section";
 
-export const ListContainer = styled(Section)``;
+export const List = styled(Section)``;
 
 export const ListHeader = styled.div`
   flex: 0 0;
@@ -58,13 +58,13 @@ export const LinkButton = styled(Link)`
   }
 `;
 
-export const ListItemContainer = styled.div`
+export const ListItem = styled.button`
   flex: 0 0 4rem;
   width: 100%;
-  /* height: 4rem; */
-  /* background-color: var(--color-primary-200); */
+  padding: 0.5rem 1rem;
   background-color: var(--color-primary-100);
   box-shadow: 0 0 0.5rem var(--color-primary-300);
+  border: none;
   border-radius: 1rem;
   display: flex;
   flex-direction: row;
@@ -73,19 +73,71 @@ export const ListItemContainer = styled.div`
   gap: 1rem;
   color: var(--color-primary-900);
   font-size: 1.5rem;
-  /* FIXME: 高度動畫無法正常顯示 */
-  /* TODO: 改以 framer-motion 顯示進場動畫 */
-  transition: box-shadow 0.2s ease-in-out;
-  /* transition: height 0.2s ease-in-out, box-shadow 0.2s ease-in-out; */
+  transition: box-shadow 0.2s ease-in-out, background-color 0.1s ease-in-out;
+  svg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
 
+  &.button {
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  &:active {
+    background-color: var(--color-secondary-400);
+    box-shadow: 0 0 0.25rem var(--color-primary-400);
+    color: var(--color-primary-100);
+  }
   &.toggled {
-    /* height: 23rem; */
+    background-color: var(--color-secondary-400);
     box-shadow: 0 0 1rem var(--color-primary-400);
+    color: var(--color-primary-100);
+  }
+
+  &.primary {
+    background-color: var(--color-secondary-500);
+    color: var(--color-primary-100);
+  }
+  &.primary:active {
+    background-color: var(--color-secondary-400);
+    box-shadow: 0 0 0.25rem var(--color-primary-400);
+  }
+  &.primary.toggled {
+    background-color: var(--color-secondary-400);
+    box-shadow: 0 0 1rem var(--color-primary-400);
+  }
+
+  &.secondary {
+    background-color: var(--color-primary-400);
+    color: var(--color-primary-100);
+  }
+  &.secondary:active {
+    background-color: var(--color-primary-300);
+    box-shadow: 0 0 0.25rem var(--color-primary-400);
+  }
+  &.secondary.toggled {
+    background-color: var(--color-primary-300);
+    box-shadow: 0 0 1rem var(--color-primary-400);
+  }
+
+  &.danger {
+    background-color: var(--color-danger-600);
+    color: var(--color-primary-100);
+  }
+  &.danger:active {
+    background-color: var(--color-danger-500);
+    box-shadow: 0 0 0.25rem var(--color-danger-400);
+  }
+  &.danger.toggled {
+    background-color: var(--color-danger-500);
+    box-shadow: 0 0 1rem var(--color-danger-400);
   }
 `;
 
 export const ListItemContentContainer = styled.div`
   flex: 1 1;
+  height: 2rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -96,12 +148,14 @@ export const ListItemContentContainer = styled.div`
 
 const StyledContent = styled.div`
   flex: 0 0 2rem;
+  height: 2rem;
   /* max-width: 10rem; */
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   font-size: 1.5rem;
+  line-height: 2rem;
 
   &.extend {
     flex: 1 1;
