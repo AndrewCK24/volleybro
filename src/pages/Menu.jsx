@@ -1,50 +1,57 @@
-import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import styled from "@emotion/styled";
 
+import store from "../store";
 import { userActions } from "../components/user/user-slice";
 import { teamActions } from "../components/team/team-slice";
 
-import { Section } from "../components/common/Section";
 import {
-  ListItem,
-  ListItemContent,
-} from "../components/common/List";
+  FiChevronDown,
+  FiChevronRight,
+  FiSettings,
+  FiUser,
+  FiUsers,
+} from "react-icons/fi";
+import { GoArrowSwitch } from "react-icons/go";
+import { Section } from "../components/common/Section";
+import { IconButton } from "../components/common/Button";
+import { ListItem, ListItemContent } from "../components/common/List";
 
-const CardContainer = styled.div`
-  flex: 0 0 4rem;
-  width: 100%;
-  background-color: var(--color-primary-200);
-  border-radius: 0.5rem;
-  padding: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  svg {
-    width: 2rem;
-    height: 2rem;
+const ExtendTeamsIcon = styled(FiChevronDown)`
+  transition: transform 0.2s ease-in-out;
+  &.up {
+    transform: rotate(180deg);
   }
 `;
 
-const StyledBtn = styled.button`
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1.5rem;
-  color: var(--color-danger-100);
-  background-color: var(--color-danger-800);
-  cursor: pointer;
+const TeamItem = styled(ListItem)`
+  padding: 0 1rem;
+  box-shadow: none;
+  color: var(--color-secondary-800);
+
+  &.special {
+    color: var(--color-danger-600);
+  }
 `;
 
 const MenuPage = () => {
+  const [extendTeams, setExtendTeams] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userName = useSelector((state) => state.user.name);
+  const { teams } = useSelector((state) => state.user);
 
-  const signOutUser = async () => {
+  const handleExtendTeams = () => {
+    setExtendTeams(!extendTeams);
+  };
+
+  const handleInvitingTeams = () => {
+    navigate("/team/invitations");
+  };
+
+  const handleSignOut = async () => {
     try {
       await fetch("/.netlify/functions/sign-out-user");
       dispatch(userActions.signOut());
@@ -58,15 +65,49 @@ const MenuPage = () => {
   return (
     <>
       <Section>
+        <ListItem className="primary">
+          <FiUser />
+          <ListItemContent
+            className="extend"
+            onClick={() => handleExtendTeams()}
+          >
+            {userName}
+          </ListItemContent>
+          <ExtendTeamsIcon className={extendTeams && "up"} />
+        </ListItem>
+        {extendTeams &&
+          teams.map((team, index) => (
+            <TeamItem key={team._id}>
+              <FiUsers />
+              <ListItemContent className="extend">{team.name}</ListItemContent>
+              {index === 0 || (
+                <IconButton onClick={() => switchTeam(team._id)}>
+                  <GoArrowSwitch />
+                </IconButton>
+              )}
+            </TeamItem>
+          ))}
+        <TeamItem className="special" onClick={() => handleInvitingTeams()}>
+          <ListItemContent className="extend">隊伍邀請</ListItemContent>
+          <FiChevronRight />
+        </TeamItem>
         <ListItem>
-          <ListItemContent className="extend">{userName}</ListItemContent>
+          <FiSettings />
+          設定
         </ListItem>
       </Section>
       <Section className="transparent">
-        <ListItem className="button danger" onClick={() => signOutUser()}>登出</ListItem>
+        <ListItem className="button danger" onClick={() => handleSignOut()}>
+          登出
+        </ListItem>
       </Section>
     </>
   );
 };
 
 export default MenuPage;
+
+export const loader = () => {
+  store.dispatch({ type: "root/setTitle", payload: "功能表" });
+  return null;
+};

@@ -27,7 +27,7 @@ import TeamInfoForm, {
 } from "./views/TeamInfoForm";
 import { action as memberEditAction } from "./components/team/MemberCard";
 
-import MenuPage from "./pages/Menu";
+import MenuPage, { loader as MenuLoader } from "./pages/Menu";
 
 import RecordPage from "./pages/Record";
 
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
             loader: teamMembersLoader,
           },
           {
-            path: "list",
+            path: "invitations",
             element: <TeamListPage />,
             loader: teamListLoader,
           },
@@ -80,6 +80,7 @@ const router = createBrowserRouter([
       {
         path: "user",
         element: <MenuPage />,
+        loader: MenuLoader,
         // children: [
         //   {
         //     index: true,
