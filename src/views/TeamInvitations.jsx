@@ -13,33 +13,13 @@ import {
   ListItemContent,
 } from "../components/common/List";
 import { IconButton } from "../components/common/Button";
-import { FiChevronRight, FiCheck, FiX } from "react-icons/fi";
+import { FiCheck, FiX } from "react-icons/fi";
 
-const TeamListPage = () => {
+const TeamInvitationsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { teams, invitingTeams } = useSelector((state) => state.user);
+  const { invitingTeams } = useSelector((state) => state.user);
 
-  const switchTeam = async (teamId) => {
-    try {
-      const response = await fetch("/.netlify/functions/fetch-team-by-id", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({ teamId }),
-      });
-      const { status, userData, teamData } = await response.json();
-      if (status === 200) {
-        dispatch(userActions.loadUserData(userData));
-        dispatch(teamActions.loadTeamData(teamData));
-        navigate("/team");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleInvitation = async (teamId, accept) => {
     try {
@@ -69,23 +49,6 @@ const TeamListPage = () => {
 
   return (
     <>
-      <List>
-        <ListHeader>
-          <ListInfo>
-            <ListTitle>已加入的隊伍</ListTitle>
-          </ListInfo>
-        </ListHeader>
-        {teams.map((team, index) => (
-          <ListItem key={team._id}>
-            <ListItemContent className="extend">{team.name}</ListItemContent>
-            {index === 0 || (
-              <IconButton onClick={() => switchTeam(team._id)}>
-                <FiChevronRight />
-              </IconButton>
-            )}
-          </ListItem>
-        ))}
-      </List>
       <List>
         <ListHeader>
           <ListInfo>
@@ -120,9 +83,9 @@ const TeamListPage = () => {
   );
 };
 
-export default TeamListPage;
+export default TeamInvitationsPage;
 
 export const loader = () => {
-  store.dispatch({ type: "root/setTitle", payload: "隊伍列表" });
+  store.dispatch({ type: "root/setTitle", payload: "隊伍邀請" });
   return null;
 };
