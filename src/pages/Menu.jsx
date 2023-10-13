@@ -86,14 +86,9 @@ const MenuPage = () => {
   return (
     <>
       <Section>
-        <ListItem className="primary">
+        <ListItem className="primary" onClick={() => handleExtendTeams()}>
           <FiUser />
-          <ListItemContent
-            className="extend"
-            onClick={() => handleExtendTeams()}
-          >
-            {userName}
-          </ListItemContent>
+          <ListItemContent className="extend">{userName}</ListItemContent>
           <ExtendTeamsIcon className={extendTeams && "up"} />
         </ListItem>
         {extendTeams &&
