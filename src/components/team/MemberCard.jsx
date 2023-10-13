@@ -4,7 +4,6 @@ import store from "../../store";
 import { teamActions } from "./team-slice";
 import {
   ListItem,
-  ListItemContentContainer,
   ListItemContent,
   ListIndicator,
 } from "../common/List";
@@ -52,11 +51,9 @@ const MemberCard = ({ index, member, isAdmin, userId }) => {
         <MemberCardEdit index={index} member={member} isAdmin={isAdmin} />
       ) : (
         <>
-          <ListItemContentContainer>
-            <ListItemContent className="bold">{number}</ListItemContent>
-            <ListItemContent>{role}</ListItemContent>
-            <ListItemContent className="extend">{name}</ListItemContent>
-          </ListItemContentContainer>
+          <ListItemContent className="bold">{number}</ListItemContent>
+          <ListItemContent>{role}</ListItemContent>
+          <ListItemContent className="extend">{name}</ListItemContent>
           <ListIndicator className={status.className}>
             {status.icon}
             {status.text}

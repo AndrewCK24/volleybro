@@ -136,18 +136,7 @@ export const ListItem = styled.button`
   }
 `;
 
-export const ListItemContentContainer = styled.div`
-  flex: 1 1;
-  height: 2rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  font-size: 1.5rem;
-`;
-
-const StyledContent = styled.div`
+export const ListItemContent = styled.div`
   flex: 0 0 2rem;
   height: 2rem;
   /* max-width: 10rem; */
@@ -167,10 +156,6 @@ const StyledContent = styled.div`
     font-weight: 600;
   }
 `;
-
-export const ListItemContent = ({ children, className }) => {
-  return <StyledContent className={className}>{children}</StyledContent>;
-};
 
 const StyledIndicator = styled.div`
   flex: 0 0 6.5rem;

@@ -10,7 +10,7 @@ import {
   ListInfo,
   ListTitle,
   ListItem,
-  ListItemContentContainer,
+  ListItemContent,
 } from "../components/common/List";
 import { IconButton } from "../components/common/Button";
 import { FiChevronRight, FiCheck, FiX } from "react-icons/fi";
@@ -77,7 +77,7 @@ const TeamListPage = () => {
         </ListHeader>
         {teams.map((team, index) => (
           <ListItem key={team._id}>
-            <ListItemContentContainer>{team.name}</ListItemContentContainer>
+            <ListItemContent className="extend">{team.name}</ListItemContent>
             {index === 0 || (
               <IconButton onClick={() => switchTeam(team._id)}>
                 <FiChevronRight />
@@ -94,9 +94,9 @@ const TeamListPage = () => {
         </ListHeader>
         {invitingTeams.map((invitingTeam) => (
           <ListItem key={invitingTeam._id}>
-            <ListItemContentContainer>
+            <ListItemContent className="extend">
               {invitingTeam.name}
-            </ListItemContentContainer>
+            </ListItemContent>
             <IconButton
               onClick={() => handleInvitation(invitingTeam._id, true)}
             >
