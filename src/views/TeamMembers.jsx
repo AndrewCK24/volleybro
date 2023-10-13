@@ -1,7 +1,8 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 import store from "../store";
+import { teamActions } from "../components/team/team-slice";
 import {
   List,
   ListHeader,
@@ -12,9 +13,8 @@ import {
   LinkButton,
 } from "../components/common/List";
 import MemberCard from "../components/team/MemberCard";
-import NewMemberBtn from "../components/team/NewMemberBtn";
 import { BsGrid3X2Gap } from "react-icons/bs";
-import { FiEdit3 } from "react-icons/fi";
+import { FiPlus, FiEdit3 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 
 const StyledItem = styled(ListItem)`
@@ -25,6 +25,7 @@ const StyledItem = styled(ListItem)`
 `;
 
 const TeamMembersPage = () => {
+  const dispatch = useDispatch();
   const { _id: userId } = useSelector((state) => state.user);
   const { name, members, editingMember } = useSelector((state) => state.team);
   const isAdmin = members.find(
@@ -40,6 +41,10 @@ const TeamMembersPage = () => {
   const hasSixPlayers =
     members.filter((member) => member.number && member.role !== "M").length >=
     6;
+
+  const handleCreateMember = () => {
+    dispatch(teamActions.createMember());
+  };
 
   return (
     <List>
@@ -69,7 +74,14 @@ const TeamMembersPage = () => {
           userId={userId}
         />
       ))}
-      {isNewBtnVisible && <NewMemberBtn />}
+      {isNewBtnVisible && (
+        <ListItem
+          className="button secondary"
+          onClick={() => handleCreateMember()}
+        >
+          <FiPlus />
+        </ListItem>
+      )}
     </List>
   );
 };
