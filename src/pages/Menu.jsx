@@ -42,6 +42,7 @@ const MenuPage = () => {
   const dispatch = useDispatch();
   const userName = useSelector((state) => state.user.name);
   const { teams } = useSelector((state) => state.user);
+  // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = () => {
     setExtendTeams(!extendTeams);

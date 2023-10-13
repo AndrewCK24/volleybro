@@ -146,7 +146,6 @@ export const ListItem = styled.button`
 export const ListItemContent = styled.div`
   flex: 0 0 2rem;
   height: 2rem;
-  /* max-width: 10rem; */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -163,6 +162,44 @@ export const ListItemContent = styled.div`
     font-weight: 600;
   }
 `;
+
+// TODO: 將 ListItemDetailContent 簡化為 ListItemContent
+export const ListItemDetailContent = ({ detail, children }) => {
+  const Container = styled.div`
+    flex: 1 1;
+    height: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: center;
+    gap: 0.25rem;
+  `;
+
+  const StyledContent = styled(ListItemContent)`
+    flex: 0 0 1.5rem;
+    width: 100%;
+    height: 1.5rem;
+    justify-content: flex-start;
+    line-height: 1.5rem;
+  `;
+
+  const StyledDetail = styled(ListItemContent)`
+    flex: 0 0 1rem;
+    width: 100%;
+    height: 1rem;
+    justify-content: flex-start;
+    font-size: 1rem;
+    line-height: 1rem;
+    color: var(--color-primary-600);
+  `;
+
+  return (
+    <Container>
+      <StyledContent>{children}</StyledContent>
+      <StyledDetail>{detail}</StyledDetail>
+    </Container>
+  );
+};
 
 export const ListIndicator = styled.div`
   flex: 0 0 6.5rem;
