@@ -157,7 +157,7 @@ export const ListItemContent = styled.div`
   }
 `;
 
-const StyledIndicator = styled.div`
+export const ListIndicator = styled.div`
   flex: 0 0 6.5rem;
   height: 2rem;
   padding: 0rem 0.5rem;
@@ -198,18 +198,3 @@ const StyledIndicator = styled.div`
     color: var(--color-primary-100);
   }
 `;
-
-export const ListIndicator = ({ children, className }) => {
-  switch (className) {
-    case "primary":
-      return <StyledIndicator className="primary">{children}</StyledIndicator>;
-    case "secondary":
-      return (
-        <StyledIndicator className="secondary">{children}</StyledIndicator>
-      );
-    case "danger":
-      return <StyledIndicator className="danger">{children}</StyledIndicator>;
-    default:
-      return <StyledIndicator>{children}</StyledIndicator>;
-  }
-};
