@@ -102,7 +102,7 @@ const MemberCardEdit = ({ index, member, isAdmin }) => {
           labelText="電子信箱"
           type="email"
           placeholder="請輸入球員電子信箱"
-          required={true}
+          required={false}
           defaultValue={info.email}
           disabled={!isAdmin}
         />
