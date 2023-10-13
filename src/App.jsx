@@ -22,11 +22,11 @@ import TeamInvitationsPage, {
   loader as teamInvitationsLoader,
 } from "./views/TeamInvitations";
 import TeamLineupPage, { loader as teamLineupLoader } from "./views/TeamLineup";
-import TeamInfoForm, {
-  loader as teamCreateLoader,
+import TeamInfo, {
+  loader as teamInfoLoader,
   teamCreateAction,
-  teamNameUpdateAction,
-} from "./views/TeamInfoForm";
+  teamInfoUpdateAction,
+} from "./views/TeamInfo";
 import { action as memberEditAction } from "./components/team/MemberCard";
 
 import MenuPage, { loader as MenuLoader } from "./pages/Menu";
@@ -66,15 +66,15 @@ const router = createBrowserRouter([
             loader: teamLineupLoader,
           },
           {
-            path: "edit",
-            element: <TeamInfoForm />,
-            loader: teamCreateLoader,
-            action: teamNameUpdateAction,
+            path: ":id",
+            element: <TeamInfo />,
+            loader: teamInfoLoader,
+            action: teamInfoUpdateAction,
           },
           {
             path: "new",
-            element: <TeamInfoForm />,
-            loader: teamCreateLoader,
+            element: <TeamInfo />,
+            loader: teamInfoLoader,
             action: teamCreateAction,
           },
         ],

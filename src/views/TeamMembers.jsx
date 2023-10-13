@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 
 import store from "../store";
@@ -8,14 +9,12 @@ import {
   ListHeader,
   ListInfo,
   ListTitle,
-  LinkSet,
   ListItem,
   LinkButton,
 } from "../components/common/List";
 import MemberCard from "../components/team/MemberCard";
 import { BsGrid3X2Gap } from "react-icons/bs";
-import { FiPlus, FiEdit3 } from "react-icons/fi";
-import { GoArrowSwitch } from "react-icons/go";
+import { FiPlus, FiChevronRight } from "react-icons/fi";
 
 const StyledItem = styled(ListItem)`
   padding: 0.5rem 1.5rem;
@@ -26,8 +25,14 @@ const StyledItem = styled(ListItem)`
 
 const TeamMembersPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { _id: userId } = useSelector((state) => state.user);
-  const { name, members, editingMember } = useSelector((state) => state.team);
+  const {
+    _id: teamId,
+    name,
+    members,
+    editingMember,
+  } = useSelector((state) => state.team);
   const isAdmin = members.find(
     (member) => member.info.userId === userId && member.info.admin
   );
@@ -42,6 +47,10 @@ const TeamMembersPage = () => {
     members.filter((member) => member.number && member.role !== "M").length >=
     6;
 
+  const handleTeamBtn = () => {
+    navigate(`/team/${teamId}`);
+  };
+
   const handleCreateMember = () => {
     dispatch(teamActions.createMember());
   };
@@ -50,19 +59,14 @@ const TeamMembersPage = () => {
     <List>
       <ListHeader>
         <ListInfo>
-          <ListTitle>{name}</ListTitle>
-          <LinkButton to="/team/list">
-            <GoArrowSwitch />
-          </LinkButton>
+          <ListTitle onClick={() => handleTeamBtn()}>
+            {name}
+            <FiChevronRight />
+          </ListTitle>
         </ListInfo>
-        <LinkSet>
-          <LinkButton to="/team/lineup">
-            <BsGrid3X2Gap />
-          </LinkButton>
-          <LinkButton to="/team/edit">
-            <FiEdit3 />
-          </LinkButton>
-        </LinkSet>
+        <LinkButton to="/team/lineup">
+          <BsGrid3X2Gap />
+        </LinkButton>
       </ListHeader>
       {hasSixPlayers || <StyledItem>*球員不足6人，請先完成球員登錄</StyledItem>}
       {members.map((member, index) => (

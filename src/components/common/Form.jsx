@@ -2,7 +2,7 @@ import { Form, Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
 export const FormContainer = styled(Form)`
-  margin: 10% 5%;
+  margin: none;
   border-radius: 1rem;
   background-color: var(--color-primary-100);
   padding: 10% 5%;
@@ -233,9 +233,12 @@ export const FormSelect = (props) => {
 };
 
 export const StyledButton = styled.button`
-  height: 2.5rem;
+  height: 3rem;
   width: 100%;
   padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-primary-100);
   background-color: var(--color-secondary-500);
   border: none;

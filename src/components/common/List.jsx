@@ -26,6 +26,10 @@ export const ListInfo = styled.div`
 `;
 
 export const ListTitle = styled.h2`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
   /* TODO: 新增 subtitle */
   max-width: calc(100vw - 11rem);
   overflow: hidden;
@@ -34,6 +38,12 @@ export const ListTitle = styled.h2`
   font-size: 1.75rem;
   font-weight: 500;
   color: var(--color-primary-800);
+  gap: 0.5rem;
+  svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-secondary-700);
+  }
 `;
 
 export const LinkSet = styled.div`

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { redirect, useLocation } from "react-router-dom";
 
 import store from "../store";
+import { Section } from "../components/common/Section";
 import {
   FormContainer,
   FormTitle,
@@ -10,14 +11,14 @@ import {
   FormButton,
 } from "../components/common/Form";
 
-const TeamInfoForm = () => {
+const TeamInfo = () => {
   const { pathname } = useLocation();
   const pathArr = pathname.split("/").filter(Boolean);
-  const isEdit = pathArr[1] === "edit";
-  const actionPath = isEdit ? "/team/edit" : "/team/new";
+  const isNew = pathArr[1] === "new";
+  const actionPath = isNew ? "/team/new" : "/team/:id";
 
-  const [nameError, setNameError] = useState(isEdit ? "" : " ");
-  const [nicknameError, setNicknameError] = useState(isEdit ? "" : " ");
+  const [nameError, setNameError] = useState(isNew ? " " : "");
+  const [nicknameError, setNicknameError] = useState(isNew ? " " : "");
   const errorArr = [nameError, nicknameError];
 
   const handleNameChange = (value) => {
@@ -39,41 +40,42 @@ const TeamInfoForm = () => {
   };
 
   return (
-    <FormContainer method="post" path={actionPath}>
-      <FormTitle>{isEdit ? "修改隊伍資訊" : "建立隊伍"}</FormTitle>
-      <FormContents>
-        <FormControl
-          name="name"
-          labelText="隊伍名稱"
-          type="text"
-          defaultValue={isEdit ? store.getState().team.name : ""}
-          placeholder="請輸入隊伍全名"
-          required={true}
-          onChange={handleNameChange}
-          warn={nameError}
-        />
-        <FormControl
-          name="nickname"
-          labelText="隊伍簡稱"
-          type="text"
-          defaultValue={isEdit ? store.getState().team.nickname : ""}
-          placeholder="請輸入隊伍簡稱 (8字以內)"
-          required={true}
-          onChange={handleNicknameChange}
-          warn={nicknameError}
-        />
-      </FormContents>
-      <FormButton errorArr={errorArr}>
-        {isEdit ? "儲存修改" : "建立隊伍"}
-      </FormButton>
-    </FormContainer>
+    <Section className="fixed">
+      <FormContainer method="post" path={actionPath}>
+        <FormContents>
+          <FormControl
+            name="name"
+            labelText="隊伍名稱"
+            type="text"
+            defaultValue={isNew ? "" : store.getState().team.name}
+            placeholder="請輸入隊伍全名"
+            required={true}
+            onChange={handleNameChange}
+            warn={nameError}
+          />
+          <FormControl
+            name="nickname"
+            labelText="隊伍簡稱"
+            type="text"
+            defaultValue={isNew ? "" : store.getState().team.nickname}
+            placeholder="請輸入隊伍簡稱 (8字以內)"
+            required={true}
+            onChange={handleNicknameChange}
+            warn={nicknameError}
+          />
+        </FormContents>
+        <FormButton errorArr={errorArr}>
+          {isNew ? "建立隊伍" : "儲存修改"}
+        </FormButton>
+      </FormContainer>
+    </Section>
   );
 };
 
-export default TeamInfoForm;
+export default TeamInfo;
 
 export const loader = () => {
-  store.dispatch({ type: "root/setTitle", payload: "" });
+  store.dispatch({ type: "root/setTitle", payload: "隊伍資訊" });
   return null;
 };
 
@@ -112,7 +114,7 @@ export const teamCreateAction = async ({ request }) => {
   }
 };
 
-export const teamNameUpdateAction = async ({ request }) => {
+export const teamInfoUpdateAction = async ({ request }) => {
   const { editingMember, ...teamData } = store.getState().team;
   const formData = await request.formData();
   const reqData = {
