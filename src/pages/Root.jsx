@@ -56,7 +56,8 @@ const RootLayout = () => {
 
   const { pathname } = useLocation();
   const pathArr = pathname.split("/").filter(Boolean);
-  const index = pathArr.length > 1 ? `/${pathArr[0]}` : "";
+  const isIndex = pathArr.length <= 1;
+  const returnPath = isIndex ? "" : `/${pathArr[0]}`;
   const teamId = useSelector((state) => state.team._id);
   const { title } = useSelector((state) => state.root);
 
@@ -75,12 +76,12 @@ const RootLayout = () => {
     </RootContainer>
   ) : (
     <RootContainer>
-      <Header title={title} index={index} />
+      <Header title={title} index={returnPath} />
       <MainContainer className={pathArr[1] === "lineup" ? "fixed" : ""}>
         <Outlet />
-        {pathArr[1] !== "lineup" || pathname !== "/team/:id" && <Footer />}
+        {isIndex && <Footer />}
       </MainContainer>
-      {!index && teamId && hasSixPlayers && <StartRecordBtn />}
+      {isIndex && teamId && hasSixPlayers && <StartRecordBtn />}
       <BottomNav />
     </RootContainer>
   );
