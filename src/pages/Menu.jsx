@@ -16,7 +16,6 @@ import {
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 import { Section } from "../components/common/Section";
-import { IconButton } from "../components/common/Button";
 import { ListItem, ListItemContent } from "../components/common/List";
 
 const ExtendTeamsIcon = styled(FiChevronDown)`
@@ -46,6 +45,27 @@ const MenuPage = () => {
 
   const handleExtendTeams = () => {
     setExtendTeams(!extendTeams);
+  };
+
+  const handleTeamSwitch = async (teamId) => {
+    try {
+      const response = await fetch("/.netlify/functions/fetch-team-by-id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ teamId }),
+      });
+      const { status, userData, teamData } = await response.json();
+      if (status === 200) {
+        dispatch(userActions.loadUserData(userData));
+        dispatch(teamActions.loadTeamData(teamData));
+        navigate("/team");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleInvitingTeams = () => {
@@ -78,14 +98,10 @@ const MenuPage = () => {
         </ListItem>
         {extendTeams &&
           teams.map((team, index) => (
-            <TeamItem key={team._id}>
+            <TeamItem key={team._id} onClick={() => handleTeamSwitch(team._id)}>
               <FiUsers />
               <ListItemContent className="extend">{team.name}</ListItemContent>
-              {index === 0 || (
-                <IconButton onClick={() => switchTeam(team._id)}>
-                  <GoArrowSwitch />
-                </IconButton>
-              )}
+              {index === 0 || <GoArrowSwitch />}
             </TeamItem>
           ))}
         <TeamItem className="special" onClick={() => handleInvitingTeams()}>
