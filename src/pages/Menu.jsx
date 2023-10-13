@@ -47,7 +47,12 @@ const MenuPage = () => {
     setExtendTeams(!extendTeams);
   };
 
-  const handleTeamSwitch = async (teamId) => {
+  const handleTeamSwitch = async (index, teamId) => {
+    if (index === 0) {
+      navigate("/team");
+      return;
+    }
+
     try {
       const response = await fetch("/.netlify/functions/fetch-team-by-id", {
         method: "POST",
@@ -93,7 +98,7 @@ const MenuPage = () => {
         </ListItem>
         {extendTeams &&
           teams.map((team, index) => (
-            <TeamItem key={team._id} onClick={() => handleTeamSwitch(team._id)}>
+            <TeamItem key={team._id} onClick={() => handleTeamSwitch(index, team._id)}>
               <FiUsers />
               <ListItemContent className="extend">{team.name}</ListItemContent>
               {index === 0 || <GoArrowSwitch />}
