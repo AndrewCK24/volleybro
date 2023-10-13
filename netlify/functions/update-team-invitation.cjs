@@ -74,7 +74,7 @@ exports.handler = async (event) => {
     const acceptedTeam = user.invitingTeams.splice(acceptedTeamIndex, 1)[0];
     console.log("acceptedTeam", acceptedTeam);
     console.log("user.invitingTeams", user.invitingTeams);
-    user.teams.push(acceptedTeam);
+    user.teams.unshift(acceptedTeam);
     console.log("user.teams", user.teams);
     await user.save();
     await team.save();
@@ -87,6 +87,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         status: 200,
         userData: user,
+        teamData: team,
         message: "Invitation accepted.",
       }),
     };

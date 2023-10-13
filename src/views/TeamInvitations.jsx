@@ -20,7 +20,6 @@ const TeamInvitationsPage = () => {
   const navigate = useNavigate();
   const { invitingTeams } = useSelector((state) => state.user);
 
-
   const handleInvitation = async (teamId, accept) => {
     try {
       const response = await fetch(
@@ -34,10 +33,12 @@ const TeamInvitationsPage = () => {
           body: JSON.stringify({ teamId, accept }),
         }
       );
-      const { status, userData } = await response.json();
+      const { status, userData, teamData } = await response.json();
       if (status === 200) {
         if (accept) {
           dispatch(userActions.loadUserData(userData));
+          dispatch(teamActions.loadTeamData(teamData));
+          navigate("/team");
         } else {
           dispatch(userActions.loadUserData(userData));
         }
