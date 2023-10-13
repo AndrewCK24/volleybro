@@ -76,8 +76,8 @@ export const ListItem = styled.button`
   user-select: none;
   transition: box-shadow 0.2s ease-in-out, background-color 0.1s ease-in-out;
   svg {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   &.button {
@@ -85,15 +85,22 @@ export const ListItem = styled.button`
     cursor: pointer;
   }
 
+  &.icon-button {
+    justify-content: center;
+    cursor: pointer;
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+
   &:active {
-    background-color: var(--color-secondary-400);
+    background-color: var(--color-primary-200);
     box-shadow: 0 0 0.25rem var(--color-primary-400);
-    color: var(--color-primary-100);
   }
   &.toggled {
-    background-color: var(--color-secondary-400);
+    background-color: var(--color-primary-200);
     box-shadow: 0 0 1rem var(--color-primary-400);
-    color: var(--color-primary-100);
   }
 
   &.primary {

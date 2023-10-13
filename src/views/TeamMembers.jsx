@@ -76,7 +76,7 @@ const TeamMembersPage = () => {
       ))}
       {isNewBtnVisible && (
         <ListItem
-          className="button secondary"
+          className="icon-button secondary"
           onClick={() => handleCreateMember()}
         >
           <FiPlus />
