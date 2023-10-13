@@ -12,7 +12,7 @@ import SignUpForm, {
   action as signUpAction,
 } from "./components/auth/SignUpForm";
 
-import Dashboard from "./pages/DashBoard";
+import Dashboard, { loader as homeLoader } from "./pages/DashBoard";
 
 import TeamPage from "./pages/Team";
 import TeamMembersPage, {
@@ -43,6 +43,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
+        loader: homeLoader,
       },
       {
         path: "team",
