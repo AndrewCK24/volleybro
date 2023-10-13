@@ -1,20 +1,9 @@
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 
-export const ListContainer = styled.section`
-  flex: 0 0;
-  width: 100%;
-  border-radius: 1.5rem;
-  padding: 1rem;
-  /* background-color: var(--color-secondary-300); */
-  background-color: var(--color-primary-100);
-  box-shadow: 0 0 1rem var(--color-primary-300);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-`;
+import { Section } from "./Section";
+
+export const ListContainer = styled(Section)``;
 
 export const ListHeader = styled.div`
   flex: 0 0;

@@ -2,27 +2,12 @@ import { useSelector } from "react-redux";
 import styled from "@emotion/styled";
 
 import store from "../store";
+import { Section } from "../components/common/Section";
 import { Court } from "../components/common/Court";
 import {
-  ListContainer,
-  ListHeader,
-  ListInfoGroup,
-  ListTitle,
   ListItemContainer,
   ListItemContent,
 } from "../components/common/List";
-
-const FixedListContainer = styled(ListContainer)`
-  flex: 1 1;
-  overflow: scroll;
-  overscroll-behavior-y: contain;
-`;
-
-const TransparentContainer = styled(ListContainer)`
-  padding-top: 0;
-  background-color: transparent;
-  box-shadow: none;
-`;
 
 const SaveBtn = styled(ListItemContainer)`
   justify-content: center;
@@ -35,15 +20,10 @@ const TeamLineupPage = () => {
 
   return (
     <>
-      <ListContainer>
-        <ListHeader>
-          <ListInfoGroup>
-            <ListTitle>選擇先發球員</ListTitle>
-          </ListInfoGroup>
-        </ListHeader>
+      <Section>
         <Court members={members} />
-      </ListContainer>
-      <FixedListContainer>
+      </Section>
+      <Section className="fixed">
         {members.map(
           (member, index) =>
             member._id && (
@@ -58,10 +38,10 @@ const TeamLineupPage = () => {
               </ListItemContainer>
             )
         )}
-      </FixedListContainer>
-      <TransparentContainer>
+      </Section>
+      <Section className="transparent">
         <SaveBtn>儲存陣容</SaveBtn>
-      </TransparentContainer>
+      </Section>
     </>
   );
 };
