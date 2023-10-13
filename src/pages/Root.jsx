@@ -78,9 +78,9 @@ const RootLayout = () => {
       <Header title={title} index={index} />
       <MainContainer className={pathArr[1] === "lineup" ? "fixed" : ""}>
         <Outlet />
-        {pathArr[1] !== "lineup" && <Footer />}
+        {pathArr[1] !== "lineup" || pathname !== "/team/:id" && <Footer />}
       </MainContainer>
-      {teamId && hasSixPlayers && <StartRecordBtn />}
+      {!index && teamId && hasSixPlayers && <StartRecordBtn />}
       <BottomNav />
     </RootContainer>
   );
