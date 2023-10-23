@@ -2,10 +2,6 @@ import { Inter, Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
 
-import Header from "./components/layout/Header";
-import StartRecordBtn from "./components/layout/StartRecordBtn";
-import BottomNav from "./components/layout/BottomNav";
-
 const inter = Inter({ subsets: ["latin"] });
 const saira = Saira({ subsets: ["latin"] });
 const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
@@ -61,7 +57,7 @@ export default function RootLayout({ children }) {
         />
 
         <link
-          href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500;700&family=Orbitron:wght@400;500;700&family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;700&family=Orbitron:wght@400;500;700&family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
 
@@ -80,10 +76,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <StyledComponentsRegistry>
-          <Header />
           {children}
-          <StartRecordBtn />
-          <BottomNav />
         </StyledComponentsRegistry>
       </body>
     </html>
