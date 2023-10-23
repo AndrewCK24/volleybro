@@ -78,11 +78,11 @@ const iconSharedStyle = css`
   }
 `;
 
-export const IconButton = ({ children, className, ...prop }) => {
-  const StyledButton = styled.button`
-    ${iconSharedStyle}
-  `;
+const StyledButton = styled.button`
+  ${iconSharedStyle}
+`;
 
+export const IconButton = ({ children, className, ...prop }) => {
   return (
     <StyledButton className={className} {...prop}>
       {children}
