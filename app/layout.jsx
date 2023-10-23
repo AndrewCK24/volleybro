@@ -2,6 +2,8 @@ import { Inter, Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
 
+import Header from "./components/layout/Header";
+import StartRecordBtn from "./components/layout/StartRecordBtn";
 import BottomNav from "./components/layout/BottomNav";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -78,7 +80,9 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <StyledComponentsRegistry>
+          <Header />
           {children}
+          <StartRecordBtn />
           <BottomNav />
         </StyledComponentsRegistry>
       </body>

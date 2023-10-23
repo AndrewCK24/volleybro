@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import styled from "styled-components";
 
 import { FiEdit } from "react-icons/fi";
@@ -29,7 +31,7 @@ const StyledLink = styled(Link)`
 
 const StartRecordBtn = () => {
   return (
-    <StyledLink to="/record">
+    <StyledLink href="/record">
       <FiEdit />
       開始紀錄
     </StyledLink>

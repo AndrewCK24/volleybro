@@ -1,3 +1,5 @@
+"use client";
+
 import styled from "styled-components";
 
 import { LinkButton } from "../common/List";
@@ -41,7 +43,7 @@ const Header = ({ title, index }) => {
     <Container>
       {index ? (
         <>
-          <LinkButton to={index}>
+          <LinkButton href={index}>
             <FiArrowLeft />
           </LinkButton>
           <CenteredTitle>{title}</CenteredTitle>

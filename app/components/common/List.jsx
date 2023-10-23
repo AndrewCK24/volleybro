@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import styled from "styled-components";
 
 import { Section } from "./Section";
