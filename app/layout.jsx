@@ -1,5 +1,8 @@
 import { Inter, Saira, Noto_Sans_TC } from "next/font/google";
+import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
+
+import BottomNav from "./components/layout/BottomNav";
 
 const inter = Inter({ subsets: ["latin"] });
 const saira = Saira({ subsets: ["latin"] });
@@ -13,7 +16,7 @@ export const metadata = {
   keywords: ["volleyball", "stats", "app", "vstats", "v-stats"],
   authors: [{ name: "V-Stats" }, { name: "Andrew Tseng" }],
   colorTheme: "light",
-  themeColor: "#10687e",
+  themeColor: "#dddcdd",
   formatDetection: {
     email: false,
     address: false,
@@ -64,13 +67,21 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="V-Stats" />
         <meta property="og:site_name" content="V-Stats" />
-        <meta property="og:description" content="Best volleyball stats app ever" />
+        <meta
+          property="og:description"
+          content="Best volleyball stats app ever"
+        />
         {/* TODO: 尚未補上 og 圖片 */}
 
         {/* TODO: twitter 設定待補 */}
         {/* TODO: apple splash screen images 待補 */}
       </head>
-      <body className={saira.className}>{children}</body>
+      <body>
+        <StyledComponentsRegistry>
+          {children}
+          <BottomNav />
+        </StyledComponentsRegistry>
+      </body>
     </html>
   );
 }
