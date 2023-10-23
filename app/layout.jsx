@@ -1,12 +1,12 @@
-import { Inter, Saira, Noto_Sans_TC } from "next/font/google";
+// import { Inter, Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
 
 import Root from "./components/layout/Root";
 
-const inter = Inter({ subsets: ["latin"] });
-const saira = Saira({ subsets: ["latin"] });
-const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
+// const saira = Saira({ subsets: ["latin"] });
+// const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
 
 export const metadata = {
   manifest: "/manifest.json",

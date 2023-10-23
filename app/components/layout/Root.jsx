@@ -38,12 +38,18 @@ const Root = ({ children }) => {
 
   return (
     <>
-      <Header title="V-Stats" />
-      <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
-        {children}
-      </Main>
-      <StartRecordBtn />
-      <BottomNav pathname={pathname} />
+      {pathname === "/auth" ? (
+        <Main>{children}</Main>
+      ) : (
+        <>
+          <Header title="V-Stats" isIndex={isIndex} />
+          <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
+            {children}
+          </Main>
+          {isIndex && <StartRecordBtn />}
+          <BottomNav pathname={pathname} />
+        </>
+      )}
     </>
   );
 };

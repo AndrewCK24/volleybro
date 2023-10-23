@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 
-import { LinkButton } from "../common/List";
+import { IconButton } from "../common/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 
@@ -32,25 +32,29 @@ const Title = styled.h1`
   font-size: 2rem;
   font-weight: 500;
   line-height: 3rem;
+
+  &.center {
+    justify-content: center;
+  }
 `;
 
 const CenteredTitle = styled(Title)`
   justify-content: center;
 `;
 
-const Header = ({ title, index }) => {
+const Header = ({ title, isIndex }) => {
+  const handleBack = () => {
+    window.history.back();
+  };
+
   return (
     <Container>
-      {index ? (
-        <>
-          <LinkButton href={index}>
-            <FiArrowLeft />
-          </LinkButton>
-          <CenteredTitle>{title}</CenteredTitle>
-        </>
-      ) : (
-        <Title>{title}</Title>
+      {isIndex && (
+        <IconButton onClick={handleBack}>
+          <FiArrowLeft />
+        </IconButton>
       )}
+      <Title className={isIndex ? "center" : ""}>{title}</Title>
       <IoNotificationsSharp />
     </Container>
   );
