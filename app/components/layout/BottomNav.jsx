@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 import {
@@ -53,8 +52,7 @@ const NavLink = styled(Link)`
   }
 `;
 
-const BottomNav = () => {
-  const router = useRouter();
+const BottomNav = ({pathname}) => {
   const navLinks = [
     { title: "首頁", icon: <HomeIcon />, path: "/" },
     { title: "隊伍", icon: <TeamIcon />, path: "/team" },
@@ -68,7 +66,7 @@ const BottomNav = () => {
         <NavLink
           key={path}
           href={path}
-          className={router.pathname === path ? "active" : ""}
+          className={pathname === path ? "active" : ""}
         >
           {icon}
           {title}
