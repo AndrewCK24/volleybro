@@ -1,3 +1,4 @@
+"use client";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -11,6 +12,9 @@ const Container = styled.div`
   font-weight: 700;
   color: var(--color-secondary-500);
   text-shadow: 0 0 0.25rem var(--color-secondary-600);
+  &.maximized {
+    flex: 1 1;
+  }
   /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
   /* &.dark {
     color: var(--color-secondary-800);
@@ -27,6 +31,8 @@ const Container = styled.div`
   } */
 `;
 
-const Logo = () => <Container>V-STATS</Container>;
+const Logo = ({ className }) => (
+  <Container className={className}>V-STATS</Container>
+);
 
 export default Logo;
