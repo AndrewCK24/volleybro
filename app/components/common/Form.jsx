@@ -12,7 +12,7 @@ export const FormContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 2rem;
+  gap: 1rem;
   &.minimized {
     flex: 0 0;
   }
@@ -25,7 +25,7 @@ export const FormContainer = styled.div`
 
 export const FormTitle = styled.h1`
   width: 100%;
-  margin: 0;
+  padding: 0 0 1rem;
   display: flex;
   align-items: center;
   justify-content: left;
@@ -258,6 +258,7 @@ export const StyledButton = styled.button`
     background-color: var(--color-secondary-300);
   }
   &.outlined {
+    font-weight: 500;
     color: var(--color-secondary-500);
     background-color: var(--color-primary-100);
     border: solid 1px var(--color-secondary-500);
@@ -267,13 +268,24 @@ export const StyledButton = styled.button`
     background-color: var(--color-primary-100);
     border: solid 1px var(--color-primary-300);
   }
+  &.text {
+    font-weight: 500;
+    color: var(--color-secondary-500);
+    background-color: transparent;
+    border: none;
+  }
 `;
 
 export const FormButton = ({ children, errorArr = [], className, onClick }) => {
   const hasError = errorArr.some((error) => error);
 
   return (
-    <StyledButton type="submit" disabled={hasError} className={className} onClick={onClick}>
+    <StyledButton
+      type="submit"
+      disabled={hasError}
+      className={className}
+      onClick={onClick}
+    >
       {children}
     </StyledButton>
   );

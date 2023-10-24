@@ -134,8 +134,8 @@ const SignUpForm = () => {
         />
         <FormButton errorArr={errorArr}>登入</FormButton>
       </FormContents>
-      <FormHr content="或使用以下方式登入" />
-      <FormButton className="outlined" onClick={handleSignIn}>
+      <FormHr content="已有帳號了嗎？" />
+      <FormButton className="text" onClick={handleSignIn}>
         返回登入頁
       </FormButton>
     </FormContainer>
