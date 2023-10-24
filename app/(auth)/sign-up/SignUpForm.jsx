@@ -9,7 +9,6 @@ import {
   FormControl,
   FormButton,
   FormHr,
-  FormLink,
 } from "../../components/common/Form";
 
 const SignUpForm = () => {
@@ -133,7 +132,6 @@ const SignUpForm = () => {
           onChange={handleNameChange}
           warn={nameError}
         />
-        <FormLink href="/auth/password">忘記密碼？</FormLink>
         <FormButton errorArr={errorArr}>登入</FormButton>
       </FormContents>
       <FormHr content="或使用以下方式登入" />
