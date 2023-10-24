@@ -1,19 +1,21 @@
 import Link from "next/link";
 import styled from "styled-components";
 
-export const FormContainer = styled.form`
+export const FormContainer = styled.div`
   flex: 1 1;
   margin: none;
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   background-color: var(--color-primary-100);
   padding: 10% 5%;
-  /* height: 100%; */
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   gap: 2rem;
+  &.minimized {
+    flex: 0 0;
+  }
 
   @media screen and (min-width: 768px) {
     margin: 20% 5%;
@@ -27,12 +29,12 @@ export const FormTitle = styled.h1`
   display: flex;
   align-items: center;
   justify-content: left;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-primary-800);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--color-primary-900);
 `;
 
-export const FormContents = styled.div`
+export const FormContents = styled.form`
   flex: 1 1;
   width: 100%;
   display: flex;
@@ -102,6 +104,9 @@ const FormInput = styled.input`
     -moz-box-shadow: inset 0 0 0.25rem var(--color-primary-400);
     box-shadow: inset 0 0 0.25rem var(--color-primary-400);
   }
+  &.warn {
+    border: solid 2px var(--color-danger-500);
+  }
 `;
 
 export const FormControl = (props) => {
@@ -138,6 +143,7 @@ export const FormControl = (props) => {
         ref={ref}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="on"
+        className={warn === " " ? "" : warn ? "warn" : ""}
       />
     </FormInputContainer>
   );
@@ -251,13 +257,23 @@ export const StyledButton = styled.button`
   &:disabled {
     background-color: var(--color-secondary-300);
   }
+  &.outlined {
+    color: var(--color-secondary-500);
+    background-color: var(--color-primary-100);
+    border: solid 1px var(--color-secondary-500);
+  }
+  &.outlined:disabled {
+    color: var(--color-primary-300);
+    background-color: var(--color-primary-100);
+    border: solid 1px var(--color-primary-300);
+  }
 `;
 
-export const FormButton = ({ children, errorArr }) => {
+export const FormButton = ({ children, errorArr = [], className, onClick }) => {
   const hasError = errorArr.some((error) => error);
 
   return (
-    <StyledButton type="submit" disabled={hasError}>
+    <StyledButton type="submit" disabled={hasError} className={className} onClick={onClick}>
       {children}
     </StyledButton>
   );
@@ -273,3 +289,49 @@ export const FormLink = styled(Link)`
   font-weight: 500;
   text-decoration: none;
 `;
+
+export const FormHr = styled.hr`
+  width: 100%;
+  position: relative;
+  padding: 1rem 0;
+  border: 0;
+  font-size: 1rem;
+  color: var(--color-primary-400);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--color-primary-400),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--color-primary-400),
+    transparent
+  );
+
+  &::before {
+    content: "${(props) => props.content}";
+    position: absolute;
+    padding: 0 1ch;
+    line-height: 1px;
+    border: solid var(--color-primary-400);
+    border-width: 0 99vw;
+    width: fit-content;
+    white-space: nowrap;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+`;
+
+// const FormHr = styled.hr`
+//   width: 100%;
+//   border: 0;
+//   padding-top: 1px;
+//   background: linear-gradient(
+//     to right,
+//     transparent,
+//     var(--color-primary-400),
+//     transparent
+//   );
+// `;
