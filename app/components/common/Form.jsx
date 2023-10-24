@@ -1,12 +1,13 @@
-import { Form, Link } from "react-router-dom";
+import Link from "next/link";
 import styled from "styled-components";
 
-export const FormContainer = styled(Form)`
+export const FormContainer = styled.form`
+  flex: 1 1;
   margin: none;
   border-radius: 1rem;
   background-color: var(--color-primary-100);
   padding: 10% 5%;
-  height: 100%;
+  /* height: 100%; */
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -26,7 +27,7 @@ export const FormTitle = styled.h1`
   display: flex;
   align-items: center;
   justify-content: left;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-primary-800);
 `;
@@ -87,14 +88,14 @@ const FormHelperText = styled.span`
 `;
 
 const FormInput = styled.input`
-  height: 3rem;
+  height: 4rem;
   width: 100%;
   padding: 0.5rem;
   border-radius: 0.5rem;
   border: solid 1px var(--gray-primary);
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 500;
-  line-height: 2rem;
+  line-height: 3rem;
   &:focus {
     outline: none;
     -webkit-box-shadow: inset 0 0 0.25rem var(--color-primary-400);
@@ -113,6 +114,7 @@ export const FormControl = (props) => {
     required = false,
     disabled = false,
     warn = "",
+    ref,
     onChange,
   } = props;
 
@@ -133,6 +135,7 @@ export const FormControl = (props) => {
         name={name}
         required={required}
         disabled={disabled}
+        ref={ref}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="on"
       />
@@ -173,16 +176,16 @@ const FormRadioInput = styled.input`
 
 const FormRadioLabel = styled.label`
   width: 100%;
-  height: 3rem;
+  height: 4rem;
   padding: 0.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
   border: solid 1px var(--color-secondary-600);
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 500;
-  line-height: 2rem;
+  line-height: 3rem;
   color: var(--color-secondary-600);
 `;
 
@@ -233,7 +236,7 @@ export const FormSelect = (props) => {
 };
 
 export const StyledButton = styled.button`
-  height: 3rem;
+  height: 4rem;
   width: 100%;
   padding: 0.5rem;
   display: flex;
@@ -243,15 +246,14 @@ export const StyledButton = styled.button`
   background-color: var(--color-secondary-500);
   border: none;
   border-radius: 0.5rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   &:disabled {
     background-color: var(--color-secondary-300);
   }
 `;
 
-export const FormButton = (props) => {
-  const { children, errorArr } = props;
+export const FormButton = ({ children, errorArr }) => {
   const hasError = errorArr.some((error) => error);
 
   return (
@@ -261,7 +263,7 @@ export const FormButton = (props) => {
   );
 };
 
-export const StyledLink = styled(Link)`
+export const FormLink = styled(Link)`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
