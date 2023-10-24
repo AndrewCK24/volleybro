@@ -94,7 +94,7 @@ const SignUpForm = () => {
 
   return (
     <FormContainer className="minimized">
-      <FormTitle>歡迎使用 V-Stats</FormTitle>
+      <FormTitle>開始註冊 V-Stats</FormTitle>
       <FormContents onSubmit={handleSubmit}>
         <FormControl
           name="email"
