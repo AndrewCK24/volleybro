@@ -38,7 +38,7 @@ const Root = ({ children }) => {
 
   return (
     <>
-      {pathname === "/auth" ? (
+      {pathname === "/sign-in" || pathname === "/sign-up" ? (
         <Main>{children}</Main>
       ) : (
         <>

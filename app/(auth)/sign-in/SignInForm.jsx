@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   FormContainer,
   FormTitle,
   FormContents,
   FormControl,
   FormButton,
+  FormHr,
   FormLink,
-} from "../components/common/Form";
+} from "../../components/common/Form";
 
 const SignInForm = () => {
+  const router = useRouter();
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState(" ");
   const [passwordValue, setPasswordValue] = useState("");
@@ -62,10 +65,14 @@ const SignInForm = () => {
     console.log(data);
   };
 
+  const handleSignUp = () => {
+    router.push("/sign-up");
+  };
+
   return (
-    <FormContainer onSubmit={handleSubmit}>
+    <FormContainer className="minimized">
       <FormTitle>歡迎使用 V-Stats</FormTitle>
-      <FormContents>
+      <FormContents onSubmit={handleSubmit}>
         <FormControl
           name="email"
           labelText="帳號"
@@ -85,8 +92,12 @@ const SignInForm = () => {
           warn={passwordError}
         />
         <FormLink href="/auth/password">忘記密碼？</FormLink>
+        <FormButton errorArr={errorArr}>登入</FormButton>
       </FormContents>
-      <FormButton errorArr={errorArr}>註冊 / 登入</FormButton>
+      <FormHr content="或使用以下方式登入" />
+      <FormButton className="outlined" onClick={handleSignUp}>
+        註冊
+      </FormButton>
     </FormContainer>
   );
 };
