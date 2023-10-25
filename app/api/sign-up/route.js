@@ -30,9 +30,7 @@ export const POST = async (req) => {
     }
     const hashedPassword = await hash(password, 10);
 
-    // TODO: add fetching inviting team functions (by Member)
     const invitingTeams = await Team.find({ "members.email": email });
-
     const user = new User({
       email,
       password: hashedPassword,
@@ -45,7 +43,6 @@ export const POST = async (req) => {
     await user.save();
     console.log(`[sign-up] user (${email}) created!`);
 
-    // TODO: add JWT cookies
     const userData = hidePassword(user);
     const token = signJwt(userData);
 
