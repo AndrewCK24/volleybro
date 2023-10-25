@@ -21,7 +21,7 @@ const SignUpForm = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState(" ");
   const [nameValue, setNameValue] = useState("");
   const [nameError, setNameError] = useState(" ");
-  const errorArr = [emailError, passwordError];
+  const errorArr = [emailError, passwordError, confirmPasswordError, nameError];
 
   const handleEmailChange = (value) => {
     setEmailValue(value);
@@ -68,24 +68,30 @@ const SignUpForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = { email: emailValue, password: passwordValue };
+    const formData = {
+      email: emailValue,
+      password: passwordValue,
+      confirm_password: confirmPasswordValue,
+      name: nameValue,
+    };
+    console.log(formData);
 
-    const res = await fetch("/api/sign-in", {
+    const res = await fetch("/api/sign-up", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
 
-    if (res.status === 404) {
-      setEmailError("帳號有誤");
+    if (res.status === 409) {
+      setEmailError("帳號已存在");
     }
-    if (res.status === 401) {
-      setPasswordError("密碼有誤");
+    if (res.status === 400) {
+      setConfirmPasswordError("密碼不一致");
     }
 
     const data = await res.json();
-
     console.log(data);
+    router.push("/");
   };
 
   const handleSignIn = () => {
