@@ -12,10 +12,26 @@ const teamSchema = new Schema(
     },
     members: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Member",
-        required: true,
-      }
+        admin: {
+          type: Boolean,
+          required: true,
+        },
+        email: {
+          type: String,
+          ref: "User",
+          required: false,
+        },
+        user_id: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: false,
+        },
+        member_id: {
+          type: Schema.Types.ObjectId,
+          ref: "Member",
+          required: true,
+        },
+      },
     ],
     matches: [
       {
