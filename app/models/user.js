@@ -33,7 +33,11 @@ const userSchema = new Schema(
     info: {
       type: Object,
       required: false,
-    }
+    },
+    preferences: {
+      type: Object,
+      required: false,
+    },
   },
   {
     timestamps: true,
