@@ -76,22 +76,24 @@ const SignUpForm = () => {
     };
     console.log(formData);
 
-    const res = await fetch("/api/sign-up", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch("/api/sign-up", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    if (res.status === 409) {
-      setEmailError("帳號已存在");
-    }
-    if (res.status === 400) {
-      setConfirmPasswordError("密碼不一致");
-    }
+      if (res.status === 409) return setEmailError("帳號已存在");
+      if (res.status === 400) return setConfirmPasswordError("密碼不一致");
 
-    const data = await res.json();
-    console.log(data);
-    router.push("/");
+      if (res.status === 201) {
+        const { userData } = await res.json();
+        return router.push("/team");
+      }
+    } catch (err) {
+      setEmailError("發生未知錯誤，請稍後再試");
+      console.log(err);
+    }
   };
 
   const handleSignIn = () => {
@@ -138,7 +140,7 @@ const SignUpForm = () => {
           onChange={handleNameChange}
           warn={nameError}
         />
-        <FormButton errorArr={errorArr}>登入</FormButton>
+        <FormButton errorArr={errorArr}>註冊</FormButton>
       </FormContents>
       <FormHr content="已有帳號了嗎？" />
       <FormButton className="text" onClick={handleSignIn}>
