@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import connectMongoDB from "../utils/connect-mongodb";
+import hideUserPassword from "../utils/hide-user-password";
 import signJwt from "../utils/sign-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
@@ -33,13 +34,14 @@ export const POST = async (req) => {
       );
     }
 
-    const token = signJwt(user);
-    const defaultTeamId = user.teams.joined[0];
-    const team = await Team.findById(defaultTeamId);
+    const userData = hideUserPassword(user);
+    const token = signJwt(userData);
+    const defaultTeamId = userData.teams.joined[0];
+    const teamData = await Team.findById(defaultTeamId);
     // if (!team) { ... }
     // TODO: 思考是否要做刪除隊伍功能 (this happens when team was deleted)
 
-    const response = NextResponse.json({ user, team }, { status: 200 });
+    const response = NextResponse.json({ userData, teamData }, { status: 200 });
     response.cookies.set({
       name: "token",
       value: token,

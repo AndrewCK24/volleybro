@@ -57,8 +57,8 @@ const SignInForm = () => {
       if (res.status === 401) return setPasswordError("密碼有誤");
 
       if (res.status === 200) {
-        const { user, team } = await res.json();
-        return team ? router.push("/") : router.push("/team");
+        const { userData, teamData } = await res.json();
+        return teamData ? router.push("/") : router.push("/team");
       }
     } catch (err) {
       setEmailError("發生未知錯誤，請稍後再試");
