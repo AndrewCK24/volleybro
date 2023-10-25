@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { compare } from "bcryptjs";
 import connectMongoDB from "../utils/connect-mongodb";
+import signJwt from "../utils/sign-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 
@@ -15,47 +15,42 @@ export const GET = async () => {
 
 export const POST = async (req) => {
   const { email, password } = await req.json();
-  const response = NextResponse;
   try {
     await connectMongoDB();
 
     const user = await User.findOne({ email });
     if (!user) {
       console.log(`[sign-in] user (${email}) not found!`);
-      return response.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    console.log(`[sign-in] user (${email}) found!`);
 
     const isPasswordCorrect = await compare(password, user.password);
     if (!isPasswordCorrect) {
       console.log(`[sign-in] user (${email}) password is incorrect`);
-      response.json({ error: "Incorrect password" }, { status: 401 });
-      return response;
+      return NextResponse.json(
+        { error: "Incorrect password" },
+        { status: 401 }
+      );
     }
-    console.log(`[sign-in] user (${email}) password is correct`);
 
+    const token = signJwt(user);
     const defaultTeamId = user.teams.joined[0];
-    if (!defaultTeamId) {
-      console.log(
-        `[sign-in] user (${email}) has no team, turning to team create page`
-      );
-      return response.json({ user }, { status: 200 });
-    }
-    console.log(
-      `[sign-in] user (${email}) has default team, finding team (${defaultTeamId})`
-    );
-
     const team = await Team.findById(defaultTeamId);
-    if (!team) {
-      console.log(
-        `[sign-in] default team (${defaultTeamId}) of user (${email}) does not exist`
-      );
-      return response.json({ user }, { status: 200 });
-    }
+    // if (!team) { ... }
+    // TODO: 思考是否要做刪除隊伍功能 (this happens when team was deleted)
 
-    return response.json({ user, team }, { status: 200 });
+    const response = NextResponse.json({ user, team }, { status: 200 });
+    response.cookies.set({
+      name: "token",
+      value: token,
+      options: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    });
+    return response;
   } catch (error) {
-    console.log(error);
-    return response.json({ error }, { status: 500 });
+    console.log("[sign-in]", error);
+    return NextResponse.json({ error }, { status: 500 });
   }
 };

@@ -46,23 +46,24 @@ const SignInForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = { email: emailValue, password: passwordValue };
+    try {
+      const res = await fetch("/api/sign-in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const res = await fetch("/api/sign-in", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+      if (res.status === 404) return setEmailError("帳號有誤");
+      if (res.status === 401) return setPasswordError("密碼有誤");
 
-    if (res.status === 404) {
-      setEmailError("帳號有誤");
+      if (res.status === 200) {
+        const { user, team } = await res.json();
+        return team ? router.push("/") : router.push("/team");
+      }
+    } catch (err) {
+      setEmailError("發生未知錯誤，請稍後再試");
+      console.log(err);
     }
-    if (res.status === 401) {
-      setPasswordError("密碼有誤");
-    }
-
-    const data = await res.json();
-
-    console.log(data);
   };
 
   const handleSignUp = () => {
