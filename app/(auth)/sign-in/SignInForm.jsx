@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { userActions } from "@/app/user/user-slice";
 import {
   FormContainer,
   FormTitle,
@@ -14,6 +16,7 @@ import {
 
 const SignInForm = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState(" ");
   const [passwordValue, setPasswordValue] = useState("");
@@ -58,6 +61,7 @@ const SignInForm = () => {
 
       if (res.status === 200) {
         const { userData, teamData } = await res.json();
+        dispatch(userActions.loadUserData(userData));
         return teamData ? router.push("/") : router.push("/team");
       }
     } catch (err) {
