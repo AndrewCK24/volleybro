@@ -2,6 +2,7 @@
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
 
+import { Provider } from "./store/provider";
 import Root from "./components/layout/Root";
 
 // const inter = Inter({ subsets: ["latin"] });
@@ -77,11 +78,11 @@ export default function RootLayout({ children }) {
         {/* TODO: apple splash screen images 待補 */}
       </head>
       <body>
-        <StyledComponentsRegistry>
-          <Root>
-          {children}
-          </Root>
-        </StyledComponentsRegistry>
+        <Provider>
+          <StyledComponentsRegistry>
+            <Root>{children}</Root>
+          </StyledComponentsRegistry>
+        </Provider>
       </body>
     </html>
   );
