@@ -34,16 +34,22 @@ export const POST = async (req) => {
     }
     console.log(`[sign-in] user (${email}) password is correct`);
 
-    const defaultTeamId = user.teams[0];
+    const defaultTeamId = user.teams.joined[0];
     if (!defaultTeamId) {
-      console.log(`[sign-in] user (${email}) has no team, turning to team create page`);
+      console.log(
+        `[sign-in] user (${email}) has no team, turning to team create page`
+      );
       return response.json({ user }, { status: 200 });
     }
-    console.log(`[sign-in] user (${email}) has default team, finding team (${defaultTeamId})`);
+    console.log(
+      `[sign-in] user (${email}) has default team, finding team (${defaultTeamId})`
+    );
 
     const team = await Team.findById(defaultTeamId);
     if (!team) {
-      console.log(`[sign-in] user (${email}) has default team (${defaultTeamId}) but it does not exist`);
+      console.log(
+        `[sign-in] default team (${defaultTeamId}) of user (${email}) does not exist`
+      );
       return response.json({ user }, { status: 200 });
     }
 

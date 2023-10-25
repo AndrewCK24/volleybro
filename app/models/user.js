@@ -14,26 +14,26 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    teams: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Team",
-        required: true,
-      },
-    ],
-    invitingTeams: [
-      {
-        _id: {
+    teams: {
+      joined: [
+        {
           type: Schema.Types.ObjectId,
           ref: "Team",
           required: true,
         },
-        name: {
-          type: String,
+      ],
+      inviting: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Team",
           required: true,
         },
-      },
-    ],
+      ],
+    },
+    info: {
+      type: Object,
+      required: false,
+    }
   },
   {
     timestamps: true,
