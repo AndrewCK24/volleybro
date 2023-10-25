@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import connectMongoDB from "../utils/connect-mongodb";
-import hideUserPassword from "../utils/hide-user-password";
+import hidePassword from "../utils/hide-password";
 import signJwt from "../utils/sign-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
@@ -34,7 +34,7 @@ export const POST = async (req) => {
       );
     }
 
-    const userData = hideUserPassword(user);
+    const userData = hidePassword(user);
     const token = signJwt(userData);
     const defaultTeamId = userData.teams.joined[0];
     const teamData = await Team.findById(defaultTeamId);

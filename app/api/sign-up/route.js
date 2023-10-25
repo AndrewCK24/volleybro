@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import connectMongoDB from "../utils/connect-mongodb";
-import hideUserPassword from "../utils/hide-user-password";
+import hidePassword from "../utils/hide-password";
 import signJwt from "../utils/sign-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
@@ -46,7 +46,7 @@ export const POST = async (req) => {
     console.log(`[sign-up] user (${email}) created!`);
 
     // TODO: add JWT cookies
-    const userData = hideUserPassword(user);
+    const userData = hidePassword(user);
     const token = signJwt(userData);
 
     const response = NextResponse.json({ userData }, { status: 201 });
