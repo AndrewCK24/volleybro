@@ -14,7 +14,7 @@ export const GET = async () => {
 };
 
 export const POST = async (req) => {
-  const { email, password } = req.body;
+  const { email, password } = await req.json();
   const response = NextResponse;
   try {
     await connectMongoDB();
