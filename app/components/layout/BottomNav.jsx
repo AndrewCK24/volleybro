@@ -11,6 +11,10 @@ import {
 } from "react-icons/fi";
 
 const Nav = styled.aside`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   flex: 0 0 4rem;
   padding: 0 5% 1rem;
   display: flex;

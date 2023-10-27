@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { FiEdit } from "react-icons/fi";
 
 const StyledLink = styled(Link)`
-  position: absolute;
+  position: fixed;
   bottom: 5rem;
   right: 5%;
   width: 12rem;

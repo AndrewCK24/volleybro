@@ -9,7 +9,7 @@ import BottomNav from "./BottomNav";
 
 const Main = styled.main`
   flex: 1 1;
-  padding: 0.5rem 0 0;
+  padding: 4rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,17 +17,16 @@ const Main = styled.main`
   gap: 1rem;
   flex-wrap: nowrap;
   overflow: scroll;
-  /* overscroll-behavior-x: none; */
   overscroll-behavior-y: contain;
 
   &.fixed {
-    padding-bottom: 0.5rem;
+    padding-bottom: 4.5rem;
     overflow: hidden;
     overscroll-behavior-y: none;
   }
 
   @media screen and (min-width: 768px) {
-    padding: 1rem 5% 0;
+    padding: 4rem 5%;
   }
 `;
 
@@ -43,7 +42,9 @@ const Root = ({ children }) => {
       ) : (
         <>
           <Header title="V-Stats" isIndex={isIndex} />
-          <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
+          <Main
+            className={pathname === "/team/lineup" ? "fixed" : ""}
+          >
             {children}
           </Main>
           {isIndex && <StartRecordBtn />}

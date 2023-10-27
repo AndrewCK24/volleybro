@@ -7,7 +7,8 @@ import { FiArrowLeft } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 
 const Container = styled.header`
-  flex: 0 0 4rem;
+  position: fixed;
+  height: 3.5rem;
   width: 100%;
   padding: 0 5%;
   display: flex;
@@ -15,6 +16,8 @@ const Container = styled.header`
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  overscroll-behavior: none;
+  background-color: var(--color-primary-100);
   svg {
     color: var(--color-primary-500);
     width: 2.5rem;
