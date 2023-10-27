@@ -19,6 +19,10 @@ const Main = styled.main`
   overflow: scroll;
   overscroll-behavior-y: contain;
 
+  &.full-height {
+    padding: 0;
+  }
+
   &.fixed {
     padding-bottom: 4.5rem;
     overflow: hidden;
@@ -38,13 +42,11 @@ const Root = ({ children }) => {
   return (
     <>
       {pathname === "/sign-in" || pathname === "/sign-up" ? (
-        <Main>{children}</Main>
+        <Main className="full-height">{children}</Main>
       ) : (
         <>
           <Header title="V-Stats" isIndex={isIndex} />
-          <Main
-            className={pathname === "/team/lineup" ? "fixed" : ""}
-          >
+          <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
             {children}
           </Main>
           {isIndex && <StartRecordBtn />}
