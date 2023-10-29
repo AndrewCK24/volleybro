@@ -30,10 +30,10 @@ const ExtendTeamsIcon = styled(FiChevronDown)`
 const TeamItem = styled(ListItem)`
   padding: 0 1rem;
   box-shadow: none;
-  color: var(--color-secondary-800);
+  color: var(--secondary-800);
 
   &.special {
-    color: var(--color-danger-600);
+    color: var(--danger-600);
   }
 `;
 

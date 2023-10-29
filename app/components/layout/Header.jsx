@@ -17,9 +17,9 @@ const Container = styled.header`
   justify-content: center;
   gap: 1rem;
   overscroll-behavior: none;
-  background-color: var(--color-primary-100);
+  background-color: var(--primary-100);
   svg {
-    color: var(--color-primary-500);
+    color: var(--primary-500);
     width: 2.5rem;
     height: 2.5rem;
   }

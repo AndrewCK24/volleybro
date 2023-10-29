@@ -43,36 +43,36 @@ const iconSharedStyle = css`
   svg {
     width: 2rem;
     height: 2rem;
-    color: var(--color-secondary-500);
+    color: var(--secondary-500);
   }
 
   &:hover,
   &:active {
     svg {
-      color: var(--color-secondary-300);
+      color: var(--secondary-300);
     }
   }
 
   &.secondary {
     svg {
-      color: var(--color-primary-400);
+      color: var(--primary-400);
     }
     &:hover,
     &:active {
       svg {
-        color: var(--color-primary-200);
+        color: var(--primary-200);
       }
     }
   }
 
   &.danger {
     svg {
-      color: var(--color-danger-500);
+      color: var(--danger-500);
     }
     &:hover,
     &:active {
       svg {
-        color: var(--color-danger-300);
+        color: var(--danger-300);
       }
     }
   }

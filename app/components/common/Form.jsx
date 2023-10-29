@@ -5,7 +5,7 @@ export const FormContainer = styled.div`
   flex: 1 1;
   margin: none;
   border-radius: 1.5rem;
-  background-color: var(--color-primary-100);
+  background-color: var(--primary-100);
   padding: 10% 5%;
   width: 100%;
   display: flex;
@@ -31,7 +31,7 @@ export const FormTitle = styled.h1`
   justify-content: left;
   font-size: 2rem;
   font-weight: 500;
-  color: var(--color-primary-900);
+  color: var(--primary-900);
 `;
 
 export const FormContents = styled.form`
@@ -73,7 +73,7 @@ const FormLabel = styled.label`
 const FormRequiredSymbol = styled.span`
   width: fit-content;
   display: inline-flex;
-  color: var(--color-danger-500);
+  color: var(--danger-500);
   font-size: 1rem;
   font-weight: 500;
 `;
@@ -86,7 +86,7 @@ const FormHelperText = styled.span`
   padding: 0 0.5rem;
   font-size: 1rem;
   font-weight: 400;
-  color: var(--color-danger-500);
+  color: var(--danger-500);
 `;
 
 const FormInput = styled.input`
@@ -100,12 +100,12 @@ const FormInput = styled.input`
   line-height: 3rem;
   &:focus {
     outline: none;
-    -webkit-box-shadow: inset 0 0 0.25rem var(--color-primary-400);
-    -moz-box-shadow: inset 0 0 0.25rem var(--color-primary-400);
-    box-shadow: inset 0 0 0.25rem var(--color-primary-400);
+    -webkit-box-shadow: inset 0 0 0.25rem var(--primary-400);
+    -moz-box-shadow: inset 0 0 0.25rem var(--primary-400);
+    box-shadow: inset 0 0 0.25rem var(--primary-400);
   }
   &.warn {
-    border: solid 2px var(--color-danger-500);
+    border: solid 2px var(--danger-500);
   }
 `;
 
@@ -168,15 +168,15 @@ const FormRadioGroup = styled.div`
 const FormRadioInput = styled.input`
   display: none;
   &:disabled ~ label {
-    border-color: var(--color-primary-500);
-    color: var(--color-primary-500);
+    border-color: var(--primary-500);
+    color: var(--primary-500);
   }
   &:checked ~ label {
-    background-color: var(--color-secondary-600);
-    color: var(--color-primary-100);
+    background-color: var(--secondary-600);
+    color: var(--primary-100);
   }
   &:checked:disabled ~ label {
-    background-color: var(--color-primary-500);
+    background-color: var(--primary-500);
   }
 `;
 
@@ -188,11 +188,11 @@ const FormRadioLabel = styled.label`
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  border: solid 1px var(--color-secondary-600);
+  border: solid 1px var(--secondary-600);
   font-size: 2rem;
   font-weight: 500;
   line-height: 3rem;
-  color: var(--color-secondary-600);
+  color: var(--secondary-600);
 `;
 
 export const FormSelect = (props) => {
@@ -248,29 +248,29 @@ export const StyledButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary-100);
-  background-color: var(--color-secondary-500);
+  color: var(--primary-100);
+  background-color: var(--secondary-500);
   border: none;
   border-radius: 0.5rem;
   font-size: 1.75rem;
   font-weight: 700;
   &:disabled {
-    background-color: var(--color-secondary-300);
+    background-color: var(--secondary-300);
   }
   &.outlined {
     font-weight: 500;
-    color: var(--color-secondary-500);
-    background-color: var(--color-primary-100);
-    border: solid 1px var(--color-secondary-500);
+    color: var(--secondary-500);
+    background-color: var(--primary-100);
+    border: solid 1px var(--secondary-500);
   }
   &.outlined:disabled {
-    color: var(--color-primary-300);
-    background-color: var(--color-primary-100);
-    border: solid 1px var(--color-primary-300);
+    color: var(--primary-300);
+    background-color: var(--primary-100);
+    border: solid 1px var(--primary-300);
   }
   &.text {
     font-weight: 500;
-    color: var(--color-secondary-500);
+    color: var(--secondary-500);
     background-color: transparent;
     border: none;
   }
@@ -295,7 +295,7 @@ export const FormLink = styled(Link)`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  color: var(--color-secondary-500);
+  color: var(--secondary-500);
   padding: 0.5rem 0.5rem;
   font-size: 1rem;
   font-weight: 500;
@@ -308,17 +308,17 @@ export const FormHr = styled.hr`
   padding: 1rem 0;
   border: 0;
   font-size: 1rem;
-  color: var(--color-primary-400);
+  color: var(--primary-400);
   -webkit-mask-image: linear-gradient(
     to right,
     transparent,
-    var(--color-primary-400),
+    var(--primary-400),
     transparent
   );
   mask-image: linear-gradient(
     to right,
     transparent,
-    var(--color-primary-400),
+    var(--primary-400),
     transparent
   );
 
@@ -327,7 +327,7 @@ export const FormHr = styled.hr`
     position: absolute;
     padding: 0 1ch;
     line-height: 1px;
-    border: solid var(--color-primary-400);
+    border: solid var(--primary-400);
     border-width: 0 99vw;
     width: fit-content;
     white-space: nowrap;
@@ -343,7 +343,7 @@ export const FormHr = styled.hr`
 //   background: linear-gradient(
 //     to right,
 //     transparent,
-//     var(--color-primary-400),
+//     var(--primary-400),
 //     transparent
 //   );
 // `;

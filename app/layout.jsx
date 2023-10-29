@@ -1,13 +1,20 @@
-// import { Inter, Saira, Noto_Sans_TC } from "next/font/google";
+import { Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
 
 import { Provider } from "./store/provider";
 import Root from "./components/layout/Root";
 
-// const inter = Inter({ subsets: ["latin"] });
-// const saira = Saira({ subsets: ["latin"] });
-// const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
+const saira = Saira({
+  subsets: ["latin"],
+  variable: "--font-saira",
+  display: "swap",
+});
+const notoSansTC = Noto_Sans_TC({
+  subsets: ["latin"],
+  variable: "--font-noto-sans-tc",
+  display: "swap",
+});
 
 export const metadata = {
   manifest: "/manifest.json",
@@ -26,17 +33,12 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  
-
   return (
-    <html lang="en">
+    <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="default"
-        />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="V-Stats" />
         {/* apple touch icons */}
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -59,11 +61,6 @@ export default function RootLayout({ children }) {
           rel="apple-touch-icon"
           sizes="120x120"
           href="/icons/apple-touch-icon-120x120.png"
-        />
-
-        <link
-          href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;700&family=Orbitron:wght@400;500;700&family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
-          rel="stylesheet"
         />
 
         {/* open graph */}

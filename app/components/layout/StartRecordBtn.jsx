@@ -16,14 +16,14 @@ const StyledLink = styled(Link)`
   justify-content: center;
   text-decoration: none;
   border-radius: 0.5rem;
-  background-color: var(--color-danger-500);
-  color: var(--color-primary-100);
+  background-color: var(--danger-500);
+  color: var(--primary-100);
   font-size: 1.5rem;
   font-weight: 500;
   padding: 0.5rem 1rem;
   gap: 0.5rem;
   svg {
-    color: var(--color-primary-100);
+    color: var(--primary-100);
     width: 1.5rem;
     height: 1.5rem;
   }

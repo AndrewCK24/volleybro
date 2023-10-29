@@ -10,14 +10,14 @@ const Container = styled.div`
   font-family: "Orbitron";
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-secondary-500);
-  text-shadow: 0 0 0.25rem var(--color-secondary-600);
+  color: var(--secondary-500);
+  text-shadow: 0 0 0.25rem var(--secondary-600);
   &.maximized {
     flex: 1 1;
   }
   /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
   /* &.dark {
-    color: var(--color-secondary-800);
+    color: var(--secondary-800);
     border: none;
     text-shadow: none;
     box-shadow: none;

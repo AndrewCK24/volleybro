@@ -1,5 +1,4 @@
 "use client";
-
 import { usePathname } from "next/navigation";
 import styled from "styled-components";
 
@@ -45,12 +44,15 @@ const Root = ({ children }) => {
         <Main className="full-height">{children}</Main>
       ) : (
         <>
+          {/* <Suspense fallback={<Logo />}> */}
+          {/* <DataLoader /> */}
           <Header title="V-Stats" isIndex={isIndex} />
           <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
             {children}
           </Main>
           {isIndex && <StartRecordBtn />}
           <BottomNav pathname={pathname} />
+          {/* </Suspense> */}
         </>
       )}
     </>

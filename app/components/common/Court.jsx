@@ -8,7 +8,7 @@ const CourtContainer = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 1rem;
-  background-color: var(--color-secondary-500);
+  background-color: var(--secondary-500);
   padding: 0.5rem;
 `;
 
@@ -26,14 +26,14 @@ const AttackLine = styled.div`
   top: 0%;
   width: 100%;
   height: 33%;
-  background-color: var(--color-danger-500);
-  border-bottom: 0.25rem solid var(--color-primary-100);
+  background-color: var(--danger-500);
+  border-bottom: 0.25rem solid var(--primary-100);
   z-index: 1;
 `;
 
 const SideAttackLine = styled(AttackLine)`
   background-color: transparent;
-  border-bottom: 0.25rem dashed var(--color-primary-100);
+  border-bottom: 0.25rem dashed var(--primary-100);
 `;
 
 const InsideZone = styled.div`
@@ -43,8 +43,8 @@ const InsideZone = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: var(--color-danger-400);
-  border: 0.25rem solid var(--color-primary-100);
+  background-color: var(--danger-400);
+  border: 0.25rem solid var(--primary-100);
   position: relative;
 `;
 
@@ -68,12 +68,12 @@ const Dock = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 1rem;
-  border: 0.25rem solid var(--color-primary-100);
-  background-color: var(--color-primary-300);
+  border: 0.25rem solid var(--primary-100);
+  background-color: var(--primary-300);
   opacity: 0.5;
   font-size: 3rem;
   font-weight: 700;
-  color: var(--color-primary-100);
+  color: var(--primary-100);
 `;
 
 export const Court = ({ members }) => {
@@ -89,7 +89,7 @@ export const Court = ({ members }) => {
         <AttackLine />
         <MainZone>
           {positionArr.map((position, index) => (
-            <Dock key={index} style={{gridArea: position}}>
+            <Dock key={index} style={{ gridArea: position }}>
               {index + 1}
             </Dock>
           ))}

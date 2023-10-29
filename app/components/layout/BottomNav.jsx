@@ -21,7 +21,7 @@ const Nav = styled.aside`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-secondary-500);
+  background-color: var(--secondary-500);
 `;
 
 const NavLink = styled(Link)`
@@ -32,12 +32,12 @@ const NavLink = styled(Link)`
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: var(--color-primary-200);
+  color: var(--primary-200);
   font-size: 1.25rem;
   gap: 0.5rem;
 
   svg {
-    stroke: var(--color-primary-200);
+    stroke: var(--primary-200);
     height: 2rem;
     width: 2rem;
   }
@@ -46,17 +46,17 @@ const NavLink = styled(Link)`
     border 0.2s ease-in-out;
 
   &.active {
-    border-top: 0.25rem solid var(--color-primary-100);
+    border-top: 0.25rem solid var(--primary-100);
     padding: 0.25rem 0 0;
-    color: var(--color-primary-100);
+    color: var(--primary-100);
     font-weight: 700;
     svg {
-      stroke: var(--color-primary-100);
+      stroke: var(--primary-100);
     }
   }
 `;
 
-const BottomNav = ({pathname}) => {
+const BottomNav = ({ pathname }) => {
   const navLinks = [
     { title: "首頁", icon: <HomeIcon />, path: "/" },
     { title: "隊伍", icon: <TeamIcon />, path: "/team" },
