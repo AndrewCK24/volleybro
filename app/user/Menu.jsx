@@ -38,7 +38,7 @@ const TeamItem = styled(ListItem)`
 `;
 
 const Menu = () => {
-  const [extendTeams, setExtendTeams] = useState(true);
+  const [extendTeams, setExtendTeams] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const userName = useSelector((state) => state.user.name);
