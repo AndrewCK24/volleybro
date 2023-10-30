@@ -36,13 +36,12 @@ export const ButtonContainer = ({ children, className }) => {
 const iconSharedStyle = css`
   flex: 0 0 3rem;
   height: 3rem;
-  padding: 0.5rem;
+  padding: 0.25rem;
   border: none;
   background-color: transparent;
-  aspect-ratio: 1;
   svg {
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
     color: var(--secondary-500);
   }
 

@@ -41,10 +41,6 @@ const Title = styled.h1`
   }
 `;
 
-const CenteredTitle = styled(Title)`
-  justify-content: center;
-`;
-
 const Header = ({ title, isIndex }) => {
   const handleBack = () => {
     window.history.back();
@@ -52,12 +48,12 @@ const Header = ({ title, isIndex }) => {
 
   return (
     <Container>
-      {isIndex && (
-        <IconButton onClick={handleBack}>
+      {isIndex || (
+        <IconButton onClick={handleBack} className="secondary">
           <FiArrowLeft />
         </IconButton>
       )}
-      <Title className={isIndex ? "center" : ""}>{title}</Title>
+      <Title className={isIndex ? "" : "center"}>{title}</Title>
       <IoNotificationsSharp />
     </Container>
   );
