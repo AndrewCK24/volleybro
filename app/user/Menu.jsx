@@ -68,7 +68,7 @@ const Menu = () => {
       if (status === 200) {
         router.push("/team");
         dispatch(userActions.loadUserData(userData));
-        dispatch(teamActions.loadTeamData(teamData));
+        // dispatch(teamActions.loadTeamData(teamData));
       }
     } catch (error) {
       console.log(error);
@@ -81,9 +81,15 @@ const Menu = () => {
 
   const handleSignOut = async () => {
     try {
-      await fetch("/.netlify/functions/sign-out-user");
+      await fetch("/api/sign-out", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
       dispatch(userActions.signOut());
-      dispatch(teamActions.resetTeamData());
+      // dispatch(teamActions.resetTeamData());
       router.push("/sign-in");
     } catch (error) {
       console.error(error);
