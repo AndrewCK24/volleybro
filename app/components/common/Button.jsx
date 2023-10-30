@@ -1,6 +1,8 @@
-import styled, { css } from "styled-components";
+"use client";
 
-const StyledButtonContainer = styled.div`
+import styled from "styled-components";
+
+export const ButtonContainer = styled.div`
   flex: 1 1;
   display: flex;
   flex-direction: row;
@@ -20,20 +22,7 @@ const StyledButtonContainer = styled.div`
   }
 `;
 
-export const ButtonContainer = ({ children, className }) => {
-  switch (className) {
-    case "row":
-      return (
-        <StyledButtonContainer className={className}>
-          {children}
-        </StyledButtonContainer>
-      );
-    default:
-      return <StyledButtonContainer>{children}</StyledButtonContainer>;
-  }
-};
-
-const iconSharedStyle = css`
+export const IconButton = styled.button`
   flex: 0 0 3rem;
   height: 3rem;
   padding: 0.25rem;
@@ -76,15 +65,3 @@ const iconSharedStyle = css`
     }
   }
 `;
-
-const StyledButton = styled.button`
-  ${iconSharedStyle}
-`;
-
-export const IconButton = ({ children, className, ...prop }) => {
-  return (
-    <StyledButton className={className} {...prop}>
-      {children}
-    </StyledButton>
-  );
-};
