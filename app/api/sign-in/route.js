@@ -3,15 +3,40 @@ import { compare } from "bcryptjs";
 import connectMongoDB from "../utils/connect-mongodb";
 import hidePassword from "../utils/hide-password";
 import signJwt from "../utils/sign-jwt";
+import verifyJwt from "../utils/verify-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 
 // for route testing
-export const GET = async () => {
-  const response = NextResponse;
-  await connectMongoDB();
-  cookies().set("hello", "world", { httpOnly: true });
-  return response.json({ message: "Hello World" });
+export const GET = async (req) => {
+  const data = await verifyJwt(req);
+  if (data.error) {
+    const response = NextResponse.json({ error: data.error }, { status: 500 });
+    response.cookies.set({
+      name: "token",
+      value: "",
+      options: {
+        httpOnly: true,
+        maxAge: 0,
+      },
+    });
+    return response;
+  }
+
+  const { userData, token } = data;
+
+  const defaultTeamId = userData.teams.joined[0];
+  const teamData = await Team.findById(defaultTeamId);
+  const response = NextResponse.json({ userData, teamData }, { status: 200 });
+  response.cookies.set({
+    name: "token",
+    value: token,
+    options: {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 30,
+    },
+  });
+  return response;
 };
 
 export const POST = async (req) => {
@@ -34,8 +59,8 @@ export const POST = async (req) => {
       );
     }
 
+    const token = signJwt(user);
     const userData = hidePassword(user);
-    const token = signJwt(userData);
     const defaultTeamId = userData.teams.joined[0];
     const teamData = await Team.findById(defaultTeamId);
     // if (!team) { ... }
