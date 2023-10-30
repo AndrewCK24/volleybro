@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { compare } from "bcryptjs";
-import connectMongoDB from "../utils/connect-mongodb";
-import hidePassword from "../utils/hide-password";
-import signJwt from "../utils/sign-jwt";
-import verifyJwt from "../utils/verify-jwt";
+import connectMongoDB from "../../utils/connect-mongodb";
+import hidePassword from "../../utils/hide-password";
+import signJwt from "../../utils/sign-jwt";
+import verifyJwt from "../../utils/verify-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
-import connectMongoDB from "../utils/connect-mongodb";
-import hidePassword from "../utils/hide-password";
-import signJwt from "../utils/sign-jwt";
+import connectMongoDB from "../../utils/connect-mongodb";
+import hidePassword from "../../utils/hide-password";
+import signJwt from "../../utils/sign-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 
