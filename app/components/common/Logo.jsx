@@ -7,28 +7,39 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  font-family: "Orbitron";
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--secondary-500);
-  text-shadow: 0 0 0.25rem var(--secondary-600);
+  font-size: 3rem;
+  font-weight: 500;
+  color: var(--primary-100);
+  text-shadow: 0 0 0.5rem var(--primary-100);
+  position: relative;
   &.maximized {
     flex: 1 1;
   }
-  /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
-  /* &.dark {
-    color: var(--secondary-800);
-    border: none;
-    text-shadow: none;
-    box-shadow: none;
+
+  &::before {
+    content: "";
+    width: 80vw;
+    aspect-ratio: 1;
+    border-radius: 2rem;
+    background: var(--secondary-500);
+    position: absolute;
+    z-index: -2;
+    rotate: 30deg;
   }
-  &.small {
-    padding: 0.5rem;
-    border: none;
-    text-shadow: none;
-    box-shadow: none;
-    font-size: 2rem;
-  } */
+
+  &::after {
+    content: "";
+    width: 40vw;
+    aspect-ratio: 1;
+    border-radius: 2rem;
+    background: var(--danger-500);
+    position: absolute;
+    left: 60%;
+    top: 60%;
+    z-index: -1;
+    rotate: 60deg;
+  }
+  /* TODO: 加上動畫效果: https://youtu.be/1EAtn4B-76g */
 `;
 
 const Logo = ({ className }) => (
