@@ -98,6 +98,8 @@ const FormInput = styled.input`
   font-size: 2rem;
   font-weight: 500;
   line-height: 3rem;
+  color: var(--primary-900);
+  caret-color: var(--primary-400);
   &:focus {
     outline: none;
     -webkit-box-shadow: inset 0 0 0.25rem var(--primary-400);
