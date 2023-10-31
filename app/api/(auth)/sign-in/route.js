@@ -6,6 +6,7 @@ import signJwt from "../../utils/sign-jwt";
 import verifyJwt from "../../utils/verify-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
+import Member from "@/app/models/member";
 
 // for route testing
 export const GET = async (req) => {
@@ -27,7 +28,12 @@ export const GET = async (req) => {
 
   const defaultTeamId = userData.teams.joined[0];
   const teamData = await Team.findById(defaultTeamId);
-  const response = NextResponse.json({ userData, teamData }, { status: 200 });
+  const membersData = await Member.find({ team_id: defaultTeamId });
+  
+  const response = NextResponse.json(
+    { userData, teamData, membersData },
+    { status: 200 }
+  );
   response.cookies.set({
     name: "token",
     value: token,
@@ -66,7 +72,12 @@ export const POST = async (req) => {
     // if (!team) { ... }
     // TODO: 思考是否要做刪除隊伍功能 (this happens when team was deleted)
 
-    const response = NextResponse.json({ userData, teamData }, { status: 200 });
+    const membersData = await Member.find({ team_id: defaultTeamId });
+
+    const response = NextResponse.json(
+      { userData, teamData, membersData },
+      { status: 200 }
+    );
     response.cookies.set({
       name: "token",
       value: token,
