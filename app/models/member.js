@@ -7,6 +7,22 @@ const memberSchema = new Schema(
       ref: "Team",
       required: true,
     },
+    meta: {
+      admin: {
+        type: Boolean,
+        required: true,
+      },
+      email: {
+        type: String,
+        ref: "User",
+        required: false,
+      },
+      user_id: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: false,
+      },
+    },
     name: {
       type: String,
       required: false,
@@ -28,6 +44,8 @@ const memberSchema = new Schema(
     timestamps: true,
   }
 );
+
+memberSchema.index({ team_id: 1 });
 
 const Member = models.Member || model("Member", memberSchema, "members");
 export default Member;
