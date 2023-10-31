@@ -61,7 +61,7 @@ const SignInForm = () => {
 
       if (res.status === 200) {
         const { userData, teamData } = await res.json();
-        dispatch(userActions.loadUserData(userData));
+        dispatch(userActions.setUser(userData));
         return teamData ? router.push("/") : router.push("/team");
       }
     } catch (err) {

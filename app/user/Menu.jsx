@@ -67,7 +67,7 @@ const Menu = () => {
       const { status, userData, teamData } = await response.json();
       if (status === 200) {
         router.push("/team");
-        dispatch(userActions.loadUserData(userData));
+        dispatch(userActions.setUser(userData));
         // dispatch(teamActions.loadTeamData(teamData));
       }
     } catch (error) {
