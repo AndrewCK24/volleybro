@@ -13,15 +13,15 @@ const teamSlice = createSlice({
   name: "team",
   initialState,
   reducers: {
-    setTeam: (state, action) => {
+    setTeam: (_, action) => {
+      const { teamData, membersData } = action.payload;
       return {
-        ...state,
-        _id: action.payload._id,
-        name: action.payload.name,
-        nickname: action.payload.nickname,
-        members: action.payload.members,
-        matchIds: action.payload.matches,
-        stats: action.payload.stats,
+        _id: teamData._id,
+        name: teamData.name,
+        nickname: teamData.nickname,
+        members: membersData,
+        matches: teamData.matches,
+        stats: teamData.stats,
       };
     },
     resetTeam: () => {

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -61,9 +60,9 @@ const SignInForm = () => {
       if (res.status === 401) return setPasswordError("密碼有誤");
 
       if (res.status === 200) {
-        const { userData, teamData } = await res.json();
+        const { userData, teamData, membersData } = await res.json();
         dispatch(userActions.setUser(userData));
-        if (teamData) dispatch(teamActions.setTeam(teamData));
+        if (teamData) dispatch(teamActions.setTeam({teamData, membersData}));
         return teamData ? router.push("/") : router.push("/team");
       }
     } catch (err) {
