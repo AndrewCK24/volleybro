@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 import store from "../store/store";
 import { userActions } from "./user-slice";
+import { teamActions } from "../team/team-slice";
 // import { teamActions } from "../components/team/team-slice";
 
 import {
@@ -89,7 +90,7 @@ const Menu = () => {
         },
       });
       dispatch(userActions.signOut());
-      // dispatch(teamActions.resetTeamData());
+      dispatch(teamActions.resetTeam());
       router.push("/sign-in");
     } catch (error) {
       console.error(error);
