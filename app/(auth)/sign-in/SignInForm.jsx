@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/user/user-slice";
+import { teamActions } from "@/app/team/team-slice";
 import {
   FormContainer,
   FormTitle,
@@ -56,12 +57,13 @@ const SignInForm = () => {
         body: JSON.stringify(formData),
       });
 
-      if (res.status === 404) return setEmailError("帳號有誤");
+      if (res.status === 404) return setEmailError("帳號不存在");
       if (res.status === 401) return setPasswordError("密碼有誤");
 
       if (res.status === 200) {
         const { userData, teamData } = await res.json();
         dispatch(userActions.setUser(userData));
+        if (teamData) dispatch(teamActions.setTeam(teamData));
         return teamData ? router.push("/") : router.push("/team");
       }
     } catch (err) {
