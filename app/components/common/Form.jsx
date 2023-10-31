@@ -123,6 +123,7 @@ export const FormControl = (props) => {
     warn = "",
     ref,
     onChange,
+    autoComplete = "on",
   } = props;
 
   return (
@@ -144,7 +145,7 @@ export const FormControl = (props) => {
         disabled={disabled}
         ref={ref}
         onChange={(e) => onChange(e.target.value)}
-        autoComplete="on"
+        autoComplete={autoComplete}
         className={warn === " " ? "" : warn ? "warn" : ""}
       />
     </FormInputContainer>
