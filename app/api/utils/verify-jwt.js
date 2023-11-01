@@ -30,7 +30,6 @@ const verifyJwt = async (req) => {
     }
 
     const newToken = signJwt(user);
-    console.log("user", hidePassword(user));
     return { userData: hidePassword(user), token: newToken };
   } catch (error) {
     console.log("[verify-jwt]", error);

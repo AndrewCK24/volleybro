@@ -8,7 +8,6 @@ import styled from "styled-components";
 import store from "../store/store";
 import { userActions } from "./user-slice";
 import { teamActions } from "../team/team-slice";
-// import { teamActions } from "../components/team/team-slice";
 
 import {
   FiChevronDown,
@@ -46,9 +45,7 @@ const Menu = () => {
   const { teams } = useSelector((state) => state.user);
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
-  const handleExtendTeams = () => {
-    setExtendTeams(!extendTeams);
-  };
+  const handleExtendTeams = () => setExtendTeams(!extendTeams);
 
   const handleTeamSwitch = async (index, teamId) => {
     if (index === 0) {

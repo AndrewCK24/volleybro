@@ -29,7 +29,7 @@ export const GET = async (req) => {
   const defaultTeamId = userData.teams.joined[0];
   const teamData = await Team.findById(defaultTeamId);
   const membersData = await Member.find({ team_id: defaultTeamId });
-  
+
   const response = NextResponse.json(
     { userData, teamData, membersData },
     { status: 200 }
@@ -42,6 +42,7 @@ export const GET = async (req) => {
       maxAge: 60 * 60 * 24 * 30,
     },
   });
+  console.log(`[sign-in] user (${userData.email}) signed in!`);
   return response;
 };
 
