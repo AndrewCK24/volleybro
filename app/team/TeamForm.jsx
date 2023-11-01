@@ -17,7 +17,7 @@ const TeamForm = ({ isNew }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const actionPath = isNew ? "/api/team" : "/api/team/:id";
-  const teamData = isNew ? {} : useSelector((state) => state.team);
+  const teamData = useSelector((state) => state.team);
 
   const [nameValue, setNameValue] = useState("");
   const [nameError, setNameError] = useState(isNew ? " " : "");
