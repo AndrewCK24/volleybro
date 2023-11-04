@@ -1,21 +1,24 @@
-import { verify } from "jsonwebtoken";
+import { cookies } from "next/headers";
+import { jwtVerify } from "jose";
 import connectMongoDB from "./connect-mongodb";
 import signJwt from "./sign-jwt";
 import hidePassword from "./hide-password";
 import User from "@/app/models/user";
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const secret = new TextEncoder().encode(JWT_SECRET);
 
-const verifyJwt = async (req) => {
-  const { cookies } = req;
-  const token = cookies.get("token").value;
+const verifyJwt = async () => {
+  const cookieStore = cookies();
+  const token = cookieStore.get("token").value;
+
   if (!token) {
     console.log("[verify-jwt] token not found!");
     return { error: "Token not found" };
   }
 
   try {
-    const userData = verify(token, JWT_SECRET);
+    const userData = (await jwtVerify(token, secret)).payload;
 
     await connectMongoDB();
     const user = await User.findById(userData._id);
@@ -29,7 +32,7 @@ const verifyJwt = async (req) => {
       return { error: "Incorrect password" };
     }
 
-    const newToken = signJwt(user);
+    const newToken = await signJwt(user);
     return { userData: hidePassword(user), token: newToken };
   } catch (error) {
     console.log("[verify-jwt]", error);
