@@ -43,8 +43,8 @@ export const POST = async (req) => {
     await user.save();
     console.log(`[sign-up] user (${email}) created!`);
 
+    const token = await signJwt(user);
     const userData = hidePassword(user);
-    const token = signJwt(userData);
 
     const response = NextResponse.json({ userData }, { status: 201 });
     response.cookies.set({

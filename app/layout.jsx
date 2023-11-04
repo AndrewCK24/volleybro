@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
@@ -32,7 +33,27 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+const getAuthData = async () => {
+  const cookieStore = cookies();
+  const token = cookieStore.get("token").value || "";
+  const response = await fetch(
+    process.env.URL + "/api/sign-in",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        cookie: `token=${token}`,
+      },
+      next: { revalidate: 60 },
+    }
+  );
+  const data = await response.json();
+  return data;
+};
+
+export default async function RootLayout({ children }) {
+  const data = await getAuthData();
   return (
     <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
       <head>
@@ -79,7 +100,7 @@ export default function RootLayout({ children }) {
       <body>
         <Provider>
           <StyledComponentsRegistry>
-            <Root>{children}</Root>
+            <Root data={data}>{children}</Root>
           </StyledComponentsRegistry>
         </Provider>
       </body>

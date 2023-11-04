@@ -10,7 +10,7 @@ import Member from "@/app/models/member";
 
 // for route testing
 export const GET = async (req) => {
-  const data = await verifyJwt(req);
+  const data = await verifyJwt();
   if (data.error) {
     const response = NextResponse.json({ error: data.error }, { status: 500 });
     response.cookies.set({
@@ -25,11 +25,9 @@ export const GET = async (req) => {
   }
 
   const { userData, token } = data;
-
   const defaultTeamId = userData.teams.joined[0];
   const teamData = await Team.findById(defaultTeamId);
   const membersData = await Member.find({ team_id: defaultTeamId });
-
   const response = NextResponse.json(
     { userData, teamData, membersData },
     { status: 200 }
@@ -42,7 +40,6 @@ export const GET = async (req) => {
       maxAge: 60 * 60 * 24 * 30,
     },
   });
-  console.log(`[sign-in] user (${userData.email}) signed in!`);
   return response;
 };
 
@@ -66,7 +63,7 @@ export const POST = async (req) => {
       );
     }
 
-    const token = signJwt(user);
+    const token = await signJwt(user);
     const userData = hidePassword(user);
     const defaultTeamId = userData.teams.joined[0];
     const teamData = await Team.findById(defaultTeamId);

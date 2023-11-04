@@ -35,8 +35,8 @@ export const POST = async (req) => {
     await newTeam.save();
     await updatedUser.save();
 
+    const token = await signJwt(user);
     const user = hidePassword(updatedUser);
-    const token = signJwt(user);
     const response = NextResponse.json(
       { userData: user, teamData: newTeam, membersData: [newMember] },
       { status: 201 }

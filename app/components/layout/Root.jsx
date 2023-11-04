@@ -1,7 +1,10 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
+import { userActions } from "../../user/user-slice";
+import { teamActions } from "../../team/team-slice";
 import Header from "./Header";
 import StartRecordBtn from "./StartRecordBtn";
 import BottomNav from "./BottomNav";
@@ -33,28 +36,28 @@ const Main = styled.main`
   }
 `;
 
-const Root = ({ children }) => {
+const Root = ({ data, children }) => {
+  const router = useRouter();
   const pathname = usePathname();
   const pathArr = pathname.split("/").filter(Boolean);
   const isIndex = pathArr.length <= 1;
+  const isAuthPage = pathname === "/sign-in" || pathname === "/sign-up";
+  if (data && !useSelector((state) => state.user.signIn)) {
+    const { userData, teamData, membersData } = data;
+    console.log("userData", userData);
+    const dispatch = useDispatch();
+    dispatch(userActions.setUser(userData));
+    dispatch(teamActions.setTeam({ teamData, membersData }));
+  }
 
   return (
     <>
-      {pathname === "/sign-in" || pathname === "/sign-up" ? (
-        <Main className="full-height">{children}</Main>
-      ) : (
-        <>
-          {/* <Suspense fallback={<Logo />}> */}
-          {/* <DataLoader /> */}
-          <Header title="V-Stats" isIndex={isIndex} />
-          <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
-            {children}
-          </Main>
-          {isIndex && <StartRecordBtn />}
-          <BottomNav pathname={pathname} />
-          {/* </Suspense> */}
-        </>
-      )}
+      {isAuthPage || <Header title="V-Stats" isIndex={isIndex} />}
+      <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
+        {children}
+      </Main>
+      {isAuthPage || (isIndex && <StartRecordBtn />)}
+      {isAuthPage || <BottomNav pathname={pathname} />}
     </>
   );
 };
