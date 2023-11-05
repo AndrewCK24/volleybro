@@ -34,21 +34,24 @@ export const metadata = {
 };
 
 const getAuthData = async () => {
+  console.log("getAuthData");
   const cookieStore = cookies();
-  const token = cookieStore.get("token").value || "";
-  const response = await fetch(
-    process.env.URL + "/api/sign-in",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        cookie: `token=${token}`,
-      },
-      next: { revalidate: 60 },
-    }
-  );
+  const cookie = cookieStore.get("token");
+  const token = cookie ? cookie.value : "";
+  if (!cookie || !token) return null;
+
+  const response = await fetch(process.env.URL + "/api/sign-in", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      cookie: `token=${token}`,
+    },
+    next: { revalidate: 60 },
+  });
   const data = await response.json();
+  if (data.error) return null;
+
   return data;
 };
 

@@ -1,4 +1,5 @@
 "use client";
+import { use, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -38,17 +39,24 @@ const Main = styled.main`
 
 const Root = ({ data, children }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const pathname = usePathname();
   const pathArr = pathname.split("/").filter(Boolean);
   const isIndex = pathArr.length <= 1;
   const isAuthPage = pathname === "/sign-in" || pathname === "/sign-up";
-  if (data && !useSelector((state) => state.user.signIn)) {
-    const { userData, teamData, membersData } = data;
-    console.log("userData", userData);
-    const dispatch = useDispatch();
-    dispatch(userActions.setUser(userData));
-    dispatch(teamActions.setTeam({ teamData, membersData }));
-  }
+  const isSignIn = useSelector((state) => state.user.signIn);
+  
+  useEffect(() => {
+    if (!data) {
+      if (pathname !== "/sign-in") router.push("/sign-in");
+    } else if (!isSignIn) {
+      const { userData, teamData, membersData } = data;
+      console.log("userData", userData);
+      dispatch(userActions.setUser(userData));
+      dispatch(teamActions.setTeam({ teamData, membersData }));
+      router.push("/");
+    }
+  }, []);
 
   return (
     <>
