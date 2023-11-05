@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -45,7 +45,7 @@ const Root = ({ data, children }) => {
   const isIndex = pathArr.length <= 1;
   const isAuthPage = pathname === "/sign-in" || pathname === "/sign-up";
   const isSignIn = useSelector((state) => state.user.signIn);
-  
+
   useEffect(() => {
     if (!data) {
       if (pathname !== "/sign-in") router.push("/sign-in");

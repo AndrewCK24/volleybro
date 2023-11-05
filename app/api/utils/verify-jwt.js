@@ -5,8 +5,7 @@ import signJwt from "./sign-jwt";
 import hidePassword from "./hide-password";
 import User from "@/app/models/user";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const secret = new TextEncoder().encode(JWT_SECRET);
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const verifyJwt = async () => {
   const cookieStore = cookies();

@@ -1,6 +1,5 @@
 import { SignJWT } from "jose";
-const JWT_SECRET = process.env.JWT_SECRET;
-const secret = new TextEncoder().encode(JWT_SECRET);
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const signJwt = async (data) => {
   const { _doc: user } = data;
