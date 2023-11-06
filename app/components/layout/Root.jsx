@@ -1,46 +1,34 @@
 "use client";
 import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
+import styles from "./styles.module.scss";
 
 import { userActions } from "../../user/user-slice";
 import { teamActions } from "../../team/team-slice";
+import { FiEdit } from "react-icons/fi";
 import Header from "./Header";
-import StartRecordBtn from "./StartRecordBtn";
-import BottomNav from "./BottomNav";
+import Nav from "./Nav";
 
-const Main = styled.main`
-  flex: 1 1;
-  margin: 3.5rem 0;
-  padding: 0.5rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  flex-wrap: nowrap;
-  overflow: scroll;
-  overscroll-behavior-y: contain;
-  background-color: var(--primary-200);
-  z-index: 0;
+const Main = ({ children, full, fixed }) => {
+  return (
+    <main
+      className={`${styles.main} ${full && styles[`main--full-height`]} ${
+        fixed && styles[`main--fixed`]
+      }}`}
+    >
+      {children}
+    </main>
+  );
+};
 
-  &.full-height {
-    margin: 0;
-    padding: 0%;
-    gap: 0;
-  }
-
-  &.fixed {
-    margin-bottom: 4.5rem;
-    overflow: hidden;
-    overscroll-behavior-y: none;
-  }
-
-  @media screen and (min-width: 768px) {
-    padding: 4rem 5%;
-  }
-`;
+const RecordBtn = () => (
+  <Link href="/record" className={styles.recordBtn}>
+    <FiEdit />
+    開始紀錄
+  </Link>
+);
 
 const Root = ({ data, children }) => {
   const router = useRouter();
@@ -59,20 +47,18 @@ const Root = ({ data, children }) => {
       console.log("userData", userData);
       dispatch(userActions.setUser(userData));
       dispatch(teamActions.setTeam({ teamData, membersData }));
-      router.push("/");
+      // router.push("/");
     }
   }, []);
 
   return isAuthPage ? (
-    <Main className="full-height">{children}</Main>
+    <Main full={true}>{children}</Main>
   ) : (
     <>
       <Header title="V-Stats" isIndex={isIndex} />
-      <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
-        {children}
-      </Main>
-      {isIndex && <StartRecordBtn />}
-      <BottomNav pathname={pathname} />
+      <Main fixed={pathname === "/team/lineup"}>{children}</Main>
+      {isIndex && <RecordBtn />}
+      <Nav pathname={pathname} />
     </>
   );
 };

@@ -1,45 +1,24 @@
-"use client";
-
-import styled from "styled-components";
+import styles from "./styles.module.scss";
 
 import { IconButton } from "../common/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 
-const Container = styled.header`
-  position: fixed;
-  height: 3.5rem;
-  width: 100%;
-  padding: 0 5%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  overscroll-behavior: none;
-  background-color: var(--primary-100);
-  svg {
-    color: var(--primary-500);
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-`;
+const Container = ({ children }) => (
+  <header className={styles.header}>{children}</header>
+);
 
-const Title = styled.h1`
-  flex: 1 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 3rem;
-
-  &.center {
-    justify-content: center;
-  }
-`;
+const Title = ({ children, center }) => {
+  return (
+    <h1
+      className={`${styles.header__title} ${
+        center && styles["header__title--center"]
+      }`}
+    >
+      {children}
+    </h1>
+  );
+};
 
 const Header = ({ title, isIndex }) => {
   const handleBack = () => {
@@ -53,7 +32,7 @@ const Header = ({ title, isIndex }) => {
           <FiArrowLeft />
         </IconButton>
       )}
-      <Title className={isIndex ? "" : "center"}>{title}</Title>
+      <Title center={!isIndex}>{title}</Title>
       <IoNotificationsSharp />
     </Container>
   );
