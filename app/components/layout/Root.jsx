@@ -12,7 +12,8 @@ import BottomNav from "./BottomNav";
 
 const Main = styled.main`
   flex: 1 1;
-  padding: 4rem 0;
+  margin: 3.5rem 0;
+  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,13 +22,16 @@ const Main = styled.main`
   flex-wrap: nowrap;
   overflow: scroll;
   overscroll-behavior-y: contain;
+  background-color: var(--primary-200);
+  z-index: 0;
 
   &.full-height {
-    padding: 0;
+    margin: 0;
+    padding: 0%;
   }
 
   &.fixed {
-    padding-bottom: 4.5rem;
+    margin-bottom: 4.5rem;
     overflow: hidden;
     overscroll-behavior-y: none;
   }
@@ -58,14 +62,16 @@ const Root = ({ data, children }) => {
     }
   }, []);
 
-  return (
+  return isAuthPage ? (
+    <Main className="full-height">{children}</Main>
+  ) : (
     <>
-      {isAuthPage || <Header title="V-Stats" isIndex={isIndex} />}
+      <Header title="V-Stats" isIndex={isIndex} />
       <Main className={pathname === "/team/lineup" ? "fixed" : ""}>
         {children}
       </Main>
-      {isAuthPage || (isIndex && <StartRecordBtn />)}
-      {isAuthPage || <BottomNav pathname={pathname} />}
+      {isIndex && <StartRecordBtn />}
+      <BottomNav pathname={pathname} />
     </>
   );
 };
