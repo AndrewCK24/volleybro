@@ -28,6 +28,7 @@ const Main = styled.main`
   &.full-height {
     margin: 0;
     padding: 0%;
+    gap: 0;
   }
 
   &.fixed {
