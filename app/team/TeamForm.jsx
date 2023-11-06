@@ -16,7 +16,7 @@ import {
 const TeamForm = ({ isNew }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const actionPath = isNew ? "/api/team" : "/api/team/:id";
+  const actionPath = isNew ? "/api/teams" : "/api/teams/:id";
   const teamData = useSelector((state) => state.team);
 
   const [nameValue, setNameValue] = useState("");
