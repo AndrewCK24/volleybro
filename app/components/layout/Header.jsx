@@ -28,7 +28,7 @@ const Header = ({ title, isIndex }) => {
   return (
     <Container>
       {isIndex || (
-        <IconButton onClick={handleBack} className="secondary">
+        <IconButton onClick={handleBack} type="secondary">
           <FiArrowLeft />
         </IconButton>
       )}
