@@ -68,7 +68,7 @@ const TeamForm = ({ isNew }) => {
   };
 
   return (
-    <Section className="fixed">
+    <Section type="fixed">
       <FormContainer>
         <FormContents onSubmit={handleSubmit}>
           <FormControl

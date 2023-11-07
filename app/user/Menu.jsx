@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
@@ -16,6 +16,7 @@ import {
   FiUser,
   FiUsers,
 } from "react-icons/fi";
+// import Loading from "./loading";
 import { GoArrowSwitch } from "react-icons/go";
 import { Section } from "../components/common/Section";
 import { ListItem, ListItemContent } from "../components/common/List";
@@ -37,12 +38,17 @@ const TeamItem = styled(ListItem)`
   }
 `;
 
+const getTeams = (teamIds) => {
+  console.log(`/api/teams?teamIds=${teamIds}`);
+};
+
 const Menu = () => {
   const [extendTeams, setExtendTeams] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const userName = useSelector((state) => state.user.name);
-  const { teams } = useSelector((state) => state.user);
+  const teamIds = useSelector((state) => state.user.teams.joined);
+
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = () => setExtendTeams(!extendTeams);
@@ -102,14 +108,21 @@ const Menu = () => {
           <ListItemContent className="extend">{userName}</ListItemContent>
           <ExtendTeamsIcon className={extendTeams && "up"} />
         </ListItem>
-        {/* {extendTeams &&
-          teams.map((team, index) => (
-            <TeamItem key={team._id} onClick={() => handleTeamSwitch(index, team._id)}>
-              <FiUsers />
-              <ListItemContent className="extend">{team.name}</ListItemContent>
-              {index === 0 || <GoArrowSwitch />}
-            </TeamItem>
-          ))} */}
+        {/* <Suspense fallback={<Loading teamIds={teamIds} />}>
+          {extendTeams &&
+            teams.map((team, index) => (
+              <TeamItem
+                key={team._id}
+                onClick={() => handleTeamSwitch(index, team._id)}
+              >
+                <FiUsers />
+                <ListItemContent className="extend">
+                  {team.name}
+                </ListItemContent>
+                {index === 0 || <GoArrowSwitch />}
+              </TeamItem>
+            ))}
+        </Suspense> */}
         <TeamItem className="special" onClick={() => handleInvitingTeams()}>
           <ListItemContent className="extend">隊伍邀請</ListItemContent>
           <FiChevronRight />
@@ -119,7 +132,7 @@ const Menu = () => {
           設定
         </ListItem>
       </Section>
-      <Section className="transparent">
+      <Section type="transparent">
         <ListItem className="button danger" onClick={() => handleSignOut()}>
           登出
         </ListItem>

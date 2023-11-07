@@ -1,10 +1,6 @@
 import Link from "next/link";
 import styled from "styled-components";
 
-import { Section } from "./Section";
-
-export const List = styled(Section)``;
-
 export const ListHeader = styled.div`
   flex: 0 0;
   width: 100%;
