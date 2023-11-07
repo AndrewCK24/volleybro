@@ -1,115 +1,29 @@
 import Link from "next/link";
-import styled from "styled-components";
+import styles from "./styles.module.scss";
 
-export const FormContainer = styled.div`
-  flex: 1 1;
-  margin: none;
-  border-radius: 1.5rem;
-  background-color: var(--primary-100);
-  padding: 10% 5%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  &.minimized {
-    flex: 0 0;
-  }
+export const FormContainer = ({ children, type }) => {
+  return (
+    <div
+      className={`${styles.form__container} ${
+        type === "minimized" && styles[`styles__container--minimized`]
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
 
-  @media screen and (min-width: 768px) {
-    margin: 20% 5%;
-    width: 60%;
-  }
-`;
+export const FormTitle = ({ children }) => {
+  return <h2 className={styles.form__title}>{children}</h2>;
+};
 
-export const FormTitle = styled.h1`
-  width: 100%;
-  padding: 0 0 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: left;
-  font-size: 2rem;
-  font-weight: 500;
-  color: var(--primary-900);
-`;
-
-export const FormContents = styled.form`
-  flex: 1 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  justify-content: flex-start;
-  gap: 1rem;
-`;
-
-const FormInputContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  justify-content: center;
-  gap: 0.25rem;
-`;
-
-const FormLabelGroup = styled.div`
-  height: 1rem;
-  display: flex;
-  flex-direction: row;
-`;
-
-const FormLabel = styled.label`
-  height: 1rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: left;
-  padding-left: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1rem;
-`;
-
-const FormRequiredSymbol = styled.span`
-  width: fit-content;
-  display: inline-flex;
-  color: var(--danger-500);
-  font-size: 1rem;
-  font-weight: 500;
-`;
-
-const FormHelperText = styled.span`
-  /* width: 100%; */
-  display: inline-flex;
-  align-items: center;
-  justify-content: right;
-  padding: 0 0.5rem;
-  font-size: 1rem;
-  font-weight: 400;
-  color: var(--danger-500);
-`;
-
-const FormInput = styled.input`
-  height: 4rem;
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: solid 1px var(--gray-primary);
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 3rem;
-  color: var(--primary-900);
-  caret-color: var(--primary-400);
-  &:focus {
-    outline: none;
-    -webkit-box-shadow: inset 0 0 0.25rem var(--primary-400);
-    -moz-box-shadow: inset 0 0 0.25rem var(--primary-400);
-    box-shadow: inset 0 0 0.25rem var(--primary-400);
-  }
-  &.warn {
-    border: solid 2px var(--danger-500);
-  }
-`;
+export const FormContents = ({ children, onSubmit }) => {
+  return (
+    <form onSubmit={onSubmit} className={styles.form__contents}>
+      {children}
+    </form>
+  );
+};
 
 export const FormControl = (props) => {
   const {
@@ -127,15 +41,19 @@ export const FormControl = (props) => {
   } = props;
 
   return (
-    <FormInputContainer>
-      <FormLabelGroup>
-        <FormLabel htmlFor={name}>
+    <div className={styles.form__inputContainer}>
+      <div className={styles.form__labelGroup}>
+        <label
+          className={
+            required ? styles[`form__label--required`] : styles.form__label
+          }
+          htmlFor={name}
+        >
           {labelText}
-          {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
-          <FormHelperText>{warn}</FormHelperText>
-        </FormLabel>
-      </FormLabelGroup>
-      <FormInput
+        </label>
+        <span className={styles.form__helper}>{warn}</span>
+      </div>
+      <input
         type={type}
         defaultValue={defaultValue}
         placeholder={placeholder}
@@ -146,57 +64,28 @@ export const FormControl = (props) => {
         ref={ref}
         onChange={(e) => onChange(e.target.value)}
         autoComplete={autoComplete}
-        className={warn === " " ? "" : warn ? "warn" : ""}
+        className={`${styles.form__input} ${
+          !warn || warn === " " || styles["form__input--danger"]
+        }`}
       />
-    </FormInputContainer>
+    </div>
   );
 };
 
-const FormRadioSet = styled.div`
-  width: 100%;
-  padding: none;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: left;
-  border: none;
-  gap: 0.5rem;
-`;
-
-const FormRadioGroup = styled.div`
-  flex: 1 1 3rem;
-`;
-
-const FormRadioInput = styled.input`
-  display: none;
-  &:disabled ~ label {
-    border-color: var(--primary-500);
-    color: var(--primary-500);
-  }
-  &:checked ~ label {
-    background-color: var(--secondary-600);
-    color: var(--primary-100);
-  }
-  &:checked:disabled ~ label {
-    background-color: var(--primary-500);
-  }
-`;
-
-const FormRadioLabel = styled.label`
-  width: 100%;
-  height: 4rem;
-  padding: 0.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  border: solid 1px var(--secondary-600);
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 3rem;
-  color: var(--secondary-600);
-`;
+// const FormRadioInput = styled.input`
+//   display: none;
+//   &:disabled ~ label {
+//     border-color: var(--primary-500);
+//     color: var(--primary-500);
+//   }
+//   &:checked ~ label {
+//     background-color: var(--secondary-600);
+//     color: var(--primary-100);
+//   }
+//   &:checked:disabled ~ label {
+//     background-color: var(--primary-500);
+//   }
+// `;
 
 export const FormSelect = (props) => {
   const {
@@ -211,20 +100,24 @@ export const FormSelect = (props) => {
   } = props;
 
   return (
-    <FormInputContainer>
-      <FormLabelGroup>
-        <FormLabel>
+    <div className={styles.form__inputContainer}>
+      <div className={styles.form__labelGroup}>
+        <label
+          className={
+            required ? styles[`form__label--required`] : styles.form__label
+          }
+        >
           {labelText}
-          {required && <FormRequiredSymbol>*</FormRequiredSymbol>}
-          <FormHelperText>{warn}</FormHelperText>
-        </FormLabel>
-      </FormLabelGroup>
-      <FormRadioSet>
+          <span className={styles.form__helper}>{warn}</span>
+        </label>
+      </div>
+      <div className={styles.form__radioSet}>
         {options.map((option, index) => {
           const { id, value, text } = option;
           return (
-            <FormRadioGroup key={index}>
-              <FormRadioInput
+            <div className={styles.form__radioGroup} key={index}>
+              <input
+                className={styles.form__radioInput}
                 key={id}
                 type="radio"
                 id={id}
@@ -233,120 +126,44 @@ export const FormSelect = (props) => {
                 disabled={disabled}
                 defaultChecked={defaultValue === value}
               />
-              <FormRadioLabel key={index} htmlFor={id}>
+              <label
+                className={styles.form__radioLabel}
+                key={index}
+                htmlFor={id}
+              >
                 {text}
-              </FormRadioLabel>
-            </FormRadioGroup>
+              </label>
+            </div>
           );
         })}
-      </FormRadioSet>
-    </FormInputContainer>
+      </div>
+    </div>
   );
 };
 
-export const StyledButton = styled.button`
-  height: 4rem;
-  width: 100%;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary-100);
-  background-color: var(--secondary-500);
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1.75rem;
-  font-weight: 700;
-  &:disabled {
-    background-color: var(--secondary-300);
-  }
-  &.outlined {
-    font-weight: 500;
-    color: var(--secondary-500);
-    background-color: var(--primary-100);
-    border: solid 1px var(--secondary-500);
-  }
-  &.outlined:disabled {
-    color: var(--primary-300);
-    background-color: var(--primary-100);
-    border: solid 1px var(--primary-300);
-  }
-  &.text {
-    font-weight: 500;
-    color: var(--secondary-500);
-    background-color: transparent;
-    border: none;
-  }
-`;
-
-export const FormButton = ({ children, errorArr = [], className, onClick }) => {
+export const FormButton = ({ children, errorArr = [], type, onClick }) => {
   const hasError = errorArr.some((error) => error);
 
   return (
-    <StyledButton
+    <button
       type="submit"
       disabled={hasError}
-      className={className}
+      className={`${styles.form__button} ${styles[`form__button--${type}`]}`}
       onClick={onClick}
     >
       {children}
-    </StyledButton>
+    </button>
   );
 };
 
-export const FormLink = styled(Link)`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  color: var(--secondary-500);
-  padding: 0.5rem 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  text-decoration: none;
-`;
-
-export const FormHr = styled.hr`
-  width: 100%;
-  position: relative;
-  padding: 1rem 0;
-  border: 0;
-  font-size: 1rem;
-  color: var(--primary-400);
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    var(--primary-400),
-    transparent
+export const FormLink = ({ children, href }) => {
+  return (
+    <div className={styles.form__link}>
+      <Link href={href}>{children}</Link>
+    </div>
   );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    var(--primary-400),
-    transparent
-  );
+};
 
-  &::before {
-    content: "${(props) => props.content}";
-    position: absolute;
-    padding: 0 1ch;
-    line-height: 1px;
-    border: solid var(--primary-400);
-    border-width: 0 99vw;
-    width: fit-content;
-    white-space: nowrap;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-`;
-
-// const FormHr = styled.hr`
-//   width: 100%;
-//   border: 0;
-//   padding-top: 1px;
-//   background: linear-gradient(
-//     to right,
-//     transparent,
-//     var(--primary-400),
-//     transparent
-//   );
-// `;
+export const FormHr = ({ content }) => {
+  return <hr className={styles.form__hr} content={content} />;
+};

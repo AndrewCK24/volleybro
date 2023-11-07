@@ -76,7 +76,7 @@ const SignInForm = () => {
   };
 
   return (
-    <FormContainer className="minimized">
+    <FormContainer type="minimized">
       <FormTitle>歡迎使用 V-Stats</FormTitle>
       <FormContents onSubmit={handleSubmit}>
         <FormControl
@@ -101,7 +101,7 @@ const SignInForm = () => {
         <FormButton errorArr={errorArr}>登入</FormButton>
       </FormContents>
       <FormHr content="或使用以下方式登入" />
-      <FormButton className="outlined" onClick={handleSignUp}>
+      <FormButton type="outlined" onClick={handleSignUp}>
         註冊
       </FormButton>
     </FormContainer>

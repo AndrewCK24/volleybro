@@ -105,7 +105,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <FormContainer className="minimized">
+    <FormContainer type="minimized">
       <FormTitle>開始註冊 V-Stats</FormTitle>
       <FormContents onSubmit={handleSubmit}>
         <FormControl
@@ -147,7 +147,7 @@ const SignUpForm = () => {
         <FormButton errorArr={errorArr}>註冊</FormButton>
       </FormContents>
       <FormHr content="已有帳號了嗎？" />
-      <FormButton className="text" onClick={handleSignIn}>
+      <FormButton type="text" onClick={handleSignIn}>
         返回登入頁
       </FormButton>
     </FormContainer>
