@@ -4,7 +4,7 @@ import SignUpForm from "./SignUpForm";
 const SignUpPage = () => {
   return (
     <>
-      <Logo className="maximized" />
+      <Logo type="maximized" />
       <SignUpForm />
     </>
   );
