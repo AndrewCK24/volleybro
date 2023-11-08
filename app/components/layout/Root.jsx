@@ -11,13 +11,9 @@ import { FiEdit } from "react-icons/fi";
 import Header from "./Header";
 import Nav from "./Nav";
 
-const Main = ({ children, full, fixed }) => {
+const Main = ({ children, full }) => {
   return (
-    <main
-      className={`${styles.main} ${full && styles[`main--full-height`]} ${
-        fixed && styles[`main--fixed`]
-      }}`}
-    >
+    <main className={`${styles.main} ${full && styles[`main--full-height`]}`}>
       {children}
     </main>
   );
@@ -56,7 +52,7 @@ const Root = ({ data, children }) => {
   ) : (
     <>
       <Header title="V-Stats" isIndex={isIndex} />
-      <Main fixed={pathname === "/team/lineup"}>{children}</Main>
+      <Main>{children}</Main>
       {isIndex && <RecordBtn />}
       <Nav pathname={pathname} />
     </>
