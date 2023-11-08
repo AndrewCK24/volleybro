@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/app/components/common/Logo";
 import SignUpForm from "./SignUpForm";
 

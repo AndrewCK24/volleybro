@@ -1,9 +1,8 @@
-const TeamPage = () => {
-  return (
-    <div>
-      <h1>Team</h1>
-    </div>
-  );
-}
+"use client";
+import TeamMembers from "./TeamMembers";
+
+const TeamPage = async () => {
+  return <TeamMembers />;
+};
 
 export default TeamPage;
