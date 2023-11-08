@@ -6,6 +6,14 @@ import User from "@/app/models/user";
 import Team from "@/app/models/team";
 import Member from "@/app/models/member";
 
+export const GET = async () => {
+  const { userData, token } = await verifyJwt();
+  const { joined } = userData.teams;
+  const teams = await Team.find({ _id: { $in: joined } });
+
+  return NextResponse.json({ teams }, { status: 200 });
+};
+
 export const POST = async (req) => {
   try {
     const { userData } = await verifyJwt(req);
@@ -29,13 +37,13 @@ export const POST = async (req) => {
 
     const updatedUser = await User.findById(userData._id);
     newMember.team_id = newTeam._id;
-    updatedUser.teams.joined = newTeam._id;
+    updatedUser.teams.joined.push(newTeam._id);
 
     await newMember.save();
     await newTeam.save();
     await updatedUser.save();
 
-    const token = await signJwt(user);
+    const token = await signJwt(updatedUser);
     const user = hidePassword(updatedUser);
     const response = NextResponse.json(
       { userData: user, teamData: newTeam, membersData: [newMember] },

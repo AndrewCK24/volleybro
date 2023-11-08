@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, Suspense, useEffect } from "react";
+import { useState, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
-import store from "../store/store";
 import { userActions } from "./user-slice";
 import { teamActions } from "../team/team-slice";
 
+import Loading from "./loading";
+import Teams from "./Teams";
 import {
   FiChevronDown,
   FiChevronRight,
@@ -16,7 +17,6 @@ import {
   FiUser,
   FiUsers,
 } from "react-icons/fi";
-// import Loading from "./loading";
 import { GoArrowSwitch } from "react-icons/go";
 import { Section } from "../components/common/Section";
 import { ListItem, ListItemContent } from "../components/common/List";
@@ -38,17 +38,12 @@ const TeamItem = styled(ListItem)`
   }
 `;
 
-const getTeams = (teamIds) => {
-  console.log(`/api/teams?teamIds=${teamIds}`);
-};
-
 const Menu = () => {
+  console.log("Menu, render");
   const [extendTeams, setExtendTeams] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const userName = useSelector((state) => state.user.name);
-  const teamIds = useSelector((state) => state.user.teams.joined);
-
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = () => setExtendTeams(!extendTeams);
@@ -108,21 +103,11 @@ const Menu = () => {
           <ListItemContent className="extend">{userName}</ListItemContent>
           <ExtendTeamsIcon className={extendTeams && "up"} />
         </ListItem>
-        {/* <Suspense fallback={<Loading teamIds={teamIds} />}>
-          {extendTeams &&
-            teams.map((team, index) => (
-              <TeamItem
-                key={team._id}
-                onClick={() => handleTeamSwitch(index, team._id)}
-              >
-                <FiUsers />
-                <ListItemContent className="extend">
-                  {team.name}
-                </ListItemContent>
-                {index === 0 || <GoArrowSwitch />}
-              </TeamItem>
-            ))}
-        </Suspense> */}
+        {extendTeams && (
+          <Suspense fallback={<Loading />}>
+            <Teams handleTeamSwitch={handleTeamSwitch} />
+          </Suspense>
+        )}
         <TeamItem className="special" onClick={() => handleInvitingTeams()}>
           <ListItemContent className="extend">隊伍邀請</ListItemContent>
           <FiChevronRight />
@@ -142,8 +127,3 @@ const Menu = () => {
 };
 
 export default Menu;
-
-export const loader = () => {
-  store.dispatch({ type: "root/setTitle", payload: "功能表" });
-  return null;
-};
