@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-
-import { userActions } from "./user-slice";
-import { teamActions } from "../team/team-slice";
 
 import Loading from "./loading";
 import Teams from "./Teams";
@@ -18,8 +15,8 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
-import { Section } from "../components/common/Section";
-import { ListItem, ListItemContent } from "../components/common/List";
+import { Section } from "../../components/common/Section";
+import { ListItem, ListItemContent } from "../../components/common/List";
 
 const ExtendTeamsIcon = styled(FiChevronDown)`
   transition: transform 0.2s ease-in-out;
@@ -42,37 +39,10 @@ const Menu = () => {
   console.log("Menu, render");
   const [extendTeams, setExtendTeams] = useState(false);
   const router = useRouter();
-  const dispatch = useDispatch();
   const userName = useSelector((state) => state.user.name);
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = () => setExtendTeams(!extendTeams);
-
-  const handleTeamSwitch = async (index, teamId) => {
-    if (index === 0) {
-      router.push("/team");
-      return;
-    }
-
-    try {
-      const response = await fetch("/.netlify/functions/fetch-team-by-id", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({ teamId }),
-      });
-      const { status, userData, teamData } = await response.json();
-      if (status === 200) {
-        router.push("/team");
-        dispatch(userActions.setUser(userData));
-        // dispatch(teamActions.loadTeamData(teamData));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleInvitingTeams = () => {
     router.push("/team/invitations");
@@ -105,7 +75,7 @@ const Menu = () => {
         </ListItem>
         {extendTeams && (
           <Suspense fallback={<Loading />}>
-            <Teams handleTeamSwitch={handleTeamSwitch} />
+            <Teams />
           </Suspense>
         )}
         <TeamItem className="special" onClick={() => handleInvitingTeams()}>

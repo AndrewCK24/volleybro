@@ -35,7 +35,7 @@
 
 .main {
   flex: 1 1;
-  margin: 3.5rem 0;
+  margin: 3.5rem 0 5rem;
   padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
@@ -59,37 +59,12 @@
   }
 }
 
-.recordBtn {
-  position: fixed;
-  bottom: 5rem;
-  right: 5%;
-  width: 12rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  border-radius: 0.5rem;
-  background-color: var(--danger-500);
-  color: var(--primary-100);
-  font-size: 1.5rem;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  gap: 0.5rem;
-  
-  svg {
-    color: var(--primary-100);
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-}
-
 .nav {
   position: fixed;
   bottom: 0;
   left: 0;
+  height: 5rem;
   width: 100%;
-  flex: 0 0 4rem;
   padding: 0 5% 1rem;
   display: flex;
   flex-direction: row;
@@ -102,12 +77,12 @@
     height: 100%;
     padding: 0.5rem 0 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-decoration: none;
     color: var(--primary-200);
-    font-size: 1.25rem;
-    gap: 0.5rem;
+    font-size: 0.9rem;
 
     transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out,
       border 0.2s ease-in-out;
@@ -122,10 +97,17 @@
       border-top: 0.25rem solid var(--primary-100);
       padding: 0.25rem 0 0;
       color: var(--primary-100);
-      font-weight: 700;
+      font-weight: 600;
 
       svg {
         stroke: var(--primary-100);
+      }
+    }
+
+    &--record {
+      svg {
+        width: 3rem;
+        height: 3rem;
       }
     }
   }

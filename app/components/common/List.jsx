@@ -1,15 +1,10 @@
 import Link from "next/link";
 import styled from "styled-components";
+import styles from "./styles.module.scss";
 
-export const ListHeader = styled.div`
-  flex: 0 0;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: var(--primary-100);
-`;
+export const ListHeader = ({ children }) => (
+  <div className={styles.list__header}>{children}</div>
+);
 
 export const ListInfo = styled.div`
   flex: 1 1;

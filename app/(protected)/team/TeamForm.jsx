@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
 import { userActions } from "../user/user-slice";
-import { Section } from "../components/common/Section";
+import { Section } from "../../components/common/Section";
 import {
   FormContainer,
   FormContents,
   FormControl,
   FormButton,
-} from "../components/common/Form";
+} from "../../components/common/Form";
 
 const TeamForm = ({ isNew }) => {
   const router = useRouter();

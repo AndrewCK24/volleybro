@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { userActions } from "@/app/user/user-slice";
+import { userActions } from "@/app/(protected)/user/user-slice";
 import {
   FormContainer,
   FormTitle,

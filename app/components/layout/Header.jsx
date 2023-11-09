@@ -1,3 +1,6 @@
+"use client";
+import { usePathname } from "next/navigation";
+
 import styles from "./styles.module.scss";
 
 import { IconButton } from "../common/Button";
@@ -8,19 +11,9 @@ const Container = ({ children }) => (
   <header className={styles.header}>{children}</header>
 );
 
-const Title = ({ children, center }) => {
-  return (
-    <h1
-      className={`${styles.header__title} ${
-        center && styles["header__title--center"]
-      }`}
-    >
-      {children}
-    </h1>
-  );
-};
-
-const Header = ({ title, isIndex }) => {
+export const Header = () => {
+  const pathname = usePathname();
+  const isIndex = pathname.split("/").filter(Boolean).length <= 1;
   const handleBack = () => {
     window.history.back();
   };
@@ -32,10 +25,14 @@ const Header = ({ title, isIndex }) => {
           <FiArrowLeft />
         </IconButton>
       )}
-      <Title center={!isIndex}>{title}</Title>
+      <h1
+        className={`${styles.header__title} ${
+          !isIndex && styles["header__title--center"]
+        }`}
+      >
+        V-Stats
+      </h1>
       <IoNotificationsSharp />
     </Container>
   );
 };
-
-export default Header;

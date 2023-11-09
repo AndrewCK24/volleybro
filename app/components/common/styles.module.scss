@@ -297,6 +297,18 @@
   }
 }
 
+.list {
+  &__header {
+    flex: 0 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: var(--primary-100);
+  }
+}
+
 .logo {
   flex: 0 0;
   width: 100%;

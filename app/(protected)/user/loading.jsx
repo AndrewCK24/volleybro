@@ -1,6 +1,6 @@
 "use client";
 import styled from "styled-components";
-import { ListItem } from "../components/common/List";
+import { ListItem } from "../../components/common/List";
 
 const LoadingItem = styled(ListItem)`
   animation: skeleton 0.75s linear infinite alternate;
