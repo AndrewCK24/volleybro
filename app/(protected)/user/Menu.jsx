@@ -2,9 +2,11 @@
 
 import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 
+import { userActions } from "../user/user-slice";
+import { teamActions } from "../team/team-slice";
 import Loading from "./loading";
 import Teams from "./Teams";
 import {
@@ -37,6 +39,7 @@ const TeamItem = styled(ListItem)`
 
 const Menu = () => {
   console.log("Menu, render");
+  const dispatch = useDispatch();
   const [extendTeams, setExtendTeams] = useState(false);
   const router = useRouter();
   const userName = useSelector((state) => state.user.name);
