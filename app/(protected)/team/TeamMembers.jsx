@@ -37,7 +37,7 @@ const TeamMembers = () => {
         <ListItem key={member._id}>
           <FiUser />
           <ListItemText minimized={true} bold={true}>
-            20
+            {member.number || "??"}
           </ListItemText>
           <ListItemText>{member.name}</ListItemText>
           <ListIndicator member={member} />
