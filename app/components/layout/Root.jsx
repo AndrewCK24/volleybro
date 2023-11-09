@@ -6,10 +6,10 @@ import { userActions } from "../../(protected)/user/user-slice";
 import { teamActions } from "../../(protected)/team/team-slice";
 
 const Root = ({ data }) => {
-  console.log("Root, render");
   const router = useRouter();
   const dispatch = useDispatch();
   const isSignIn = useSelector((state) => state.user.signIn);
+  if (isSignIn) return <></>;
 
   if (!data) {
     router.push("/sign-in");

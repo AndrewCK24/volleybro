@@ -1,245 +1,127 @@
 import Link from "next/link";
-import styled from "styled-components";
 import styles from "./styles.module.scss";
+
+import {
+  MdOutlineAdminPanelSettings,
+  MdCheckCircleOutline,
+  MdOutlineAccessTime,
+  MdOutlineHighlightOff,
+} from "react-icons/md";
 
 export const ListHeader = ({ children }) => (
   <div className={styles.list__header}>{children}</div>
 );
 
-export const ListInfo = styled.div`
-  flex: 1 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  height: 3rem;
-  margin: 0;
-`;
+export const ListTitle = ({ children }) => (
+  <h2 className={styles.list__title}>{children}</h2>
+);
 
-export const ListTitle = styled.h2`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  /* TODO: 新增 subtitle */
-  max-width: calc(100vw - 11rem);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 1.75rem;
-  font-weight: 500;
-  color: var(--primary-800);
-  gap: 0.5rem;
-  svg {
-    width: 2rem;
-    height: 2rem;
-    color: var(--secondary-700);
-  }
-`;
+export const ListBtnContainer = ({ children }) => (
+  <div className={styles.list__btn_container}>{children}</div>
+);
 
-export const LinkSet = styled.div`
-  flex: 0 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-`;
+export const ListBtn = ({ children, href }) => (
+  <Link href={href} className={styles.list__btn}>
+    {children}
+  </Link>
+);
 
-export const LinkButton = styled(Link)`
-  flex: 0 0 3rem;
-  height: 3rem;
-  padding: 0.5rem;
-  border: none;
-  background-color: transparent;
-  aspect-ratio: 1;
-  svg {
-    width: 2rem;
-    height: 2rem;
-    color: var(--secondary-700);
-  }
-`;
-
-export const ListItem = styled.button`
-  flex: 0 0 4rem;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-100);
-  box-shadow: 0 0 0.5rem var(--primary-300);
-  border: none;
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  color: var(--primary-900);
-  font-size: 1.5rem;
-  user-select: none;
-  transition: box-shadow 0.2s ease-in-out, background-color 0.1s ease-in-out;
-  svg {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  &.button {
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  &.icon-button {
-    justify-content: center;
-    cursor: pointer;
-    svg {
-      width: 2.5rem;
-      height: 2.5rem;
-    }
-  }
-
-  &:active {
-    background-color: var(--primary-200);
-    box-shadow: 0 0 0.25rem var(--primary-400);
-  }
-  &.toggled {
-    background-color: var(--primary-200);
-    box-shadow: 0 0 1rem var(--primary-400);
-  }
-
-  &.primary {
-    background-color: var(--secondary-500);
-    color: var(--primary-100);
-  }
-  &.primary:active {
-    background-color: var(--secondary-400);
-    box-shadow: 0 0 0.25rem var(--primary-400);
-  }
-  &.primary.toggled {
-    background-color: var(--secondary-400);
-    box-shadow: 0 0 1rem var(--primary-400);
-  }
-
-  &.secondary {
-    background-color: var(--primary-400);
-    color: var(--primary-100);
-  }
-  &.secondary:active {
-    background-color: var(--primary-300);
-    box-shadow: 0 0 0.25rem var(--primary-400);
-  }
-  &.secondary.toggled {
-    background-color: var(--primary-300);
-    box-shadow: 0 0 1rem var(--primary-400);
-  }
-
-  &.danger {
-    background-color: var(--danger-600);
-    color: var(--primary-100);
-  }
-  &.danger:active {
-    background-color: var(--danger-500);
-    box-shadow: 0 0 0.25rem var(--danger-400);
-  }
-  &.danger.toggled {
-    background-color: var(--danger-500);
-    box-shadow: 0 0 1rem var(--danger-400);
-  }
-`;
-
-export const ListItemContent = styled.div`
-  flex: 0 0 2rem;
-  height: 2rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 1.5rem;
-  line-height: 2rem;
-
-  &.extend {
-    flex: 1 1;
-    justify-content: flex-start;
-  }
-
-  &.bold {
-    font-weight: 600;
-  }
-`;
-
-// TODO: 將 ListItemDetailContent 簡化為 ListItemContent
-export const ListItemDetailContent = ({ detail, children }) => {
-  const Container = styled.div`
-    flex: 1 1;
-    height: 3rem;
-    display: flex;
-    flex-direction: column;
-    align-items: left;
-    justify-content: center;
-    gap: 0.25rem;
-  `;
-
-  const StyledContent = styled(ListItemContent)`
-    flex: 0 0 1.5rem;
-    width: 100%;
-    height: 1.5rem;
-    justify-content: flex-start;
-    line-height: 1.5rem;
-  `;
-
-  const StyledDetail = styled(ListItemContent)`
-    flex: 0 0 1rem;
-    width: 100%;
-    height: 1rem;
-    justify-content: flex-start;
-    font-size: 1rem;
-    line-height: 1rem;
-    color: var(--primary-600);
-  `;
-
+export const ListItem = ({ children, type, center, text, onClick = null }) => {
   return (
-    <Container>
-      <StyledContent>{children}</StyledContent>
-      <StyledDetail>{detail}</StyledDetail>
-    </Container>
+    <button
+      className={`${styles.list__item} ${
+        text
+          ? styles[`list__item--${type}-text`]
+          : type && styles[`list__item--${type}`]
+      } ${center && styles[`list__item--center`]}`}
+      onClick={onClick}
+      disabled={!onClick}
+    >
+      {children}
+    </button>
   );
 };
 
-export const ListIndicator = styled.div`
-  flex: 0 0 6.5rem;
-  height: 2rem;
-  padding: 0rem 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--secondary-600);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: transparent;
-  color: var(--secondary-600);
-  font-size: 1.25rem;
-  font-weight: 400;
-  line-height: 1.5rem;
-  gap: 0.25rem;
-  svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
+export const ListItemText = ({ children, minimized, bold }) => {
+  return (
+    <div
+      className={`${styles.list__item_text} ${
+        minimized && styles[`list__item_text--minimized`]
+      } ${bold && styles[`list__item-text--bold`]}`}
+    >
+      {children}
+    </div>
+  );
+};
 
-  &.primary {
-    // joined
-    background-color: var(--secondary-600);
-    color: var(--primary-100);
-  }
+// TODO: 將 ListItemDetailContent 簡化為 ListItemContent
+// export const ListItemDetailContent = ({ detail, children }) => {
+//   const Container = styled.div`
+//     flex: 1 1;
+//     height: 3rem;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: left;
+//     justify-content: center;
+//     gap: 0.25rem;
+//   `;
 
-  &.secondary {
-    // not invited
-    border-color: var(--primary-400);
-    background-color: var(--primary-400);
-    color: var(--primary-100);
-  }
+//   const StyledContent = styled(ListItemText)`
+//     flex: 0 0 1.5rem;
+//     width: 100%;
+//     height: 1.5rem;
+//     justify-content: flex-start;
+//     line-height: 1.5rem;
+//   `;
 
-  &.danger {
-    // admin
-    border-color: var(--danger-500);
-    background-color: var(--danger-500);
-    color: var(--primary-100);
-  }
-`;
+//   const StyledDetail = styled(ListItemText)`
+//     flex: 0 0 1rem;
+//     width: 100%;
+//     height: 1rem;
+//     justify-content: flex-start;
+//     font-size: 1rem;
+//     line-height: 1rem;
+//     color: var(--primary-600);
+//   `;
+
+//   return (
+//     <Container>
+//       <StyledContent>{children}</StyledContent>
+//       <StyledDetail>{detail}</StyledDetail>
+//     </Container>
+//   );
+// };
+
+export const ListIndicator = ({ member }) => {
+  const { admin, user_id, email } = member.meta;
+  const identity = admin
+    ? {
+        text: "管理者",
+        type: "danger",
+        icon: <MdOutlineAdminPanelSettings />,
+      }
+    : user_id
+    ? {
+        text: "已加入",
+        type: "primary",
+        icon: <MdCheckCircleOutline />,
+      }
+    : email
+    ? { text: "邀請中", type: "", icon: <MdOutlineAccessTime /> }
+    : {
+        text: "未邀請",
+        type: "secondary",
+        icon: <MdOutlineHighlightOff />,
+      };
+
+  return (
+    <div
+      className={`${styles.list__indicator} ${
+        styles[`list__indicator--${identity.type}`]
+      }`}
+    >
+      {identity.icon}
+      {identity.text}
+    </div>
+  );
+};

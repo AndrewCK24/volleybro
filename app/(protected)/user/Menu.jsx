@@ -18,7 +18,7 @@ import {
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 import { Section } from "../../components/common/Section";
-import { ListItem, ListItemContent } from "../../components/common/List";
+import { ListItem, ListItemText } from "../../components/common/List";
 
 const ExtendTeamsIcon = styled(FiChevronDown)`
   transition: transform 0.2s ease-in-out;
@@ -71,9 +71,9 @@ const Menu = () => {
   return (
     <>
       <Section>
-        <ListItem className="primary" onClick={() => handleExtendTeams()}>
+        <ListItem type="primary" onClick={() => handleExtendTeams()}>
           <FiUser />
-          <ListItemContent className="extend">{userName}</ListItemContent>
+          <ListItemText className="extend">{userName}</ListItemText>
           <ExtendTeamsIcon className={extendTeams && "up"} />
         </ListItem>
         {extendTeams && (
@@ -81,10 +81,14 @@ const Menu = () => {
             <Teams />
           </Suspense>
         )}
-        <TeamItem className="special" onClick={() => handleInvitingTeams()}>
-          <ListItemContent className="extend">隊伍邀請</ListItemContent>
+        <ListItem
+          type="danger"
+          text={true}
+          onClick={() => handleInvitingTeams()}
+        >
+          <ListItemText className="extend">隊伍邀請</ListItemText>
           <FiChevronRight />
-        </TeamItem>
+        </ListItem>
         <ListItem>
           <FiSettings />
           設定

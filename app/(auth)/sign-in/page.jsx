@@ -1,4 +1,3 @@
-"use client";
 import Logo from "@/app/components/common/Logo";
 import SignInForm from "./SignInForm";
 

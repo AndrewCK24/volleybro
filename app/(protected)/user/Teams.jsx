@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { ListItem, ListItemContent } from "../../components/common/List";
+import { ListItem, ListItemText } from "../../components/common/List";
 
 import { userActions } from "./user-slice";
 import { teamActions } from "../team/team-slice";
@@ -57,7 +57,7 @@ const Teams = async () => {
             key={team.id}
             onClick={() => handleTeamSwitch(index, team.id)}
           >
-            <ListItemContent className="extend">{team.name}</ListItemContent>
+            <ListItemText className="extend">{team.name}</ListItemText>
           </ListItem>
         ))}
     </>
