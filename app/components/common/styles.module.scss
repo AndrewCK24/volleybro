@@ -170,7 +170,8 @@
       color: var(--primary-500);
     }
     &:checked ~ label {
-      background-color: var(--secondary-600);
+      background-color: var(--danger-600);
+      font-weight: 500;
       color: var(--primary-100);
     }
     &:checked:disabled ~ label {
@@ -185,11 +186,11 @@
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem;
-    border: solid 1px var(--secondary-600);
+    border: solid 1px var(--danger-600);
     font-size: 2rem;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 3rem;
-    color: var(--secondary-600);
+    color: var(--danger-600);
   }
 
   &__button {

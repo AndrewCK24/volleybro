@@ -44,12 +44,13 @@ const MemberForm = ({ member = null, setIsEditing }) => {
         <FormSelect
           name="admin"
           labelText="權限"
-          defaultValue={member?.meta.admin || false}
           options={[
-            { value: false, text: "一般成員" },
-            { value: true, text: "管理者" },
+            { id: "member", value: false, text: "一般成員" },
+            { id: "admin", value: true, text: "管理者" },
           ]}
+          defaultValue={member?.meta.admin || false}
         />
+        <SectionHr content="" />
         <FormButton>{member ? "儲存變更" : "建立隊員"}</FormButton>
       </FormContainer>
       {member ? (
