@@ -1,24 +1,25 @@
-"use client";
-import styled from "styled-components";
-import { ListItem } from "../../components/common/List";
-
-const LoadingItem = styled(ListItem)`
-  animation: skeleton 0.75s linear infinite alternate;
-  @keyframes skeleton {
-    0% {
-      background-color: transparent;
-    }
-    100% {
-      background-color: var(--primary-300);
-    }
-  }
-`;
+import { Section } from "@/app/components/common/Section";
+import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const Loading = () => {
   return (
     <>
-      <LoadingItem key={1} />
-      <LoadingItem key={2} />
+      <Section>
+        <ListItem />
+        <ListItem>
+          <ListItemText minimized={true} />
+          <ListItemText minimized={true} />
+          <ListItemText />
+        </ListItem>
+        <ListItem>
+          <ListItemText minimized={true} />
+          <ListItemText minimized={true} />
+          <ListItemText />
+        </ListItem>
+      </Section>
+      <Section transparent={true}>
+        <ListItem />
+      </Section>
     </>
   );
 };

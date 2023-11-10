@@ -309,6 +309,7 @@
   }
 
   &__title {
+    height: 3rem;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -320,12 +321,25 @@
     text-overflow: ellipsis;
     font-size: 1.75rem;
     font-weight: 500;
+    line-height: 3rem;
     color: var(--primary-800);
     gap: 0.5rem;
     svg {
       width: 2rem;
       height: 2rem;
       color: var(--secondary-700);
+    }
+
+    &:empty {
+      animation: skeleton 0.75s linear infinite alternate;
+      @keyframes skeleton {
+        0% {
+          background-color: transparent;
+        }
+        100% {
+          background-color: var(--primary-300);
+        }
+      }
     }
   }
 
@@ -373,6 +387,18 @@
     svg {
       width: 2rem;
       height: 2rem;
+    }
+
+    &:empty {
+      animation: skeleton 0.75s linear infinite alternate;
+      @keyframes skeleton {
+        0% {
+          background-color: transparent;
+        }
+        100% {
+          background-color: var(--primary-300);
+        }
+      }
     }
 
     &:active {
