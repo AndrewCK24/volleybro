@@ -20,10 +20,10 @@ export const ListBtnContainer = ({ children }) => (
   <div className={styles.list__btn_container}>{children}</div>
 );
 
-export const ListBtn = ({ children, href }) => (
-  <Link href={href} className={styles.list__btn}>
+export const ListBtn = ({ children, onClick }) => (
+  <div onClick={onClick} className={styles.list__btn}>
     {children}
-  </Link>
+  </div>
 );
 
 export const ListItem = ({

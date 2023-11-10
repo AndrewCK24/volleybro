@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
 import { Section } from "@/app/components/common/Section";
@@ -15,11 +16,20 @@ import { BsGrid3X2Gap } from "react-icons/bs";
 import { FiUser, FiPlus, FiChevronRight } from "react-icons/fi";
 
 const TeamMembers = () => {
+  const router = useRouter();
   const {
     _id: teamId,
     name: teamName,
     members,
   } = useSelector((state) => state.team);
+
+  const handleLineupClick = () => {
+    router.push(`/team/lineup`);
+  };
+
+  const handleMemberClick = (memberId) => {
+    router.push(`/team/member/${memberId}`);
+  };
   return (
     <Section>
       <ListHeader>
@@ -28,13 +38,16 @@ const TeamMembers = () => {
           <FiChevronRight />
         </ListTitle>
         <ListBtnContainer>
-          <ListBtn href="/team/lineup">
+          <ListBtn onClick={handleLineupClick}>
             <BsGrid3X2Gap />
           </ListBtn>
         </ListBtnContainer>
       </ListHeader>
       {members.map((member) => (
-        <ListItem key={member._id}>
+        <ListItem
+          key={member._id}
+          onClick={() => handleMemberClick(member._id)}
+        >
           <FiUser />
           <ListItemText minimized={true} bold={true}>
             {member.number || "??"}
