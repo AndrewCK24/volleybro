@@ -26,17 +26,17 @@
     font-size: 2rem;
     font-weight: 500;
     line-height: 3rem;
-  
+
     &--center {
       justify-content: center;
-    }  
+    }
   }
 }
 
 .main {
   flex: 1 1;
-  margin: 3.5rem 0 5rem;
-  padding: 0.5rem 0;
+  // margin: 3.5rem 0 5rem;
+  padding: 4rem 0 5.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,8 +49,9 @@
   z-index: 0;
 
   &--full-height {
+    overscroll-behavior-y: none;
     margin: 0;
-    padding: 0%;
+    padding: 0;
     gap: 0;
   }
 

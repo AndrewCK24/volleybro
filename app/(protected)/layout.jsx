@@ -31,8 +31,8 @@ const ProtectedLayout = async ({ children }) => {
   return (
     <>
       <Root data={data} />
-      <Header />
       <Main>{children}</Main>
+      <Header />
       <Nav />
     </>
   );

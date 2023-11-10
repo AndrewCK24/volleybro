@@ -54,7 +54,7 @@ body {
   flex-wrap: nowrap;
   text-size-adjust: 100%;
   touch-action: none;
-  background-color: var(--primary-100);
+  background-color: var(--primary-200);
 }
 
 .scrollbar-hidden {
