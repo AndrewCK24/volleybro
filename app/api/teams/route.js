@@ -7,11 +7,34 @@ import Team from "@/app/models/team";
 import Member from "@/app/models/member";
 
 export const GET = async () => {
-  const { userData, token } = await verifyJwt();
-  const { joined } = userData.teams;
-  const teams = await Team.find({ _id: { $in: joined } });
+  try {
+    const { userData, token } = await verifyJwt();
+    const { joined, inviting } = userData.teams;
+    const foundJoined = await Team.find({ _id: { $in: joined } });
+    const foundInviting = await Team.find({ _id: { $in: inviting } });
 
-  return NextResponse.json({ teams }, { status: 200 });
+    const byId = (order) => (a, b) =>
+      order.indexOf(a._id.toString()) - order.indexOf(b._id.toString());
+    const joinedTeams = foundJoined.sort(byId(joined));
+    const invitingTeams = foundInviting.sort(byId(inviting));
+    const response = NextResponse.json(
+      { joined: joinedTeams, inviting: invitingTeams },
+      { status: 200 }
+    );
+    response.cookies.set({
+      name: "token",
+      value: token,
+      options: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.log("[get-teams]", error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
 };
 
 export const POST = async (req) => {

@@ -26,6 +26,11 @@ const userSlice = createSlice({
       state.preferences = action.payload.preferences;
       state._id = action.payload._id;
     },
+    setTeamsDetails: (state, action) => {
+      const { joined, inviting } = action.payload;
+      if (joined) state.teams.joined = joined;
+      if (inviting) state.teams.inviting = inviting;
+    },
     signOut: (state) => {
       state.signIn = false;
       state.name = "";

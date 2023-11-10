@@ -7,8 +7,6 @@ import styled from "styled-components";
 
 import { userActions } from "../user/user-slice";
 import { teamActions } from "../team/team-slice";
-import Loading from "./loading";
-import Teams from "./Teams";
 import {
   FiChevronDown,
   FiChevronRight,
@@ -28,14 +26,44 @@ const ExtendTeamsIcon = styled(FiChevronDown)`
 `;
 
 const Menu = () => {
-  console.log("Menu, render");
   const dispatch = useDispatch();
   const [extendTeams, setExtendTeams] = useState(false);
   const router = useRouter();
   const userName = useSelector((state) => state.user.name);
+  const joinedTeams = useSelector((state) => state.user.teams.joined);
+  const isJoinedTeamsLoaded = joinedTeams[0]._id;
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
-  const handleExtendTeams = () => setExtendTeams(!extendTeams);
+  const handleExtendTeams = async () => {
+    if (extendTeams) return setExtendTeams(!extendTeams);
+
+    setExtendTeams(!extendTeams);
+    if (isJoinedTeamsLoaded) return;
+
+    const response = await fetch("/api/teams");
+    const teams = await response.json();
+    dispatch(userActions.setTeamsDetails(teams));
+  };
+
+  const handleTeamSwitch = async (index, team) => {
+    if (index === 0) return router.push("/team");
+
+    try {
+      const response = await fetch(`/api/teams/${team._id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+      const { userData, teamData, membersData } = await response.json();
+      dispatch(userActions.setUser(userData));
+      dispatch(teamActions.setTeam({ teamData, membersData }));
+      router.push("/team");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleInvitingTeams = () => {
     router.push("/team/invitations");
@@ -66,11 +94,17 @@ const Menu = () => {
           <ListItemText>{userName}</ListItemText>
           <ExtendTeamsIcon className={extendTeams && "up"} />
         </ListItem>
-        {extendTeams && (
-          <Suspense fallback={<Loading />}>
-            <Teams />
-          </Suspense>
-        )}
+        {extendTeams &&
+          joinedTeams.map((team, index) => (
+            <ListItem
+              key={index}
+              type="primary"
+              text={true}
+              onClick={() => handleTeamSwitch(index, team)}
+            >
+              <ListItemText>{team.name || ""}</ListItemText>
+            </ListItem>
+          ))}
         <ListItem
           type="danger"
           text={true}

@@ -26,13 +26,17 @@ export const ListBtn = ({ children, href }) => (
   </Link>
 );
 
-export const ListItem = ({ children, type, center, text, onClick = null }) => {
+export const ListItem = ({
+  children,
+  type = "",
+  center,
+  text = false,
+  onClick = null,
+}) => {
   return (
     <button
       className={`${styles.list__item} ${
-        text
-          ? styles[`list__item--${type}-text`]
-          : type && styles[`list__item--${type}`]
+        styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
       } ${center && styles[`list__item--center`]}`}
       onClick={onClick}
       disabled={!onClick}
