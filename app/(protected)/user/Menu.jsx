@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -31,14 +31,14 @@ const Menu = () => {
   const router = useRouter();
   const userName = useSelector((state) => state.user.name);
   const joinedTeams = useSelector((state) => state.user.teams.joined);
-  const isJoinedTeamsLoaded = joinedTeams[0]._id;
+  const isTeamDetailsLoaded = joinedTeams[0]._id;
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = async () => {
     if (extendTeams) return setExtendTeams(!extendTeams);
 
     setExtendTeams(!extendTeams);
-    if (isJoinedTeamsLoaded) return;
+    if (isTeamDetailsLoaded) return;
 
     const response = await fetch("/api/teams");
     const teams = await response.json();
@@ -65,7 +65,12 @@ const Menu = () => {
     }
   };
 
-  const handleInvitingTeams = () => {
+  const handleInvitingTeams = async () => {
+    if (isTeamDetailsLoaded) return router.push("/team/invitations");
+
+    const response = await fetch("/api/teams");
+    const teams = await response.json();
+    dispatch(userActions.setTeamsDetails(teams));
     router.push("/team/invitations");
   };
 
@@ -102,7 +107,9 @@ const Menu = () => {
               text={true}
               onClick={() => handleTeamSwitch(index, team)}
             >
+              <FiUsers />
               <ListItemText>{team.name || ""}</ListItemText>
+              {index !== 0 && <GoArrowSwitch />}
             </ListItem>
           ))}
         <ListItem
