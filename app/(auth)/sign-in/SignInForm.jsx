@@ -7,7 +7,7 @@ import { teamActions } from "@/app/(protected)/team/team-slice";
 import { Section, SectionHr } from "@/app/components/common/Section";
 import {
   FormTitle,
-  FormContents,
+  FormContainer,
   FormControl,
   FormButton,
   FormLink,
@@ -76,8 +76,8 @@ const SignInForm = () => {
 
   return (
     <Section>
-      <FormTitle>歡迎使用 V-Stats</FormTitle>
-      <FormContents onSubmit={handleSubmit}>
+      <FormContainer onSubmit={handleSubmit}>
+        <FormTitle>歡迎使用 V-Stats</FormTitle>
         <FormControl
           name="email"
           labelText="帳號"
@@ -98,7 +98,7 @@ const SignInForm = () => {
         />
         <FormLink href="/auth/password">忘記密碼？</FormLink>
         <FormButton errorArr={errorArr}>登入</FormButton>
-      </FormContents>
+      </FormContainer>
       <SectionHr content="或使用以下方式登入" />
       <FormButton type="outlined" onClick={handleSignUp}>
         註冊

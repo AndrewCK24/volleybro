@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../user/user-slice";
 import { Section } from "../../components/common/Section";
 import {
-  FormContents,
+  FormContainer,
   FormControl,
   FormButton,
 } from "../../components/common/Form";
@@ -68,33 +68,33 @@ const TeamForm = ({ isNew }) => {
 
   return (
     <Section type="fixed">
-        <FormContents onSubmit={handleSubmit}>
-          <FormControl
-            name="name"
-            labelText="隊伍名稱"
-            type="text"
-            defaultValue={isNew ? "" : teamData.name}
-            placeholder="請輸入隊伍全名"
-            required={true}
-            onChange={handleNameChange}
-            autoComplete="off"
-            warn={nameError}
-          />
-          <FormControl
-            name="nickname"
-            labelText="隊伍簡稱"
-            type="text"
-            defaultValue={isNew ? "" : teamData.nickname}
-            placeholder="請輸入隊伍簡稱 (8字以內)"
-            required={true}
-            onChange={handleNicknameChange}
-            autoComplete="off"
-            warn={nicknameError}
-          />
-          <FormButton errorArr={errorArr}>
-            {isNew ? "建立隊伍" : "儲存修改"}
-          </FormButton>
-        </FormContents>
+      <FormContainer onSubmit={handleSubmit}>
+        <FormControl
+          name="name"
+          labelText="隊伍名稱"
+          type="text"
+          defaultValue={isNew ? "" : teamData.name}
+          placeholder="請輸入隊伍全名"
+          required={true}
+          onChange={handleNameChange}
+          autoComplete="off"
+          warn={nameError}
+        />
+        <FormControl
+          name="nickname"
+          labelText="隊伍簡稱"
+          type="text"
+          defaultValue={isNew ? "" : teamData.nickname}
+          placeholder="請輸入隊伍簡稱 (8字以內)"
+          required={true}
+          onChange={handleNicknameChange}
+          autoComplete="off"
+          warn={nicknameError}
+        />
+        <FormButton errorArr={errorArr}>
+          {isNew ? "建立隊伍" : "儲存修改"}
+        </FormButton>
+      </FormContainer>
     </Section>
   );
 };

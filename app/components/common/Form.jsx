@@ -1,16 +1,16 @@
 import Link from "next/link";
 import styles from "./styles.module.scss";
 
-export const FormTitle = ({ children }) => {
-  return <h2 className={styles.form__title}>{children}</h2>;
-};
-
-export const FormContents = ({ children, onSubmit }) => {
+export const FormContainer = ({ children, onSubmit }) => {
   return (
-    <form onSubmit={onSubmit} className={styles.form__contents}>
+    <form onSubmit={onSubmit} className={styles.form__container}>
       {children}
     </form>
   );
+};
+
+export const FormTitle = ({ children }) => {
+  return <h2 className={styles.form__title}>{children}</h2>;
 };
 
 export const FormControl = (props) => {
