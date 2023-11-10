@@ -23,13 +23,6 @@ const TeamMembers = () => {
     members,
   } = useSelector((state) => state.team);
 
-  const handleLineupClick = () => {
-    router.push(`/team/lineup`);
-  };
-
-  const handleMemberClick = (memberId) => {
-    router.push(`/team/member/${memberId}`);
-  };
   return (
     <Section>
       <ListHeader>
@@ -38,7 +31,7 @@ const TeamMembers = () => {
           <FiChevronRight />
         </ListTitle>
         <ListBtnContainer>
-          <ListBtn onClick={handleLineupClick}>
+          <ListBtn onClick={() => router.push("/team/lineup")}>
             <BsGrid3X2Gap />
           </ListBtn>
         </ListBtnContainer>
@@ -46,7 +39,7 @@ const TeamMembers = () => {
       {members.map((member) => (
         <ListItem
           key={member._id}
-          onClick={() => handleMemberClick(member._id)}
+          onClick={() => router.push(`/team/member/${member._id}`)}
         >
           <FiUser />
           <ListItemText minimized={true} bold={true}>
@@ -56,7 +49,11 @@ const TeamMembers = () => {
           <ListIndicator member={member} />
         </ListItem>
       ))}
-      <ListItem type="secondary" center={true}>
+      <ListItem
+        type="secondary"
+        center={true}
+        onClick={() => router.push("/team/member/new")}
+      >
         <FiPlus />
       </ListItem>
     </Section>
