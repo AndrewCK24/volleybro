@@ -7,3 +7,7 @@ export const Section = ({ children, type }) => {
     </section>
   );
 };
+
+export const SectionHr = ({ content }) => {
+  return <hr className={styles.section__hr} content={content} />;
+};

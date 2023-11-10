@@ -1,18 +1,6 @@
 import Link from "next/link";
 import styles from "./styles.module.scss";
 
-export const FormContainer = ({ children, type }) => {
-  return (
-    <div
-      className={`${styles.form__container} ${
-        type === "minimized" && styles[`styles__container--minimized`]
-      }`}
-    >
-      {children}
-    </div>
-  );
-};
-
 export const FormTitle = ({ children }) => {
   return <h2 className={styles.form__title}>{children}</h2>;
 };
@@ -162,8 +150,4 @@ export const FormLink = ({ children, href }) => {
       <Link href={href}>{children}</Link>
     </div>
   );
-};
-
-export const FormHr = ({ content }) => {
-  return <hr className={styles.form__hr} content={content} />;
 };

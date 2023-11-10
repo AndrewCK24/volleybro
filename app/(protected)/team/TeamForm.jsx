@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../user/user-slice";
 import { Section } from "../../components/common/Section";
 import {
-  FormContainer,
   FormContents,
   FormControl,
   FormButton,
@@ -69,7 +68,6 @@ const TeamForm = ({ isNew }) => {
 
   return (
     <Section type="fixed">
-      <FormContainer>
         <FormContents onSubmit={handleSubmit}>
           <FormControl
             name="name"
@@ -97,7 +95,6 @@ const TeamForm = ({ isNew }) => {
             {isNew ? "建立隊伍" : "儲存修改"}
           </FormButton>
         </FormContents>
-      </FormContainer>
     </Section>
   );
 };
