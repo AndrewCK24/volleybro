@@ -16,7 +16,7 @@ const Root = ({ data }) => {
   } else if (!isSignIn) {
     const { userData, teamData, membersData } = data;
     dispatch(userActions.setUser(userData));
-    dispatch(teamActions.setTeam({ teamData, membersData }));
+    dispatch(teamActions.setTeam({ userData, teamData, membersData }));
   }
 
   return <></>;

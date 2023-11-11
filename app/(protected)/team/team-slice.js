@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  admin: false,
   _id: "",
   name: "",
   nickname: "",
@@ -14,8 +15,12 @@ const teamSlice = createSlice({
   initialState,
   reducers: {
     setTeam: (_, action) => {
-      const { teamData, membersData } = action.payload;
+      const { userData, teamData, membersData } = action.payload;
+      const userId = userData._id;
+      const admin = membersData.find((member) => member.meta.user_id === userId)
+        .meta.admin;
       return {
+        admin,
         _id: teamData._id,
         name: teamData.name,
         nickname: teamData.nickname,

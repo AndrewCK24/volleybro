@@ -58,7 +58,7 @@ const Menu = () => {
       });
       const { userData, teamData, membersData } = await response.json();
       dispatch(userActions.setUser(userData));
-      dispatch(teamActions.setTeam({ teamData, membersData }));
+      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
       router.push("/team");
     } catch (error) {
       console.log(error);
