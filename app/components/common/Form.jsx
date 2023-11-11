@@ -60,21 +60,6 @@ export const FormControl = (props) => {
   );
 };
 
-// const FormRadioInput = styled.input`
-//   display: none;
-//   &:disabled ~ label {
-//     border-color: var(--primary-500);
-//     color: var(--primary-500);
-//   }
-//   &:checked ~ label {
-//     background-color: var(--secondary-600);
-//     color: var(--primary-100);
-//   }
-//   &:checked:disabled ~ label {
-//     background-color: var(--primary-500);
-//   }
-// `;
-
 export const FormSelect = (props) => {
   const {
     name,
@@ -113,6 +98,7 @@ export const FormSelect = (props) => {
                 value={value}
                 disabled={disabled}
                 defaultChecked={defaultValue === value}
+                onChange={(e) => onChange(e.target.value)}
               />
               <label
                 className={styles.form__radioLabel}

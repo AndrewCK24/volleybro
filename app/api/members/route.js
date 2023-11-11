@@ -1,0 +1,214 @@
+import { NextResponse } from "next/server";
+import verifyJwt from "../utils/verify-jwt";
+import User from "@/app/models/user";
+import Team from "@/app/models/team";
+import Member from "@/app/models/member";
+
+export const POST = async (req) => {
+  try {
+    const { userData, token } = await verifyJwt(req);
+    const formData = await req.json();
+
+    // find the team
+    const team = await Team.findById(formData.team_id);
+    if (!team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
+
+    const members = await Member.find({ team_id: formData.team_id });
+
+    // any member can create members
+    const userIsMember = members.find(
+      (member) => member.meta.user_id.toString() === userData._id.toString()
+    );
+    if (!userIsMember) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    // only admins can create admins
+    const userIsAdmin = userIsMember.meta.admin;
+    if (formData.meta.admin && !userIsAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const hasSameNumber = members.find(
+      (member) => member.number === formData.number
+    );
+    if (hasSameNumber) {
+      return NextResponse.json(
+        { error: "A member with the same number already exists" },
+        { status: 409 }
+      );
+    }
+
+    if (formData.meta.email) {
+      const hasSameEmail = members.find(
+        (member) => member.meta.email === formData.meta.email
+      );
+      if (hasSameEmail) {
+        return NextResponse.json(
+          { error: "A member with the same email already exists" },
+          { status: 409 }
+        );
+      }
+    }
+
+    const newMember = new Member({
+      team_id: formData.team_id,
+      meta: {
+        admin: formData.meta.admin,
+        email: formData.meta.email,
+      },
+      name: formData.name,
+      number: formData.number,
+    });
+
+    // find the user and send invitation
+    if (formData.meta.email) {
+      const targetUser = await User.findOne({ email: formData.meta.email });
+      if (targetUser) {
+        targetUser.teams.inviting.push(formData.team_id);
+        await targetUser.save();
+      }
+    }
+
+    team.members.push(newMember._id);
+    await team.save();
+    await newMember.save();
+
+    members.push(newMember);
+    const response = NextResponse.json(
+      { teamData: team, membersData: members, member: newMember },
+      { status: 201 }
+    );
+    response.cookies.set({
+      name: "token",
+      value: token,
+      options: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("[post-teams]", error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
+};
+
+export const PUT = async (req) => {
+  try {
+    const { userData, token } = await verifyJwt(req);
+    const formData = await req.json();
+
+    // find the team
+    const team = await Team.findById(formData.team_id);
+    if (!team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
+
+    const members = await Member.find({ team_id: formData.team_id });
+
+    // any admin can update members
+    const userIsAdmin = members.find(
+      (member) => member.meta.user_id.toString() === userData._id.toString()
+    ).meta.admin;
+    if (!userIsAdmin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // find the member
+    const targetIndex = members.findIndex((member) =>
+      member._id.equals(formData._id)
+    );
+    if (targetIndex === -1) {
+      return NextResponse.json({ error: "Member not found" }, { status: 404 });
+    }
+    const updatingMember = await Member.findById(formData._id);
+
+    updatingMember.name = formData.name;
+    const isNumberChanged = updatingMember.number !== formData.number;
+    if (isNumberChanged) {
+      const hasSameNumber = members.find(
+        (member) => member.number === formData.number
+      );
+      if (hasSameNumber) {
+        return NextResponse.json(
+          { error: "A member with the same number already exists" },
+          { status: 409 }
+        );
+      }
+      updatingMember.number = formData.number;
+    }
+
+    const isEmailChanged = updatingMember.meta.email !== formData.meta.email;
+    if (isEmailChanged) {
+      if (formData.meta.email) {
+        const hasSameEmail = members.find(
+          (member) => member.meta.email === formData.meta.email
+        );
+        if (hasSameEmail) {
+          return NextResponse.json(
+            { error: "A member with the same email already exists" },
+            { status: 409 }
+          );
+        }
+      }
+      // handle invitation
+      if (updatingMember.meta.user_id) {
+        updatingMember.meta.user_id = null;
+        const removedUser = await User.findById(updatingMember.meta.user_id);
+        if (removedUser) {
+          removedUser.teams.joined = removedUser.teams.joined.filter(
+            (teamId) => !teamId.equals(formData.team_id)
+          );
+          await removedUser.save();
+        }
+      } else if (updatingMember.meta.email) {
+        const removedUser = await User.findOne({
+          email: updatingMember.meta.email,
+        });
+        if (removedUser) {
+          removedUser.teams.inviting = removedUser.teams.inviting.filter(
+            (teamId) => !teamId.equals(formData.team_id)
+          );
+          await removedUser.save();
+        }
+      }
+      if (formData.meta.email) {
+        updatingMember.meta.email = formData.meta.email;
+        const invitingUser = await User.findOne({
+          email: formData.meta.email,
+        });
+        if (invitingUser) {
+          if (!invitingUser.teams.inviting.includes(formData.team_id)) {
+            invitingUser.teams.inviting.push(formData.team_id);
+            await invitingUser.save();
+          }
+        }
+      } else {
+        updatingMember.meta.email = null;
+      }
+    }
+    updatingMember.meta.admin = formData.meta.admin;
+    console.log(updatingMember);
+    await updatingMember.save();
+
+    members[targetIndex] = updatingMember;
+    const response = NextResponse.json(
+      { teamData: team, membersData: members, member: updatingMember },
+      { status: 200 }
+    );
+    response.cookies.set({
+      name: "token",
+      value: token,
+      options: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log("[put-teams]", error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
+};
