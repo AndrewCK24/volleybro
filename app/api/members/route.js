@@ -155,7 +155,6 @@ export const PUT = async (req) => {
       }
       // handle invitation
       if (updatingMember.meta.user_id) {
-        updatingMember.meta.user_id = null;
         const removedUser = await User.findById(updatingMember.meta.user_id);
         if (removedUser) {
           removedUser.teams.joined = removedUser.teams.joined.filter(
@@ -163,6 +162,7 @@ export const PUT = async (req) => {
           );
           await removedUser.save();
         }
+        updatingMember.meta.user_id = null;
       } else if (updatingMember.meta.email) {
         const removedUser = await User.findOne({
           email: updatingMember.meta.email,
