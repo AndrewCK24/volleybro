@@ -19,6 +19,8 @@ const teamSlice = createSlice({
       const userId = userData._id;
       const admin = membersData.find((member) => member.meta.user_id === userId)
         .meta.admin;
+      membersData.sort((a, b) => a.number - b.number);
+
       return {
         admin,
         _id: teamData._id,
