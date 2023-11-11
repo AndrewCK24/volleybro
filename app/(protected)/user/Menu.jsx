@@ -31,7 +31,7 @@ const Menu = () => {
   const router = useRouter();
   const userName = useSelector((state) => state.user.name);
   const joinedTeams = useSelector((state) => state.user.teams.joined);
-  const isTeamDetailsLoaded = joinedTeams[0]._id;
+  const isTeamDetailsLoaded = joinedTeams[0]?._id || false;
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = async () => {

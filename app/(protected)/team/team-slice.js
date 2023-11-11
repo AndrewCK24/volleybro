@@ -17,19 +17,25 @@ const teamSlice = createSlice({
     setTeam: (_, action) => {
       const { userData, teamData, membersData } = action.payload;
       const userId = userData._id;
-      const admin = membersData.find((member) => member.meta.user_id === userId)
-        .meta.admin;
-      membersData.sort((a, b) => a.number - b.number);
-
-      return {
-        admin,
-        _id: teamData._id,
-        name: teamData.name,
-        nickname: teamData.nickname,
-        members: membersData,
-        matches: teamData.matches,
-        stats: teamData.stats,
-      };
+      if (teamData) {
+        const admin = membersData.find(
+          (member) => member.meta.user_id === userId
+        ).meta.admin;
+        membersData.sort((a, b) => a.number - b.number);
+        return {
+          admin,
+          _id: teamData._id,
+          name: teamData.name,
+          nickname: teamData.nickname,
+          members: membersData,
+          matches: teamData.matches,
+          stats: teamData.stats,
+        };
+      } else {
+        return {
+          ...initialState,
+        };
+      }
     },
     resetTeam: () => {
       return {
