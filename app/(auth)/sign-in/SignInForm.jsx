@@ -61,9 +61,15 @@ const SignInForm = () => {
       if (res.status === 200) {
         const { userData, teamData, membersData } = await res.json();
         dispatch(userActions.setUser(userData));
-        if (teamData)
+        if (teamData) {
           dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-        return teamData ? router.push("/") : router.push("/team");
+          return router.push("/");
+        } else {
+          const response = await fetch("/api/teams");
+          const teams = await response.json();
+          dispatch(userActions.setTeamsDetails(teams));      
+          return router.push("/team/invitations");
+        }
       }
     } catch (err) {
       setEmailError("發生未知錯誤，請稍後再試");

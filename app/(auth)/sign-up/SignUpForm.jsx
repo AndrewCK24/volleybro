@@ -91,7 +91,10 @@ const SignUpForm = () => {
       if (res.status === 201) {
         const { userData } = await res.json();
         dispatch(userActions.setUser(userData));
-        return router.push("/team");
+        const response = await fetch("/api/teams");
+        const teams = await response.json();
+        dispatch(userActions.setTeamsDetails(teams));
+        return router.push("/team/invitations");
       }
     } catch (err) {
       setEmailError("發生未知錯誤，請稍後再試");

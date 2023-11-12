@@ -30,6 +30,7 @@ const Invitations = () => {
         <FiPlus />
         建立隊伍
       </ListItem>
+      <p>或聯絡你的隊伍管理者</p>
     </Section>
   );
 };
