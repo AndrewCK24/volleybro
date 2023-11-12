@@ -371,6 +371,9 @@
         background-color: var(--secondary-400);
         box-shadow: 0 0 0.25rem var(--primary-400);
       }
+      &:disabled:active {
+        background-color: var(--secondary-500);
+      }
       &-text {
         color: var(--secondary-700);
         box-shadow: none;

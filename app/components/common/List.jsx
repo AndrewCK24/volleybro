@@ -32,6 +32,7 @@ export const ListItem = ({
   center,
   text = false,
   onClick = null,
+  disabled = false,
 }) => {
   return (
     <button
@@ -39,7 +40,7 @@ export const ListItem = ({
         styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
       } ${center && styles[`list__item--center`]}`}
       onClick={onClick}
-      disabled={!onClick}
+      disabled={!onClick || disabled}
     >
       {children}
     </button>

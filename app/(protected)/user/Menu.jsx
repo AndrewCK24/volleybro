@@ -94,10 +94,16 @@ const Menu = () => {
   return (
     <>
       <Section>
-        <ListItem type="primary" onClick={() => handleExtendTeams()}>
+        <ListItem
+          type="primary"
+          onClick={() => handleExtendTeams()}
+          disabled={joinedTeams.length === 0}
+        >
           <FiUser />
           <ListItemText>{userName}</ListItemText>
-          <ExtendTeamsIcon className={extendTeams && "up"} />
+          {joinedTeams.length === 0 || (
+            <ExtendTeamsIcon className={extendTeams && "up"} />
+          )}
         </ListItem>
         {extendTeams &&
           joinedTeams.map((team, index) => (
