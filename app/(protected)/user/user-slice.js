@@ -32,7 +32,7 @@ const userSlice = createSlice({
       if (inviting) state.teams.inviting = inviting;
     },
     signOut: (state) => {
-      state.signIn = false;
+      state.signIn = null;
       state.name = "";
       state.email = "";
       state.teams = {
