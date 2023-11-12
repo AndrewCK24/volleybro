@@ -31,6 +31,7 @@ const Menu = () => {
   const router = useRouter();
   const userName = useSelector((state) => state.user.name);
   const joinedTeams = useSelector((state) => state.user.teams.joined);
+  const invitingTeams = useSelector((state) => state.user.teams.inviting);
   const isTeamDetailsLoaded = joinedTeams[0]?._id || false;
   // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
@@ -124,6 +125,7 @@ const Menu = () => {
           onClick={() => handleInvitingTeams()}
         >
           <ListItemText>隊伍邀請</ListItemText>
+          <ListItemText minimized>{invitingTeams.length}</ListItemText>
           <FiChevronRight />
         </ListItem>
         <ListItem>
