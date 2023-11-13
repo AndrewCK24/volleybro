@@ -17,14 +17,11 @@ const Root = ({ data }) => {
       document.body.style.backgroundColor = "var(--primary-200)";
     } else {
       document.body.style.backgroundColor = "var(--primary-100)";
+      if (!data && !isSignIn) router.push("/sign-in");
     }
   }, [pathname]);
 
-  if (isSignIn) return <></>;
-
-  if (!data) {
-    router.push("/sign-in");
-  } else if (isSignIn === false) {
+  if (data && isSignIn === false) {
     const { userData, teamData, membersData } = data;
     dispatch(userActions.setUser(userData));
     dispatch(teamActions.setTeam({ userData, teamData, membersData }));
