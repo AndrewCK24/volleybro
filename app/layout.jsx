@@ -15,7 +15,7 @@ const saira = Saira({
 const notoSansTC = Noto_Sans_TC({
   subsets: ["latin"],
   variable: "--font-noto-sans-tc",
-  display: "swap",
+  display: "fallback",
 });
 
 export const metadata = {
@@ -62,7 +62,10 @@ export default async function RootLayout({ children }) {
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content="V-Stats" />
         {/* apple touch icons */}
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
