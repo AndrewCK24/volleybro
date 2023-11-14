@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-import { FiEdit2 } from "react-icons/fi";
+import { FiEdit2, FiHash, FiUser, FiMail, FiShield } from "react-icons/fi";
 import { Section, SectionHr } from "@/app/components/common/Section";
 import {
   ListHeader,
@@ -39,16 +39,20 @@ const MemberPage = ({ params }) => {
       ) : (
         <>
           <ListItem type="secondary" text>
+            <FiHash />
             <ListItemText bold>背號：{member.number || " "}</ListItemText>
           </ListItem>
           <ListItem type="secondary" text>
+            <FiUser />
             <ListItemText bold>姓名：{member.name}</ListItemText>
           </ListItem>
           <SectionHr content="權限與邀請" />
           <ListItem type="secondary" text>
+            <FiMail />
             <ListItemText>信箱：{member.meta.email}</ListItemText>
           </ListItem>
           <ListItem type="secondary" text>
+            <FiShield />
             <ListItemText>
               權限：{member.meta.admin ? "管理者" : "一般成員"}
             </ListItemText>
