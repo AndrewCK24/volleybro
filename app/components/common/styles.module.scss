@@ -307,7 +307,39 @@
     svg {
       width: 2rem;
       height: 2rem;
-      color: var(--secondary-600);
+    }
+
+    &--primary {
+      svg {
+        color: var(--secondary-500);
+      }
+      &:active {
+        svg {
+          color: var(--secondary-300);
+        }
+      }
+    }
+
+    &--secondary {
+      svg {
+        color: var(--primary-600);
+      }
+      &:active {
+        svg {
+          color: var(--primary-200);
+        }
+      }
+    }
+
+    &--danger {
+      svg {
+        color: var(--danger-500);
+      }
+      &:active {
+        svg {
+          color: var(--danger-300);
+        }
+      }
     }
   }
 
@@ -327,6 +359,7 @@
     color: var(--primary-900);
     font-size: 1.5rem;
     user-select: none;
+    -webkit-user-select: none;
     transition: box-shadow 0.2s ease-in-out, background-color 0.1s ease-in-out;
     svg {
       width: 2rem;
@@ -352,7 +385,7 @@
 
     &:disabled:active {
       background-color: var(--primary-100);
-      box-shadow: 0 0 0.5rem var(--primary-300);
+      box-shadow: none;
     }
 
     &--center {
@@ -565,35 +598,38 @@
 
   &__hr {
     width: 100%;
-    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     padding: 1rem 0;
     border: 0;
     font-size: 1rem;
-    color: var(--primary-400);
+    color: var(--primary-500);
     -webkit-mask-image: linear-gradient(
       to right,
-      transparent,
-      var(--primary-400),
-      transparent
+      transparent 0%,
+      var(--primary-400) 20%,
+      var(--primary-400) 80%,
+      transparent 100%
     );
     mask-image: linear-gradient(
       to right,
-      transparent,
-      var(--primary-400),
-      transparent
+      transparent 0%,
+      var(--primary-400) 20%,
+      var(--primary-400) 80%,
+      transparent 100%
     );
 
     &::before {
       content: attr(content);
-      position: absolute;
+      flex: 0 0;
+      width: 100%;
       padding: 0 1ch;
       line-height: 1px;
       border: solid var(--primary-400);
       border-width: 0 99vw;
-      width: fit-content;
       white-space: nowrap;
-      left: 50%;
-      transform: translateX(-50%);
     }
   }
 }

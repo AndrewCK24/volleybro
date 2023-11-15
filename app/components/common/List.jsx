@@ -20,31 +20,58 @@ export const ListBtnContainer = ({ children }) => (
   <div className={styles.list__btn_container}>{children}</div>
 );
 
-export const ListBtn = ({ children, onClick }) => (
-  <div onClick={onClick} className={styles.list__btn}>
-    {children}
-  </div>
-);
+export const ListBtn = ({ children, type, onClick, rotate }) => {
+  const handleClick = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    onClick();
+  };
+  return (
+    <div
+      onClick={handleClick}
+      disabled={!onClick}
+      className={`${styles.list__btn} ${styles[`list__btn--${type}`]} ${
+        rotate && styles[`list__btn--rotate`]
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const ListItem = ({
   children,
   type = "",
   center,
-  text = false,
   onClick = null,
   disabled = false,
+  text = false,
+  div = false,
 }) => {
-  return (
-    <button
-      className={`${styles.list__item} ${
-        styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
-      } ${center && styles[`list__item--center`]}`}
-      onClick={onClick}
-      disabled={!onClick || disabled}
-    >
-      {children}
-    </button>
-  );
+  if (div) {
+    return (
+      <div
+        className={`${styles.list__item} ${
+          styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
+        } ${center && styles[`list__item--center`]}`}
+        disabled={true}
+      >
+        {children}
+      </div>
+    );
+  } else {
+    return (
+      <button
+        className={`${styles.list__item} ${
+          styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
+        } ${center && styles[`list__item--center`]}`}
+        onClick={onClick}
+        disabled={!onClick || disabled}
+      >
+        {children}
+      </button>
+    );
+  }
 };
 
 export const ListItemText = ({ children, minimized, bold }) => {
