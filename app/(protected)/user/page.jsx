@@ -1,11 +1,8 @@
+"use client";
 import Menu from "./Menu";
 
 const userPage = () => {
-  return (
-    <>
-      <Menu />
-    </>
-  );
+  return <Menu />;
 };
 
 export default userPage;

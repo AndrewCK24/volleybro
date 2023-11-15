@@ -1,3 +1,4 @@
+"use client";
 import TeamForm from "../TeamForm";
 
 const NewTeamPage = () => {

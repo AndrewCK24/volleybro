@@ -2,17 +2,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { userActions } from "@/app/user/user-slice";
-import { teamActions } from "@/app/team/team-slice";
+import { userActions } from "@/app/(protected)/user/user-slice";
+import { teamActions } from "@/app/(protected)/team/team-slice";
+import { Section, SectionHr } from "@/app/components/common/Section";
 import {
-  FormContainer,
   FormTitle,
-  FormContents,
+  FormContainer,
   FormControl,
   FormButton,
-  FormHr,
   FormLink,
-} from "../../components/common/Form";
+} from "@/app/components/common/Form";
 
 const SignInForm = () => {
   const router = useRouter();
@@ -62,8 +61,15 @@ const SignInForm = () => {
       if (res.status === 200) {
         const { userData, teamData, membersData } = await res.json();
         dispatch(userActions.setUser(userData));
-        if (teamData) dispatch(teamActions.setTeam({teamData, membersData}));
-        return teamData ? router.push("/") : router.push("/team");
+        if (teamData) {
+          dispatch(teamActions.setTeam({ userData, teamData, membersData }));
+          return router.push("/");
+        } else {
+          const response = await fetch("/api/teams");
+          const teams = await response.json();
+          dispatch(userActions.setTeamsDetails(teams));      
+          return router.push("/team/invitations");
+        }
       }
     } catch (err) {
       setEmailError("發生未知錯誤，請稍後再試");
@@ -76,9 +82,9 @@ const SignInForm = () => {
   };
 
   return (
-    <FormContainer className="minimized">
-      <FormTitle>歡迎使用 V-Stats</FormTitle>
-      <FormContents onSubmit={handleSubmit}>
+    <Section>
+      <FormContainer onSubmit={handleSubmit}>
+        <FormTitle>歡迎使用 V-Stats</FormTitle>
         <FormControl
           name="email"
           labelText="帳號"
@@ -99,12 +105,12 @@ const SignInForm = () => {
         />
         <FormLink href="/auth/password">忘記密碼？</FormLink>
         <FormButton errorArr={errorArr}>登入</FormButton>
-      </FormContents>
-      <FormHr content="或使用以下方式登入" />
-      <FormButton className="outlined" onClick={handleSignUp}>
+      </FormContainer>
+      <SectionHr content="或使用以下方式登入" />
+      <FormButton type="outlined" onClick={handleSignUp}>
         註冊
       </FormButton>
-    </FormContainer>
+    </Section>
   );
 };
 

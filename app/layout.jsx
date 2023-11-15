@@ -1,20 +1,21 @@
 import { cookies } from "next/headers";
+import Root from "./components/layout/Root";
 import { Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import "./globals.css";
 
 import { Provider } from "./store/provider";
-import Root from "./components/layout/Root";
 
 const saira = Saira({
   subsets: ["latin"],
   variable: "--font-saira",
   display: "swap",
 });
+
 const notoSansTC = Noto_Sans_TC({
   subsets: ["latin"],
   variable: "--font-noto-sans-tc",
-  display: "swap",
+  display: "fallback",
 });
 
 export const metadata = {
@@ -61,7 +62,10 @@ export default async function RootLayout({ children }) {
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content="V-Stats" />
         {/* apple touch icons */}
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -102,7 +106,8 @@ export default async function RootLayout({ children }) {
       <body>
         <Provider>
           <StyledComponentsRegistry>
-            <Root data={data}>{children}</Root>
+            <Root data={data} />
+            {children}
           </StyledComponentsRegistry>
         </Provider>
       </body>

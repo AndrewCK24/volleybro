@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { userActions } from "@/app/user/user-slice";
+import { userActions } from "@/app/(protected)/user/user-slice";
+import { Section, SectionHr } from "@/app/components/common/Section";
 import {
-  FormContainer,
   FormTitle,
-  FormContents,
+  FormContainer,
   FormControl,
   FormButton,
-  FormHr,
 } from "../../components/common/Form";
 
 const SignUpForm = () => {
@@ -92,7 +91,10 @@ const SignUpForm = () => {
       if (res.status === 201) {
         const { userData } = await res.json();
         dispatch(userActions.setUser(userData));
-        return router.push("/team");
+        const response = await fetch("/api/teams");
+        const teams = await response.json();
+        dispatch(userActions.setTeamsDetails(teams));
+        return router.push("/team/invitations");
       }
     } catch (err) {
       setEmailError("發生未知錯誤，請稍後再試");
@@ -105,9 +107,9 @@ const SignUpForm = () => {
   };
 
   return (
-    <FormContainer className="minimized">
-      <FormTitle>開始註冊 V-Stats</FormTitle>
-      <FormContents onSubmit={handleSubmit}>
+    <Section>
+      <FormContainer onSubmit={handleSubmit}>
+        <FormTitle>開始註冊 V-Stats</FormTitle>
         <FormControl
           name="email"
           labelText="帳號"
@@ -145,12 +147,12 @@ const SignUpForm = () => {
           warn={nameError}
         />
         <FormButton errorArr={errorArr}>註冊</FormButton>
-      </FormContents>
-      <FormHr content="已有帳號了嗎？" />
-      <FormButton className="text" onClick={handleSignIn}>
+      </FormContainer>
+      <SectionHr content="已有帳號了嗎？" />
+      <FormButton type="text" onClick={handleSignIn}>
         返回登入頁
       </FormButton>
-    </FormContainer>
+    </Section>
   );
 };
 

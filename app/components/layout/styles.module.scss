@@ -1,0 +1,115 @@
+.header {
+  position: fixed;
+  height: 3.5rem;
+  width: 100%;
+  padding: 0 5%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  overscroll-behavior: none;
+  background-color: var(--primary-100);
+  svg {
+    color: var(--primary-500);
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  &__title {
+    flex: 1 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 3rem;
+
+    &--center {
+      justify-content: center;
+    }
+  }
+}
+
+.main {
+  flex: 1 1;
+  // margin: 3.5rem 0 5rem;
+  padding: 4rem 0 5.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  overflow: scroll;
+  overscroll-behavior-y: contain;
+  background-color: var(--primary-200);
+  z-index: 0;
+
+  &--full-height {
+    overscroll-behavior-y: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  @media screen and (min-width: 768px) {
+    padding: 4rem 5%;
+  }
+}
+
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 5rem;
+  width: 100%;
+  padding: 0 5% 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-500);
+
+  &__link {
+    flex: 1 1;
+    height: 100%;
+    padding: 0.5rem 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--primary-200);
+    font-size: 0.9rem;
+
+    transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out,
+      border 0.2s ease-in-out;
+
+    svg {
+      stroke: var(--primary-200);
+      height: 2rem;
+      width: 2rem;
+    }
+
+    &--active {
+      border-top: 0.25rem solid var(--primary-100);
+      padding: 0.25rem 0 0;
+      color: var(--primary-100);
+      font-weight: 600;
+
+      svg {
+        stroke: var(--primary-100);
+      }
+    }
+
+    &--record {
+      svg {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
+  }
+}

@@ -30,18 +30,16 @@
   --danger-900: #321811; /* white text */
 
   overscroll-behavior-y: none;
-
-  font-family: var(--font-saira), var(--font-noto-sans-tc), sans-serif;
 }
 
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-
-  /* color: var(--primary-900); */
+  
   font-size: 12px;
   font-weight: 400;
+  font-family: var(--font-saira), var(--font-noto-sans-tc), sans-serif;
   margin: 0;
   overscroll-behavior-x: none;
   overscroll-behavior-y: contain;
@@ -55,8 +53,10 @@ body {
   flex-direction: column;
   flex-wrap: nowrap;
   text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
   touch-action: none;
   background-color: var(--primary-100);
+  transition: background-color 0.3s ease-in-out;
 }
 
 .scrollbar-hidden {

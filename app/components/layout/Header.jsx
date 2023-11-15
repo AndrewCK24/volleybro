@@ -1,47 +1,19 @@
 "use client";
+import { usePathname } from "next/navigation";
 
-import styled from "styled-components";
+import styles from "./styles.module.scss";
 
 import { IconButton } from "../common/Button";
 import { FiArrowLeft } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 
-const Container = styled.header`
-  position: fixed;
-  height: 3.5rem;
-  width: 100%;
-  padding: 0 5%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  overscroll-behavior: none;
-  background-color: var(--primary-100);
-  svg {
-    color: var(--primary-500);
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-`;
+const Container = ({ children }) => (
+  <header className={styles.header}>{children}</header>
+);
 
-const Title = styled.h1`
-  flex: 1 1;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 3rem;
-
-  &.center {
-    justify-content: center;
-  }
-`;
-
-const Header = ({ title, isIndex }) => {
+export const Header = () => {
+  const pathname = usePathname();
+  const isIndex = pathname.split("/").filter(Boolean).length <= 1;
   const handleBack = () => {
     window.history.back();
   };
@@ -49,14 +21,18 @@ const Header = ({ title, isIndex }) => {
   return (
     <Container>
       {isIndex || (
-        <IconButton onClick={handleBack} className="secondary">
+        <IconButton onClick={handleBack} type="secondary">
           <FiArrowLeft />
         </IconButton>
       )}
-      <Title className={isIndex ? "" : "center"}>{title}</Title>
+      <h1
+        className={`${styles.header__title} ${
+          !isIndex && styles["header__title--center"]
+        }`}
+      >
+        V-Stats
+      </h1>
       <IoNotificationsSharp />
     </Container>
   );
 };
-
-export default Header;
