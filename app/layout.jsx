@@ -1,10 +1,11 @@
 import { cookies } from "next/headers";
-import Root from "./components/layout/Root";
 import { Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
+import Root from "./lib/Root";
 import "./globals.css";
 
-import { Provider } from "./store/provider";
+import { Analytics } from "@vercel/analytics/react";
+import { ReduxProvider } from "./store/provider";
 
 const saira = Saira({
   subsets: ["latin"],
@@ -104,12 +105,13 @@ export default async function RootLayout({ children }) {
         {/* TODO: apple splash screen images 待補 */}
       </head>
       <body>
-        <Provider>
+        <ReduxProvider>
           <StyledComponentsRegistry>
             <Root data={data} />
             {children}
           </StyledComponentsRegistry>
-        </Provider>
+        </ReduxProvider>
+        <Analytics />
       </body>
     </html>
   );

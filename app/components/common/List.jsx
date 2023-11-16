@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styles from "./styles.module.scss";
 
 import {
@@ -126,24 +125,28 @@ export const ListItemText = ({ children, minimized, bold }) => {
 
 export const ListIndicator = ({ member }) => {
   const { admin, user_id, email } = member.meta;
-  const identity = admin
+  const identity = !email
     ? {
-        text: "管理者",
-        type: "danger",
-        icon: <MdOutlineAdminPanelSettings />,
+        text: "未邀請",
+        type: "secondary",
+        icon: <MdOutlineHighlightOff />,
       }
-    : user_id
+    : !user_id
+    ? {
+        text: "邀請中",
+        type: "",
+        icon: <MdOutlineAccessTime />,
+      }
+    : !admin
     ? {
         text: "已加入",
         type: "primary",
         icon: <MdCheckCircleOutline />,
       }
-    : email
-    ? { text: "邀請中", type: "", icon: <MdOutlineAccessTime /> }
     : {
-        text: "未邀請",
-        type: "secondary",
-        icon: <MdOutlineHighlightOff />,
+        text: "管理者",
+        type: "danger",
+        icon: <MdOutlineAdminPanelSettings />,
       };
 
   return (
