@@ -21,7 +21,7 @@ export const Header = () => {
   return (
     <Container>
       {isIndex || (
-        <IconButton onClick={handleBack} type="secondary">
+        <IconButton onClick={handleBack} type="secondary" ariaLabel="previous page" >
           <FiArrowLeft />
         </IconButton>
       )}

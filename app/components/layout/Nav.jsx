@@ -12,13 +12,14 @@ import {
   FiMenu as MenuIcon,
 } from "react-icons/fi";
 
-const NavLink = ({ children, href, active, record }) => {
+const NavLink = ({ children, href, active, record, ariaLabel }) => {
   return (
     <Link
       href={href}
       className={`${styles.nav__link} ${
         active && styles["nav__link--active"]
       } ${record && styles["nav__link--record"]}`}
+      aria-label={ariaLabel}
     >
       {children}
     </Link>
@@ -37,7 +38,7 @@ export const Nav = () => {
         <TeamIcon />
         隊伍
       </NavLink>
-      <NavLink href="/record" record={true}>
+      <NavLink href="/record" record ariaLabel="Start recording match">
         <RecordIcon />
       </NavLink>
       <NavLink href="/history" active={pathname.startsWith("/history")}>
