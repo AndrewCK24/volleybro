@@ -17,6 +17,34 @@ const teamSchema = new Schema(
         required: true,
       },
     ],
+    lineup: {
+      starters: [
+        {
+          member_id: {
+            type: Schema.Types.ObjectId,
+            ref: "Member",
+            required: false,
+          },
+          position: {
+            type: String,
+            required: false,
+          },
+        },
+      ],
+      liberos: [
+        {
+          member_id: {
+            type: Schema.Types.ObjectId,
+            ref: "Member",
+            required: false,
+          },
+          position: {
+            type: String,
+            required: false,
+          },
+        },
+      ],
+    },
     matches: [
       {
         type: Schema.Types.ObjectId,

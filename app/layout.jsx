@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { Saira, Noto_Sans_TC } from "next/font/google";
 import StyledComponentsRegistry from "./lib/registry";
 import Root from "./lib/Root";
+import "normalize.css";
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/react";

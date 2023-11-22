@@ -5,6 +5,7 @@ import {
   MdCheckCircleOutline,
   MdOutlineAccessTime,
   MdOutlineHighlightOff,
+  MdOutlineSportsVolleyball,
 } from "react-icons/md";
 
 export const ListHeader = ({ children }) => (
@@ -78,7 +79,7 @@ export const ListItemText = ({ children, minimized, bold }) => {
     <div
       className={`${styles.list__item_text} ${
         minimized && styles[`list__item_text--minimized`]
-      } ${bold && styles[`list__item-text--bold`]}`}
+      } ${bold && styles[`list__item_text--bold`]}`}
     >
       {children}
     </div>
@@ -123,7 +124,55 @@ export const ListItemText = ({ children, minimized, bold }) => {
 //   );
 // };
 
-export const ListIndicator = ({ member }) => {
+export const ListIndicator = ({ position, member }) => {
+  if (position) {
+    const identities = [
+      {
+        symbol: "S",
+        text: "舉球 (S)",
+        type: "primary",
+        icon: <MdOutlineSportsVolleyball />,
+      },
+      {
+        symbol: "OH",
+        text: "主攻 (OH)",
+        type: "",
+        icon: <MdOutlineSportsVolleyball />,
+      },
+      {
+        symbol: "MB",
+        text: "攔中 (MB)",
+        type: "",
+        icon: <MdOutlineSportsVolleyball />,
+      },
+      {
+        symbol: "OP",
+        text: "副攻 (OP)",
+        type: "",
+        icon: <MdOutlineSportsVolleyball />,
+      },
+      {
+        symbol: "L",
+        text: "自由 (L)",
+        type: "",
+        icon: <MdOutlineSportsVolleyball />,
+      },
+    ];
+    const { text, type, icon } = identities.find(
+      (identity) => identity.symbol === position
+    );
+    return (
+      <div
+        className={`${styles.list__indicator} ${
+          styles[`list__indicator--${type}`]
+        }`}
+      >
+        {icon}
+        {text}
+      </div>
+    );
+  }
+
   const { admin, user_id, email } = member.meta;
   const identity = !email
     ? {

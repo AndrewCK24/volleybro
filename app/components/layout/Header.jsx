@@ -1,5 +1,5 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import styles from "./styles.module.scss";
 
@@ -13,15 +13,15 @@ const Container = ({ children }) => (
 
 export const Header = () => {
   const pathname = usePathname();
-  const isIndex = pathname.split("/").filter(Boolean).length <= 1;
-  const handleBack = () => {
-    window.history.back();
-  };
+  const router = useRouter();
+  const pathArr = pathname.split("/").filter(Boolean);
+  const isIndex = pathArr.length <= 1;
+  const handleBack = () => router.push(`/${pathArr[0]}`);
 
   return (
     <Container>
       {isIndex || (
-        <IconButton onClick={handleBack} type="secondary">
+        <IconButton onClick={handleBack} type="secondary" ariaLabel="previous page" >
           <FiArrowLeft />
         </IconButton>
       )}
