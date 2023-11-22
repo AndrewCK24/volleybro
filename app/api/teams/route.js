@@ -97,3 +97,52 @@ export const POST = async (req) => {
     return NextResponse.json({ error }, { status: 500 });
   }
 };
+
+export const PATCH = async (req) => {
+  try {
+    const { userData, token } = await verifyJwt(req);
+    const patchRequest = await req.json();
+    const team = await Team.findById(patchRequest.teamId);
+    if (!team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
+    const members = await Member.find({ team_id: patchRequest.teamId });
+    const isAdmin = members.find(
+      (member) => member.meta.user_id.toString() === userData._id.toString()
+    )?.meta.admin;
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "You are not authorized to update this team" },
+        { status: 401 }
+      );
+    }
+
+    if (patchRequest.lineup) {
+      const { lineup } = patchRequest;
+
+      team.lineup = lineup;
+      await team.save();
+
+      const response = NextResponse.json(
+        {
+          userData,
+          teamData: team,
+          membersData: members,
+        },
+        { status: 200 }
+      );
+      response.cookies.set({
+        name: "token",
+        value: token,
+        options: {
+          httpOnly: true,
+          maxAge: 60 * 60 * 24 * 30,
+        },
+      });
+      return response;
+    }
+  } catch (error) {
+    console.log("[update-team]", error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
+};
