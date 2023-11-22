@@ -56,6 +56,17 @@ export const POST = async (req) => {
       name,
       nickname,
       members: [newMember._id],
+      lineup: {
+        starters: [
+          { member_id: null },
+          { member_id: null },
+          { member_id: null },
+          { member_id: null },
+          { member_id: null },
+          { member_id: null },
+        ],
+        liberos: [{ member_id: null }],
+      },
     });
 
     const updatedUser = await User.findById(userData._id);

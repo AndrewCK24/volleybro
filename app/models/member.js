@@ -31,8 +31,8 @@ const memberSchema = new Schema(
       type: Number,
       required: false,
     },
-    role: {
-      type: String,
+    info: {
+      type: Object,
       required: false,
     },
     stats: {

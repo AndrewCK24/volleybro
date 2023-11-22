@@ -464,6 +464,7 @@
     line-height: 2rem;
 
     &:empty {
+      border-radius: 0.5rem;
       animation: skeleton 0.75s linear infinite alternate;
       @keyframes skeleton {
         0% {
@@ -476,7 +477,7 @@
     }
 
     &--minimized {
-      flex: 0 0 2rem;
+      flex: 0 0 2.25rem;
       justify-content: flex-end;
     }
 
@@ -486,7 +487,8 @@
   }
 
   &__indicator {
-    flex: 0 0 6.5rem;
+    min-width: fit-content;
+    flex: 0 0;
     height: 2rem;
     padding: 0rem 0.5rem;
     border-radius: 0.5rem;
@@ -575,7 +577,7 @@
   flex: 0 0;
   width: 100%;
   border-radius: 1.5rem;
-  padding: 1rem 1rem 2rem;
+  padding: 1rem 1rem;
   background-color: var(--primary-100);
   box-shadow: 0 0 1rem var(--primary-300);
   display: flex;

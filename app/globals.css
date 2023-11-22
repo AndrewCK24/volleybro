@@ -37,7 +37,8 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   
-  font-size: 12px;
+  /* font-size: 12px; */
+  font-size: 2.75vmin;
   font-weight: 400;
   font-family: var(--font-saira), var(--font-noto-sans-tc), sans-serif;
   margin: 0;
