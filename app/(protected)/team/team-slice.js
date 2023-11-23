@@ -80,8 +80,18 @@ const teamSlice = createSlice({
       const { zone, member_id, position } = action.payload;
       state.editingLineup.edited = true;
       if (zone <= 6) {
+        if (state.editingLineup.starters[zone - 1].member_id) {
+          state.editingLineup.benches.push(
+            state.editingLineup.starters[zone - 1].member_id
+          );
+        }
         state.editingLineup.starters[zone - 1] = { member_id, position };
       } else {
+        if (state.editingLineup.liberos[zone - 7].member_id) {
+          state.editingLineup.benches.push(
+            state.editingLineup.liberos[zone - 7].member_id
+          );
+        }
         state.editingLineup.liberos[zone - 7] = { member_id, position };
       }
 

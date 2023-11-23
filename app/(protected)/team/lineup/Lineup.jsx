@@ -77,7 +77,6 @@ const Lineup = () => {
         ) : (
           <PositionList
             starters={starters}
-            liberos={liberos}
             editingZone={editingZone}
             editingMember={editingMember}
             setEditingZone={setEditingZone}

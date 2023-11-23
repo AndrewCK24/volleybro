@@ -1,12 +1,10 @@
 import { useDispatch } from "react-redux";
 
 import { teamActions } from "../team-slice";
-import { MdOutlineSportsVolleyball } from "react-icons/md";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const PositionList = ({
   starters,
-  liberos,
   editingZone,
   editingMember,
   setEditingZone,
@@ -21,43 +19,42 @@ const PositionList = ({
   const positions = [
     {
       text: "舉球員（二傳, Setter）",
-      icon: <MdOutlineSportsVolleyball />,
       value: "S",
       disabled:
-        isSetterExist ||
+        (isSetterExist && starters[editingZone - 1].position !== "S") ||
         (isOppositeExist
           ? starters[oppositeZone - 1].position !== "OP"
           : starters[oppositeZone - 1].position),
     },
     {
       text: "主攻手（大砲, Outside Hitter）",
-      icon: <MdOutlineSportsVolleyball />,
       value: "OH",
-      disabled: isOutsideExist
-        ? starters[oppositeZone - 1].position !== "OH"
-        : starters[oppositeZone - 1].position,
+      disabled:
+        (isOutsideExist && starters[editingZone - 1].position !== "OH") ||
+        (isOutsideExist
+          ? starters[oppositeZone - 1].position !== "OH"
+          : starters[oppositeZone - 1].position),
     },
     {
       text: "快攻手（攔中, Middle Blocker）",
-      icon: <MdOutlineSportsVolleyball />,
       value: "MB",
-      disabled: isMiddleExist
-        ? starters[oppositeZone - 1].position !== "MB"
-        : starters[oppositeZone - 1].position,
+      disabled:
+        (isMiddleExist && starters[editingZone - 1].position !== "MB") ||
+        (isMiddleExist
+          ? starters[oppositeZone - 1].position !== "MB"
+          : starters[oppositeZone - 1].position),
     },
     {
       text: "副攻手（舉對, Opposite Hitter）",
-      icon: <MdOutlineSportsVolleyball />,
       value: "OP",
       disabled:
-        isOppositeExist ||
+        (isOppositeExist && starters[editingZone - 1].position !== "OP") ||
         (isSetterExist
           ? starters[oppositeZone - 1].position !== "S"
           : starters[oppositeZone - 1].position),
     },
     {
       text: "自由球員 (Libero)",
-      icon: <MdOutlineSportsVolleyball />,
       value: "L",
       disabled: editingZone < 7,
     },
@@ -84,8 +81,9 @@ const PositionList = ({
             onClick={() => handleClick(position.value)}
             disabled={position.disabled}
           >
-            {/* {position.icon} */}
-            <ListItemText minimized bold>{position.value}</ListItemText>
+            <ListItemText minimized bold>
+              {position.value}
+            </ListItemText>
             <ListItemText>{position.text}</ListItemText>
           </ListItem>
         );

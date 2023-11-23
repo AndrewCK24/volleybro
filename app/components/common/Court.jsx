@@ -1,8 +1,9 @@
 import styled from "styled-components";
+import { FiX } from "react-icons/fi";
 
 export const CourtContainer = styled.div`
   width: 100%;
-  aspect-ratio: 12.5 / 9;
+  aspect-ratio: 11 / 9;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -14,61 +15,55 @@ export const CourtContainer = styled.div`
 
 export const Outside = styled.div`
   position: relative;
-  flex: 1.75;
+  flex: 2;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   border: 0.25rem solid transparent;
+  gap: 0.25rem;
 `;
 
-const AttackLine = styled.div`
-  position: absolute;
-  top: 0;
+export const OutsideFront = styled.div`
   width: 100%;
-  height: 33%;
-  min-height: 33%;
-  background-color: var(--danger-500);
-  border-bottom: 0.25rem solid var(--primary-100);
-`;
-
-export const OutsideFront = styled(AttackLine)`
+  height: calc(33% + 0.25rem);
   background-color: transparent;
   border-bottom: 0.25rem dashed var(--primary-100);
 `;
 
-const Inside = styled.div`
+export const Inside = styled.div`
   position: relative;
   flex: 9;
   aspect-ratio: 1 / 1;
   height: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--danger-400);
-  border: 0.25rem solid var(--primary-100);
-`;
-
-const MainZone = styled.div`
-  flex: 1 1;
-  max-width: calc((100vw - 3rem) * (9 / 12.5));
-  height: 100%;
+  max-width: calc((100vw - 3rem) * (9 / 11));
   padding: 5% 0.5rem;
   display: grid;
   grid-template-areas:
     "z4 z3 z2"
     "z5 z6 z1";
-  grid-column-gap: 0.25rem;
-  grid-row-gap: 0.25rem;
-  z-index: 1;
+  grid-gap: 0.25rem;
+  background-color: var(--danger-400);
+  border: 0.25rem solid var(--primary-100);
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 33%;
+    min-height: 33%;
+    background-color: var(--danger-500);
+    border-bottom: 0.25rem solid var(--primary-100);
+  }
 `;
 
 export const PlayerCard = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 0.5rem 0;
   border-radius: 0.5rem;
   border: 0.25rem solid var(--primary-100);
   background-color: var(--primary-100);
@@ -122,46 +117,37 @@ export const PlayerCard = styled.div`
   }
   &.toggled {
     color: var(--secondary-500);
-    border-color: var(--secondary-500);
+    box-shadow: 0 0 0 0.25rem var(--secondary-400);
     &:empty {
       opacity: 0.9;
     }
   }
 `;
 
-export const InsideCourt = ({ children }) => {
+export const PlayerCardCross = () => {
+  const Container = styled.div`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+    background-color: var(--secondary-300);
+    color: var(--primary-100);
+    z-index: 1;
+    opacity: 0.65;
+    cursor: pointer;
+    svg {
+      width: 3rem;
+      height: 3rem;
+    }
+  `;
   return (
-    <Inside>
-      <AttackLine />
-      <MainZone>{children}</MainZone>
-    </Inside>
-  );
-};
-
-export const Court = ({ starters }) => {
-  return (
-    <CourtContainer>
-      <Outside>
-        <OutsideFront />
-        <PlayerCard>L</PlayerCard>
-      </Outside>
-      <Inside>
-        <AttackLine />
-        <MainZone>
-          {starters.map((starter, index) => (
-            <PlayerCard
-              key={index}
-              style={{ gridArea: `z${index + 1}` }}
-              content={index + 1}
-            >
-              {/* {index + 1} */}
-            </PlayerCard>
-          ))}
-        </MainZone>
-      </Inside>
-      <Outside>
-        <OutsideFront />
-      </Outside>
-    </CourtContainer>
+    <Container>
+      <FiX />
+    </Container>
   );
 };

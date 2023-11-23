@@ -117,30 +117,27 @@ export const PATCH = async (req) => {
       );
     }
 
-    if (patchRequest.lineup) {
-      const { lineup } = patchRequest;
+    if (patchRequest.lineup) team.lineup = patchRequest.lineup;
 
-      team.lineup = lineup;
-      await team.save();
+    await team.save();
 
-      const response = NextResponse.json(
-        {
-          userData,
-          teamData: team,
-          membersData: members,
-        },
-        { status: 200 }
-      );
-      response.cookies.set({
-        name: "token",
-        value: token,
-        options: {
-          httpOnly: true,
-          maxAge: 60 * 60 * 24 * 30,
-        },
-      });
-      return response;
-    }
+    const response = NextResponse.json(
+      {
+        userData,
+        teamData: team,
+        membersData: members,
+      },
+      { status: 200 }
+    );
+    response.cookies.set({
+      name: "token",
+      value: token,
+      options: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    });
+    return response;
   } catch (error) {
     console.log("[update-team]", error);
     return NextResponse.json({ error }, { status: 500 });
