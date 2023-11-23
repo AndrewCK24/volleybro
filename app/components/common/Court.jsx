@@ -25,6 +25,9 @@ export const Outside = styled.div`
 `;
 
 export const OutsideFront = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: calc(33% + 0.25rem);
   background-color: transparent;
@@ -151,3 +154,21 @@ export const PlayerCardCross = () => {
     </Container>
   );
 };
+
+export const AdjustButton = styled.div`
+  flex: 1 1;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: var(--primary-100);
+  font-size: 1.25rem;
+  color: var(--primary-700);
+  cursor: pointer;
+  svg {
+    width: 3rem;
+    height: 3rem;
+  }
+`;

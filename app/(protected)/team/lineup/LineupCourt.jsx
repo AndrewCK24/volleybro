@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 
 import { teamActions } from "../team-slice";
+import { FiRotateCw } from "react-icons/fi";
 import { Section } from "@/app/components/common/Section";
 import {
   CourtContainer,
@@ -9,6 +10,7 @@ import {
   Inside,
   PlayerCard,
   PlayerCardCross,
+  AdjustButton,
 } from "@/app/components/common/Court";
 
 const LineupCourt = ({
@@ -42,7 +44,14 @@ const LineupCourt = ({
     <Section>
       <CourtContainer>
         <Outside>
-          <OutsideFront />
+          <OutsideFront>
+            <AdjustButton onClick={() => dispatch(teamActions.rotateLineup())}>
+              <h3>
+                <FiRotateCw />
+              </h3>
+              輪轉
+            </AdjustButton>
+          </OutsideFront>
           {liberos.map((libero, index) => {
             const member = members.find((m) => m._id === libero.member_id);
             return (
