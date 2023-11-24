@@ -32,7 +32,9 @@ export const GET = async (req, { params }) => {
       const membersData = await Member.find({ team_id: matchedTeamId });
 
       const user = await User.findById(userData._id);
-      const teamIndex = user.teams.joined.findIndex((id) => id === teamId);
+      const teamIndex = user.teams.joined.findIndex(
+        (id) => id.toString() === teamId
+      );
       user.teams.joined.unshift(user.teams.joined.splice(teamIndex, 1)[0]);
       await user.save();
 
@@ -54,7 +56,7 @@ export const GET = async (req, { params }) => {
       });
       return response;
     } else {
-      
+      // return NextResponse.json({ teamData }, { status: 200 });
     }
   } catch (error) {
     console.log("[get-teams]", error);
