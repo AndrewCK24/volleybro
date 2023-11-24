@@ -247,7 +247,7 @@ export const PATCH = async (req) => {
     await member.save();
     await user.save();
 
-    const token = await signJwt(userData);
+    const token = await signJwt(user);
     const hidePasswordUser = hidePassword(user);
     if (accept) {
       const members = await Member.find({ team_id: teamId });
