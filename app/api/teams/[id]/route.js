@@ -10,7 +10,10 @@ export const GET = async (req, { params }) => {
   try {
     const { userData } = await verifyJwt();
     const { id: teamId } = params;
-    const matchedTeamId = userData.teams.joined.find((id) => id.toString() === teamId);
+    const query = req.nextUrl.searchParams;
+    const matchedTeamId = userData.teams.joined.find(
+      (id) => id.toString() === teamId
+    );
     if (!matchedTeamId) {
       console.log("[get-teams] User is not a member of this team");
       return NextResponse.json(
@@ -24,30 +27,35 @@ export const GET = async (req, { params }) => {
       console.log("[get-teams] Team not found");
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
-    const membersData = await Member.find({ team_id: matchedTeamId });
 
-    const user = await User.findById(userData._id);
-    const teamIndex = user.teams.joined.findIndex((id) => id === teamId);
-    user.teams.joined.unshift(user.teams.joined.splice(teamIndex, 1)[0]);
-    await user.save();
+    if (query.get("switch") === "true") {
+      const membersData = await Member.find({ team_id: matchedTeamId });
 
-    const token = await signJwt(user);
-    const hidePasswordUser = hidePassword(user);
+      const user = await User.findById(userData._id);
+      const teamIndex = user.teams.joined.findIndex((id) => id === teamId);
+      user.teams.joined.unshift(user.teams.joined.splice(teamIndex, 1)[0]);
+      await user.save();
 
-    const response = NextResponse.json({
-      userData: hidePasswordUser,
-      teamData,
-      membersData,
-    });
-    response.cookies.set({
-      name: "token",
-      value: token,
-      options: {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 30,
-      },
-    });
-    return response;
+      const token = await signJwt(user);
+      const hidePasswordUser = hidePassword(user);
+
+      const response = NextResponse.json({
+        userData: hidePasswordUser,
+        teamData,
+        membersData,
+      });
+      response.cookies.set({
+        name: "token",
+        value: token,
+        options: {
+          httpOnly: true,
+          maxAge: 60 * 60 * 24 * 30,
+        },
+      });
+      return response;
+    } else {
+      
+    }
   } catch (error) {
     console.log("[get-teams]", error);
     return NextResponse.json({ error }, { status: 500 });

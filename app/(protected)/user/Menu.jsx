@@ -54,7 +54,7 @@ const Menu = () => {
     if (index === 0) return router.push("/team");
 
     try {
-      const response = await fetch(`/api/teams/${team._id}`, {
+      const response = await fetch(`/api/teams/${team._id}?switch=true`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -145,10 +145,6 @@ const Menu = () => {
               <ListItem key={index} type="primary" text div>
                 <FiUsers />
                 <ListItemText>{team.name || ""}</ListItemText>
-                {/* <ListBtn
-                  type="primary"
-                  onClick={() => window.confirm("確認接受邀請？")}
-                > */}
                 <ListBtn
                   type="primary"
                   onClick={() => handleAccept(team._id, true)}
