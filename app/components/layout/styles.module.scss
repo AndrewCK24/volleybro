@@ -35,7 +35,6 @@
 
 .main {
   flex: 1 1;
-  // margin: 3.5rem 0 5rem;
   padding: 4rem 0 5.5rem;
   display: flex;
   flex-direction: column;
@@ -49,8 +48,8 @@
   z-index: 0;
 
   &--full-height {
+    overflow: hidden;
     overscroll-behavior-y: none;
-    margin: 0;
     padding: 0;
     gap: 0;
   }
