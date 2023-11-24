@@ -12,8 +12,10 @@ export const ListHeader = ({ children }) => (
   <div className={styles.list__header}>{children}</div>
 );
 
-export const ListTitle = ({ children }) => (
-  <h2 className={styles.list__title}>{children}</h2>
+export const ListTitle = ({ children, onClick }) => (
+  <h2 className={styles.list__title} onClick={onClick}>
+    {children}
+  </h2>
 );
 
 export const ListBtnContainer = ({ children }) => (
@@ -51,9 +53,11 @@ export const ListItem = ({
   if (div) {
     return (
       <div
-        className={`${styles.list__item} ${
-          styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
-        } ${center && styles[`list__item--center`]}`}
+        className={`
+          ${styles.list__item} 
+          ${styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]} 
+          ${center && styles[`list__item--center`]}
+        `}
         disabled={true}
       >
         {children}
@@ -62,9 +66,11 @@ export const ListItem = ({
   } else {
     return (
       <button
-        className={`${styles.list__item} ${
-          styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]
-        } ${center && styles[`list__item--center`]}`}
+        className={`
+          ${styles.list__item} 
+          ${styles[`list__item${type && `--${type}`}${text ? `-text` : ""}`]} 
+          ${center && styles[`list__item--center`]}
+        `}
         onClick={onClick}
         disabled={!onClick || disabled}
       >
@@ -74,12 +80,15 @@ export const ListItem = ({
   }
 };
 
-export const ListItemText = ({ children, minimized, bold }) => {
+export const ListItemText = ({ children, minimized, bold, fit }) => {
   return (
     <div
-      className={`${styles.list__item_text} ${
-        minimized && styles[`list__item_text--minimized`]
-      } ${bold && styles[`list__item_text--bold`]}`}
+      className={`
+        ${styles.list__item_text} 
+        ${minimized && styles[`list__item_text--minimized`]} 
+        ${bold && styles[`list__item_text--bold`]} 
+        ${fit && styles[`list__item_text--fit`]}
+      `}
     >
       {children}
     </div>
