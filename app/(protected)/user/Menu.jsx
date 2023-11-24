@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,8 +13,6 @@ import {
   FiUsers,
   FiUserPlus,
   FiPlus,
-  FiCheck,
-  FiX,
   FiLogOut,
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
@@ -70,31 +67,6 @@ const Menu = () => {
     }
   };
 
-  const handleAccept = async (teamId, accept) => {
-    if (!window.confirm(accept ? "確認接受邀請？" : "確認拒絕邀請？")) return;
-    try {
-      const response = await fetch("/api/members", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamId, accept }),
-      });
-      if (accept) {
-        const { userData, teamData, membersData } = await response.json();
-        dispatch(userActions.setUser(userData));
-        dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-        router.push("/team");
-      } else {
-        const { userData } = await response.json();
-        dispatch(userActions.setUser(userData));
-        const detailRes = await fetch("/api/teams");
-        const teams = await detailRes.json();
-        dispatch(userActions.setTeamsDetails(teams));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleSignOut = async () => {
     try {
       await fetch("/api/sign-out", {
@@ -142,21 +114,14 @@ const Menu = () => {
             ))}
             {invitingTeams.length > 0 && <SectionHr content="收到的邀請" />}
             {invitingTeams.map((team, index) => (
-              <ListItem key={index} type="primary" text div>
+              <ListItem
+                key={index}
+                type="primary"
+                text
+                onClick={() => router.push(`/team/info/${team._id}`)}
+              >
                 <FiUsers />
                 <ListItemText>{team.name || ""}</ListItemText>
-                <ListBtn
-                  type="primary"
-                  onClick={() => handleAccept(team._id, true)}
-                >
-                  <FiCheck />
-                </ListBtn>
-                <ListBtn
-                  type="danger"
-                  onClick={() => handleAccept(team._id, false)}
-                >
-                  <FiX />
-                </ListBtn>
               </ListItem>
             ))}
             <span>沒有你的隊伍嗎？你可以聯絡你的隊伍管理者，或...</span>
