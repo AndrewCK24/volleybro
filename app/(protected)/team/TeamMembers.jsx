@@ -26,7 +26,7 @@ const TeamMembers = () => {
   return (
     <Section>
       <ListHeader>
-        <ListTitle>
+        <ListTitle onClick={() => router.push("/team/info")}>
           {teamName}
           <FiChevronRight />
         </ListTitle>

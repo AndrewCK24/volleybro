@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import connectMongoDB from "../../utils/connect-mongodb";
 import verifyJwt from "../../utils/verify-jwt";
 import signJwt from "../../utils/sign-jwt";
 import hidePassword from "../../utils/hide-password";
@@ -8,28 +9,29 @@ import Member from "@/app/models/member";
 
 export const GET = async (req, { params }) => {
   try {
-    const { userData } = await verifyJwt();
     const { id: teamId } = params;
     const query = req.nextUrl.searchParams;
-    const matchedTeamId = userData.teams.joined.find(
-      (id) => id.toString() === teamId
-    );
-    if (!matchedTeamId) {
-      console.log("[get-teams] User is not a member of this team");
-      return NextResponse.json(
-        { error: "You are not a member of this team" },
-        { status: 403 }
-      );
-    }
+    await connectMongoDB();
 
     const teamData = await Team.findById(teamId);
     if (!teamData) {
       console.log("[get-teams] Team not found");
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
+    const membersData = await Member.find({ team_id: teamId });
 
     if (query.get("switch") === "true") {
-      const membersData = await Member.find({ team_id: matchedTeamId });
+      const { userData } = await verifyJwt();
+      const matchedTeamId = userData.teams.joined.find(
+        (id) => id.toString() === teamId
+      );
+      if (!matchedTeamId) {
+        console.log("[get-teams] User is not a member of this team");
+        return NextResponse.json(
+          { error: "You are not a member of this team" },
+          { status: 403 }
+        );
+      }
 
       const user = await User.findById(userData._id);
       const teamIndex = user.teams.joined.findIndex(
@@ -55,9 +57,9 @@ export const GET = async (req, { params }) => {
         },
       });
       return response;
-    } else {
-      // return NextResponse.json({ teamData }, { status: 200 });
     }
+
+    return NextResponse.json({ teamData, membersData }, { status: 200 });
   } catch (error) {
     console.log("[get-teams]", error);
     return NextResponse.json({ error }, { status: 500 });

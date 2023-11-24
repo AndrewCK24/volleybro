@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { userActions } from "../user/user-slice";
+import { teamActions } from "./team-slice";
 import { Section } from "../../components/common/Section";
 import {
   FormContainer,
@@ -12,16 +13,15 @@ import {
   FormButton,
 } from "../../components/common/Form";
 
-const TeamForm = ({ isNew }) => {
+const TeamForm = ({ teamData, setIsEditing }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const actionPath = isNew ? "/api/teams" : "/api/teams/:id";
-  const teamData = useSelector((state) => state.team);
+  const teamId = teamData?._id;
 
   const [nameValue, setNameValue] = useState("");
-  const [nameError, setNameError] = useState(isNew ? " " : "");
+  const [nameError, setNameError] = useState(teamId ? "" : " ");
   const [nicknameValue, setNicknameValue] = useState("");
-  const [nicknameError, setNicknameError] = useState(isNew ? " " : "");
+  const [nicknameError, setNicknameError] = useState(teamId ? "" : " ");
   const errorArr = [nameError, nicknameError];
 
   const handleNameChange = (value) => {
@@ -46,20 +46,21 @@ const TeamForm = ({ isNew }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = { name: nameValue, nickname: nicknameValue };
     try {
-      const res = await fetch(actionPath, {
-        method: "POST",
+      const res = await fetch("/api/teams", {
+        method: teamId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          teamId,
+          name: nameValue,
+          nickname: nicknameValue,
+        }),
       });
 
       const { userData, teamData, membersData } = await res.json();
-      console.log("userData", userData);
-      console.log("teamData", teamData);
-      console.log("membersData", membersData);
       dispatch(userActions.setUser(userData));
-      router.push(`/team`);
+      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
+      teamId ? setIsEditing(false) : router.push(`/team`);
     } catch (err) {
       console.log(err);
       setNameError("發生未知錯誤，請稍後再試");
@@ -67,15 +68,15 @@ const TeamForm = ({ isNew }) => {
   };
 
   return (
-    <Section type="fixed">
+    <Section>
       <FormContainer onSubmit={handleSubmit}>
         <FormControl
           name="name"
           labelText="隊伍名稱"
           type="text"
-          defaultValue={isNew ? "" : teamData.name}
+          defaultValue={teamId ? teamData.name : ""}
           placeholder="請輸入隊伍全名"
-          required={true}
+          required
           onChange={handleNameChange}
           autoComplete="off"
           warn={nameError}
@@ -84,17 +85,26 @@ const TeamForm = ({ isNew }) => {
           name="nickname"
           labelText="隊伍簡稱"
           type="text"
-          defaultValue={isNew ? "" : teamData.nickname}
+          defaultValue={teamId ? teamData.nickname : ""}
           placeholder="請輸入隊伍簡稱 (8字以內)"
-          required={true}
+          required
           onChange={handleNicknameChange}
           autoComplete="off"
           warn={nicknameError}
         />
         <FormButton errorArr={errorArr}>
-          {isNew ? "建立隊伍" : "儲存修改"}
+          {teamId ? "儲存修改" : "建立隊伍"}
         </FormButton>
       </FormContainer>
+      {teamId ? (
+        <FormButton type="text" onClick={() => setIsEditing(false)}>
+          取消編輯
+        </FormButton>
+      ) : (
+        <FormButton type="text" onClick={() => router.push("/team")}>
+          取消建立
+        </FormButton>
+      )}
     </Section>
   );
 };

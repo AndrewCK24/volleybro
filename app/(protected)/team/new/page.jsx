@@ -2,7 +2,7 @@
 import TeamForm from "../TeamForm";
 
 const NewTeamPage = () => {
-  return <TeamForm isNew={true} />;
+  return <TeamForm teamData={null} setIsEditing={null} />;
 };
 
 export default NewTeamPage;

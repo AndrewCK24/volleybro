@@ -118,6 +118,8 @@ export const PATCH = async (req) => {
     }
 
     if (patchRequest.lineup) team.lineup = patchRequest.lineup;
+    if (patchRequest.name) team.name = patchRequest.name;
+    if (patchRequest.nickname) team.nickname = patchRequest.nickname;
 
     await team.save();
 
