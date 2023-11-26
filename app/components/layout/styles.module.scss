@@ -51,6 +51,9 @@
     overflow: hidden;
     overscroll-behavior-y: none;
     padding: 0;
+  }
+
+  &--no-gap {
     gap: 0;
   }
 
