@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { teamActions } from "../team-slice";
 import { FiRotateCw } from "react-icons/fi";
 import { Section } from "@/app/components/common/Section";
-import { FormSelect } from "@/app/components/common/Form";
 import {
   CourtContainer,
   Outside,
@@ -40,22 +39,12 @@ const LineupCourt = ({
     }
   };
 
-  const handleServingChange = (value) => {
-    if (value === "true") {
-      dispatch(teamActions.rotateLineupCw());
-    } else {
-      dispatch(teamActions.rotateLineupCcw());
-    }
-  };
-
   return (
     <Section>
       <CourtContainer>
         <Outside className="left">
           <AdjustButton onClick={() => dispatch(teamActions.rotateLineupCw())}>
-            <h3>
-              <FiRotateCw />
-            </h3>
+            <FiRotateCw />
             輪轉
           </AdjustButton>
           {liberos.map((libero, index) => {
@@ -110,15 +99,6 @@ const LineupCourt = ({
         </Inside>
         <Outside className="right" />
       </CourtContainer>
-      <FormSelect
-        name="serving"
-        options={[
-          { id: "ours", value: true, text: "我方發球" },
-          { id: "oppo", value: false, text: "對方發球" },
-        ]}
-        defaultValue={true}
-        onChange={handleServingChange}
-      />
     </Section>
   );
 };

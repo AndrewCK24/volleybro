@@ -172,6 +172,7 @@ export const AdjustButton = styled.div`
   justify-content: center;
   font-size: 1.25rem;
   color: var(--primary-100);
+  gap: 0.25rem;
   z-index: 1;
   cursor: pointer;
   svg {
