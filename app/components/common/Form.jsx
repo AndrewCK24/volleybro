@@ -66,7 +66,7 @@ export const FormSelect = (props) => {
     labelText,
     options = [],
     required = false,
-    defaultValue = "",
+    defaultValue,
     disabled = false,
     warn = "",
     onChange,
@@ -75,14 +75,16 @@ export const FormSelect = (props) => {
   return (
     <div className={styles.form__inputContainer}>
       <div className={styles.form__labelGroup}>
-        <label
-          className={
-            required ? styles[`form__label--required`] : styles.form__label
-          }
-        >
-          {labelText}
-          <span className={styles.form__helper}>{warn}</span>
-        </label>
+        {labelText && (
+          <label
+            className={
+              required ? styles[`form__label--required`] : styles.form__label
+            }
+          >
+            {labelText}
+            <span className={styles.form__helper}>{warn}</span>
+          </label>
+        )}
       </div>
       <div className={styles.form__radioSet}>
         {options.map((option, index) => {

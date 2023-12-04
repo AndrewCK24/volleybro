@@ -76,10 +76,16 @@ const teamSlice = createSlice({
         ...initialState,
       };
     },
-    rotateLineup: (state) => {
+    rotateLineupCw: (state) => {
       state.editingLineup.edited = true;
       const newStarters = state.editingLineup.starters.slice(1);
       newStarters.push(state.editingLineup.starters[0]);
+      state.editingLineup.starters = newStarters;
+    },
+    rotateLineupCcw: (state) => {
+      state.editingLineup.edited = true;
+      const newStarters = state.editingLineup.starters.slice(0, -1);
+      newStarters.unshift(state.editingLineup.starters[5]);
       state.editingLineup.starters = newStarters;
     },
     setLineupPlayer: (state, action) => {
