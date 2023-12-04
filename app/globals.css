@@ -44,6 +44,8 @@
   margin: 0;
   overscroll-behavior-x: none;
   overscroll-behavior-y: contain;
+
+  user-select: none;
 }
 
 body {

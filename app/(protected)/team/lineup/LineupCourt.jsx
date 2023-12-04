@@ -6,7 +6,6 @@ import { Section } from "@/app/components/common/Section";
 import {
   CourtContainer,
   Outside,
-  OutsideFront,
   Inside,
   PlayerCard,
   PlayerCardCross,
@@ -43,15 +42,13 @@ const LineupCourt = ({
   return (
     <Section>
       <CourtContainer>
-        <Outside>
-          <OutsideFront>
-            <AdjustButton onClick={() => dispatch(teamActions.rotateLineup())}>
-              <h3>
-                <FiRotateCw />
-              </h3>
-              輪轉
-            </AdjustButton>
-          </OutsideFront>
+        <Outside className="left">
+          <AdjustButton onClick={() => dispatch(teamActions.rotateLineup())}>
+            <h3>
+              <FiRotateCw />
+            </h3>
+            輪轉
+          </AdjustButton>
           {liberos.map((libero, index) => {
             const member = members.find((m) => m._id === libero.member_id);
             return (
@@ -102,6 +99,7 @@ const LineupCourt = ({
             );
           })}
         </Inside>
+        <Outside className="right" />
       </CourtContainer>
     </Section>
   );

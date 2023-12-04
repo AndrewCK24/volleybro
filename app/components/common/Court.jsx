@@ -3,6 +3,7 @@ import { FiX } from "react-icons/fi";
 
 export const CourtContainer = styled.div`
   width: 100%;
+  max-height: 35vh;
   aspect-ratio: 11 / 9;
   display: flex;
   flex-direction: row;
@@ -17,21 +18,28 @@ export const Outside = styled.div`
   position: relative;
   flex: 2;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
   border: 0.25rem solid transparent;
-  gap: 0.25rem;
-`;
-
-export const OutsideFront = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: calc(33% + 0.25rem);
-  background-color: transparent;
-  border-bottom: 0.25rem dashed var(--primary-100);
+  grid-gap: 0.5rem;
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    min-height: calc((100% - 0.5rem) / 3);
+    border-bottom: 0.25rem dashed var(--primary-100);
+  }
+  &.left {
+    padding-right: 0.25rem;
+  }
+  &.right {
+    display: none;
+    @media (min-width: 768px) {
+      display: flex;
+      flex: 1 10 0;
+    }
+  }
 `;
 
 export const Inside = styled.div`
@@ -45,7 +53,7 @@ export const Inside = styled.div`
   grid-template-areas:
     "z4 z3 z2"
     "z5 z6 z1";
-  grid-gap: 0.25rem;
+  grid-gap: 0.5rem;
   background-color: var(--danger-400);
   border: 0.25rem solid var(--primary-100);
   &::before {
@@ -53,8 +61,7 @@ export const Inside = styled.div`
     position: absolute;
     top: 0;
     width: 100%;
-    height: 33%;
-    min-height: 33%;
+    min-height: calc((100% - 0.5rem) / 3);
     background-color: var(--danger-500);
     border-bottom: 0.25rem solid var(--primary-100);
   }
@@ -62,6 +69,7 @@ export const Inside = styled.div`
 
 export const PlayerCard = styled.div`
   position: relative;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,6 +78,8 @@ export const PlayerCard = styled.div`
   border-radius: 0.5rem;
   border: 0.25rem solid var(--primary-100);
   background-color: var(--primary-100);
+  transition: all 0.15s ease-in-out;
+  z-index: 1;
   h3 {
     display: flex;
     align-items: center;
@@ -119,8 +129,8 @@ export const PlayerCard = styled.div`
     }
   }
   &.toggled {
-    color: var(--secondary-500);
-    box-shadow: 0 0 0 0.25rem var(--secondary-400);
+    background-color: var(--secondary-500);
+    color: var(--primary-100);
     &:empty {
       opacity: 0.9;
     }
@@ -156,16 +166,13 @@ export const PlayerCardCross = () => {
 };
 
 export const AdjustButton = styled.div`
-  flex: 1 1;
-  height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
-  background-color: var(--primary-100);
   font-size: 1.25rem;
-  color: var(--primary-700);
+  color: var(--primary-100);
+  z-index: 1;
   cursor: pointer;
   svg {
     width: 3rem;
