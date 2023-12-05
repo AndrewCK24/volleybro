@@ -14,14 +14,14 @@ import {
 
 const LineupCourt = ({
   members,
-  starters,
-  liberos,
+  editingLineup,
   editingZone,
   editingMember,
   setEditingZone,
   setEditingMember,
 }) => {
   const dispatch = useDispatch();
+  const { starters, liberos } = editingLineup;
   const handleClick = (index, player) => {
     setEditingMember({ _id: null, position: null });
     if (editingZone === index + 1) {
