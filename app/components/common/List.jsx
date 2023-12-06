@@ -41,6 +41,10 @@ export const ListBtn = ({ children, type, onClick, rotate }) => {
   );
 };
 
+export const ListItemContainer = ({ children }) => (
+  <div className={styles.list__item_container}>{children}</div>
+);
+
 export const ListItem = ({
   children,
   type = "",

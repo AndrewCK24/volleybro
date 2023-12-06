@@ -106,7 +106,6 @@ const teamSlice = createSlice({
         }
         state.editingLineup.liberos[zone - 7] = { member_id, position };
       }
-
       state.editingLineup.benches = state.editingLineup.benches.filter(
         (id) => id !== member_id
       );
@@ -123,8 +122,15 @@ const teamSlice = createSlice({
           member_id: null,
         };
       }
-
       state.editingLineup.benches.push(member_id);
+    },
+    resetEditingLineup: (state) => {
+      state.editingLineup = {
+        edited: false,
+        starters: state.lineup.starters,
+        liberos: state.lineup.liberos,
+        benches: state.lineup.benches,
+      };
     },
   },
 });

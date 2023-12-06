@@ -59,6 +59,9 @@
 
   @media screen and (min-width: 768px) {
     padding: 4rem 5%;
+    &--full-height {
+      padding: 0;
+    }
   }
 }
 
