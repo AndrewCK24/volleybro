@@ -3,14 +3,9 @@ import { useDispatch } from "react-redux";
 import { teamActions } from "../team-slice";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
-const PositionList = ({
-  starters,
-  editingZone,
-  editingMember,
-  setEditingZone,
-  setEditingMember,
-}) => {
+const PositionList = ({ starters, status }) => {
   const dispatch = useDispatch();
+  const { editingZone, editingMember } = status;
   const oppositeZone = editingZone > 3 ? editingZone - 3 : editingZone + 3;
   const isSetterExist = starters.find((starter) => starter.position === "S");
   const isOutsideExist = starters.find((starter) => starter.position === "OH");
@@ -67,8 +62,6 @@ const PositionList = ({
         position,
       })
     );
-    setEditingZone(null);
-    setEditingMember({ _id: null, position: null });
   };
 
   return (

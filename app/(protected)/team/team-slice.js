@@ -13,6 +13,13 @@ const initialState = {
   },
   editingLineup: {
     edited: false,
+    status: {
+      editingZone: null,
+      editingMember: {
+        _id: null,
+        number: null,
+      },
+    },
     starters: [],
     liberos: [],
     benches: [],
@@ -63,6 +70,7 @@ const teamSlice = createSlice({
         },
         editingLineup: {
           edited: false,
+          status: initialState.editingLineup.status,
           starters: teamData.lineup.starters,
           liberos: teamData.lineup.liberos,
           benches,
@@ -88,6 +96,56 @@ const teamSlice = createSlice({
       newStarters.unshift(state.editingLineup.starters[5]);
       state.editingLineup.starters = newStarters;
     },
+    setEditingStatus: (state, action) => {
+      const { zone, member } = action.payload;
+      const { editingZone, editingMember } = state.editingLineup.status;
+      if (zone) {
+        if (editingZone && editingZone !== zone && !editingMember._id) {
+          if (zone <= 6) {
+            const player = state.editingLineup.starters[zone - 1].member_id;
+            if (editingZone <= 6) {
+              state.editingLineup.starters[zone - 1].member_id =
+                state.editingLineup.starters[editingZone - 1].member_id;
+              state.editingLineup.starters[editingZone - 1].member_id = player;
+            } else {
+              state.editingLineup.starters[zone - 1].member_id =
+                state.editingLineup.liberos[editingZone - 7].member_id;
+              state.editingLineup.liberos[editingZone - 7].member_id = player;
+            }
+          } else {
+            const player = state.editingLineup.liberos[zone - 7].member_id;
+            if (editingZone <= 6) {
+              state.editingLineup.liberos[zone - 7].member_id =
+                state.editingLineup.starters[editingZone - 1].member_id;
+              state.editingLineup.starters[editingZone - 1].member_id = player;
+            } else {
+              state.editingLineup.liberos[zone - 7].member_id =
+                state.editingLineup.liberos[editingZone - 7].member_id;
+              state.editingLineup.liberos[editingZone - 7].member_id = player;
+            }
+          }
+          state.editingLineup.edited = true;
+          state.editingLineup.status.editingZone = null;
+          state.editingLineup.status.editingMember = {
+            _id: null,
+            number: null,
+          };
+          return;
+        }
+        state.editingLineup.status.editingZone =
+          editingZone !== zone ? zone : null;
+        state.editingLineup.status.editingMember = {
+          _id: null,
+          number: null,
+        };
+      }
+      if (member) {
+        state.editingLineup.status.editingMember = {
+          _id: member._id,
+          number: member.number,
+        };
+      }
+    },
     setLineupPlayer: (state, action) => {
       const { zone, member_id, position } = action.payload;
       state.editingLineup.edited = true;
@@ -109,6 +167,7 @@ const teamSlice = createSlice({
       state.editingLineup.benches = state.editingLineup.benches.filter(
         (id) => id !== member_id
       );
+      state.editingLineup.status = initialState.editingLineup.status;
     },
     resetLineupPlayer: (state, action) => {
       const { zone, member_id } = action.payload;
@@ -123,10 +182,12 @@ const teamSlice = createSlice({
         };
       }
       state.editingLineup.benches.push(member_id);
+      state.editingLineup.status = initialState.editingLineup.status;
     },
     resetEditingLineup: (state) => {
       state.editingLineup = {
         edited: false,
+        status: initialState.editingLineup.status,
         starters: state.lineup.starters,
         liberos: state.lineup.liberos,
         benches: state.lineup.benches,

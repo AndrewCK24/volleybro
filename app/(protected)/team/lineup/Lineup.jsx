@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,11 +8,6 @@ import LineupOptions from "./LineupOptions";
 const Lineup = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [editingZone, setEditingZone] = useState(null);
-  const [editingMember, setEditingMember] = useState({
-    _id: null,
-    number: null,
-  });
   const {
     _id: teamId,
     members,
@@ -51,21 +45,10 @@ const Lineup = () => {
 
   return (
     <>
-      <LineupCourt
-        members={members}
-        editingLineup={editingLineup}
-        editingZone={editingZone}
-        editingMember={editingMember}
-        setEditingZone={setEditingZone}
-        setEditingMember={setEditingMember}
-      />
+      <LineupCourt members={members} editingLineup={editingLineup} />
       <LineupOptions
         members={members}
         editingLineup={editingLineup}
-        editingZone={editingZone}
-        editingMember={editingMember}
-        setEditingZone={setEditingZone}
-        setEditingMember={setEditingMember}
         handleSave={handleSave}
         handleCancel={handleCancel}
       />

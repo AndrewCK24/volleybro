@@ -1,15 +1,20 @@
+import { useDispatch } from "react-redux";
+import { teamActions } from "../team-slice";
 import { FiUser } from "react-icons/fi";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
-const BenchList = ({
-  members,
-  benches,
-  editingZone,
-  editingMember,
-  setEditingMember,
-}) => {
+const BenchList = ({ members, benches, status }) => {
+  const dispatch = useDispatch();
+  const { editingZone, editingMember } = status;
   const handleClick = (player) => {
-    setEditingMember({ _id: player._id, number: player.number });
+    dispatch(
+      teamActions.setEditingStatus({
+        member: {
+          _id: player._id,
+          number: player.number,
+        },
+      })
+    );
   };
 
   const players = members.filter((member) => benches.includes(member._id));

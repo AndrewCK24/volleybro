@@ -8,36 +8,13 @@ import {
   Outside,
   Inside,
   PlayerCard,
-  PlayerCardCross,
   AdjustButton,
 } from "@/app/components/common/Court";
 
-const LineupCourt = ({
-  members,
-  editingLineup,
-  editingZone,
-  editingMember,
-  setEditingZone,
-  setEditingMember,
-}) => {
+const LineupCourt = ({ members, editingLineup }) => {
   const dispatch = useDispatch();
-  const { starters, liberos } = editingLineup;
-  const handleClick = (index, player) => {
-    setEditingMember({ _id: null, position: null });
-    if (editingZone === index + 1) {
-      setEditingZone(null);
-      if (player.member_id && !editingMember._id) {
-        dispatch(
-          teamActions.resetLineupPlayer({
-            zone: index + 1,
-            member_id: player.member_id,
-          })
-        );
-      }
-    } else {
-      setEditingZone(index + 1);
-    }
-  };
+  const { starters, liberos, status } = editingLineup;
+  const { editingZone, editingMember } = status;
 
   return (
     <Section>
@@ -53,7 +30,9 @@ const LineupCourt = ({
               <PlayerCard
                 key={index}
                 className={editingZone === index + 7 && "toggled"}
-                onClick={() => handleClick(index + 6, libero)}
+                onClick={() =>
+                  dispatch(teamActions.setEditingStatus({ zone: index + 1 }))
+                }
               >
                 {editingZone === index + 7 && editingMember._id ? (
                   <>
@@ -62,7 +41,6 @@ const LineupCourt = ({
                   </>
                 ) : member ? (
                   <>
-                    {editingZone === index + 7 && <PlayerCardCross />}
                     <h3>{member.number}</h3>
                     <span>L</span>
                   </>
@@ -79,7 +57,9 @@ const LineupCourt = ({
                 key={index}
                 style={{ gridArea: `z${index + 1}` }}
                 className={editingZone === index + 1 && "toggled"}
-                onClick={() => handleClick(index, starter)}
+                onClick={() =>
+                  dispatch(teamActions.setEditingStatus({ zone: index + 1 }))
+                }
               >
                 {editingZone === index + 1 && editingMember._id ? (
                   <>
@@ -88,7 +68,6 @@ const LineupCourt = ({
                   </>
                 ) : member ? (
                   <>
-                    {editingZone === index + 1 && <PlayerCardCross />}
                     <h3>{member.number}</h3>
                     <span>{starter.position}</span>
                   </>

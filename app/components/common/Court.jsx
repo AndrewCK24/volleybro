@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { FiX } from "react-icons/fi";
 
 export const CourtContainer = styled.div`
   width: 100%;
@@ -128,7 +127,8 @@ export const PlayerCard = styled.div`
       font-size: 1.5rem;
     }
   }
-  &.toggled {
+  &.toggled,
+  &:active {
     background-color: var(--secondary-500);
     color: var(--primary-100);
     &:empty {
@@ -136,34 +136,6 @@ export const PlayerCard = styled.div`
     }
   }
 `;
-
-export const PlayerCardCross = () => {
-  const Container = styled.div`
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 0.5rem;
-    background-color: var(--secondary-300);
-    color: var(--primary-100);
-    z-index: 1;
-    opacity: 0.65;
-    cursor: pointer;
-    svg {
-      width: 3rem;
-      height: 3rem;
-    }
-  `;
-  return (
-    <Container>
-      <FiX />
-    </Container>
-  );
-};
 
 export const AdjustButton = styled.div`
   display: flex;

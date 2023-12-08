@@ -8,14 +8,11 @@ import PositionList from "./PositionList";
 const LineupOptions = ({
   members,
   editingLineup,
-  editingZone,
-  editingMember,
-  setEditingZone,
-  setEditingMember,
   handleSave,
   handleCancel,
 }) => {
-  const { starters, benches, edited } = editingLineup;
+  const { starters, benches, edited, status } = editingLineup;
+  const { editingZone, editingMember } = status;
   const isStarterFilled = starters.every((starter) => starter.member_id);
 
   return (
@@ -28,21 +25,9 @@ const LineupOptions = ({
             </ListItem>
           )}
           {!(editingZone && editingMember._id) ? (
-            <BenchList
-              members={members}
-              benches={benches}
-              editingZone={editingZone}
-              editingMember={editingMember}
-              setEditingMember={setEditingMember}
-            />
+            <BenchList members={members} benches={benches} status={status} />
           ) : (
-            <PositionList
-              starters={starters}
-              editingZone={editingZone}
-              editingMember={editingMember}
-              setEditingZone={setEditingZone}
-              setEditingMember={setEditingMember}
-            />
+            <PositionList starters={starters} status={status} />
           )}
         </InnerSection>
         <ListItemContainer>
