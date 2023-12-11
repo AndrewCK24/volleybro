@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
 import { teamActions } from "../team-slice";
+import { Section } from "@/app/components/common/Section";
 import LineupCourt from "./LineupCourt";
 import LineupOptions from "./LineupOptions";
 
@@ -45,13 +46,17 @@ const Lineup = () => {
 
   return (
     <>
-      <LineupCourt members={members} editingLineup={editingLineup} />
-      <LineupOptions
-        members={members}
-        editingLineup={editingLineup}
-        handleSave={handleSave}
-        handleCancel={handleCancel}
-      />
+      <Section>
+        <LineupCourt members={members} editingLineup={editingLineup} />
+      </Section>
+      <Section type="fixed">
+        <LineupOptions
+          members={members}
+          editingLineup={editingLineup}
+          handleSave={handleSave}
+          handleCancel={handleCancel}
+        />
+      </Section>
     </>
   );
 };
