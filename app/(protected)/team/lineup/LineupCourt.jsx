@@ -29,7 +29,7 @@ const LineupCourt = ({ members, editingLineup }) => {
               key={index}
               className={editingZone === index + 7 && "toggled"}
               onClick={() =>
-                dispatch(teamActions.setEditingStatus({ zone: index + 1 }))
+                dispatch(teamActions.setEditingStatus({ zone: index + 7 }))
               }
             >
               {editingZone === index + 7 && editingMember._id ? (
