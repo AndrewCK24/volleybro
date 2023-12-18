@@ -40,7 +40,7 @@ const LineupCourt = ({ members, editingLineup }) => {
               ) : member ? (
                 <>
                   <h3>{member.number}</h3>
-                  <span>L</span>
+                  <span>{libero.position}</span>
                 </>
               ) : null}
             </PlayerCard>

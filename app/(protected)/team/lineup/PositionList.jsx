@@ -16,37 +16,37 @@ const PositionList = ({ starters, status }) => {
       text: "舉球員（二傳, Setter）",
       value: "S",
       disabled:
-        (isSetterExist && starters[editingZone - 1].position !== "S") ||
+        (isSetterExist && starters[editingZone - 1]?.position !== "S") ||
         (isOppositeExist
-          ? starters[oppositeZone - 1].position !== "OP"
-          : starters[oppositeZone - 1].position),
+          ? starters[oppositeZone - 1]?.position !== "OP"
+          : starters[oppositeZone - 1]?.position),
     },
     {
       text: "主攻手（大砲, Outside Hitter）",
       value: "OH",
       disabled:
-        (isOutsideExist && starters[editingZone - 1].position !== "OH") ||
+        (isOutsideExist && starters[editingZone - 1]?.position !== "OH") ||
         (isOutsideExist
-          ? starters[oppositeZone - 1].position !== "OH"
-          : starters[oppositeZone - 1].position),
+          ? starters[oppositeZone - 1]?.position !== "OH"
+          : starters[oppositeZone - 1]?.position),
     },
     {
       text: "快攻手（攔中, Middle Blocker）",
       value: "MB",
       disabled:
-        (isMiddleExist && starters[editingZone - 1].position !== "MB") ||
+        (isMiddleExist && starters[editingZone - 1]?.position !== "MB") ||
         (isMiddleExist
-          ? starters[oppositeZone - 1].position !== "MB"
-          : starters[oppositeZone - 1].position),
+          ? starters[oppositeZone - 1]?.position !== "MB"
+          : starters[oppositeZone - 1]?.position),
     },
     {
       text: "副攻手（舉對, Opposite Hitter）",
       value: "OP",
       disabled:
-        (isOppositeExist && starters[editingZone - 1].position !== "OP") ||
+        (isOppositeExist && starters[editingZone - 1]?.position !== "OP") ||
         (isSetterExist
-          ? starters[oppositeZone - 1].position !== "S"
-          : starters[oppositeZone - 1].position),
+          ? starters[oppositeZone - 1]?.position !== "S"
+          : starters[oppositeZone - 1]?.position),
     },
     {
       text: "自由球員 (Libero)",
