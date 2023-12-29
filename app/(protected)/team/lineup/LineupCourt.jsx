@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 
 import { teamActions } from "../team-slice";
-import { FiRotateCw } from "react-icons/fi";
+import { FiRepeat, FiRotateCw } from "react-icons/fi";
 import {
   CourtContainer,
   Outside,
@@ -37,12 +37,16 @@ const LineupCourt = ({ members, editingLineup }) => {
                   <h3>{editingMember.number}</h3>
                   <span />
                 </>
-              ) : member ? (
+              ) : (
                 <>
-                  <h3>{member.number}</h3>
-                  <span>{libero.position}</span>
+                  <h3>{member.number || ""}</h3>
+                  {editingZone && editingZone !== index + 7 ? (
+                    <FiRepeat />
+                  ) : (
+                    <span>{libero.position || ""}</span>
+                  )}
                 </>
-              ) : null}
+              )}
             </PlayerCard>
           );
         })}
@@ -64,12 +68,16 @@ const LineupCourt = ({ members, editingLineup }) => {
                   <h3>{editingMember.number}</h3>
                   <span />
                 </>
-              ) : member ? (
+              ) : (
                 <>
-                  <h3>{member.number}</h3>
-                  <span>{starter.position}</span>
+                  <h3>{member.number || ""}</h3>
+                  {editingZone && editingZone !== index + 1 ? (
+                    <FiRepeat />
+                  ) : (
+                    <span>{starter.position || ""}</span>
+                  )}
                 </>
-              ) : null}
+              )}
             </PlayerCard>
           );
         })}

@@ -90,7 +90,7 @@ export const PlayerCard = styled.div`
     font-size: 4rem;
     font-weight: 700;
   }
-  span {
+  span, svg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,32 +100,6 @@ export const PlayerCard = styled.div`
     min-width: 1.5rem;
     font-size: 1.5rem;
     font-weight: 400;
-  }
-  &:empty {
-    opacity: 0.5;
-    background-color: var(--primary-300);
-    &::before {
-      content: "";
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      max-height: 4rem;
-      min-height: 4rem;
-      max-width: 4rem;
-      min-width: 4rem;
-      font-size: 4rem;
-    }
-    &::after {
-      content: "";
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      max-height: 1.5rem;
-      min-height: 1.5rem;
-      max-width: 1.5rem;
-      min-width: 1.5rem;
-      font-size: 1.5rem;
-    }
   }
   &.toggled,
   &:active {
