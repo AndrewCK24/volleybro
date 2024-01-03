@@ -79,6 +79,20 @@ const teamSlice = createSlice({
         stats: teamData.stats,
       };
     },
+    updateTeamOnly: (state, action) => {
+      state.name = action.payload.name;
+      state.nickname = action.payload.nickname;
+      state.lineup = action.payload.lineup;
+      state.editingLineup = {
+        edited: initialState.editingLineup.edited,
+        status: initialState.editingLineup.status,
+        starters: action.payload.lineup.starters,
+        liberos: action.payload.lineup.liberos,
+        benches: action.payload.lineup.benches,
+      };
+      state.matches = action.payload.matches;
+      state.stats = action.payload.stats;
+    },
     resetTeam: () => {
       return {
         ...initialState,

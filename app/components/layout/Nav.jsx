@@ -38,7 +38,7 @@ export const Nav = () => {
         <TeamIcon />
         隊伍
       </NavLink>
-      <NavLink href="/record" record ariaLabel="Start recording match">
+      <NavLink href="/match/new/config" record ariaLabel="Start recording match">
         <RecordIcon />
       </NavLink>
       <NavLink href="/history" active={pathname.startsWith("/history")}>
