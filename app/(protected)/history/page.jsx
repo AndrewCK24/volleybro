@@ -1,8 +1,11 @@
+import { Section } from "@/app/components/common/Section";
+import HistoryList from "./HistoryList";
+
 const HistoryPage = () => {
   return (
-    <div>
-      <h1>HistoryPage</h1>
-    </div>
+    <Section>
+      <HistoryList />
+    </Section>
   );
 };
 
