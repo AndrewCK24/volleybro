@@ -55,7 +55,7 @@ const Title = styled.div`
   font-weight: 600;
 `;
 
-const Header = ({ children }) => {
+const Header = () => {
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   const isNew = segments[0] === "new";

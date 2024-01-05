@@ -40,24 +40,25 @@ const Score = styled.div`
 
 const Scores = () => {
   const { ours, oppo } = useSelector((state) => state.match.status.scores);
+  const { team } = useSelector((state) => state.match.info);
 
   return (
     <>
       <Score>
         <div className="score">{ours}</div>
-        <div className="team">DRAPAN</div>
+        <div className="team">{team.ours.name || "我方"}</div>
       </Score>
       <Score>
         <MdOutlineSportsVolleyball />
         <div>
-          <div>2</div>
+          <div>0</div>
           <div> - </div>
-          <div>1</div>
+          <div>0</div>
         </div>
       </Score>
       <Score>
         <div className="score">{oppo}</div>
-        <div className="team">NTUJP</div>
+        <div className="team">{team.oppo.name || "對手"}</div>
       </Score>
     </>
   );
