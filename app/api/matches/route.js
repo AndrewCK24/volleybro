@@ -29,7 +29,7 @@ export const POST = async (req) => {
     });
     await newMatch.save();
 
-    team.matches.push(newMatch._id);
+    team.matches.unshift(newMatch._id);
     await team.save();
 
     const response = NextResponse.json(
