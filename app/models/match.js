@@ -52,8 +52,16 @@ const matchSchema = new Schema(
           type: Boolean,
           required: false,
         },
-        records: [],
-        lineup: [],
+        records: [
+          {
+            type: Object,
+            required: false,
+          },
+        ],
+        lineup: {
+          type: Object,
+          required: false,
+        },
       },
     ],
   },
