@@ -83,7 +83,7 @@ const initialState = {
               inOutArr: [null, null],
             },
           ],
-          libero: [
+          liberos: [
             {
               starting: "",
               substitute: "",
@@ -119,6 +119,15 @@ const matchSlice = createSlice({
   name: "match",
   initialState,
   reducers: {
+    setMatch: (state, action) => {
+      const { matchData } = action.payload;
+      state._id = matchData._id;
+      state.team_id = matchData.team_id;
+      state.recording = initialState.recording;
+      state.status = initialState.status;
+      state.sets = matchData.sets;
+      state.info = matchData.info;
+    },
     configMatch: (state, action) => {
       const { setNum } = state.status.editingData;
       const {
@@ -159,9 +168,9 @@ const matchSlice = createSlice({
           starter.position;
       });
       liberos.map((libero, index) => {
-        state.sets[setNum].lineup.ours.libero[index].starting =
+        state.sets[setNum].lineup.ours.liberos[index].starting =
           libero.member_id;
-        state.sets[setNum].lineup.ours.libero[index].position = libero.position;
+        state.sets[setNum].lineup.ours.liberos[index].position = libero.position;
       });
       benches.map((bench, index) => {
         state.sets[setNum].lineup.ours.benches[index] = bench;

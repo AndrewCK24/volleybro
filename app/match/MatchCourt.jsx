@@ -9,7 +9,6 @@ import {
   FiRepeat,
   FiRotateCw,
 } from "react-icons/fi";
-import { teamActions } from "../(protected)/team/team-slice";
 import { matchActions } from "./match-slice";
 import {
   CourtContainer,
@@ -47,9 +46,14 @@ const MultiFunctionButton = styled.div`
   }
 `;
 
-const MatchCourt = ({ starters, liberos, members }) => {
+const MatchCourt = () => {
   const dispatch = useDispatch();
   const { player } = useSelector((state) => state.match.recording.ours);
+  const { members } = useSelector((state) => state.team);
+  const { setNum } = useSelector((state) => state.match.status.editingData);
+  const { starters, liberos } = useSelector(
+    (state) => state.match.sets[setNum].lineup.ours
+  );
 
   const handleClick = (player, zone) => {
     dispatch(matchActions.setRecordingPlayer({ player, zone }));
@@ -62,14 +66,19 @@ const MatchCourt = ({ starters, liberos, members }) => {
           <FiUser />
         </MultiFunctionButton>
         {liberos.map((libero, index) => {
-          const member = members.find((m) => m._id === libero.member_id);
+          const arr = libero.inOutArr;
+          const liberoId =
+            (arr[0] === null) === (arr[1] === null)
+              ? libero.starting
+              : libero.substitute;
+          const member = members.find((m) => m._id === liberoId);
           return (
             <PlayerCard
               key={index}
               // onClick={() => handleClick(member, index + 7)}
-              className={player.number === member.number && "toggled"}
+              className={player.number === member?.number && "toggled"}
             >
-              <h3>{member.number}</h3>
+              <h3>{member?.number}</h3>
               <span>L</span>
             </PlayerCard>
           );
@@ -77,15 +86,20 @@ const MatchCourt = ({ starters, liberos, members }) => {
       </Outside>
       <Inside>
         {starters.map((starter, index) => {
-          const member = members.find((m) => m._id === starter.member_id);
+          const arr = starter.inOutArr;
+          const starterId =
+            (arr[0] === null) === (arr[1] === null)
+              ? starter.starting
+              : starter.substitute;
+          const member = members.find((m) => m._id === starterId);
           return (
             <PlayerCard
               key={index}
               style={{ gridArea: `z${index + 1}` }}
               onClick={() => handleClick(member, index + 1)}
-              className={player.number === member.number && "toggled"}
+              className={player.number === member?.number && "toggled"}
             >
-              <h3>{member.number}</h3>
+              <h3>{member?.number}</h3>
               <span>{starter.position}</span>
             </PlayerCard>
           );
