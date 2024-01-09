@@ -4,7 +4,7 @@ import { Main } from "../components/layout/Main";
 const RecordLayout = ({ children }) => {
   return (
     <>
-      <Main full>
+      <Main full halfGap>
         <Header />
         {children}
       </Main>
