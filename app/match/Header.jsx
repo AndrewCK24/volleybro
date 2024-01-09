@@ -44,7 +44,7 @@ const MainPart = styled.div`
   gap: 0.5rem;
 `;
 
-const Title = styled.div`
+export const Title = styled.div`
   flex: 1;
   height: 3rem;
   display: flex;
@@ -71,13 +71,17 @@ const Header = () => {
     return router.push("/history");
   };
 
+  const handleMore = () => {
+    if (!isConfig) return router.push(`/match/${segments[0]}/config`);
+  };
+
   return (
     <Container>
       <BtnContainer onClick={() => handleBack()}>
         <FiArrowLeft />
       </BtnContainer>
       <MainPart>{isConfig ? <Title>賽事資訊</Title> : <Scores />}</MainPart>
-      <BtnContainer>
+      <BtnContainer onClick={() => handleMore()}>
         <FiMoreHorizontal />
       </BtnContainer>
     </Container>
