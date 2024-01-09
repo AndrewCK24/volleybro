@@ -3,9 +3,10 @@ import { recordTypes } from "../lib/record-types";
 
 const initialState = {
   _id: "",
+  win: null,
   team_id: "",
   recording: {
-    win: false,
+    win: null,
     ours: {
       score: 0,
       type: "",
@@ -41,6 +42,7 @@ const initialState = {
   },
   sets: [
     {
+      win: null,
       firstServe: false,
       records: [],
       lineup: {
@@ -170,7 +172,8 @@ const matchSlice = createSlice({
       liberos.map((libero, index) => {
         state.sets[setNum].lineup.ours.liberos[index].starting =
           libero.member_id;
-        state.sets[setNum].lineup.ours.liberos[index].position = libero.position;
+        state.sets[setNum].lineup.ours.liberos[index].position =
+          libero.position;
       });
       benches.map((bench, index) => {
         state.sets[setNum].lineup.ours.benches[index] = bench;

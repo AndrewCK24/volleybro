@@ -2,6 +2,10 @@ import { Schema, model, models } from "mongoose";
 
 const matchSchema = new Schema(
   {
+    win: {
+      type: Boolean,
+      required: true,
+    },
     team_id: {
       type: Schema.Types.ObjectId,
       ref: "Team",
@@ -48,6 +52,10 @@ const matchSchema = new Schema(
     },
     sets: [
       {
+        win: {
+          type: Boolean,
+          required: false,
+        },
         firstServe: {
           type: Boolean,
           required: false,
