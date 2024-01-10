@@ -14,16 +14,14 @@ const RecordPage = ({ params }) => {
   const dispatch = useDispatch();
   const isMatchDataLoaded = useSelector((state) => state.match._id) === matchId;
 
-  if (!isMatchDataLoaded) {
-    const fetcher = (url) => fetch(url).then((res) => res.json());
-    const { data, error, isLoading } = useSWR(
-      `/api/matches/${matchId}`,
-      fetcher
-    );
-    if (error) throw error;
-    if (isLoading) return <div>Loading...</div>;
-    dispatch(matchActions.setMatch(data));
-  }
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const { data, error, isLoading } = useSWR(
+    !isMatchDataLoaded ? `/api/matches/${matchId}` : null,
+    fetcher
+  );
+  if (error) throw error;
+  if (isLoading) return <div>Loading...</div>;
+  if (data) dispatch(matchActions.setMatch(data));
 
   return (
     <>
