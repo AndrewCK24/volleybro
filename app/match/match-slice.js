@@ -181,7 +181,17 @@ const matchSlice = createSlice({
     },
     setRecordingPlayer: (state, action) => {
       if (action.payload.player.number === state.recording.ours.player.number) {
-        state.recording = { ...initialState.recording };
+        state.recording = {
+          ...initialState.recording,
+          ours: {
+            ...initialState.recording.ours,
+            score: state.status.scores.ours,
+          },
+          oppo: {
+            ...initialState.recording.oppo,
+            score: state.status.scores.oppo,
+          },
+        };
       } else {
         state.recording = {
           ...initialState.recording,
@@ -192,6 +202,11 @@ const matchSlice = createSlice({
               _id: action.payload.player._id,
               number: action.payload.player.number,
             },
+            score: state.status.scores.ours,
+          },
+          oppo: {
+            ...initialState.recording.oppo,
+            score: state.status.scores.oppo,
           },
         };
       }
@@ -237,7 +252,7 @@ const matchSlice = createSlice({
             ...state.recording.oppo,
             type: initialState.recording.oppo.type,
             num: initialState.recording.oppo.num,
-            score: initialState.recording.oppo.score,
+            score: state.status.oppo.score,
           },
         };
       } else {
@@ -267,7 +282,17 @@ const matchSlice = createSlice({
         }
       }
       state.status.editingData.recordNum += 1;
-      state.recording = { ...initialState.recording };
+      state.recording = {
+        ...initialState.recording,
+        ours: {
+          ...initialState.recording.ours,
+          score: state.status.scores.ours,
+        },
+        oppo: {
+          ...initialState.recording.oppo,
+          score: state.status.scores.oppo,
+        },
+      };
     },
   },
 });
