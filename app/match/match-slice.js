@@ -252,7 +252,6 @@ const matchSlice = createSlice({
             ...state.recording.oppo,
             type: initialState.recording.oppo.type,
             num: initialState.recording.oppo.num,
-            score: state.status.oppo.score,
           },
         };
       } else {
