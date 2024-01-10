@@ -11,7 +11,7 @@ const Error = () => {
         <h1>Something went wrong...</h1>
       </Section>
       <Section type="transparent">
-        <ListItem type="danger" text onClick={() => router.back()}>
+        <ListItem type="danger" text onClick={() => router.push("/history")}>
           <ListItemText>回到紀錄頁</ListItemText>
         </ListItem>
       </Section>
