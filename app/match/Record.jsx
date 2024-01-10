@@ -80,19 +80,23 @@ export const IconError = styled(FiTriangle)`
   stroke-width: 3;
 `;
 
-const Record = ({ record, editingItem }) => {
-  const { win, ours, oppo, zone } = record;
+const Record = ({ record, editingItem, onClick }) => {
+  const { win, ours, oppo } = record;
   const oursType = recordTypes[ours.num];
   const oppoType = recordTypes[oppo.num];
 
   return (
-    <RecordContainer>
+    <RecordContainer onClick={onClick}>
       {ours.type ? (
         <>
-          <Score className={win ? "win" : zone === undefined ? "lose" : ""}>
+          <Score
+            className={win ? "win" : editingItem === undefined ? "lose" : ""}
+          >
             {ours.score}
           </Score>
-          <Score className={!win ? "win" : zone === undefined ? "lose" : ""}>
+          <Score
+            className={!win ? "win" : editingItem === undefined ? "lose" : ""}
+          >
             {oppo.score}
           </Score>
         </>
