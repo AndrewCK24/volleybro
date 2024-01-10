@@ -130,6 +130,14 @@ const matchSlice = createSlice({
       state.sets = matchData.sets;
       state.info = matchData.info;
     },
+    resetMatch: (state) => {
+      state._id = initialState._id;
+      state.team_id = initialState.team_id;
+      state.recording = initialState.recording;
+      state.status = initialState.status;
+      state.sets = initialState.sets;
+      state.info = initialState.info;
+    },
     configMatch: (state, action) => {
       const { setNum } = state.status.editingData;
       const {
