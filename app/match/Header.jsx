@@ -60,14 +60,12 @@ const Header = () => {
   const segments = useSelectedLayoutSegments();
   const isNew = segments[0] === "new";
   const isConfig = segments[1] === "config";
+  const isRecording = segments.length === 1;
 
   const handleBack = () => {
-    if (isNew) {
-      return router.push("/history");
-    }
-    if (isConfig) {
-      return router.push(`/match/${segments[0]}`);
-    }
+    if (isNew) return router.push("/history");
+    if (!isRecording) return router.push(`/match/${segments[0]}`);
+
     return router.push("/history");
   };
 
