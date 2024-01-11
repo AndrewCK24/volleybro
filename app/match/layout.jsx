@@ -1,14 +1,12 @@
-import Header from "./Header";
 import { Main } from "../components/layout/Main";
+import Header from "./Header";
 
 const RecordLayout = ({ children }) => {
   return (
-    <>
-      <Main full halfGap>
-        <Header />
-        {children}
-      </Main>
-    </>
+    <Main full halfGap>
+      <Header />
+      {children}
+    </Main>
   );
 };
 

@@ -1,7 +1,8 @@
 "use client";
-import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import styled from "styled-components";
-import { FiArrowLeft, FiMoreHorizontal } from "react-icons/fi";
+import { useRouter, useSelectedLayoutSegments } from "next/navigation";
+import { useSelector } from "react-redux";
+import { FiArrowLeft, FiSettings } from "react-icons/fi";
 import Scores from "./Scores";
 
 const Container = styled.section`
@@ -21,6 +22,7 @@ const Container = styled.section`
 const BtnContainer = styled.button`
   flex: 0 0;
   height: 100%;
+  min-width: 4rem;
   padding: 0 1rem;
   display: flex;
   justify-content: center;
@@ -37,19 +39,12 @@ const BtnContainer = styled.button`
 
 const MainPart = styled.div`
   flex: 3 1;
+  min-height: 3rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-`;
-
-export const Title = styled.div`
-  flex: 1;
-  height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   color: var(--primary-900);
   font-size: 2rem;
   font-weight: 600;
@@ -58,19 +53,19 @@ export const Title = styled.div`
 const Header = () => {
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
+  const matchId = segments[0];
   const isNew = segments[0] === "new";
   const isConfig = segments[1] === "config";
+  const isRecords = segments[1] === "records";
+
+  const isMatchDataLoaded = useSelector((state) => state.match._id) === matchId;
   const isRecording = segments.length === 1;
 
   const handleBack = () => {
     if (isNew) return router.push("/history");
-    if (!isRecording) return router.push(`/match/${segments[0]}`);
+    if (!isRecording) return router.push(`/match/${matchId}`);
 
     return router.push("/history");
-  };
-
-  const handleMore = () => {
-    if (!isConfig) return router.push(`/match/${segments[0]}/config`);
   };
 
   return (
@@ -78,10 +73,25 @@ const Header = () => {
       <BtnContainer onClick={() => handleBack()}>
         <FiArrowLeft />
       </BtnContainer>
-      <MainPart>{isConfig ? <Title>賽事資訊</Title> : <Scores />}</MainPart>
-      <BtnContainer onClick={() => handleMore()}>
-        <FiMoreHorizontal />
-      </BtnContainer>
+      <MainPart>
+        {isMatchDataLoaded &&
+          (isRecording ? (
+            <Scores />
+          ) : isConfig ? (
+            "比賽資訊"
+          ) : isRecords ? (
+            "逐球紀錄"
+          ) : (
+            ""
+          ))}
+      </MainPart>
+      {isConfig ? (
+        <BtnContainer />
+      ) : (
+        <BtnContainer onClick={() => router.push(`/match/${matchId}/config`)}>
+          <FiSettings />
+        </BtnContainer>
+      )}
     </Container>
   );
 };

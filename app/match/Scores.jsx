@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
-import { Title } from "./Header";
 
 const Score = styled.div`
   height: 6rem;
@@ -40,12 +39,9 @@ const Score = styled.div`
 `;
 
 const Scores = () => {
-  const isMatchDataLoaded = useSelector((state) => state.match._id);
   const { ours, oppo } = useSelector((state) => state.match.status.scores);
   const { team } = useSelector((state) => state.match.info);
   const { sets } = useSelector((state) => state.match);
-
-  if (!isMatchDataLoaded) return <Title />;
 
   return (
     <>
