@@ -279,6 +279,8 @@ const matchSlice = createSlice({
       if (state.recording.win) {
         state.status.scores.ours += 1;
         if (!state.status.isServing) {
+          const servingPlayer = state.sets[setNum].lineup.ours.starters.shift();
+          state.sets[setNum].lineup.ours.starters.push(servingPlayer);
           state.status.rotateNum += 1;
           state.status.isServing = true;
         }
