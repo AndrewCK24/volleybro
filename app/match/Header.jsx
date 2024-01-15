@@ -60,6 +60,7 @@ const Header = () => {
 
   const handleBack = () => {
     if (segments[0] === "new") {
+      if (segments[1] === "config") return router.push("/history");
       if (segments[1] === "lineup") return router.push("/match/new/config");
       if (segments[1] === "overview")
         return router.replace("/match/new/lineup");
@@ -89,7 +90,7 @@ const Header = () => {
           ""
         )}
       </MainPart>
-      {segments[1] === "config" ? (
+      {segments[0] === "new" || segments[1] === "config" ? (
         <BtnContainer />
       ) : (
         <BtnContainer onClick={() => router.push(`/match/${matchId}/config`)}>
