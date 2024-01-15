@@ -24,7 +24,7 @@ const Info = () => {
     info.match.finalSetPoint || 15
   );
 
-  const handleClick = async (e) => {
+  const handleSave = () => {
     const formData = {
       teamId,
       oursName: oursName,
@@ -35,22 +35,8 @@ const Info = () => {
     };
     dispatch(matchActions.configMatchInfo(formData));
     isNew
-      ? router.replace("/match/[id]/lineup", `/match/new/lineup`)
-      : router.replace("/match/[id]/lineup", `/match/${matchId}/lineup`);
-    // try {
-    //   const response = await fetch("/api/matches", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(matchData),
-    //   });
-    //   const { teamData, newMatch } = await response.json();
-    //   dispatch(teamActions.updateTeamOnly(teamData));
-    //   router.push(`/match/${newMatch}`);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+      ? router.replace(`/match/new/lineup`)
+      : router.push(`/match/${matchId}`);
   };
 
   return (
@@ -78,17 +64,6 @@ const Info = () => {
           placeholder="請輸入對手隊伍名稱"
           onChange={setOppoName}
         />
-        {/* <FormSelect
-        name="firstServe"
-        labelText="發球權"
-        options={[
-          { id: "ours", value: true, text: "我方發球" },
-          { id: "oppo", value: false, text: "對方發球" },
-        ]}
-        defaultValue={true}
-        required
-        onChange={setFirstServeValue}
-      /> */}
         <FormSelect
           name="setCount"
           labelText="比賽局數"
@@ -112,7 +87,7 @@ const Info = () => {
           onChange={setFinalSetPoint}
         />
       </FormContainer>
-      <ListItem type="primary" center onClick={handleClick}>
+      <ListItem type="primary" center onClick={handleSave}>
         {isNew ? "下一步" : "儲存資訊"}
       </ListItem>
     </>
