@@ -138,19 +138,16 @@ const matchSlice = createSlice({
       state.sets = initialState.sets;
       state.info = initialState.info;
     },
-    configMatch: (state, action) => {
-      const { setNum } = state.status.editingData;
+    configMatchInfo: (state, action) => {
       const {
         teamId,
-        firstServe,
         oursName,
         oppoName,
         matchName,
-        formalMatch,
         setCount,
         finalSetPoint,
-        lineup,
       } = action.payload;
+      
       state.info = {
         team: {
           ours: {
@@ -162,30 +159,46 @@ const matchSlice = createSlice({
         },
         match: {
           name: matchName,
-          formal: formalMatch,
           setCount: setCount,
           finalSetPoint: finalSetPoint,
         },
       };
       if (!state.team_id) state.team_id = teamId;
-      state.sets[setNum].firstServe = firstServe;
+      // state.sets[setNum].firstServe = firstServe;
 
-      const { starters, liberos, benches } = lineup;
-      starters.map((starter, index) => {
-        state.sets[setNum].lineup.ours.starters[index].starting =
-          starter.member_id;
-        state.sets[setNum].lineup.ours.starters[index].position =
-          starter.position;
-      });
-      liberos.map((libero, index) => {
-        state.sets[setNum].lineup.ours.liberos[index].starting =
-          libero.member_id;
-        state.sets[setNum].lineup.ours.liberos[index].position =
-          libero.position;
-      });
-      benches.map((bench, index) => {
-        state.sets[setNum].lineup.ours.benches[index] = bench;
-      });
+      // const { starters, liberos, benches } = lineup;
+      // let backRowMbIndex;
+      // starters.map((starter, index) => {
+      //   state.sets[setNum].lineup.ours.starters[index].starting =
+      //     starter.member_id;
+      //   state.sets[setNum].lineup.ours.starters[index].position =
+      //     starter.position;
+      //   if (
+      //     starter.position === "MB" &&
+      //     (index > 4 || (!firstServe && index === 0))
+      //   ) {
+      //     backRowMbIndex = index;
+      //   }
+      // });
+      // liberos.map((libero, index) => {
+      //   state.sets[setNum].lineup.ours.liberos[index].starting =
+      //     libero.member_id;
+      //   state.sets[setNum].lineup.ours.liberos[index].position =
+      //     libero.position;
+      // });
+      // benches.map((bench, index) => {
+      //   state.sets[setNum].lineup.ours.benches[index] = bench;
+      // });
+      // if (backRowMbIndex) {
+      //   const backRowMb =
+      //     state.sets[setNum].lineup.ours.starters[backRowMbIndex];
+      //   state.sets[setNum].lineup.ours.starters[backRowMbIndex].starting =
+      //     liberos[0].member_id;
+      //   state.sets[setNum].lineup.ours.starters[backRowMbIndex].position =
+      //     liberos[0].position;
+      //   state.sets[setNum].lineup.ours.liberos[0].starting = backRowMb.starting;
+      //   state.sets[setNum].lineup.ours.liberos[0].position = backRowMb.position;
+      // }
     },
     setRecordingPlayer: (state, action) => {
       if (action.payload.player.number === state.recording.ours.player.number) {
