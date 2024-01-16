@@ -33,7 +33,7 @@ export const POST = async (req) => {
     await team.save();
 
     const response = NextResponse.json(
-      { teamData: team, newMatch: newMatch._id },
+      { teamData: team, matchId: newMatch._id },
       { status: 201 }
     );
     response.cookies.set({

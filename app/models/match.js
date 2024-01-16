@@ -4,7 +4,7 @@ const matchSchema = new Schema(
   {
     win: {
       type: Boolean,
-      required: true,
+      required: false,
     },
     team_id: {
       type: Schema.Types.ObjectId,
