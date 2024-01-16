@@ -1,7 +1,7 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { teamActions } from "../team-slice";
-import { FiRepeat, FiRotateCw } from "react-icons/fi";
+import { FiRepeat, FiRefreshCw } from "react-icons/fi";
 import {
   CourtContainer,
   Outside,
@@ -10,8 +10,9 @@ import {
   AdjustButton,
 } from "@/app/components/common/Court";
 
-const LineupCourt = ({ members, editingLineup }) => {
+const LineupCourt = () => {
   const dispatch = useDispatch();
+  const { editingLineup, members } = useSelector((state) => state.team);
   const { starters, liberos, status } = editingLineup;
   const { editingZone, editingMember } = status;
 
@@ -19,7 +20,7 @@ const LineupCourt = ({ members, editingLineup }) => {
     <CourtContainer>
       <Outside className="left">
         <AdjustButton onClick={() => dispatch(teamActions.rotateLineupCw())}>
-          <FiRotateCw />
+          <FiRefreshCw />
           輪轉
         </AdjustButton>
         {liberos.map((libero, index) => {

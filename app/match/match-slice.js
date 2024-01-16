@@ -43,7 +43,7 @@ const initialState = {
   sets: [
     {
       win: null,
-      firstServe: false,
+      firstServe: null,
       records: [],
       lineup: {
         ours: {
@@ -139,15 +139,9 @@ const matchSlice = createSlice({
       state.info = initialState.info;
     },
     configMatchInfo: (state, action) => {
-      const {
-        teamId,
-        oursName,
-        oppoName,
-        matchName,
-        setCount,
-        finalSetPoint,
-      } = action.payload;
-      
+      const { teamId, oursName, oppoName, matchName, setCount, finalSetPoint } =
+        action.payload;
+
       state.info = {
         team: {
           ours: {
@@ -164,41 +158,41 @@ const matchSlice = createSlice({
         },
       };
       if (!state.team_id) state.team_id = teamId;
-      // state.sets[setNum].firstServe = firstServe;
+    },
+    configMatchSet: (state, action) => {
+      const { setNum, firstServe, lineup } = action.payload;
+      state.sets[setNum].firstServe = firstServe;
 
-      // const { starters, liberos, benches } = lineup;
-      // let backRowMbIndex;
-      // starters.map((starter, index) => {
-      //   state.sets[setNum].lineup.ours.starters[index].starting =
-      //     starter.member_id;
-      //   state.sets[setNum].lineup.ours.starters[index].position =
-      //     starter.position;
-      //   if (
-      //     starter.position === "MB" &&
-      //     (index > 4 || (!firstServe && index === 0))
-      //   ) {
-      //     backRowMbIndex = index;
-      //   }
-      // });
-      // liberos.map((libero, index) => {
-      //   state.sets[setNum].lineup.ours.liberos[index].starting =
-      //     libero.member_id;
-      //   state.sets[setNum].lineup.ours.liberos[index].position =
-      //     libero.position;
-      // });
-      // benches.map((bench, index) => {
-      //   state.sets[setNum].lineup.ours.benches[index] = bench;
-      // });
-      // if (backRowMbIndex) {
-      //   const backRowMb =
-      //     state.sets[setNum].lineup.ours.starters[backRowMbIndex];
-      //   state.sets[setNum].lineup.ours.starters[backRowMbIndex].starting =
-      //     liberos[0].member_id;
-      //   state.sets[setNum].lineup.ours.starters[backRowMbIndex].position =
-      //     liberos[0].position;
-      //   state.sets[setNum].lineup.ours.liberos[0].starting = backRowMb.starting;
-      //   state.sets[setNum].lineup.ours.liberos[0].position = backRowMb.position;
-      // }
+      const { starters, liberos } = lineup;
+      let backRowMbIndex;
+      starters.map((starter, index) => {
+        state.sets[setNum].lineup.ours.starters[index].starting =
+          starter.member_id;
+        state.sets[setNum].lineup.ours.starters[index].position =
+          starter.position;
+        if (
+          starter.position === "MB" &&
+          (index > 4 || (!firstServe && index === 0))
+        ) {
+          backRowMbIndex = index;
+        }
+      });
+      liberos.map((libero, index) => {
+        state.sets[setNum].lineup.ours.liberos[index].starting =
+          libero.member_id;
+        state.sets[setNum].lineup.ours.liberos[index].position =
+          libero.position;
+      });
+      if (backRowMbIndex) {
+        const backRowMb =
+          state.sets[setNum].lineup.ours.starters[backRowMbIndex];
+        state.sets[setNum].lineup.ours.starters[backRowMbIndex].starting =
+          liberos[0].member_id;
+        state.sets[setNum].lineup.ours.starters[backRowMbIndex].position =
+          liberos[0].position;
+        state.sets[setNum].lineup.ours.liberos[0].starting = backRowMb.starting;
+        state.sets[setNum].lineup.ours.liberos[0].position = backRowMb.position;
+      }
     },
     setRecordingPlayer: (state, action) => {
       if (action.payload.player.number === state.recording.ours.player.number) {

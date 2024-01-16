@@ -1,17 +1,12 @@
-import { FiSave, FiX } from "react-icons/fi";
-
+import { useSelector } from "react-redux";
 import { InnerSection } from "@/app/components/common/Section";
 import { ListItem, ListItemContainer } from "@/app/components/common/List";
 import BenchList from "./BenchList";
 import PositionList from "./PositionList";
 
-const LineupOptions = ({
-  members,
-  editingLineup,
-  handleSave,
-  handleCancel,
-}) => {
-  const { starters, benches, edited, status } = editingLineup;
+const LineupOptions = () => {
+  const { members, editingLineup } = useSelector((state) => state.team);
+  const { starters, benches, status } = editingLineup;
   const { editingZone, editingMember } = status;
   const isStarterFilled = starters.every((starter) => starter.member_id);
 
@@ -29,23 +24,6 @@ const LineupOptions = ({
           <PositionList starters={starters} status={status} />
         )}
       </InnerSection>
-      <ListItemContainer>
-        <ListItem type="secondary" text center onClick={handleCancel}>
-          <FiX />
-          取消編輯
-        </ListItem>
-        <ListItem
-          type={
-            !edited || editingZone || !isStarterFilled ? "secondary" : "primary"
-          }
-          center
-          disabled={!edited || editingZone || !isStarterFilled}
-          onClick={handleSave}
-        >
-          <FiSave />
-          儲存陣容
-        </ListItem>
-      </ListItemContainer>
     </>
   );
 };
