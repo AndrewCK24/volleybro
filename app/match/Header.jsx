@@ -1,8 +1,6 @@
 "use client";
 import styled from "styled-components";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { matchActions } from "@/app/match/match-slice";
 import { FiArrowLeft, FiSettings } from "react-icons/fi";
 import Scores from "./Scores";
 
@@ -53,7 +51,6 @@ const MainPart = styled.div`
 
 const Header = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
   const segments = useSelectedLayoutSegments();
   const matchId = segments[0];
   const isRecording = segments.length === 1;
@@ -68,7 +65,6 @@ const Header = () => {
     }
     if (!isRecording) return router.push(`/match/${matchId}`);
 
-    dispatch(matchActions.resetMatch());
     return router.push("/history");
   };
 
