@@ -184,8 +184,9 @@ const matchSlice = createSlice({
           libero.position;
       });
       if (backRowMbIndex) {
-        const backRowMb =
-          state.sets[setNum].lineup.ours.starters[backRowMbIndex];
+        const backRowMb = {
+          ...state.sets[setNum].lineup.ours.starters[backRowMbIndex],
+        };
         state.sets[setNum].lineup.ours.starters[backRowMbIndex].starting =
           liberos[0].member_id;
         state.sets[setNum].lineup.ours.starters[backRowMbIndex].position =

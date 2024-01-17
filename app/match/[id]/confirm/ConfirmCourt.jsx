@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { ListItem, ListItemText } from "@/app/components/common/List";
 import {
   CourtContainer,
   Outside,
@@ -33,7 +32,7 @@ const ConfirmCourt = () => {
           {starters.map((starter, index) => {
             const member = members.find((m) => m._id === starter.starting);
             return (
-              <PlayerCard key={index}>
+              <PlayerCard key={index} style={{ gridArea: `z${index + 1}` }}>
                 <h3>{member.number || ""}</h3>
                 <span>{starter.position || ""}</span>
               </PlayerCard>
