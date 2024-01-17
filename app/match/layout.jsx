@@ -1,7 +1,7 @@
 import { Main } from "../components/layout/Main";
 import Header from "./Header";
 
-const RecordLayout = ({ children }) => {
+const MatchLayout = ({ children }) => {
   return (
     <Main full halfGap>
       <Header />
@@ -10,4 +10,4 @@ const RecordLayout = ({ children }) => {
   );
 };
 
-export default RecordLayout;
+export default MatchLayout;

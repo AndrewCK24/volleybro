@@ -1,8 +1,10 @@
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import Record from "./Record";
 
-const Preview = ({ onClick }) => {
-  const recordingData = useSelector((state) => state.match.recording);
+const Preview = () => {
+  const router = useRouter();
+  const { _id: matchId, recording } = useSelector((state) => state.match);
   const { isEditing, setNum, recordNum } = useSelector(
     (state) => state.match.status.editingData
   );
@@ -10,18 +12,24 @@ const Preview = ({ onClick }) => {
     (state) => state.match.sets[setNum].records[recordNum - 1]
   );
   const record =
-    recordingData.ours.player._id ||
-    recordingData.ours.type ||
+    recording.ours.player._id ||
+    recording.ours.type ||
     (recordNum === 0 && !isEditing)
-      ? recordingData
+      ? recording
       : lastRecord;
-  const editingItem = recordingData.oppo.type
+  const editingItem = recording.oppo.type
     ? "oppo"
-    : recordingData.ours.type
+    : recording.ours.type
     ? "ours"
     : "";
 
-  return <Record record={record} editingItem={editingItem} onClick={onClick} />;
+  return (
+    <Record
+      record={record}
+      editingItem={editingItem}
+      onClick={() => router.push(`/match/${matchId}/records`)}
+    />
+  );
 };
 
 export default Preview;

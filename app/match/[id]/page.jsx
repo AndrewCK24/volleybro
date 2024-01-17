@@ -1,35 +1,17 @@
 "use client";
-import useSWR from "swr";
-import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { matchActions } from "../match-slice";
 import { Section } from "../../components/common/Section";
 import MatchCourt from "../MatchCourt";
 import Preview from "../Preview";
 import Options from "../Options";
 
-const RecordPage = ({ params }) => {
-  const { id: matchId } = params;
-  const router = useRouter();
-  const dispatch = useDispatch();
-  const isMatchDataLoaded = useSelector((state) => state.match._id) === matchId;
-
-  const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error, isLoading } = useSWR(
-    !isMatchDataLoaded ? `/api/matches/${matchId}` : null,
-    fetcher
-  );
-  if (error) throw error;
-  if (isLoading) return <div>Loading...</div>;
-  if (data) dispatch(matchActions.setMatch(data));
-
+const RecordPage = () => {
   return (
     <>
       <Section>
         <MatchCourt />
       </Section>
       <Section>
-        <Preview onClick={() => router.push(`/match/${matchId}/records`)} />
+        <Preview />
       </Section>
       <Section type="fixed" style={{ minHeight: "50rem" }}>
         <Options />
