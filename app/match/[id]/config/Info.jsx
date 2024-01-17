@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { matchActions } from "@/app/match/match-slice";
 import {
@@ -11,10 +11,11 @@ import { ListItem } from "@/app/components/common/List";
 
 const Info = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useDispatch();
   const { _id: teamId, name: teamName } = useSelector((state) => state.team);
   const { _id: matchId, info } = useSelector((state) => state.match);
-  const isNew = !matchId;
+  const isNew = pathname.includes("/match/new");
 
   const [matchName, setMatchName] = useState(info.match.name || "");
   const [oursName, setOursName] = useState(info.team.ours.name || teamName);
