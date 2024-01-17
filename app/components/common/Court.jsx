@@ -101,8 +101,7 @@ export const PlayerCard = styled.div`
     font-size: 1.5rem;
     font-weight: 400;
   }
-  &.toggled,
-  &:active {
+  &.toggled {
     background-color: var(--secondary-500);
     color: var(--primary-100);
     &:empty {
