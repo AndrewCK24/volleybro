@@ -6,7 +6,7 @@ const ConfirmInfo = () => {
   const { ours, oppo } = info.team;
   const { name, setCount, finalSetPoint } = info.match;
   const { setNum } = status.editingData;
-  const firstServe = sets[setNum].firstServe;
+  const firstServe = sets[setNum].meta.firstServe;
 
   return (
     <>

@@ -20,7 +20,7 @@ const Lineup = () => {
   const { setNum } = useSelector((state) => state.match.status.editingData);
   const setData = useSelector((state) => state.match.sets[setNum]);
   const [firstServe, setFirstServe] = useState(
-    setData.firstServe === null ? true : setData.firstServe
+    setData.meta.firstServe === null ? true : setData.meta.firstServe
   );
   const { _id: teamId, editingLineup } = useSelector((state) => state.team);
   const { starters, liberos, edited, status } = editingLineup;
@@ -49,7 +49,7 @@ const Lineup = () => {
       }
     }
     if (isRecording) {
-      dispatch(matchActions.configMatchSet({ setNum, firstServe, lineup }));
+      dispatch(matchActions.configMatchSet({ firstServe, lineup }));
       router.push(`/match/${matchId}/confirm`);
     }
   };

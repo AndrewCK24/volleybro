@@ -56,9 +56,27 @@ const matchSchema = new Schema(
           type: Boolean,
           required: false,
         },
-        firstServe: {
-          type: Boolean,
-          required: false,
+        meta: {
+          firstServe: {
+            type: Boolean,
+            required: false,
+          },
+          rotateCount: {
+            type: Number,
+            required: false,
+          },
+          timeoutCount: {
+            type: Number,
+            required: false,
+          },
+          substituteCount: {
+            type: Number,
+            required: false,
+          },
+          challengeCount: {
+            type: Number,
+            required: false,
+          },
         },
         records: [
           {

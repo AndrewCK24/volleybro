@@ -28,7 +28,6 @@ const initialState = {
     zone: 0,
   },
   status: {
-    rotateNum: 0,
     isServing: false,
     scores: {
       ours: 0,
@@ -43,7 +42,13 @@ const initialState = {
   sets: [
     {
       win: null,
-      firstServe: null,
+      meta: {
+        firstServe: null,
+        rotateCount: 0,
+        timeoutCount: 0,
+        substituteCount: 0,
+        challengeCount: 0,
+      },
       records: [],
       lineup: {
         ours: {
@@ -160,8 +165,10 @@ const matchSlice = createSlice({
       if (!state.team_id) state.team_id = teamId;
     },
     configMatchSet: (state, action) => {
-      const { setNum, firstServe, lineup } = action.payload;
-      state.sets[setNum].firstServe = firstServe;
+      const { setNum } = state.status.editingData;
+      const { firstServe, lineup } = action.payload;
+      state.sets[setNum].meta.firstServe = firstServe;
+      state.status.isServing = firstServe;
 
       const { starters, liberos } = lineup;
       let backRowMbIndex;
@@ -289,7 +296,7 @@ const matchSlice = createSlice({
         if (!state.status.isServing) {
           const servingPlayer = state.sets[setNum].lineup.ours.starters.shift();
           state.sets[setNum].lineup.ours.starters.push(servingPlayer);
-          state.status.rotateNum += 1;
+          state.sets[setNum].meta.rotateCount += 1;
           state.status.isServing = true;
         }
       } else {
