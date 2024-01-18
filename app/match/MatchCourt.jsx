@@ -79,7 +79,7 @@ const MatchCourt = () => {
               className={player.number === member?.number && "toggled"}
             >
               <h3>{member?.number}</h3>
-              <span>L</span>
+              <span>{libero?.position}</span>
             </PlayerCard>
           );
         })}
