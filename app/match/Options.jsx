@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { FiPlus, FiMinus, FiCheck } from "react-icons/fi";
+import { FiPlus, FiMinus, FiCheck, FiRepeat } from "react-icons/fi";
 import { matchActions } from "./match-slice";
 import { ListHeader, ListTitle } from "../components/common/List";
 import {
@@ -21,21 +21,21 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     button {
-      padding: 1rem;
+      padding: 0.375rem;
     }
   }
 `;
 
 const OptionBtn = styled.button`
   width: 100%;
-  flex: 0 0 5rem;
+  flex: 1 0 4rem;
   min-width: fit-content;
   padding: 0.5rem 0.75rem 0.5rem 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background-color: var(--primary-100);
+  background-color: var(--primary-200);
   border: none;
   border-radius: 1rem;
   font-size: 2rem;
@@ -44,6 +44,7 @@ const OptionBtn = styled.button`
   gap: 0.5rem;
   transition: all 0.2s ease-in-out;
   svg {
+    color: var(--primary-900);
     width: 2rem;
     height: 2rem;
   }
@@ -142,7 +143,7 @@ const Options = () => {
               <OptionBtn
                 key={option.num}
                 className={`
-                ${option.win ? "win" : "lose"} 
+                ${option.win === null ? "" : option.win ? "win" : "lose"} 
                 ${ours.num === option.num && "toggled"}
               `}
                 onClick={() => handleOursClick(option)}
@@ -151,7 +152,13 @@ const Options = () => {
                 }
               >
                 {zone === 0 ? `對方${option.description}` : option.text}
-                {option.win ? <FiPlus /> : <FiMinus />}
+                {option.win === null ? (
+                  <FiRepeat />
+                ) : option.win ? (
+                  <FiPlus />
+                ) : (
+                  <FiMinus />
+                )}
               </OptionBtn>
             ))}
           </Container>

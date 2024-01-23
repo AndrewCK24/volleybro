@@ -25,6 +25,7 @@ export const POST = async (req) => {
     const newMatch = new Match({
       team_id: matchData.team_id,
       info: matchData.info,
+      players: matchData.players,
       sets: matchData.sets,
     });
     await newMatch.save();

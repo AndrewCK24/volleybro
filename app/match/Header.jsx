@@ -73,7 +73,9 @@ const Header = () => {
       <BtnContainer onClick={() => handleBack()}>
         <FiArrowLeft />
       </BtnContainer>
-      <MainPart>
+      <MainPart
+        onClick={() => isRecording && router.push(`/match/${matchId}/overview`)}
+      >
         {segments[0] === "new" ? (
           "新增比賽紀錄"
         ) : isRecording ? (

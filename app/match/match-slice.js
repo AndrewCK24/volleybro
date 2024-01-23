@@ -1,43 +1,54 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { recordTypes } from "../lib/record-types";
 
+const playerStats = {
+  serving: {
+    successful: [0],
+    error: [0],
+  },
+  blocking: {
+    successful: [0],
+    error: [0],
+  },
+  attack: {
+    successful: [0],
+    error: [0],
+  },
+  reception: {
+    successful: [0],
+    error: [0],
+  },
+  defense: {
+    successful: [0],
+    error: [0],
+  },
+  setting: {
+    successful: [0],
+    error: [0],
+  },
+};
+
 const initialState = {
   _id: "",
   win: null,
   team_id: "",
-  recording: {
-    win: null,
-    ours: {
-      score: 0,
-      type: "",
-      num: null,
-      player: {
-        _id: "",
-        number: null,
+  info: {
+    team: {
+      ours: {
+        name: "",
+      },
+      oppo: {
+        name: "",
       },
     },
-    oppo: {
-      score: 0,
-      type: "",
-      num: null,
-      player: {
-        _id: "",
-        number: null,
-      },
+    match: {
+      name: "",
+      setCount: null,
+      finalSetPoint: null,
     },
-    zone: 0,
   },
-  status: {
-    isServing: false,
-    scores: {
-      ours: 0,
-      oppo: 0,
-    },
-    editingData: {
-      isEditing: false,
-      setNum: 0,
-      recordNum: 0,
-    },
+  players: {
+    oppo: { ...playerStats },
   },
   sets: [
     {
@@ -98,26 +109,43 @@ const initialState = {
               inOutArr: [null, null],
             },
           ],
-          benches: [],
         },
         oppo: {},
       },
     },
   ],
-  info: {
-    team: {
-      ours: {
-        name: "",
-      },
-      oppo: {
-        name: "",
+  recording: {
+    win: null,
+    ours: {
+      score: 0,
+      type: "",
+      num: null,
+      player: {
+        _id: "",
+        number: null,
       },
     },
-    match: {
-      name: "",
-      formal: false,
-      setCount: null,
-      finalSetPoint: null,
+    oppo: {
+      score: 0,
+      type: "",
+      num: null,
+      player: {
+        _id: "",
+        number: null,
+      },
+    },
+    zone: 0,
+  },
+  status: {
+    isServing: false,
+    scores: {
+      ours: 0,
+      oppo: 0,
+    },
+    editingData: {
+      isEditing: false,
+      setNum: 0,
+      recordNum: 0,
     },
   },
 };
@@ -130,23 +158,39 @@ const matchSlice = createSlice({
       const { matchData } = action.payload;
       state._id = matchData._id;
       state.team_id = matchData.team_id;
+      state.info = matchData.info;
+      state.players = matchData.players;
+      state.sets = matchData.sets;
       state.recording = initialState.recording;
       state.status = initialState.status;
-      state.sets = matchData.sets;
-      state.info = matchData.info;
     },
     resetMatch: (state) => {
       state._id = initialState._id;
       state.team_id = initialState.team_id;
+      state.info = initialState.info;
+      state.players = initialState.players;
+      state.sets = initialState.sets;
       state.recording = initialState.recording;
       state.status = initialState.status;
-      state.sets = initialState.sets;
-      state.info = initialState.info;
     },
     configMatchInfo: (state, action) => {
-      const { teamId, oursName, oppoName, matchName, setCount, finalSetPoint } =
-        action.payload;
-
+      const {
+        teamId,
+        members,
+        oursName,
+        oppoName,
+        matchName,
+        setCount,
+        finalSetPoint,
+      } = action.payload;
+      members.map((member) => {
+        state.players = {
+          ...state.players,
+          [member._id]: {
+            ...playerStats,
+          },
+        };
+      });
       state.info = {
         team: {
           ours: {
@@ -218,7 +262,6 @@ const matchSlice = createSlice({
       } else {
         state.recording = {
           ...initialState.recording,
-          zone: action.payload.zone,
           ours: {
             ...initialState.recording.ours,
             player: {
@@ -231,23 +274,12 @@ const matchSlice = createSlice({
             ...initialState.recording.oppo,
             score: state.status.scores.oppo,
           },
+          zone: action.payload.zone,
         };
       }
     },
     setRecordingOursType: (state, action) => {
       const { win, type, num, outcome } = action.payload.type;
-      // if (num === state.recording.ours.num) {
-      //   state.recording = {
-      //     ...initialState.recording,
-      //     ours: {
-      //       ...initialState.recording.ours,
-      //       player: {
-      //         _id: state.recording.ours.player._id,
-      //         number: state.recording.ours.player.number,
-      //       },
-      //     },
-      //   };
-      // } else {
       state.recording = {
         ...state.recording,
         win: win,
@@ -264,15 +296,22 @@ const matchSlice = createSlice({
           num: outcome[0],
         },
       };
-      // }
     },
     setRecordingOppoType: (state, action) => {
       const { type, num } = action.payload.type;
       if (num === state.recording.oppo.num) {
         state.recording = {
           ...state.recording,
+          win: initialState.recording.win,
+          ours: {
+            ...state.recording.ours,
+            score: state.status.scores.ours,
+            type: initialState.recording.ours.type,
+            num: initialState.recording.ours.num,
+          },
           oppo: {
             ...state.recording.oppo,
+            score: state.status.scores.oppo,
             type: initialState.recording.oppo.type,
             num: initialState.recording.oppo.num,
           },
@@ -291,18 +330,48 @@ const matchSlice = createSlice({
     confirmRecording: (state) => {
       const { setNum, recordNum } = state.status.editingData;
       state.sets[setNum].records[recordNum] = state.recording;
-      if (state.recording.win) {
+      if (state.recording.win === true) {
         state.status.scores.ours += 1;
+        if (state.recording.ours.type === "oppo-error") {
+          state.players.oppo[state.recording.oppo.type].error[setNum] += 1;
+        } else {
+          state.players[state.recording.ours.player._id][
+            state.recording.ours.type
+          ].successful[setNum] += 1;
+        }
         if (!state.status.isServing) {
           const servingPlayer = state.sets[setNum].lineup.ours.starters.shift();
           state.sets[setNum].lineup.ours.starters.push(servingPlayer);
+          if (state.sets[setNum].lineup.ours.starters[3].position === "L") {
+            const frontRowL = {
+              ...state.sets[setNum].lineup.ours.starters[3],
+            };
+            state.sets[setNum].lineup.ours.starters[3] =
+              state.sets[setNum].lineup.ours.liberos[0];
+            state.sets[setNum].lineup.ours.liberos[0] = frontRowL;
+          }
           state.sets[setNum].meta.rotateCount += 1;
           state.status.isServing = true;
         }
-      } else {
+      } else if (state.recording.win === false) {
         state.status.scores.oppo += 1;
+        if (state.recording.oppo.type !== "oppo-error") {
+          state.players.oppo[state.recording.oppo.type].successful[setNum] += 1;
+        } else {
+          state.players[state.recording.ours.player._id][
+            state.recording.ours.type
+          ].error[setNum] += 1;
+        }
         if (state.status.isServing) {
           state.status.isServing = false;
+          if (state.sets[setNum].lineup.ours.starters[0].position === "MB") {
+            const backRowMb = {
+              ...state.sets[setNum].lineup.ours.starters[0],
+            };
+            state.sets[setNum].lineup.ours.starters[0] =
+              state.sets[setNum].lineup.ours.liberos[0];
+            state.sets[setNum].lineup.ours.liberos[0] = backRowMb;
+          }
         }
       }
       state.status.editingData.recordNum += 1;

@@ -11,6 +11,10 @@ const matchSchema = new Schema(
       ref: "Team",
       required: true,
     },
+    players: {
+      type: Object,
+      required: false,
+    },
     info: {
       team: {
         ours: {

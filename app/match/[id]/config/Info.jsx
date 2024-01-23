@@ -13,7 +13,11 @@ const Info = () => {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useDispatch();
-  const { _id: teamId, name: teamName } = useSelector((state) => state.team);
+  const {
+    _id: teamId,
+    name: teamName,
+    members,
+  } = useSelector((state) => state.team);
   const { _id: matchId, info } = useSelector((state) => state.match);
   const isNew = pathname.includes("/match/new");
 
@@ -28,6 +32,7 @@ const Info = () => {
   const handleSave = () => {
     const formData = {
       teamId,
+      members,
       oursName: oursName,
       oppoName: oppoName,
       matchName: matchName,
