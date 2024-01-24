@@ -156,13 +156,38 @@ const matchSlice = createSlice({
   reducers: {
     setMatch: (state, action) => {
       const { matchData } = action.payload;
+      const setNum = matchData.sets.length - 1;
+      const recordNum = matchData.sets[setNum].records.length - 1;
+      const lastRecord = matchData.sets[setNum].records[recordNum];
+
       state._id = matchData._id;
       state.team_id = matchData.team_id;
       state.info = matchData.info;
       state.players = matchData.players;
       state.sets = matchData.sets;
-      state.recording = initialState.recording;
-      state.status = initialState.status;
+      state.recording = {
+        ...initialState.recording,
+        ours: {
+          ...initialState.recording.ours,
+          score: lastRecord?.ours.score || 0,
+        },
+        oppo: {
+          ...initialState.recording.oppo,
+          score: lastRecord?.oppo.score || 0,
+        },
+      };
+      state.status = {
+        isServing: lastRecord?.win || matchData.sets[setNum].meta.firstServe,
+        scores: {
+          ours: lastRecord?.ours.score || 0,
+          oppo: lastRecord?.oppo.score || 0,
+        },
+        editingData: {
+          isEditing: false,
+          setNum: setNum,
+          recordNum: recordNum + 1,
+        },
+      };
     },
     resetMatch: (state) => {
       state._id = initialState._id;
