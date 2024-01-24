@@ -1,7 +1,10 @@
 "use client";
 import useSWR from "swr";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { matchActions } from "@/app/match/match-slice";
+import { Main } from "@/app/components/layout/Main";
+import Header from "../Header";
 
 const RecordLayout = ({ params, children }) => {
   const { id: matchId } = params;
@@ -14,11 +17,19 @@ const RecordLayout = ({ params, children }) => {
     !isMatchDataLoaded ? `/api/matches/${matchId}` : null,
     fetcher
   );
+
+  useEffect(() => {
+    if (data) dispatch(matchActions.setMatch(data));
+  }, [data]);
   if (error) throw error;
   if (isLoading) return <div>Loading...</div>;
-  if (data) dispatch(matchActions.setMatch(data));
 
-  return <>{children}</>;
+  return (
+    <Main full halfGap>
+      <Header matchId={matchId} />
+      {children}
+    </Main>
+  );
 };
 
 export default RecordLayout;

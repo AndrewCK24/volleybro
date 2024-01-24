@@ -1,6 +1,6 @@
 "use client";
 import styled from "styled-components";
-import { useRouter, useSelectedLayoutSegments } from "next/navigation";
+import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { FiArrowLeft, FiSettings } from "react-icons/fi";
 import Scores from "./Scores";
 
@@ -49,18 +49,16 @@ const MainPart = styled.div`
   font-weight: 600;
 `;
 
-const Header = () => {
+const Header = ({ matchId }) => {
   const router = useRouter();
-  const segments = useSelectedLayoutSegments();
-  const matchId = segments[0];
-  const isRecording = segments.length === 1;
+  const segment = useSelectedLayoutSegment();
+  const isRecording = !segment;
 
   const handleBack = () => {
-    if (segments[0] === "new") {
-      if (segments[1] === "config") return router.push("/history");
-      if (segments[1] === "lineup") return router.push("/match/new/config");
-      if (segments[1] === "overview")
-        return router.replace("/match/new/lineup");
+    if (matchId === "new") {
+      if (segment === "config") return router.push("/history");
+      if (segment === "lineup") return router.push("/match/new/config");
+      if (segment === "overview") return router.replace("/match/new/lineup");
       return router.back();
     }
     if (!isRecording) return router.push(`/match/${matchId}`);
@@ -76,19 +74,19 @@ const Header = () => {
       <MainPart
         onClick={() => isRecording && router.push(`/match/${matchId}/overview`)}
       >
-        {segments[0] === "new" ? (
+        {segment === "new" ? (
           "新增比賽紀錄"
         ) : isRecording ? (
           <Scores />
-        ) : segments[1] === "config" ? (
+        ) : segment === "config" ? (
           "比賽資訊"
-        ) : segments[1] === "records" ? (
+        ) : segment === "records" ? (
           "逐球紀錄"
         ) : (
           ""
         )}
       </MainPart>
-      {segments[0] === "new" || segments[1] === "config" ? (
+      {matchId === "new" || segment === "config" ? (
         <BtnContainer />
       ) : (
         <BtnContainer onClick={() => router.push(`/match/${matchId}/config`)}>
