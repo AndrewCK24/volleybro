@@ -8,8 +8,8 @@ const Records = () => {
 
   return (
     <>
-      {records.map((record) => (
-        <Record record={record} players={players} />
+      {records.map((record, index) => (
+        <Record record={record} players={players} key={index} />
       ))}
     </>
   );
