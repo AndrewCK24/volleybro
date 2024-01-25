@@ -3,7 +3,7 @@ import { teamActions } from "../team-slice";
 import { FiUser } from "react-icons/fi";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
-const BenchList = ({ members, benches, status }) => {
+const SubstituteList = ({ members, substitutes, status }) => {
   const dispatch = useDispatch();
   const { editingZone, editingMember } = status;
   const handleClick = (player) => {
@@ -17,7 +17,7 @@ const BenchList = ({ members, benches, status }) => {
     );
   };
 
-  const players = members.filter((member) => benches.includes(member._id));
+  const players = members.filter((member) => substitutes.includes(member._id));
   players.sort((a, b) => a.number - b.number);
 
   return (
@@ -42,4 +42,4 @@ const BenchList = ({ members, benches, status }) => {
   );
 };
 
-export default BenchList;
+export default SubstituteList;

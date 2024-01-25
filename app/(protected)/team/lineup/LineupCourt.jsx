@@ -13,7 +13,7 @@ import {
 const LineupCourt = () => {
   const dispatch = useDispatch();
   const { editingLineup, members } = useSelector((state) => state.team);
-  const { starters, liberos, status } = editingLineup;
+  const { starting, liberos, status } = editingLineup;
   const { editingZone, editingMember } = status;
 
   return (
@@ -40,7 +40,7 @@ const LineupCourt = () => {
                 </>
               ) : (
                 <>
-                  <h3>{member.number || ""}</h3>
+                  <h3>{member?.number || ""}</h3>
                   {editingZone && editingZone !== index + 7 ? (
                     <FiRepeat />
                   ) : (
@@ -53,8 +53,8 @@ const LineupCourt = () => {
         })}
       </Outside>
       <Inside>
-        {starters.map((starter, index) => {
-          const member = members.find((m) => m._id === starter.member_id);
+        {starting.map((starting, index) => {
+          const member = members.find((m) => m._id === starting.member_id);
           return (
             <PlayerCard
               key={index}
@@ -71,11 +71,11 @@ const LineupCourt = () => {
                 </>
               ) : (
                 <>
-                  <h3>{member.number || ""}</h3>
+                  <h3>{member?.number || ""}</h3>
                   {editingZone && editingZone !== index + 1 ? (
                     <FiRepeat />
                   ) : (
-                    <span>{starter.position || ""}</span>
+                    <span>{starting.position || ""}</span>
                   )}
                 </>
               )}

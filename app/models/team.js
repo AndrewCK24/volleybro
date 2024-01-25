@@ -18,7 +18,7 @@ const teamSchema = new Schema(
       },
     ],
     lineup: {
-      starters: [
+      starting: [
         {
           member_id: {
             type: Schema.Types.ObjectId,
@@ -43,6 +43,9 @@ const teamSchema = new Schema(
             required: false,
           },
         },
+      ],
+      substitutes: [
+        { type: Schema.Types.ObjectId, ref: "Member", required: false },
       ],
     },
     matches: [
