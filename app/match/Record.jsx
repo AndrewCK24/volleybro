@@ -80,7 +80,7 @@ export const IconError = styled(FiTriangle)`
   stroke-width: 3;
 `;
 
-const Record = ({ record, editingItem, onClick }) => {
+const Record = ({ record, players, editingItem, onClick }) => {
   const { win, ours, oppo } = record;
   const oursType = recordTypes[ours.num];
   const oppoType = recordTypes[oppo.num];
@@ -115,13 +115,13 @@ const Record = ({ record, editingItem, onClick }) => {
             </>
           ) : (
             <>
-              <span>{ours.player.number}</span>
+              <span>{players[ours.player]?.number}</span>
               {oursType?.text}
               {ours.type && (win ? <IconWin /> : <IconLose />)}
             </>
           )
         ) : (
-          <span>{ours.player.number}</span>
+          <span>{players[ours.player]?.number}</span>
         )}
       </RecordText>
       <RecordText className={editingItem === "oppo" && "editing"}>

@@ -4,7 +4,7 @@ import Record from "./Record";
 
 const Preview = () => {
   const router = useRouter();
-  const { _id: matchId, recording } = useSelector((state) => state.match);
+  const { _id: matchId, recording, players } = useSelector((state) => state.match);
   const { isEditing, setNum, recordNum } = useSelector(
     (state) => state.match.status.editingData
   );
@@ -26,6 +26,7 @@ const Preview = () => {
   return (
     <Record
       record={record}
+      players={players}
       editingItem={editingItem}
       onClick={() => router.push(`/match/${matchId}/records`)}
     />

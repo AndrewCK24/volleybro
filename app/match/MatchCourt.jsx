@@ -2,13 +2,6 @@
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { GiWhistle } from "react-icons/gi";
-import {
-  FiUser,
-  FiInfo,
-  FiHelpCircle,
-  FiRepeat,
-  FiRotateCw,
-} from "react-icons/fi";
 import { matchActions } from "./match-slice";
 import {
   CourtContainer,
@@ -20,29 +13,18 @@ import {
 const MultiFunctionButton = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1.3;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   background-color: transparent;
-  border: 0.25rem solid var(--primary-100);
   border-radius: 0.5rem;
   color: var(--primary-100);
   gap: 0.5rem;
   svg {
     width: 80%;
     height: auto;
-    color: var(--secondary-300);
-  }
-  svg:first-child {
-    position: absolute;
-    bottom: 0;
-    right: 10%;
-    width: 40%;
-    height: auto;
-    z-index: 1;
-    color: var(--primary-100);
+    color: var(--secondary-100);
   }
 `;
 
@@ -63,7 +45,6 @@ const MatchCourt = () => {
       <Outside className="left">
         <MultiFunctionButton>
           <GiWhistle />
-          <FiUser />
         </MultiFunctionButton>
         {liberos.map((libero, index) => {
           const arr = libero.inOutArr;
@@ -76,7 +57,7 @@ const MatchCourt = () => {
             <PlayerCard
               key={index}
               // onClick={() => handleClick(member, index + 7)}
-              className={player.number === member?.number && "toggled"}
+              className={player === member?._id && "toggled"}
             >
               <h3>{member?.number}</h3>
               <span>{libero?.position}</span>
@@ -97,7 +78,7 @@ const MatchCourt = () => {
               key={index}
               style={{ gridArea: `z${index + 1}` }}
               onClick={() => handleClick(member, index + 1)}
-              className={player.number === member?.number && "toggled"}
+              className={player === member?._id && "toggled"}
             >
               <h3>{member?.number}</h3>
               <span>{starter.position}</span>

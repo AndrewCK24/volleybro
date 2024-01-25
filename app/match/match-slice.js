@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { recordTypes } from "../lib/record-types";
 
 const playerStats = {
+  number: null,
+  name: "",
   serving: {
     successful: [0],
     error: [0],
@@ -120,19 +122,13 @@ const initialState = {
       score: 0,
       type: "",
       num: null,
-      player: {
-        _id: "",
-        number: null,
-      },
+      player: "",
     },
     oppo: {
       score: 0,
       type: "",
       num: null,
-      player: {
-        _id: "",
-        number: null,
-      },
+      player: "",
     },
     zone: 0,
   },
@@ -213,6 +209,8 @@ const matchSlice = createSlice({
           ...state.players,
           [member._id]: {
             ...playerStats,
+            number: member.number,
+            name: member.name,
           },
         };
       });
@@ -272,7 +270,7 @@ const matchSlice = createSlice({
       }
     },
     setRecordingPlayer: (state, action) => {
-      if (action.payload.player.number === state.recording.ours.player.number) {
+      if (action.payload.player._id === state.recording.ours.player) {
         state.recording = {
           ...initialState.recording,
           ours: {
@@ -289,10 +287,7 @@ const matchSlice = createSlice({
           ...initialState.recording,
           ours: {
             ...initialState.recording.ours,
-            player: {
-              _id: action.payload.player._id,
-              number: action.payload.player.number,
-            },
+            player: action.payload.player._id,
             score: state.status.scores.ours,
           },
           oppo: {
@@ -360,7 +355,7 @@ const matchSlice = createSlice({
         if (state.recording.ours.type === "oppo-error") {
           state.players.oppo[state.recording.oppo.type].error[setNum] += 1;
         } else {
-          state.players[state.recording.ours.player._id][
+          state.players[state.recording.ours.player][
             state.recording.ours.type
           ].successful[setNum] += 1;
         }
@@ -383,7 +378,7 @@ const matchSlice = createSlice({
         if (state.recording.oppo.type !== "oppo-error") {
           state.players.oppo[state.recording.oppo.type].successful[setNum] += 1;
         } else {
-          state.players[state.recording.ours.player._id][
+          state.players[state.recording.ours.player][
             state.recording.ours.type
           ].error[setNum] += 1;
         }
