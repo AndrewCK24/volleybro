@@ -84,6 +84,8 @@ const Lineup = () => {
           </ListItem>
         )}
         <LineupOptions />
+      </Section>
+      <Section type="transparent">
         <ListItemContainer>
           {isRecording ? (
             <>
