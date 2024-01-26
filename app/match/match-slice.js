@@ -237,15 +237,15 @@ const matchSlice = createSlice({
       state.sets[setNum].meta.firstServe = firstServe;
       state.status.isServing = firstServe;
 
-      const { starters, liberos } = lineup;
+      const { starting, liberos } = lineup;
       let backRowMbIndex;
-      starters.map((starter, index) => {
+      starting.map((starting, index) => {
         state.sets[setNum].lineup.ours.starters[index].starting =
-          starter.member_id;
+          starting.member_id;
         state.sets[setNum].lineup.ours.starters[index].position =
-          starter.position;
+          starting.position;
         if (
-          starter.position === "MB" &&
+          starting.position === "MB" &&
           (index > 4 || (!firstServe && index === 0))
         ) {
           backRowMbIndex = index;
