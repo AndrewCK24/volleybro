@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { teamActions } from "@/app/(protected)/team/team-slice";
-import { Section, InnerSection } from "@/app/components/common/Section";
+import { Section } from "@/app/components/common/Section";
 import { ListItem } from "@/app/components/common/List";
 import ConfirmCourt from "./ConfirmCourt";
 import ConfirmInfo from "./ConfirmInfo";
@@ -34,9 +34,9 @@ const Confirm = () => {
         <ConfirmCourt />
       </Section>
       <Section type="fixed">
-        <InnerSection>
-          <ConfirmInfo />
-        </InnerSection>
+        <ConfirmInfo />
+      </Section>
+      <Section type="transparent">
         <ListItem type="primary" center onClick={handleSave}>
           確認比賽資訊
         </ListItem>
