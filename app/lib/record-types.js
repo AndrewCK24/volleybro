@@ -21,7 +21,7 @@ export const recordTypes = [
     type: "blocking",
     text: "攔網",
     description: "攔網得分",
-    outcome: [5, 6, 7],
+    outcome: [5],
   },
   {
     num: 3,
