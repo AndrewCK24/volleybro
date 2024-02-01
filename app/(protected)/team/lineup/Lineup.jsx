@@ -35,15 +35,12 @@ const Lineup = () => {
     };
     if (edited) {
       try {
-        const response = await fetch("/api/teams", {
+        const response = await fetch(`/api/teams/${teamId}/lineup`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            teamId,
-            lineup,
-          }),
+          body: JSON.stringify(lineup),
         });
         const { userData, teamData, membersData } = await response.json();
         dispatch(teamActions.setTeam({ userData, teamData, membersData }));

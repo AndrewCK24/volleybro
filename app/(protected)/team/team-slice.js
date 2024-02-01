@@ -36,6 +36,7 @@ const teamSlice = createSlice({
   initialState,
   reducers: {
     setTeam: (_, action) => {
+      // TODO: 修改 /api/teams 的 response，不要返回 userData
       const { userData, teamData, membersData } = action.payload;
       if (!teamData) return;
 
