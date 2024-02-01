@@ -41,12 +41,13 @@ export const POST = async (req) => {
   try {
     const { userData } = await verifyJwt(req);
     const newMember = new Member({
-      name: userData.name,
       meta: {
         admin: true,
         email: userData.email,
         user_id: userData._id,
       },
+      name: userData.name,
+      number: 1,
     });
 
     const { name, nickname } = await req.json();
@@ -67,6 +68,7 @@ export const POST = async (req) => {
         ],
         liberos: [{ member_id: null }],
         substitutes: [],
+        others: [newMember._id],
       },
     });
 

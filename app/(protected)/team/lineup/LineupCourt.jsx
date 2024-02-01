@@ -41,7 +41,7 @@ const LineupCourt = () => {
               ) : (
                 <>
                   <h3>{member?.number || ""}</h3>
-                  {editingZone && editingZone !== index + 7 ? (
+                  {editingZone > 0 && editingZone !== index + 7 ? (
                     <FiRepeat />
                   ) : (
                     <span>{libero.position || ""}</span>
@@ -72,7 +72,7 @@ const LineupCourt = () => {
               ) : (
                 <>
                   <h3>{member?.number || ""}</h3>
-                  {editingZone && editingZone !== index + 1 ? (
+                  {editingZone > 0 && editingZone !== index + 1 ? (
                     <FiRepeat />
                   ) : (
                     <span>{starting.position || ""}</span>

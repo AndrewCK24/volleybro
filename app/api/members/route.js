@@ -74,6 +74,7 @@ export const POST = async (req) => {
     }
 
     team.members.push(newMember._id);
+    team.lineup.others.push(newMember._id);
     await team.save();
     await newMember.save();
 

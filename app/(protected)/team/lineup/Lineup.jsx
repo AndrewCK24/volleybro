@@ -23,13 +23,15 @@ const Lineup = () => {
     setData.meta.firstServe === null ? true : setData.meta.firstServe
   );
   const { _id: teamId, editingLineup } = useSelector((state) => state.team);
-  const { starting, liberos, edited, status } = editingLineup;
-  const isStartingFilled = starting.every((starting) => starting.member_id);
+  const { starting, liberos, substitutes, others, edited, status } =
+    editingLineup;
 
   const handleSave = async () => {
     const lineup = {
       starting,
       liberos,
+      substitutes,
+      others,
     };
     if (edited) {
       try {
@@ -78,11 +80,6 @@ const Lineup = () => {
         )}
       </Section>
       <Section type="fixed">
-        {!isStartingFilled && (
-          <ListItem type="danger" text>
-            先發滿 6 位才能儲存陣容及紀錄比賽
-          </ListItem>
-        )}
         <LineupOptions />
       </Section>
       <Section type="transparent">
@@ -105,13 +102,9 @@ const Lineup = () => {
                 取消編輯
               </ListItem>
               <ListItem
-                type={
-                  !edited || status.editingZone || !isStartingFilled
-                    ? "secondary"
-                    : "primary"
-                }
+                type={!edited || status.editingZone ? "secondary" : "primary"}
                 center
-                disabled={!edited || status.editingZone || !isStartingFilled}
+                disabled={!edited || status.editingZone}
                 onClick={handleSave}
               >
                 <FiSave />

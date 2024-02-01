@@ -10,6 +10,7 @@ const initialState = {
     starting: [],
     liberos: [],
     substitutes: [],
+    others: [],
   },
   editingLineup: {
     edited: false,
@@ -18,11 +19,13 @@ const initialState = {
       editingMember: {
         _id: null,
         number: null,
+        type: "",
       },
     },
     starting: [],
     liberos: [],
     substitutes: [],
+    others: [],
   },
   matches: [],
   stats: {},
@@ -41,39 +44,17 @@ const teamSlice = createSlice({
         .meta.admin;
       membersData.sort((a, b) => a.number - b.number);
 
-      const substitutes = teamData.members
-        .filter((member) => {
-          return !teamData.lineup.starting.some((starter) =>
-            starter.member_id
-              ? starter.member_id.toString() === member.toString()
-              : false
-          );
-        })
-        .filter((member) => {
-          return !teamData.lineup.liberos.some((libero) =>
-            libero.member_id
-              ? libero.member_id.toString() === member.toString()
-              : false
-          );
-        });
-
       return {
         admin,
         _id: teamData._id,
         name: teamData.name,
         nickname: teamData.nickname,
         members: membersData,
-        lineup: {
-          starting: teamData.lineup.starting,
-          liberos: teamData.lineup.liberos,
-          substitutes: substitutes,
-        },
+        lineup: teamData.lineup,
         editingLineup: {
+          ...teamData.lineup,
           edited: false,
           status: initialState.editingLineup.status,
-          starting: teamData.lineup.starting,
-          liberos: teamData.lineup.liberos,
-          substitutes: substitutes,
         },
         matches: teamData.matches,
         stats: teamData.stats,
@@ -84,11 +65,9 @@ const teamSlice = createSlice({
       state.nickname = action.payload.nickname;
       state.lineup = action.payload.lineup;
       state.editingLineup = {
-        edited: initialState.editingLineup.edited,
+        ...action.payload.lineup,
+        edited: false,
         status: initialState.editingLineup.status,
-        starting: action.payload.lineup.starting,
-        liberos: action.payload.lineup.liberos,
-        substitutes: action.payload.lineup.substitutes,
       };
       state.matches = action.payload.matches;
       state.stats = action.payload.stats;
@@ -111,8 +90,8 @@ const teamSlice = createSlice({
       state.editingLineup.starting = newStarting;
     },
     setEditingStatus: (state, action) => {
-      const { zone, member } = action.payload;
       const { editingZone, editingMember } = state.editingLineup.status;
+      const { zone, member } = action.payload;
       if (zone) {
         if (editingZone && editingZone !== zone && !editingMember._id) {
           if (zone <= 6) {
@@ -154,48 +133,66 @@ const teamSlice = createSlice({
         };
       }
       if (member) {
+        if (member.type && !editingZone) {
+          state.editingLineup.status.editingZone = 0;
+        }
         state.editingLineup.status.editingMember = {
           _id: member._id,
           number: member.number,
+          type: member.type || "",
         };
       }
     },
-    setLineupPlayer: (state, action) => {
-      const { zone, member_id, position } = action.payload;
-      state.editingLineup.edited = true;
-      if (zone <= 6) {
-        if (state.editingLineup.starting[zone - 1].member_id) {
-          state.editingLineup.substitutes.push(
-            state.editingLineup.starting[zone - 1].member_id
-          );
-        }
-        state.editingLineup.starting[zone - 1] = { member_id, position };
-      } else {
-        if (state.editingLineup.liberos[zone - 7].member_id) {
-          state.editingLineup.substitutes.push(
-            state.editingLineup.liberos[zone - 7].member_id
-          );
-        }
-        state.editingLineup.liberos[zone - 7] = { member_id, position };
-      }
-      state.editingLineup.substitutes = state.editingLineup.substitutes.filter(
-        (id) => id !== member_id
-      );
+    resetEditingStatus: (state) => {
       state.editingLineup.status = initialState.editingLineup.status;
     },
-    resetLineupPlayer: (state, action) => {
-      const { zone, member_id } = action.payload;
+    setPlayerPosition: (state, action) => {
+      const { editingZone, editingMember } = state.editingLineup.status;
+      const { position } = action.payload;
       state.editingLineup.edited = true;
-      if (zone <= 6) {
-        state.editingLineup.starting[zone - 1] = {
-          member_id: null,
-        };
+      if (editingZone === 0) {
+        if (editingMember.type === "substitutes") {
+          state.editingLineup.others.push(editingMember._id);
+          state.editingLineup.substitutes =
+            state.editingLineup.substitutes.filter(
+              (id) => id !== editingMember._id
+            );
+        } else if (editingMember.type === "others") {
+          state.editingLineup.substitutes.push(editingMember._id);
+          state.editingLineup.others = state.editingLineup.others.filter(
+            (id) => id !== editingMember._id
+          );
+        }
       } else {
-        state.editingLineup.liberos[zone - 7] = {
-          member_id: null,
-        };
+        if (editingZone <= 6) {
+          if (state.editingLineup.starting[editingZone - 1].member_id) {
+            state.editingLineup.substitutes.push(
+              state.editingLineup.starting[editingZone - 1].member_id
+            );
+          }
+          state.editingLineup.starting[editingZone - 1] = {
+            member_id: editingMember._id,
+            position,
+          };
+        } else {
+          if (state.editingLineup.liberos[editingZone - 7].member_id) {
+            state.editingLineup.substitutes.push(
+              state.editingLineup.liberos[editingZone - 7].member_id
+            );
+          }
+          state.editingLineup.liberos[editingZone - 7] = {
+            member_id: editingMember._id,
+            position,
+          };
+        }
+        state.editingLineup.substitutes =
+          state.editingLineup.substitutes.filter(
+            (id) => id !== editingMember._id
+          );
+        state.editingLineup.others = state.editingLineup.others.filter(
+          (id) => id !== editingMember._id
+        );
       }
-      state.editingLineup.substitutes.push(member_id);
       state.editingLineup.status = initialState.editingLineup.status;
     },
     resetEditingLineup: (state) => {
@@ -205,6 +202,7 @@ const teamSlice = createSlice({
         starting: state.lineup.starting,
         liberos: state.lineup.liberos,
         substitutes: state.lineup.substitutes,
+        others: state.lineup.others,
       };
     },
   },

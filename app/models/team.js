@@ -47,6 +47,7 @@ const teamSchema = new Schema(
       substitutes: [
         { type: Schema.Types.ObjectId, ref: "Member", required: false },
       ],
+      others: [{ type: Schema.Types.ObjectId, ref: "Member", required: false }],
     },
     matches: [
       {
