@@ -1,9 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-
 import { userActions } from "../user/user-slice";
 import { teamActions } from "./team-slice";
 import { Section } from "../../components/common/Section";
@@ -32,7 +30,6 @@ const TeamForm = ({ teamData, setIsEditing }) => {
       setNameError("");
     }
   };
-
   const handleNicknameChange = (value) => {
     setNicknameValue(value);
     if (value.length === 0) {
