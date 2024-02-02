@@ -18,7 +18,7 @@ const PositionList = ({ starting, status }) => {
       value: "S",
       disabled:
         (isSetterExist &&
-          starting[editingZone - 1].position &&
+          starting[editingZone - 1]?.position &&
           starting[editingZone - 1].position !== "S") ||
         (isOppositeExist
           ? starting[oppositeZone - 1]?.position !== "OP"
@@ -29,7 +29,7 @@ const PositionList = ({ starting, status }) => {
       value: "OH",
       disabled:
         (isOutsideExist &&
-          starting[editingZone - 1].position &&
+          starting[editingZone - 1]?.position &&
           starting[editingZone - 1].position !== "OH") ||
         (isOutsideExist
           ? starting[oppositeZone - 1]?.position !== "OH"
@@ -40,7 +40,7 @@ const PositionList = ({ starting, status }) => {
       value: "MB",
       disabled:
         (isMiddleExist &&
-          starting[editingZone - 1].position &&
+          starting[editingZone - 1]?.position &&
           starting[editingZone - 1].position !== "MB") ||
         (isMiddleExist
           ? starting[oppositeZone - 1]?.position !== "MB"
@@ -51,7 +51,7 @@ const PositionList = ({ starting, status }) => {
       value: "OP",
       disabled:
         (isOppositeExist &&
-          starting[editingZone - 1].position &&
+          starting[editingZone - 1]?.position &&
           starting[editingZone - 1].position !== "OP") ||
         (isSetterExist
           ? starting[oppositeZone - 1]?.position !== "S"
