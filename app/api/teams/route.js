@@ -53,6 +53,7 @@ export const POST = async (req) => {
     const { name, nickname } = await req.json();
     // TODO: Add validation for name and nickname
     // if there is a team with the same name, ask the user to choose another name or join the existing team
+    // see issue #6
     const newTeam = new Team({
       name,
       nickname,
@@ -66,7 +67,7 @@ export const POST = async (req) => {
           { member_id: null },
           { member_id: null },
         ],
-        liberos: [{ member_id: null }],
+        liberos: [],
         substitutes: [],
         others: [newMember._id],
       },
@@ -120,7 +121,6 @@ export const PATCH = async (req) => {
       );
     }
 
-    if (patchRequest.lineup) team.lineup = patchRequest.lineup;
     if (patchRequest.name) team.name = patchRequest.name;
     if (patchRequest.nickname) team.nickname = patchRequest.nickname;
 
