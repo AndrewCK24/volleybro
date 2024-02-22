@@ -253,6 +253,7 @@
   }
 
   &__title {
+    flex: 1;
     height: 3rem;
     display: flex;
     flex-direction: row;
@@ -355,6 +356,7 @@
   &__item {
     flex: 0 0 4rem;
     width: 100%;
+    min-width: fit-content;
     padding: 0.5rem 1rem;
     background-color: var(--primary-100);
     box-shadow: 0 0 0.5rem var(--primary-300);
