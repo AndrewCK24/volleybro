@@ -67,17 +67,14 @@ export const Inside = styled.div`
 `;
 
 export const PlayerCard = styled.div`
-  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0;
   border-radius: 0.5rem;
-  border: 0.25rem solid var(--primary-100);
   background-color: var(--primary-100);
-  transition: all 0.15s ease-in-out;
+  transition: all 0.2s ease-in-out;
   z-index: 1;
   h3 {
     display: flex;
@@ -89,8 +86,11 @@ export const PlayerCard = styled.div`
     min-width: 4rem;
     font-size: 4rem;
     font-weight: 700;
+    svg {
+      font-size: 4rem;
+    }
   }
-  span, svg {
+  span {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,13 +100,13 @@ export const PlayerCard = styled.div`
     min-width: 1.5rem;
     font-size: 1.5rem;
     font-weight: 400;
+    svg {
+      font-size: 1.5rem;
+    }
   }
   &.toggled {
     background-color: var(--secondary-500);
     color: var(--primary-100);
-    &:empty {
-      opacity: 0.9;
-    }
   }
 `;
 
