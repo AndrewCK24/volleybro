@@ -59,14 +59,7 @@ export const POST = async (req) => {
       nickname,
       members: [newMember._id],
       lineup: {
-        starting: [
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-        ],
+        starting: [],
         liberos: [],
         substitutes: [],
         others: [newMember._id],
