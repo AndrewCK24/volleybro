@@ -1,28 +1,52 @@
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { SectionHr } from "@/app/components/common/Section";
-import SubstituteList from "./SubstituteList";
-import OtherList from "./OtherList";
-import PositionList from "./PositionList";
+import { ListHeader, ListTitle } from "@/app/components/common/List";
+import LineupConfig from "./(options)/LineupConfig";
+import PlayerInfo from "./(options)/PlayerInfo";
+import SubstituteList from "./(options)/SubstituteList";
+import PositionList from "./(options)/PositionList";
 
 const LineupOptions = () => {
+  const [mode, setMode] = useState(""); // ["info", "substitutes", "positions"]
   const { members, editingLineup } = useSelector((state) => state.team);
-  const { starting, substitutes, others, status } = editingLineup;
-  const { editingZone, editingMember } = status;
+  const { editingMember } = editingLineup.status;
+  const member = members.find((m) => m._id === editingMember._id);
+
+  useEffect(() => {
+    if (editingMember.zone === null) setMode("");
+  }, [editingMember.zone]);
 
   return (
     <>
-      {!(editingZone !== null && editingMember._id) ? (
+      {editingMember.zone > 0 && editingMember._id && !mode ? (
         <>
-          <SubstituteList
-            members={members}
-            substitutes={substitutes}
-            status={status}
-          />
-          <SectionHr content="以上為正式比賽 12 + 2 人名單" />
-          <OtherList members={members} others={others} status={status} />
+          <ListHeader>
+            <ListTitle>球員資訊</ListTitle>
+          </ListHeader>
+          <PlayerInfo setMode={setMode} />
+        </>
+      ) : (editingMember.zone > 0 && !editingMember._id) ||
+        mode === "substitutes" ? (
+        <>
+          <ListHeader>
+            <ListTitle>替補名單</ListTitle>
+          </ListHeader>
+          <SubstituteList />
+        </>
+      ) : mode === "positions" ? (
+        <>
+          <ListHeader>
+            <ListTitle>選擇位置</ListTitle>
+          </ListHeader>
+          <PositionList />
         </>
       ) : (
-        <PositionList starting={starting} status={status} />
+        <>
+          <ListHeader>
+            <ListTitle>陣容設定</ListTitle>
+          </ListHeader>
+          <LineupConfig />
+        </>
       )}
     </>
   );

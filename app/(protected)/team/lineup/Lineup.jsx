@@ -23,8 +23,7 @@ const Lineup = () => {
     setData.meta.firstServe === null ? true : setData.meta.firstServe
   );
   const { _id: teamId, editingLineup } = useSelector((state) => state.team);
-  const { starting, liberos, substitutes, others, edited, status } =
-    editingLineup;
+  const { starting, liberos, substitutes, others, status } = editingLineup;
 
   const handleSave = async () => {
     const lineup = {
@@ -33,7 +32,7 @@ const Lineup = () => {
       substitutes,
       others,
     };
-    if (edited) {
+    if (status.edited) {
       try {
         const response = await fetch(`/api/teams/${teamId}/lineup`, {
           method: "PATCH",
@@ -99,9 +98,11 @@ const Lineup = () => {
                 取消編輯
               </ListItem>
               <ListItem
-                type={!edited || status.editingZone ? "secondary" : "primary"}
+                type={
+                  !status.edited || status.editingZone ? "secondary" : "primary"
+                }
                 center
-                disabled={!edited || status.editingZone}
+                disabled={!status.edited || status.editingZone}
                 onClick={handleSave}
               >
                 <FiSave />

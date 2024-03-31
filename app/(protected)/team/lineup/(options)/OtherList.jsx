@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
-import { teamActions } from "../team-slice";
-import { FiUserCheck } from "react-icons/fi";
+import { teamActions } from "../../team-slice";
+import { FiUser } from "react-icons/fi";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
-const SubstituteList = ({ members, substitutes, status }) => {
+const OtherList = ({ members, others, status }) => {
   const dispatch = useDispatch();
   const { editingMember, type } = status;
   const handleClick = (player) => {
@@ -12,13 +12,13 @@ const SubstituteList = ({ members, substitutes, status }) => {
         member: {
           _id: player._id,
           number: player.number,
-          type: "substitutes",
+          type: "others",
         },
       })
     );
   };
 
-  const players = members.filter((member) => substitutes.includes(member._id));
+  const players = members.filter((member) => others.includes(member._id));
   players.sort((a, b) => a.number - b.number);
 
   return (
@@ -29,11 +29,9 @@ const SubstituteList = ({ members, substitutes, status }) => {
             key={index}
             type={editingMember._id === player._id && "primary"}
             onClick={() => handleClick(player)}
-            disabled={
-              type === "substitutes" && editingMember._id !== player._id
-            }
+            disabled={type === "others" && editingMember._id !== player._id}
           >
-            <FiUserCheck />
+            <FiUser />
             <ListItemText minimized bold>
               {player.number || " "}
             </ListItemText>
@@ -45,4 +43,4 @@ const SubstituteList = ({ members, substitutes, status }) => {
   );
 };
 
-export default SubstituteList;
+export default OtherList;

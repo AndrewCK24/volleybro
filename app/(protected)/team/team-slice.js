@@ -13,13 +13,20 @@ const initialState = {
     others: [],
   },
   editingLineup: {
-    edited: false,
     status: {
-      editingZone: null,
+      stage: "starting",
+      edited: false,
       editingMember: {
+        zone: null,
         _id: null,
         number: null,
-        type: "",
+        position: "",
+      },
+      replacingMember: {
+        zone: null,
+        _id: null,
+        number: null,
+        position: "",
       },
     },
     starting: [],
@@ -54,7 +61,6 @@ const teamSlice = createSlice({
         lineup: teamData.lineup,
         editingLineup: {
           ...teamData.lineup,
-          edited: false,
           status: initialState.editingLineup.status,
         },
         matches: teamData.matches,
@@ -67,7 +73,6 @@ const teamSlice = createSlice({
       state.lineup = action.payload.lineup;
       state.editingLineup = {
         ...action.payload.lineup,
-        edited: false,
         status: initialState.editingLineup.status,
       };
       state.matches = action.payload.matches;
@@ -79,109 +84,189 @@ const teamSlice = createSlice({
       };
     },
     rotateLineupCw: (state) => {
-      state.editingLineup.edited = true;
+      state.editingLineup.status.edited = true;
       const newStarting = state.editingLineup.starting.slice(1);
       newStarting.push(state.editingLineup.starting[0]);
       state.editingLineup.starting = newStarting;
     },
     rotateLineupCcw: (state) => {
-      state.editingLineup.edited = true;
+      state.editingLineup.status.edited = true;
       const newStarting = state.editingLineup.starting.slice(0, -1);
       newStarting.unshift(state.editingLineup.starting[5]);
       state.editingLineup.starting = newStarting;
     },
+    setCompositionEditingStage: (state, action) => {
+      const { stage } = action.payload;
+      state.editingLineup.status.stage = stage;
+    },
+    selectCompositionPlayer: (state, action) => {
+      const { stage } = state.editingLineup.status;
+      const { player, index, origin } = action.payload;
+      state.editingLineup.status.edited = true;
+      if (stage === origin) {
+        
+      }
+      state.editingLineup[stage].push({ member_id: player._id, position: "" });
+      state.editingLineup[origin].splice(index, 1);
+    },
+    removeCompositionPlayer: (state, action) => {
+      const { stage } = state.editingLineup.status;
+      const { player, index } = action.payload;
+      state.editingLineup.status.edited = true;
+      state.editingLineup.others.push(player.member_id);
+      state.editingLineup[stage].splice(index, 1);
+    },
     setEditingStatus: (state, action) => {
-      const { editingZone, editingMember } = state.editingLineup.status;
-      const { zone, member } = action.payload;
-      if (zone) {
-        if (editingZone && editingZone !== zone && !editingMember._id) {
-          if (zone <= 6) {
-            const player = state.editingLineup.starting[zone - 1].member_id;
-            if (editingZone <= 6) {
-              state.editingLineup.starting[zone - 1].member_id =
-                state.editingLineup.starting[editingZone - 1].member_id;
-              state.editingLineup.starting[editingZone - 1].member_id = player;
-            } else {
-              state.editingLineup.starting[zone - 1].member_id =
-                state.editingLineup.liberos[editingZone - 7].member_id;
-              state.editingLineup.liberos[editingZone - 7].member_id = player;
-            }
-          } else {
-            const player = state.editingLineup.liberos[zone - 7].member_id;
-            if (editingZone <= 6) {
-              state.editingLineup.liberos[zone - 7].member_id =
-                state.editingLineup.starting[editingZone - 1].member_id;
-              state.editingLineup.starting[editingZone - 1].member_id = player;
-            } else {
-              state.editingLineup.liberos[zone - 7].member_id =
-                state.editingLineup.liberos[editingZone - 7].member_id;
-              state.editingLineup.liberos[editingZone - 7].member_id = player;
-            }
-          }
-          state.editingLineup.edited = true;
-          state.editingLineup.status.editingZone = null;
-          state.editingLineup.status.editingMember = {
-            _id: null,
-            number: null,
+      const { editingMember, replacingMember } = state.editingLineup.status;
+      const { zone, _id, number, position } = action.payload;
+      if (editingMember.zone === null) {
+        state.editingLineup.status.editingMember = {
+          zone,
+          _id,
+          number,
+          position,
+        };
+        return;
+      }
+      if (zone > 0) {
+        if (editingMember.zone === zone) {
+          state.editingLineup.status = {
+            edited: state.editingLineup.status.edited,
+            editingMember: initialState.editingLineup.status.editingMember,
+            replacingMember: initialState.editingLineup.status.replacingMember,
           };
           return;
         }
-        state.editingLineup.status.editingZone =
-          editingZone !== zone ? zone : null;
-        state.editingLineup.status.editingMember = {
-          _id: null,
-          number: null,
-        };
-      }
-      if (member) {
-        if (member.type && !editingZone) {
-          state.editingLineup.status.editingZone = 0;
+        if (
+          editingMember.zone &&
+          editingMember.zone !== zone &&
+          editingMember._id &&
+          _id
+        ) {
+          if (zone <= 6) {
+            state.editingLineup.starting[zone - 1] = {
+              ...state.editingLineup.starting[zone - 1],
+              member_id: editingMember._id,
+            };
+          } else {
+            state.editingLineup.liberos[zone - 7] = {
+              ...state.editingLineup.liberos[zone - 7],
+              member_id: editingMember._id,
+            };
+          }
+          if (editingMember.zone <= 6) {
+            state.editingLineup.starting[editingMember.zone - 1] = {
+              ...state.editingLineup.starting[editingMember.zone - 1],
+              member_id: _id,
+            };
+          } else {
+            state.editingLineup.liberos[editingMember.zone - 7] = {
+              ...state.editingLineup.liberos[editingMember.zone - 7],
+              member_id: _id,
+            };
+          }
+          state.editingLineup.status = {
+            edited: true,
+            editingMember: initialState.editingLineup.status.editingMember,
+            replacingMember: initialState.editingLineup.status.replacingMember,
+          };
+          return;
+        } else {
+          state.editingLineup.status.editingMember = {
+            zone,
+            _id,
+            number,
+            position,
+          };
         }
-        state.editingLineup.status.editingMember = {
-          _id: member._id,
-          number: member.number,
-          type: member.type || "",
-        };
+      } else if (zone === 0) {
+        if (editingMember._id === _id) {
+          state.editingLineup.status = {
+            edited: state.editingLineup.status.edited,
+            editingMember: initialState.editingLineup.status.editingMember,
+            replacingMember: initialState.editingLineup.status.replacingMember,
+          };
+          return;
+        }
+        if (editingMember.zone > 0) {
+          state.editingLineup.status.replacingMember = {
+            zone,
+            _id,
+            number,
+            position: "",
+          };
+        } else {
+          state.editingLineup.status.editingMember = {
+            zone,
+            _id,
+            number,
+            position,
+          };
+        }
+      } else {
       }
     },
     resetEditingStatus: (state) => {
-      state.editingLineup.status = initialState.editingLineup.status;
+      state.editingLineup.status = {
+        ...initialState.editingLineup.status,
+        edited: state.editingLineup.status.edited,
+      };
     },
     setPlayerPosition: (state, action) => {
-      const { editingZone, editingMember } = state.editingLineup.status;
-      const { position } = action.payload;
-      state.editingLineup.edited = true;
-      if (editingZone === 0) {
-        if (editingMember.type === "substitutes") {
+      const { editingMember, replacingMember } = state.editingLineup.status;
+      const position = action.payload;
+      state.editingLineup.status.edited = true;
+      if (position === "") {
+        if (editingMember.zone <= 6) {
+          state.editingLineup.substitutes.push(
+            state.editingLineup.starting[editingMember.zone - 1].member_id
+          );
+          state.editingLineup.starting[editingMember.zone - 1] = {
+            member_id: null,
+            position: "",
+          };
+        } else {
+          state.editingLineup.substitutes.push(
+            state.editingLineup.liberos[editingMember.zone - 7].member_id
+          );
+          state.editingLineup.liberos[editingMember.zone - 7] = {
+            member_id: null,
+            position: "",
+          };
+        }
+        return;
+      }
+      if (editingMember.zone === 0) {
+        if (editingMember.position === "substitutes") {
           state.editingLineup.others.push(editingMember._id);
           state.editingLineup.substitutes =
             state.editingLineup.substitutes.filter(
               (id) => id !== editingMember._id
             );
-        } else if (editingMember.type === "others") {
+        } else if (editingMember.position === "others") {
           state.editingLineup.substitutes.push(editingMember._id);
           state.editingLineup.others = state.editingLineup.others.filter(
             (id) => id !== editingMember._id
           );
         }
       } else {
-        if (editingZone <= 6) {
-          if (state.editingLineup.starting[editingZone - 1].member_id) {
+        if (editingMember.zone <= 6) {
+          if (state.editingLineup.starting[editingMember.zone - 1].member_id) {
             state.editingLineup.substitutes.push(
-              state.editingLineup.starting[editingZone - 1].member_id
+              state.editingLineup.starting[editingMember.zone - 1].member_id
             );
           }
-          state.editingLineup.starting[editingZone - 1] = {
+          state.editingLineup.starting[editingMember.zone - 1] = {
             member_id: editingMember._id,
             position,
           };
         } else {
-          if (state.editingLineup.liberos[editingZone - 7].member_id) {
+          if (state.editingLineup.liberos[editingMember.zone - 7]?.member_id) {
             state.editingLineup.substitutes.push(
-              state.editingLineup.liberos[editingZone - 7].member_id
+              state.editingLineup.liberos[editingMember.zone - 7].member_id
             );
           }
-          state.editingLineup.liberos[editingZone - 7] = {
+          state.editingLineup.liberos[editingMember.zone - 7] = {
             member_id: editingMember._id,
             position,
           };
@@ -194,11 +279,13 @@ const teamSlice = createSlice({
           (id) => id !== editingMember._id
         );
       }
-      state.editingLineup.status = initialState.editingLineup.status;
+      state.editingLineup.status = {
+        ...initialState.editingLineup.status,
+        edited: true,
+      };
     },
     resetEditingLineup: (state) => {
       state.editingLineup = {
-        edited: false,
         status: initialState.editingLineup.status,
         starting: state.lineup.starting,
         liberos: state.lineup.liberos,
