@@ -30,9 +30,6 @@ const PlayerInfo = ({ setMode }) => {
           <FiEdit2 />
         </ListItem>
       </ListItemContainer>
-      <ListItem type="danger" center bold>
-        移除先發隊員
-      </ListItem>
     </>
   );
 };

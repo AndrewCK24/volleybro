@@ -27,7 +27,7 @@ const LineupCourt = () => {
           <AdjustButton />
         )}
         {liberos.map((libero, index) => {
-          const member = members.find((m) => m._id === libero.member_id);
+          const member = members.find((m) => m._id === libero._id);
           return (
             <PlayerCard
               key={index}
@@ -68,7 +68,7 @@ const LineupCourt = () => {
       </Outside>
       <Inside>
         {starting.map((starting, index) => {
-          const member = members.find((m) => m._id === starting.member_id);
+          const member = members.find((m) => m._id === starting._id);
           return (
             <PlayerCard
               key={index}

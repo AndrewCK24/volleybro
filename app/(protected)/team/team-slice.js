@@ -140,24 +140,20 @@ const teamSlice = createSlice({
         ) {
           if (zone <= 6) {
             state.editingLineup.starting[zone - 1] = {
-              ...state.editingLineup.starting[zone - 1],
-              member_id: editingMember._id,
+              _id: editingMember._id,
             };
           } else {
             state.editingLineup.liberos[zone - 7] = {
-              ...state.editingLineup.liberos[zone - 7],
-              member_id: editingMember._id,
+              _id: editingMember._id,
             };
           }
           if (editingMember.zone <= 6) {
             state.editingLineup.starting[editingMember.zone - 1] = {
-              ...state.editingLineup.starting[editingMember.zone - 1],
-              member_id: _id,
+              _id: _id,
             };
           } else {
             state.editingLineup.liberos[editingMember.zone - 7] = {
-              ...state.editingLineup.liberos[editingMember.zone - 7],
-              member_id: _id,
+              _id: _id,
             };
           }
           state.editingLineup.status = {
@@ -213,20 +209,18 @@ const teamSlice = createSlice({
       state.editingLineup.status.edited = true;
       if (position === "") {
         if (editingMember.zone <= 6) {
-          state.editingLineup.substitutes.push(
-            state.editingLineup.starting[editingMember.zone - 1].member_id
-          );
+          state.editingLineup.substitutes.push({
+            _id: state.editingLineup.starting[editingMember.zone - 1]._id,
+          });
           state.editingLineup.starting[editingMember.zone - 1] = {
-            member_id: null,
-            position: "",
+            _id: null,
           };
         } else {
-          state.editingLineup.substitutes.push(
-            state.editingLineup.liberos[editingMember.zone - 7].member_id
-          );
+          state.editingLineup.substitutes.push({
+            _id: state.editingLineup.liberos[editingMember.zone - 7]._id,
+          });
           state.editingLineup.liberos[editingMember.zone - 7] = {
-            member_id: null,
-            position: "",
+            _id: null,
           };
         }
         return;
@@ -246,24 +240,22 @@ const teamSlice = createSlice({
         }
       } else {
         if (editingMember.zone <= 6) {
-          if (state.editingLineup.starting[editingMember.zone - 1].member_id) {
-            state.editingLineup.substitutes.push(
-              state.editingLineup.starting[editingMember.zone - 1].member_id
-            );
+          if (state.editingLineup.starting[editingMember.zone - 1]._id) {
+            state.editingLineup.substitutes.push({
+              _id: state.editingLineup.starting[editingMember.zone - 1]._id,
+            });
           }
           state.editingLineup.starting[editingMember.zone - 1] = {
-            member_id: editingMember._id,
-            position,
+            _id: editingMember._id,
           };
         } else {
-          if (state.editingLineup.liberos[editingMember.zone - 7]?.member_id) {
-            state.editingLineup.substitutes.push(
-              state.editingLineup.liberos[editingMember.zone - 7].member_id
-            );
+          if (state.editingLineup.liberos[editingMember.zone - 7]?._id) {
+            state.editingLineup.substitutes.push({
+              _id: state.editingLineup.liberos[editingMember.zone - 7]._id,
+            });
           }
           state.editingLineup.liberos[editingMember.zone - 7] = {
-            member_id: editingMember._id,
-            position,
+            _id: editingMember._id,
           };
         }
         state.editingLineup.substitutes =

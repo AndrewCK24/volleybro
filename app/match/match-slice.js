@@ -241,7 +241,7 @@ const matchSlice = createSlice({
       let backRowMbIndex;
       starting.map((starting, index) => {
         state.sets[setNum].lineup.ours.starters[index].starting =
-          starting.member_id;
+          starting._id;
         state.sets[setNum].lineup.ours.starters[index].position =
           starting.position;
         if (
@@ -253,7 +253,7 @@ const matchSlice = createSlice({
       });
       liberos.map((libero, index) => {
         state.sets[setNum].lineup.ours.liberos[index].starting =
-          libero.member_id;
+          libero._id;
         state.sets[setNum].lineup.ours.liberos[index].position =
           libero.position;
       });
@@ -262,7 +262,7 @@ const matchSlice = createSlice({
           ...state.sets[setNum].lineup.ours.starters[backRowMbIndex],
         };
         state.sets[setNum].lineup.ours.starters[backRowMbIndex].starting =
-          liberos[0].member_id;
+          liberos[0]._id;
         state.sets[setNum].lineup.ours.starters[backRowMbIndex].position =
           liberos[0].position;
         state.sets[setNum].lineup.ours.liberos[0].starting = backRowMb.starting;
