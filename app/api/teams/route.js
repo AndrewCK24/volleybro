@@ -62,7 +62,7 @@ export const POST = async (req) => {
         starting: [],
         liberos: [],
         substitutes: [],
-        others: [newMember._id],
+        others: [{ _id: newMember._id }],
       },
     });
 

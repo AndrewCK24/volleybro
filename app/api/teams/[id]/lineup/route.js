@@ -29,9 +29,7 @@ export const PATCH = async (req, { params }) => {
 
     const response = NextResponse.json(
       {
-        userData,
         teamData: team,
-        membersData: members,
       },
       { status: 200 }
     );

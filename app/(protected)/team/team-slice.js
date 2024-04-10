@@ -96,7 +96,7 @@ const teamSlice = createSlice({
       state.editingLineup.starting = newStarting;
     },
     setCompositionEditingStage: (state, action) => {
-      const { stage } = action.payload;
+      const stage = action.payload;
       state.editingLineup.status.stage = stage;
     },
     selectCompositionPlayer: (state, action) => {
@@ -104,17 +104,12 @@ const teamSlice = createSlice({
       const { player, index, origin } = action.payload;
       state.editingLineup.status.edited = true;
       if (stage === origin) {
-        
+        state.editingLineup[stage].splice(index, 1);
+        state.editingLineup.others.push(player);
+      } else {
+        state.editingLineup[stage].push(player);
+        state.editingLineup[origin].splice(index, 1);
       }
-      state.editingLineup[stage].push({ member_id: player._id, position: "" });
-      state.editingLineup[origin].splice(index, 1);
-    },
-    removeCompositionPlayer: (state, action) => {
-      const { stage } = state.editingLineup.status;
-      const { player, index } = action.payload;
-      state.editingLineup.status.edited = true;
-      state.editingLineup.others.push(player.member_id);
-      state.editingLineup[stage].splice(index, 1);
     },
     setEditingStatus: (state, action) => {
       const { editingMember, replacingMember } = state.editingLineup.status;

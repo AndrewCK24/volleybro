@@ -11,6 +11,8 @@ const teamSchema = new Schema(
       required: false,
     },
     members: [
+      // TODO: 待前端 members 狀態從 team 獨立後，刪除此欄位
+      // 以四種 lineup 名單代替
       {
         type: Schema.Types.ObjectId,
         ref: "Member",
@@ -18,36 +20,61 @@ const teamSchema = new Schema(
       },
     ],
     lineup: {
-      starting: [
-        {
-          member_id: {
-            type: Schema.Types.ObjectId,
-            ref: "Member",
-            required: false,
-          },
-          position: {
-            type: String,
-            required: false,
-          },
+      type: {
+        starting: {
+          type: [
+            {
+              _id: {
+                type: Schema.Types.ObjectId,
+                ref: "Member",
+                required: false,
+                auto: false,
+              },
+            },
+          ],
+          required: true,
         },
-      ],
-      liberos: [
-        {
-          member_id: {
-            type: Schema.Types.ObjectId,
-            ref: "Member",
-            required: false,
-          },
-          position: {
-            type: String,
-            required: false,
-          },
+        liberos: {
+          type: [
+            {
+              _id: {
+                type: Schema.Types.ObjectId,
+                ref: "Member",
+                required: false,
+                auto: false,
+              },
+            },
+          ],
+          required: true,
         },
-      ],
-      substitutes: [
-        { type: Schema.Types.ObjectId, ref: "Member", required: false },
-      ],
-      others: [{ type: Schema.Types.ObjectId, ref: "Member", required: false }],
+        substitutes: {
+          type: [
+            {
+              _id: {
+                type: Schema.Types.ObjectId,
+                ref: "Member",
+                required: false,
+                auto: false,
+              },
+            },
+          ],
+          required: true,
+        },
+        others: {
+          type: [
+            {
+              _id: {
+                type: Schema.Types.ObjectId,
+                ref: "Member",
+                required: false,
+                auto: false,
+              },
+            },
+          ],
+          required: true,
+        },
+      },
+      required: true,
     },
     matches: [
       {
