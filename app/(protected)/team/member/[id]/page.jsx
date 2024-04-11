@@ -46,6 +46,10 @@ const MemberPage = ({ params }) => {
             <FiUser />
             <ListItemText bold>姓名：{member.name}</ListItemText>
           </ListItem>
+          <ListItem type="secondary" text>
+            <FiShield />
+            <ListItemText bold>位置：{member?.position || " "}</ListItemText>
+          </ListItem>
           <SectionHr content="權限與邀請" />
           <ListItem type="secondary" text>
             <FiMail />

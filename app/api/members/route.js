@@ -62,6 +62,7 @@ export const POST = async (req) => {
       },
       name: formData.name,
       number: formData.number,
+      position: formData.position,
     });
 
     // find the user and send invitation
@@ -129,6 +130,7 @@ export const PUT = async (req) => {
     const updatingMember = await Member.findById(formData._id);
 
     updatingMember.name = formData.name;
+    updatingMember.position = formData.position;
     const isNumberChanged = updatingMember.number !== formData.number;
     if (isNumberChanged) {
       const hasSameNumber = members.find(
