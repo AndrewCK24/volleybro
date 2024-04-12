@@ -126,6 +126,7 @@ const teamSlice = createSlice({
       if (zone > 0) {
         if (editingMember.zone === zone) {
           state.editingLineup.status = {
+            ...state.editingLineup.status,
             edited: state.editingLineup.status.edited,
             editingMember: initialState.editingLineup.status.editingMember,
             replacingMember: initialState.editingLineup.status.replacingMember,
@@ -157,6 +158,7 @@ const teamSlice = createSlice({
             };
           }
           state.editingLineup.status = {
+            ...state.editingLineup.status,
             edited: true,
             editingMember: initialState.editingLineup.status.editingMember,
             replacingMember: initialState.editingLineup.status.replacingMember,
