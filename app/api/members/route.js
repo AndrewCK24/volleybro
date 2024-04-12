@@ -62,6 +62,7 @@ export const POST = async (req) => {
       },
       name: formData.name,
       number: formData.number,
+      position: formData.position,
     });
 
     // find the user and send invitation
@@ -74,6 +75,7 @@ export const POST = async (req) => {
     }
 
     team.members.push(newMember._id);
+    team.lineup.others.push(newMember._id);
     await team.save();
     await newMember.save();
 
@@ -128,6 +130,7 @@ export const PUT = async (req) => {
     const updatingMember = await Member.findById(formData._id);
 
     updatingMember.name = formData.name;
+    updatingMember.position = formData.position;
     const isNumberChanged = updatingMember.number !== formData.number;
     if (isNumberChanged) {
       const hasSameNumber = members.find(
@@ -247,7 +250,7 @@ export const PATCH = async (req) => {
     await member.save();
     await user.save();
 
-    const token = await signJwt(userData);
+    const token = await signJwt(user);
     const hidePasswordUser = hidePassword(user);
     if (accept) {
       const members = await Member.find({ team_id: teamId });

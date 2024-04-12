@@ -41,31 +41,28 @@ export const POST = async (req) => {
   try {
     const { userData } = await verifyJwt(req);
     const newMember = new Member({
-      name: userData.name,
       meta: {
         admin: true,
         email: userData.email,
         user_id: userData._id,
       },
+      name: userData.name,
+      number: 1,
     });
 
     const { name, nickname } = await req.json();
     // TODO: Add validation for name and nickname
     // if there is a team with the same name, ask the user to choose another name or join the existing team
+    // see issue #6
     const newTeam = new Team({
       name,
       nickname,
       members: [newMember._id],
       lineup: {
-        starters: [
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-          { member_id: null },
-        ],
-        liberos: [{ member_id: null }],
+        starting: [],
+        liberos: [],
+        substitutes: [],
+        others: [{ _id: newMember._id }],
       },
     });
 
@@ -117,30 +114,28 @@ export const PATCH = async (req) => {
       );
     }
 
-    if (patchRequest.lineup) {
-      const { lineup } = patchRequest;
+    if (patchRequest.name) team.name = patchRequest.name;
+    if (patchRequest.nickname) team.nickname = patchRequest.nickname;
 
-      team.lineup = lineup;
-      await team.save();
+    await team.save();
 
-      const response = NextResponse.json(
-        {
-          userData,
-          teamData: team,
-          membersData: members,
-        },
-        { status: 200 }
-      );
-      response.cookies.set({
-        name: "token",
-        value: token,
-        options: {
-          httpOnly: true,
-          maxAge: 60 * 60 * 24 * 30,
-        },
-      });
-      return response;
-    }
+    const response = NextResponse.json(
+      {
+        userData,
+        teamData: team,
+        membersData: members,
+      },
+      { status: 200 }
+    );
+    response.cookies.set({
+      name: "token",
+      value: token,
+      options: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    });
+    return response;
   } catch (error) {
     console.log("[update-team]", error);
     return NextResponse.json({ error }, { status: 500 });

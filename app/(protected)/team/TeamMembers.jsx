@@ -17,16 +17,12 @@ import { FiUser, FiPlus, FiChevronRight } from "react-icons/fi";
 
 const TeamMembers = () => {
   const router = useRouter();
-  const {
-    _id: teamId,
-    name: teamName,
-    members,
-  } = useSelector((state) => state.team);
+  const { name: teamName, members } = useSelector((state) => state.team);
 
   return (
     <Section>
       <ListHeader>
-        <ListTitle>
+        <ListTitle onClick={() => router.push("/team/info")}>
           {teamName}
           <FiChevronRight />
         </ListTitle>

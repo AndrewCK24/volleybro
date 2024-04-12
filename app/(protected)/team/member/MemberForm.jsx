@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-
 import { teamActions } from "../team-slice";
 import { SectionHr } from "@/app/components/common/Section";
 import {
@@ -20,6 +19,7 @@ const MemberForm = ({ member = null, setIsEditing }) => {
   const [numberError, setNumberError] = useState(member ? "" : " ");
   const [nameValue, setNameValue] = useState(member?.name || "");
   const [nameError, setNameError] = useState(member ? "" : " ");
+  const [positionValue, setPositionValue] = useState(member?.position || "");
   const [emailValue, setEmailValue] = useState(member?.meta.email || "");
   const [emailError, setEmailError] = useState("");
   const [adminValue, setAdminValue] = useState(member?.meta.admin || false);
@@ -45,6 +45,8 @@ const MemberForm = ({ member = null, setIsEditing }) => {
     }
   };
 
+  const handlePositionChange = (value) => setPositionValue(value);
+
   const handleEmailChange = (value) => {
     setEmailValue(value);
     const validEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
@@ -65,6 +67,7 @@ const MemberForm = ({ member = null, setIsEditing }) => {
       meta: { email: emailValue, admin: adminValue },
       number: numberValue,
       name: nameValue,
+      position: positionValue,
       _id: member?._id || null,
     };
     const isEditing = formData._id;
@@ -114,6 +117,19 @@ const MemberForm = ({ member = null, setIsEditing }) => {
           onChange={handleNameChange}
           autoComplete="off"
           warn={nameError}
+        />
+        <FormSelect
+          name="position"
+          labelText="位置"
+          options={[
+            { id: "S", value: "S", text: "舉球" },
+            { id: "OH", value: "OH", text: "主攻" },
+            { id: "MB", value: "MB", text: "攔中" },
+            { id: "OP", value: "OPP", text: "副攻" },
+            { id: "L", value: "L", text: "自由" },
+          ]}
+          defaultValue={member?.position || ""}
+          onChange={handlePositionChange}
         />
         <SectionHr content="權限與邀請" />
         <FormControl

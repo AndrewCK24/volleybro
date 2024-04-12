@@ -8,6 +8,10 @@ export const Section = ({ children, type }) => {
   );
 };
 
+export const InnerSection = ({ children }) => {
+  return <div className={styles.section__inner}>{children}</div>;
+};
+
 export const SectionHr = ({ content }) => {
   return <hr className={styles.section__hr} content={content} />;
 };

@@ -31,6 +31,10 @@ const memberSchema = new Schema(
       type: Number,
       required: false,
     },
+    position: {
+      type: String,
+      required: false,
+    },
     info: {
       type: Object,
       required: false,

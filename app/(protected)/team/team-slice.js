@@ -7,15 +7,32 @@ const initialState = {
   nickname: "",
   members: [],
   lineup: {
-    starters: [],
+    starting: [],
     liberos: [],
-    benches: [],
+    substitutes: [],
+    others: [],
   },
   editingLineup: {
-    edited: false,
-    starters: [],
+    status: {
+      stage: "starting",
+      edited: false,
+      editingMember: {
+        zone: null,
+        _id: null,
+        number: null,
+        position: "",
+      },
+      replacingMember: {
+        zone: null,
+        _id: null,
+        number: null,
+        position: "",
+      },
+    },
+    starting: [],
     liberos: [],
-    benches: [],
+    substitutes: [],
+    others: [],
   },
   matches: [],
   stats: {},
@@ -26,6 +43,7 @@ const teamSlice = createSlice({
   initialState,
   reducers: {
     setTeam: (_, action) => {
+      // TODO: 修改 /api/teams 的 response，不要返回 userData
       const { userData, teamData, membersData } = action.payload;
       if (!teamData) return;
 
@@ -34,75 +52,233 @@ const teamSlice = createSlice({
         .meta.admin;
       membersData.sort((a, b) => a.number - b.number);
 
-      const benches = teamData.members
-        .filter((member) => {
-          return !teamData.lineup.starters.some((starter) =>
-            starter.member_id
-              ? starter.member_id.toString() === member.toString()
-              : false
-          );
-        })
-        .filter((member) => {
-          return !teamData.lineup.liberos.some((libero) =>
-            libero.member_id
-              ? libero.member_id.toString() === member.toString()
-              : false
-          );
-        });
-
       return {
         admin,
         _id: teamData._id,
         name: teamData.name,
         nickname: teamData.nickname,
         members: membersData,
-        lineup: {
-          starters: teamData.lineup.starters,
-          liberos: teamData.lineup.liberos,
-          benches,
-        },
+        lineup: teamData.lineup,
         editingLineup: {
-          edited: false,
-          starters: teamData.lineup.starters,
-          liberos: teamData.lineup.liberos,
-          benches,
+          ...teamData.lineup,
+          status: initialState.editingLineup.status,
         },
         matches: teamData.matches,
         stats: teamData.stats,
       };
+    },
+    updateTeamOnly: (state, action) => {
+      state.name = action.payload.name;
+      state.nickname = action.payload.nickname;
+      state.lineup = action.payload.lineup;
+      state.editingLineup = {
+        ...action.payload.lineup,
+        status: initialState.editingLineup.status,
+      };
+      state.matches = action.payload.matches;
+      state.stats = action.payload.stats;
     },
     resetTeam: () => {
       return {
         ...initialState,
       };
     },
-    setLineupPlayer: (state, action) => {
-      const { zone, member_id, position } = action.payload;
-      state.editingLineup.edited = true;
-      if (zone <= 6) {
-        state.editingLineup.starters[zone - 1] = { member_id, position };
-      } else {
-        state.editingLineup.liberos[zone - 7] = { member_id, position };
-      }
-
-      state.editingLineup.benches = state.editingLineup.benches.filter(
-        (id) => id !== member_id
-      );
+    rotateLineupCw: (state) => {
+      state.editingLineup.status.edited = true;
+      const newStarting = state.editingLineup.starting.slice(1);
+      newStarting.push(state.editingLineup.starting[0]);
+      state.editingLineup.starting = newStarting;
     },
-    resetLineupPlayer: (state, action) => {
-      const { zone, member_id } = action.payload;
-      state.editingLineup.edited = true;
-      if (zone <= 6) {
-        state.editingLineup.starters[zone - 1] = {
-          member_id: null,
-        };
+    rotateLineupCcw: (state) => {
+      state.editingLineup.status.edited = true;
+      const newStarting = state.editingLineup.starting.slice(0, -1);
+      newStarting.unshift(state.editingLineup.starting[5]);
+      state.editingLineup.starting = newStarting;
+    },
+    setCompositionEditingStage: (state, action) => {
+      const stage = action.payload;
+      state.editingLineup.status.stage = stage;
+    },
+    selectCompositionPlayer: (state, action) => {
+      const { stage } = state.editingLineup.status;
+      const { player, index, origin } = action.payload;
+      state.editingLineup.status.edited = true;
+      if (stage === origin) {
+        state.editingLineup[stage].splice(index, 1);
+        state.editingLineup.others.push(player);
       } else {
-        state.editingLineup.liberos[zone - 7] = {
-          member_id: null,
-        };
+        state.editingLineup[stage].push(player);
+        state.editingLineup[origin].splice(index, 1);
       }
-
-      state.editingLineup.benches.push(member_id);
+    },
+    setEditingStatus: (state, action) => {
+      const { editingMember, replacingMember } = state.editingLineup.status;
+      const { zone, _id, number, position } = action.payload;
+      if (editingMember.zone === null) {
+        state.editingLineup.status.editingMember = {
+          zone,
+          _id,
+          number,
+          position,
+        };
+        return;
+      }
+      if (zone > 0) {
+        if (editingMember.zone === zone) {
+          state.editingLineup.status = {
+            edited: state.editingLineup.status.edited,
+            editingMember: initialState.editingLineup.status.editingMember,
+            replacingMember: initialState.editingLineup.status.replacingMember,
+          };
+          return;
+        }
+        if (
+          editingMember.zone &&
+          editingMember.zone !== zone &&
+          editingMember._id &&
+          _id
+        ) {
+          if (zone <= 6) {
+            state.editingLineup.starting[zone - 1] = {
+              _id: editingMember._id,
+            };
+          } else {
+            state.editingLineup.liberos[zone - 7] = {
+              _id: editingMember._id,
+            };
+          }
+          if (editingMember.zone <= 6) {
+            state.editingLineup.starting[editingMember.zone - 1] = {
+              _id: _id,
+            };
+          } else {
+            state.editingLineup.liberos[editingMember.zone - 7] = {
+              _id: _id,
+            };
+          }
+          state.editingLineup.status = {
+            edited: true,
+            editingMember: initialState.editingLineup.status.editingMember,
+            replacingMember: initialState.editingLineup.status.replacingMember,
+          };
+          return;
+        } else {
+          state.editingLineup.status.editingMember = {
+            zone,
+            _id,
+            number,
+            position,
+          };
+        }
+      } else if (zone === 0) {
+        if (editingMember._id === _id) {
+          state.editingLineup.status = {
+            edited: state.editingLineup.status.edited,
+            editingMember: initialState.editingLineup.status.editingMember,
+            replacingMember: initialState.editingLineup.status.replacingMember,
+          };
+          return;
+        }
+        if (editingMember.zone > 0) {
+          state.editingLineup.status.replacingMember = {
+            zone,
+            _id,
+            number,
+            position: "",
+          };
+        } else {
+          state.editingLineup.status.editingMember = {
+            zone,
+            _id,
+            number,
+            position,
+          };
+        }
+      } else {
+      }
+    },
+    resetEditingStatus: (state) => {
+      state.editingLineup.status = {
+        ...initialState.editingLineup.status,
+        edited: state.editingLineup.status.edited,
+      };
+    },
+    setPlayerPosition: (state, action) => {
+      const { editingMember, replacingMember } = state.editingLineup.status;
+      const position = action.payload;
+      state.editingLineup.status.edited = true;
+      if (position === "") {
+        if (editingMember.zone <= 6) {
+          state.editingLineup.substitutes.push({
+            _id: state.editingLineup.starting[editingMember.zone - 1]._id,
+          });
+          state.editingLineup.starting[editingMember.zone - 1] = {
+            _id: null,
+          };
+        } else {
+          state.editingLineup.substitutes.push({
+            _id: state.editingLineup.liberos[editingMember.zone - 7]._id,
+          });
+          state.editingLineup.liberos[editingMember.zone - 7] = {
+            _id: null,
+          };
+        }
+        return;
+      }
+      if (editingMember.zone === 0) {
+        if (editingMember.position === "substitutes") {
+          state.editingLineup.others.push(editingMember._id);
+          state.editingLineup.substitutes =
+            state.editingLineup.substitutes.filter(
+              (id) => id !== editingMember._id
+            );
+        } else if (editingMember.position === "others") {
+          state.editingLineup.substitutes.push(editingMember._id);
+          state.editingLineup.others = state.editingLineup.others.filter(
+            (id) => id !== editingMember._id
+          );
+        }
+      } else {
+        if (editingMember.zone <= 6) {
+          if (state.editingLineup.starting[editingMember.zone - 1]._id) {
+            state.editingLineup.substitutes.push({
+              _id: state.editingLineup.starting[editingMember.zone - 1]._id,
+            });
+          }
+          state.editingLineup.starting[editingMember.zone - 1] = {
+            _id: editingMember._id,
+          };
+        } else {
+          if (state.editingLineup.liberos[editingMember.zone - 7]?._id) {
+            state.editingLineup.substitutes.push({
+              _id: state.editingLineup.liberos[editingMember.zone - 7]._id,
+            });
+          }
+          state.editingLineup.liberos[editingMember.zone - 7] = {
+            _id: editingMember._id,
+          };
+        }
+        state.editingLineup.substitutes =
+          state.editingLineup.substitutes.filter(
+            (id) => id !== editingMember._id
+          );
+        state.editingLineup.others = state.editingLineup.others.filter(
+          (id) => id !== editingMember._id
+        );
+      }
+      state.editingLineup.status = {
+        ...initialState.editingLineup.status,
+        edited: true,
+      };
+    },
+    resetEditingLineup: (state) => {
+      state.editingLineup = {
+        status: initialState.editingLineup.status,
+        starting: state.lineup.starting,
+        liberos: state.lineup.liberos,
+        substitutes: state.lineup.substitutes,
+        others: state.lineup.others,
+      };
     },
   },
 });

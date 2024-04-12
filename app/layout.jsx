@@ -28,12 +28,20 @@ export const metadata = {
   keywords: ["volleyball", "stats", "app", "vstats", "v-stats"],
   authors: [{ name: "V-Stats" }, { name: "Andrew Tseng" }],
   colorTheme: "light",
-  themeColor: "#f6f4f5",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
+};
+
+export const viewport = {
+  themeColor: "#f6f4f5",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  width: "device-width",
+  userScalable: false,
 };
 
 const getAuthData = async () => {

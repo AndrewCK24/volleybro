@@ -1,102 +1,116 @@
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
 import { teamActions } from "../team-slice";
-import { FiSave } from "react-icons/fi";
+import { matchActions } from "@/app/match/match-slice";
+import { FiRotateCcw, FiSave, FiX } from "react-icons/fi";
 import { Section } from "@/app/components/common/Section";
-import { ListItem } from "@/app/components/common/List";
+import { ListItemContainer, ListItem } from "@/app/components/common/List";
+import { FormSelect } from "@/app/components/common/Form";
 import LineupCourt from "./LineupCourt";
-import BenchList from "./BenchList";
-import PositionList from "./PositionList";
+import LineupOptions from "./LineupOptions";
 
 const Lineup = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
-  const [editingZone, setEditingZone] = useState(null);
-  const [editingMember, setEditingMember] = useState({
-    _id: null,
-    number: null,
-  });
-  const teamId = useSelector((state) => state.team._id);
-  const members = useSelector((state) => state.team.members);
-  const { starters, liberos, benches, edited } = useSelector(
-    (state) => state.team.editingLineup
+  const pathname = usePathname();
+  const isRecording = pathname.includes("match");
+  const matchId = useSelector((state) => state.match._id) || "new";
+  const { setNum } = useSelector((state) => state.match.status.editingData);
+  const setData = useSelector((state) => state.match.sets[setNum]);
+  const [firstServe, setFirstServe] = useState(
+    setData.meta.firstServe === null ? true : setData.meta.firstServe
   );
-  const isStarterFilled = starters.every((starter) => starter.member_id);
+  const { _id: teamId, editingLineup } = useSelector((state) => state.team);
+  const { starting, liberos, substitutes, others, status } = editingLineup;
 
-  const handleSaveLineup = async () => {
+  const handleSave = async () => {
     const lineup = {
-      starters,
+      starting,
       liberos,
-      benches,
+      substitutes,
+      others,
     };
-
-    try {
-      const response = await fetch("/api/teams", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          teamId,
-          lineup,
-        }),
-      });
-      const { userData, teamData, membersData } = await response.json();
-      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-    } catch (error) {
-      console.log(error);
+    if (status.edited) {
+      try {
+        const response = await fetch(`/api/teams/${teamId}/lineup`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(lineup),
+        });
+        const { userData, teamData, membersData } = await response.json();
+        dispatch(teamActions.setTeam({ userData, teamData, membersData }));
+      } catch (error) {
+        console.log(error);
+      }
     }
+    if (isRecording) {
+      dispatch(matchActions.configMatchSet({ firstServe, lineup }));
+      router.push(`/match/${matchId}/confirm`);
+    }
+  };
+
+  const handleCancel = () => {
+    dispatch(teamActions.resetEditingLineup());
+    if (!isRecording) router.push("/team");
   };
 
   return (
     <>
-      <LineupCourt
-        members={members}
-        starters={starters}
-        liberos={liberos}
-        benches={benches}
-        editingZone={editingZone}
-        editingMember={editingMember}
-        setEditingZone={setEditingZone}
-        setEditingMember={setEditingMember}
-      />
-      <Section type="fixed">
-        {!isStarterFilled && (
-          <ListItem type="danger" text>
-            先發滿 6 位才能儲存陣容及紀錄比賽
-          </ListItem>
-        )}
-        {!(editingZone && editingMember._id) ? (
-          <BenchList
-            members={members}
-            benches={benches}
-            editingZone={editingZone}
-            editingMember={editingMember}
-            setEditingMember={setEditingMember}
-          />
-        ) : (
-          <PositionList
-            starters={starters}
-            liberos={liberos}
-            editingZone={editingZone}
-            editingMember={editingMember}
-            setEditingZone={setEditingZone}
-            setEditingMember={setEditingMember}
+      <Section>
+        <LineupCourt />
+        {isRecording && (
+          <FormSelect
+            name="firstServe"
+            options={[
+              { id: "ours", value: true, text: "我方先發" },
+              { id: "oppo", value: false, text: "對方先發" },
+            ]}
+            defaultValue={firstServe}
+            required
+            onChange={setFirstServe}
           />
         )}
       </Section>
+      <Section type="fixed">
+        <LineupOptions />
+      </Section>
       <Section type="transparent">
-        <ListItem
-          type={
-            !edited || editingZone || !isStarterFilled ? "secondary" : "primary"
-          }
-          center
-          disabled={!edited || editingZone || !isStarterFilled}
-          onClick={handleSaveLineup}
-        >
-          <FiSave />
-          儲存陣容
-        </ListItem>
+        <ListItemContainer>
+          {isRecording ? (
+            <>
+              <ListItem type="secondary" text center onClick={handleCancel}>
+                <FiRotateCcw />
+                恢復預設
+              </ListItem>
+              <ListItem type="primary" center onClick={handleSave}>
+                <FiSave />
+                確認陣容
+              </ListItem>
+            </>
+          ) : (
+            <>
+              <ListItem type="secondary" text center onClick={handleCancel}>
+                <FiX />
+                取消編輯
+              </ListItem>
+              <ListItem
+                type={
+                  !status.edited || status.editingZone ? "secondary" : "primary"
+                }
+                center
+                disabled={!status.edited || status.editingZone}
+                onClick={handleSave}
+              >
+                <FiSave />
+                儲存陣容
+              </ListItem>
+            </>
+          )}
+        </ListItemContainer>
       </Section>
     </>
   );
