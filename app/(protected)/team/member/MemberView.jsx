@@ -8,7 +8,6 @@ import {
 } from "@/app/components/common/List";
 
 const MemberView = ({ member }) => {
-  console.log(member);
   return (
     <>
       <ListItemContainer>

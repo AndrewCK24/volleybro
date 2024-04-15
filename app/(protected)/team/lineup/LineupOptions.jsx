@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ListHeader, ListTitle } from "@/app/components/common/List";
 import LineupConfig from "./(options)/LineupConfig";
-import PlayerInfo from "./(options)/PlayerInfo";
+import MemberInfo from "../member/MemberInfo";
 import SubstituteList from "./(options)/SubstituteList";
 import PositionList from "./(options)/PositionList";
 
@@ -19,12 +19,7 @@ const LineupOptions = () => {
   return (
     <>
       {editingMember.zone > 0 && editingMember._id && !mode ? (
-        <>
-          <ListHeader>
-            <ListTitle>球員資訊</ListTitle>
-          </ListHeader>
-          <PlayerInfo setMode={setMode} />
-        </>
+        <MemberInfo member={member} />
       ) : (editingMember.zone > 0 && !editingMember._id) ||
         mode === "substitutes" ? (
         <>
