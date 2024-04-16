@@ -7,7 +7,7 @@ import { ListItem, ListItemText } from "@/app/components/common/List";
 const SubstituteList = () => {
   const dispatch = useDispatch();
   const { members, editingLineup } = useSelector((state) => state.team);
-  const { editingMember, replacingMember } = editingLineup.status;
+  const { editingMember } = editingLineup.status;
 
   const substitutes = members
     .filter((member) => editingLineup.substitutes.includes(member._id))
@@ -23,16 +23,7 @@ const SubstituteList = () => {
           <ListItem
             key={index}
             type={editingMember._id === player._id && "primary"}
-            onClick={() =>
-              dispatch(
-                teamActions.setEditingStatus({
-                  zone: 0,
-                  _id: player._id,
-                  number: player.number,
-                  position: "substitutes",
-                })
-              )
-            }
+            onClick={() => dispatch()}
             disabled={
               editingMember.position === "substitutes" &&
               editingMember._id !== player._id
@@ -52,16 +43,7 @@ const SubstituteList = () => {
           <ListItem
             key={index}
             type={editingMember._id === player._id && "primary"}
-            onClick={() =>
-              dispatch(
-                teamActions.setEditingStatus({
-                  zone: 0,
-                  _id: player._id,
-                  number: player.number,
-                  position: "others",
-                })
-              )
-            }
+            onClick={() => dispatch()}
             disabled={
               editingMember.position === "others" &&
               editingMember._id !== player._id

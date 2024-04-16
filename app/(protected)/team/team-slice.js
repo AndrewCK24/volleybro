@@ -21,12 +21,6 @@ const initialState = {
         list: "",
         zone: null,
       },
-      replacingMember: {
-        zone: null,
-        _id: null,
-        number: null,
-        position: "",
-      },
     },
     starting: [],
     liberos: [],
@@ -133,102 +127,8 @@ const teamSlice = createSlice({
       state.editingLineup.status.editingMember =
         initialState.editingLineup.status.editingMember;
     },
-    setEditingStatus: (state, action) => {
-      const { editingMember, replacingMember } = state.editingLineup.status;
-      const { zone, _id, number, position } = action.payload;
-      if (editingMember.zone === null) {
-        state.editingLineup.status.editingMember = {
-          zone,
-          _id,
-          number,
-          position,
-        };
-        return;
-      }
-      if (zone > 0) {
-        if (editingMember.zone === zone) {
-          state.editingLineup.status = {
-            ...state.editingLineup.status,
-            edited: state.editingLineup.status.edited,
-            editingMember: initialState.editingLineup.status.editingMember,
-            replacingMember: initialState.editingLineup.status.replacingMember,
-          };
-          return;
-        }
-        if (
-          editingMember.zone &&
-          editingMember.zone !== zone &&
-          editingMember._id &&
-          _id
-        ) {
-          if (zone <= 6) {
-            state.editingLineup.starting[zone - 1] = {
-              _id: editingMember._id,
-            };
-          } else {
-            state.editingLineup.liberos[zone - 7] = {
-              _id: editingMember._id,
-            };
-          }
-          if (editingMember.zone <= 6) {
-            state.editingLineup.starting[editingMember.zone - 1] = {
-              _id: _id,
-            };
-          } else {
-            state.editingLineup.liberos[editingMember.zone - 7] = {
-              _id: _id,
-            };
-          }
-          state.editingLineup.status = {
-            ...state.editingLineup.status,
-            edited: true,
-            editingMember: initialState.editingLineup.status.editingMember,
-            replacingMember: initialState.editingLineup.status.replacingMember,
-          };
-          return;
-        } else {
-          state.editingLineup.status.editingMember = {
-            zone,
-            _id,
-            number,
-            position,
-          };
-        }
-      } else if (zone === 0) {
-        if (editingMember._id === _id) {
-          state.editingLineup.status = {
-            edited: state.editingLineup.status.edited,
-            editingMember: initialState.editingLineup.status.editingMember,
-            replacingMember: initialState.editingLineup.status.replacingMember,
-          };
-          return;
-        }
-        if (editingMember.zone > 0) {
-          state.editingLineup.status.replacingMember = {
-            zone,
-            _id,
-            number,
-            position: "",
-          };
-        } else {
-          state.editingLineup.status.editingMember = {
-            zone,
-            _id,
-            number,
-            position,
-          };
-        }
-      } else {
-      }
-    },
-    resetEditingStatus: (state) => {
-      state.editingLineup.status = {
-        ...initialState.editingLineup.status,
-        edited: state.editingLineup.status.edited,
-      };
-    },
     setPlayerPosition: (state, action) => {
-      const { editingMember, replacingMember } = state.editingLineup.status;
+      const { editingMember } = state.editingLineup.status;
       const position = action.payload;
       state.editingLineup.status.edited = true;
       if (position === "") {
