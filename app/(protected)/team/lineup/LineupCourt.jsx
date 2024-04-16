@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { teamActions } from "../team-slice";
-import { FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw, FiRepeat } from "react-icons/fi";
 import {
   CourtContainer,
   Outside,
@@ -17,10 +17,17 @@ const LineupCourt = () => {
   return (
     <CourtContainer>
       <Outside className="left">
-        {status.editingMember.zone === null ? (
+        {status.optionMode === "" ? (
           <AdjustButton onClick={() => dispatch(teamActions.rotateLineupCw())}>
             <FiRefreshCw />
             輪轉
+          </AdjustButton>
+        ) : status.optionMode === "playerInfo" ? (
+          <AdjustButton
+            onClick={() => dispatch(teamActions.setOptionMode("substitutes"))}
+          >
+            <FiRepeat />
+            替補
           </AdjustButton>
         ) : (
           <AdjustButton />

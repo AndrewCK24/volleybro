@@ -16,6 +16,7 @@ const initialState = {
     status: {
       stage: "starting",
       edited: false,
+      optionMode: "",
       editingMember: {
         _id: null,
         list: "",
@@ -104,6 +105,10 @@ const teamSlice = createSlice({
         state.editingLineup[origin].splice(index, 1);
       }
     },
+    setOptionMode: (state, action) => {
+      const mode = action.payload;
+      state.editingLineup.status.optionMode = mode;
+    },
     setEditingPlayer: (state, action) => {
       const { _id, list, zone } = action.payload;
       if (
@@ -112,20 +117,42 @@ const teamSlice = createSlice({
       ) {
         state.editingLineup.status.editingMember =
           initialState.editingLineup.status.editingMember;
+        state.editingLineup.status.optionMode = "";
       } else {
         state.editingLineup.status.editingMember = {
           _id,
           list,
           zone,
         };
+        state.editingLineup.status.optionMode = _id
+          ? "playerInfo"
+          : "substitutes";
       }
     },
     removeEditingPlayer: (state) => {
       const { list, zone } = state.editingLineup.status.editingMember;
       state.editingLineup.status.edited = true;
+      state.editingLineup.others.push(state.editingLineup[list][zone - 1]);
       state.editingLineup[list][zone - 1] = { _id: null };
       state.editingLineup.status.editingMember =
         initialState.editingLineup.status.editingMember;
+      state.editingLineup.status.optionMode = "";
+    },
+    replaceEditingPlayer: (state, action) => {
+      const { _id, list, zone } = action.payload;
+      const editingMember = state.editingLineup.status.editingMember;
+      const replacingPlayer = state.editingLineup[list][zone];
+      state.editingLineup.status.edited = true;
+      state.editingLineup[list].splice(zone, 1);
+      if (editingMember._id) {
+        state.editingLineup[list].push(
+          state.editingLineup[editingMember.list][editingMember.zone - 1]
+        );
+      }
+      state.editingLineup[editingMember.list][editingMember.zone - 1] =
+        replacingPlayer;
+      state.editingLineup.status.editingMember._id = _id;
+      state.editingLineup.status.optionMode = "playerInfo";
     },
     setPlayerPosition: (state, action) => {
       const { editingMember } = state.editingLineup.status;
