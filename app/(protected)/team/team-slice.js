@@ -17,10 +17,9 @@ const initialState = {
       stage: "starting",
       edited: false,
       editingMember: {
-        zone: null,
         _id: null,
-        number: null,
-        position: "",
+        list: "",
+        zone: null,
       },
       replacingMember: {
         zone: null,
@@ -110,6 +109,29 @@ const teamSlice = createSlice({
         state.editingLineup[stage].push(player);
         state.editingLineup[origin].splice(index, 1);
       }
+    },
+    setEditingPlayer: (state, action) => {
+      const { _id, list, zone } = action.payload;
+      if (
+        list === state.editingLineup.status.editingMember.list &&
+        zone === state.editingLineup.status.editingMember.zone
+      ) {
+        state.editingLineup.status.editingMember =
+          initialState.editingLineup.status.editingMember;
+      } else {
+        state.editingLineup.status.editingMember = {
+          _id,
+          list,
+          zone,
+        };
+      }
+    },
+    removeEditingPlayer: (state) => {
+      const { list, zone } = state.editingLineup.status.editingMember;
+      state.editingLineup.status.edited = true;
+      state.editingLineup[list][zone - 1] = { _id: null };
+      state.editingLineup.status.editingMember =
+        initialState.editingLineup.status.editingMember;
     },
     setEditingStatus: (state, action) => {
       const { editingMember, replacingMember } = state.editingLineup.status;
