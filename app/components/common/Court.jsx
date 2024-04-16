@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { FiPlus, FiX } from "react-icons/fi";
 
 export const CourtContainer = styled.div`
   width: 100%;
@@ -66,17 +67,19 @@ export const Inside = styled.div`
   }
 `;
 
-export const PlayerCard = styled.div`
+export const PlayerCardContainer = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
+  border: 0.25rem solid var(--primary-100);
   background-color: var(--primary-100);
   transition: all 0.2s ease-in-out;
   z-index: 1;
-  h3 {
+  p {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -104,11 +107,77 @@ export const PlayerCard = styled.div`
       font-size: 1.5rem;
     }
   }
+  &.empty {
+    opacity: 50%;
+    svg {
+      opacity: 100%;
+      color: var(--primary-500);
+      font-size: 4rem;
+    }
+  }
   &.toggled {
     background-color: var(--secondary-500);
     color: var(--primary-100);
   }
 `;
+
+export const Cross = styled.div`
+  position: absolute;
+  top: -0.75rem;
+  right: -0.75rem;
+  width: 1.25rem;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.25rem;
+  border: 0.125rem solid var(--primary-100);
+  border-radius: 50%;
+  background-color: var(--danger-500);
+  color: var(--primary-100);
+  font-size: 1.5rem;
+  transition: all 0.2s ease-in-out;
+`;
+
+export const PlayerCard = ({
+  member,
+  list,
+  zone,
+  onCardClick,
+  onCrossClick,
+  editingMember,
+}) => {
+  const toggled = editingMember.list === list && editingMember.zone === zone;
+  return (
+    <PlayerCardContainer
+      style={list === "starting" ? { gridArea: `z${zone}` } : {}}
+      className={`${toggled && "toggled"} ${member || "empty"}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        onCardClick();
+      }}
+    >
+      {member ? (
+        <>
+          <p>{member.number}</p>
+          <span>{member.position}</span>
+          {toggled && onCrossClick && (
+            <Cross
+              onClick={(e) => {
+                e.stopPropagation();
+                onCrossClick();
+              }}
+            >
+              <FiX />
+            </Cross>
+          )}
+        </>
+      ) : (
+        <FiPlus />
+      )}
+    </PlayerCardContainer>
+  );
+};
 
 export const AdjustButton = styled.div`
   display: flex;

@@ -1,39 +1,27 @@
-import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ListHeader, ListTitle } from "@/app/components/common/List";
 import LineupConfig from "./(options)/LineupConfig";
-import PlayerInfo from "./(options)/PlayerInfo";
+import MemberInfo from "../member/MemberInfo";
 import SubstituteList from "./(options)/SubstituteList";
 import PositionList from "./(options)/PositionList";
 
 const LineupOptions = () => {
-  const [mode, setMode] = useState(""); // ["info", "substitutes", "positions"]
   const { members, editingLineup } = useSelector((state) => state.team);
-  const { editingMember } = editingLineup.status;
+  const { optionMode, editingMember } = editingLineup.status;
   const member = members.find((m) => m._id === editingMember._id);
-
-  useEffect(() => {
-    if (editingMember.zone === null) setMode("");
-  }, [editingMember.zone]);
 
   return (
     <>
-      {editingMember.zone > 0 && editingMember._id && !mode ? (
-        <>
-          <ListHeader>
-            <ListTitle>球員資訊</ListTitle>
-          </ListHeader>
-          <PlayerInfo setMode={setMode} />
-        </>
-      ) : (editingMember.zone > 0 && !editingMember._id) ||
-        mode === "substitutes" ? (
+      {optionMode === "playerInfo" ? (
+        <MemberInfo member={member} />
+      ) : optionMode === "substitutes" ? (
         <>
           <ListHeader>
             <ListTitle>替補名單</ListTitle>
           </ListHeader>
           <SubstituteList />
         </>
-      ) : mode === "positions" ? (
+      ) : optionMode === "positions" ? (
         <>
           <ListHeader>
             <ListTitle>選擇位置</ListTitle>

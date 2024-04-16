@@ -16,17 +16,11 @@ const initialState = {
     status: {
       stage: "starting",
       edited: false,
+      optionMode: "",
       editingMember: {
-        zone: null,
         _id: null,
-        number: null,
-        position: "",
-      },
-      replacingMember: {
+        list: "",
         zone: null,
-        _id: null,
-        number: null,
-        position: "",
       },
     },
     starting: [],
@@ -111,102 +105,57 @@ const teamSlice = createSlice({
         state.editingLineup[origin].splice(index, 1);
       }
     },
-    setEditingStatus: (state, action) => {
-      const { editingMember, replacingMember } = state.editingLineup.status;
-      const { zone, _id, number, position } = action.payload;
-      if (editingMember.zone === null) {
-        state.editingLineup.status.editingMember = {
-          zone,
-          _id,
-          number,
-          position,
-        };
-        return;
-      }
-      if (zone > 0) {
-        if (editingMember.zone === zone) {
-          state.editingLineup.status = {
-            ...state.editingLineup.status,
-            edited: state.editingLineup.status.edited,
-            editingMember: initialState.editingLineup.status.editingMember,
-            replacingMember: initialState.editingLineup.status.replacingMember,
-          };
-          return;
-        }
-        if (
-          editingMember.zone &&
-          editingMember.zone !== zone &&
-          editingMember._id &&
-          _id
-        ) {
-          if (zone <= 6) {
-            state.editingLineup.starting[zone - 1] = {
-              _id: editingMember._id,
-            };
-          } else {
-            state.editingLineup.liberos[zone - 7] = {
-              _id: editingMember._id,
-            };
-          }
-          if (editingMember.zone <= 6) {
-            state.editingLineup.starting[editingMember.zone - 1] = {
-              _id: _id,
-            };
-          } else {
-            state.editingLineup.liberos[editingMember.zone - 7] = {
-              _id: _id,
-            };
-          }
-          state.editingLineup.status = {
-            ...state.editingLineup.status,
-            edited: true,
-            editingMember: initialState.editingLineup.status.editingMember,
-            replacingMember: initialState.editingLineup.status.replacingMember,
-          };
-          return;
-        } else {
-          state.editingLineup.status.editingMember = {
-            zone,
-            _id,
-            number,
-            position,
-          };
-        }
-      } else if (zone === 0) {
-        if (editingMember._id === _id) {
-          state.editingLineup.status = {
-            edited: state.editingLineup.status.edited,
-            editingMember: initialState.editingLineup.status.editingMember,
-            replacingMember: initialState.editingLineup.status.replacingMember,
-          };
-          return;
-        }
-        if (editingMember.zone > 0) {
-          state.editingLineup.status.replacingMember = {
-            zone,
-            _id,
-            number,
-            position: "",
-          };
-        } else {
-          state.editingLineup.status.editingMember = {
-            zone,
-            _id,
-            number,
-            position,
-          };
-        }
+    setOptionMode: (state, action) => {
+      const mode = action.payload;
+      state.editingLineup.status.optionMode = mode;
+    },
+    setEditingPlayer: (state, action) => {
+      const { _id, list, zone } = action.payload;
+      if (
+        list === state.editingLineup.status.editingMember.list &&
+        zone === state.editingLineup.status.editingMember.zone
+      ) {
+        state.editingLineup.status.editingMember =
+          initialState.editingLineup.status.editingMember;
+        state.editingLineup.status.optionMode = "";
       } else {
+        state.editingLineup.status.editingMember = {
+          _id,
+          list,
+          zone,
+        };
+        state.editingLineup.status.optionMode = _id
+          ? "playerInfo"
+          : "substitutes";
       }
     },
-    resetEditingStatus: (state) => {
-      state.editingLineup.status = {
-        ...initialState.editingLineup.status,
-        edited: state.editingLineup.status.edited,
-      };
+    removeEditingPlayer: (state) => {
+      const { list, zone } = state.editingLineup.status.editingMember;
+      state.editingLineup.status.edited = true;
+      state.editingLineup.others.push(state.editingLineup[list][zone - 1]);
+      state.editingLineup[list][zone - 1] = { _id: null };
+      state.editingLineup.status.editingMember =
+        initialState.editingLineup.status.editingMember;
+      state.editingLineup.status.optionMode = "";
+    },
+    replaceEditingPlayer: (state, action) => {
+      const { _id, list, zone } = action.payload;
+      const editingMember = state.editingLineup.status.editingMember;
+      const replacingPlayer = state.editingLineup[list][zone];
+      state.editingLineup.status.edited = true;
+      state.editingLineup[list].splice(zone, 1);
+      if (editingMember._id) {
+        state.editingLineup[list].push(
+          state.editingLineup[editingMember.list][editingMember.zone - 1]
+        );
+      }
+      state.editingLineup[editingMember.list][editingMember.zone - 1] =
+        replacingPlayer;
+      state.editingLineup.status.editingMember._id = _id;
+      state.editingLineup.status.optionMode = "playerInfo";
     },
     setPlayerPosition: (state, action) => {
-      const { editingMember, replacingMember } = state.editingLineup.status;
+      const { editingMember } = state.editingLineup.status;
       const position = action.payload;
       state.editingLineup.status.edited = true;
       if (position === "") {
