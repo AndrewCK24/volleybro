@@ -41,8 +41,8 @@ const Lineup = () => {
           },
           body: JSON.stringify(lineup),
         });
-        const { userData, teamData, membersData } = await response.json();
-        dispatch(teamActions.setTeam({ userData, teamData, membersData }));
+        const { teamData } = await response.json();
+        dispatch(teamActions.updateTeamOnly(teamData));
       } catch (error) {
         console.log(error);
       }
