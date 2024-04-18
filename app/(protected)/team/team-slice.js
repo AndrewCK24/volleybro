@@ -108,6 +108,10 @@ const teamSlice = createSlice({
     setOptionMode: (state, action) => {
       const mode = action.payload;
       state.editingLineup.status.optionMode = mode;
+      if (!mode) {
+        state.editingLineup.status.editingMember =
+          initialState.editingLineup.status.editingMember;
+      }
     },
     setEditingPlayer: (state, action) => {
       const { _id, list, zone } = action.payload;
