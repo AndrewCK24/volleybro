@@ -125,7 +125,7 @@ export const Cross = styled.div`
   position: absolute;
   top: -0.75rem;
   right: -0.75rem;
-  width: 1.25rem;
+  width: 1.825rem;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
@@ -173,7 +173,10 @@ export const PlayerCard = ({
           )}
         </>
       ) : (
-        <FiPlus />
+        <>
+          <FiPlus />
+          <span />
+        </>
       )}
     </PlayerCardContainer>
   );
