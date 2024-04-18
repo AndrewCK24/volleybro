@@ -1,47 +1,55 @@
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FiEdit2 } from "react-icons/fi";
+import { teamActions } from "../../team-slice";
 import {
+  ListHeader,
+  ListTitle,
   ListItemContainer,
   ListItem,
   ListItemText,
 } from "@/app/components/common/List";
-import { FormControl, FormSelect } from "@/app/components/common/Form";
 
 const LineupConfig = () => {
-  const router = useRouter();
-  const { starting, liberos, substitutes } = useSelector(
-    (state) => state.team.lineup
+  const dispatch = useDispatch();
+  const { starting, liberos, substitutes, others } = useSelector(
+    (state) => state.team.editingLineup
   );
-  const playerCounts = starting.length + liberos.length + substitutes.length;
+  const startingCount = starting.filter((player) => player._id).length;
+  const liberoCount = liberos.filter((player) => player._id).length;
 
   return (
     <>
-      <ListItem onClick={() => router.push("/team/lineup/composition")}>
-        <ListItemText>名單人數 / 上限：</ListItemText>
-        <ListItemText fit>
-          {playerCounts} / {liberos.length === 2 ? "14" : "12"}
-        </ListItemText>
-        <FiEdit2 />
-      </ListItem>
-      <FormControl
-        name="oppoName"
-        labelText="對手隊伍名稱"
-        type="text"
-        placeholder="請輸入對手隊伍名稱"
-        // onChange={setOppoName}
-      />
-      <FormSelect
-        name="setCount"
-        labelText="比賽局數"
-        options={[
-          { id: "3", value: 3, text: "3局2勝" },
-          { id: "5", value: 5, text: "5局3勝" },
-        ]}
-        defaultValue={3}
-        required
-        // onChange={setSetCount}
-      />
+      <ListHeader>
+        <ListTitle>陣容資訊</ListTitle>
+        <ListItem
+          type="primary"
+          center
+          onClick={() => dispatch(teamActions.setOptionMode("others"))}
+        >
+          <FiEdit2 />
+          <ListItemText fit> 調整替補</ListItemText>
+        </ListItem>
+      </ListHeader>
+      <ListItemContainer>
+        <ListItem type="secondary" text>
+          <ListItemText fit>先發：</ListItemText>
+          <ListItemText>{startingCount} 人</ListItemText>
+        </ListItem>
+        <ListItem type="secondary" text>
+          <ListItemText fit>自由：</ListItemText>
+          <ListItemText>{liberoCount} 人</ListItemText>
+        </ListItem>
+      </ListItemContainer>
+      <ListItemContainer>
+        <ListItem type="secondary" text>
+          <ListItemText fit>替補：</ListItemText>
+          <ListItemText>{substitutes.length} 人</ListItemText>
+        </ListItem>
+        <ListItem type="secondary" text>
+          <ListItemText fit>其他：</ListItemText>
+          <ListItemText>{others.length} 人</ListItemText>
+        </ListItem>
+      </ListItemContainer>
     </>
   );
 };

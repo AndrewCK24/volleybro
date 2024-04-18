@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { ListHeader, ListTitle } from "@/app/components/common/List";
 import LineupConfig from "./(options)/LineupConfig";
 import MemberInfo from "../member/MemberInfo";
-import SubstituteList from "./(options)/SubstituteList";
+import BenchList from "./(options)/BenchList";
 import PositionList from "./(options)/PositionList";
 
 const LineupOptions = () => {
@@ -14,13 +14,8 @@ const LineupOptions = () => {
     <>
       {optionMode === "playerInfo" ? (
         <MemberInfo member={member} />
-      ) : optionMode === "substitutes" ? (
-        <>
-          <ListHeader>
-            <ListTitle>替補名單</ListTitle>
-          </ListHeader>
-          <SubstituteList />
-        </>
+      ) : optionMode === "substitutes" || optionMode === "others" ? (
+        <BenchList />
       ) : optionMode === "positions" ? (
         <>
           <ListHeader>
@@ -29,12 +24,7 @@ const LineupOptions = () => {
           <PositionList />
         </>
       ) : (
-        <>
-          <ListHeader>
-            <ListTitle>陣容設定</ListTitle>
-          </ListHeader>
-          <LineupConfig />
-        </>
+        <LineupConfig />
       )}
     </>
   );
