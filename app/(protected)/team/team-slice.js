@@ -154,6 +154,18 @@ const teamSlice = createSlice({
       state.editingLineup.status.editingMember._id = _id;
       state.editingLineup.status.optionMode = "playerInfo";
     },
+    addSubstitutePlayer: (state, action) => {
+      const index = action.payload;
+      state.editingLineup.status.edited = true;
+      state.editingLineup.substitutes.push(state.editingLineup.others[index]);
+      state.editingLineup.others.splice(index, 1);
+    },
+    removeSubstitutePlayer: (state, action) => {
+      const index = action.payload;
+      state.editingLineup.status.edited = true;
+      state.editingLineup.others.push(state.editingLineup.substitutes[index]);
+      state.editingLineup.substitutes.splice(index, 1);
+    },
     setPlayerPosition: (state, action) => {
       const { editingMember } = state.editingLineup.status;
       const position = action.payload;
