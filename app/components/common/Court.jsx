@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiPlus, FiX, FiRepeat } from "react-icons/fi";
 
 export const CourtContainer = styled.div`
   width: 100%;
@@ -121,11 +121,9 @@ export const PlayerCardContainer = styled.div`
   }
 `;
 
-export const Cross = styled.div`
+export const Button = styled.div`
   position: absolute;
-  top: -0.75rem;
-  right: -0.75rem;
-  width: 1.25rem;
+  width: 1.825rem;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
@@ -133,10 +131,19 @@ export const Cross = styled.div`
   margin: 0.25rem;
   border: 0.125rem solid var(--primary-100);
   border-radius: 50%;
-  background-color: var(--danger-500);
   color: var(--primary-100);
   font-size: 1.5rem;
   transition: all 0.2s ease-in-out;
+  &.left {
+    top: -0.75rem;
+    left: -0.75rem;
+    background-color: var(--secondary-500);
+  }
+  &.right {
+    top: -0.75rem;
+    right: -0.75rem;
+    background-color: var(--danger-500);
+  }
 `;
 
 export const PlayerCard = ({
@@ -144,6 +151,7 @@ export const PlayerCard = ({
   list,
   zone,
   onCardClick,
+  onSwitchClick,
   onCrossClick,
   editingMember,
 }) => {
@@ -161,19 +169,36 @@ export const PlayerCard = ({
         <>
           <p>{member.number}</p>
           <span>{member.position}</span>
-          {toggled && onCrossClick && (
-            <Cross
-              onClick={(e) => {
-                e.stopPropagation();
-                onCrossClick();
-              }}
-            >
-              <FiX />
-            </Cross>
+          {toggled && (
+            <>
+              <Button
+                className="left"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSwitchClick();
+                }}
+              >
+                <FiRepeat />
+              </Button>
+              {onCrossClick && (
+                <Button
+                  className="right"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCrossClick();
+                  }}
+                >
+                  <FiX />
+                </Button>
+              )}
+            </>
           )}
         </>
       ) : (
-        <FiPlus />
+        <>
+          <FiPlus />
+          <span />
+        </>
       )}
     </PlayerCardContainer>
   );
