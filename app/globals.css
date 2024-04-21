@@ -7,7 +7,7 @@
     --background: 246, 244, 245;
     --foreground: 0, 0, 0;
 
-    --card: 246, 244, 245, 1;
+    --card: 246, 244, 245;
     --card-foreground: 0, 0, 0;
 
     --popover: 246, 244, 245;
@@ -22,7 +22,7 @@
     --muted: 98, 98, 98;
     --muted-foreground: 221, 220, 221;
 
-    --accent: 98, 98, 98;
+    --accent: 221, 220, 221;
     --accent-foreground: 25, 24, 24;
 
     --destructive: 252, 122, 86;

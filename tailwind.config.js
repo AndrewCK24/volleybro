@@ -18,38 +18,38 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "rgb(var(--border))",
-        input: "rgb(var(--input))",
-        ring: "rgb(var(--ring))",
-        background: "rgb(var(--background))",
-        foreground: "rgb(var(--foreground))",
+        border: "rgba(var(--border))",
+        input: "rgba(var(--input))",
+        ring: "rgba(var(--ring))",
+        background: "rgba(var(--background))",
+        foreground: "rgba(var(--foreground))",
         primary: {
-          DEFAULT: "rgb(var(--primary))",
-          foreground: "rgb(var(--primary-foreground))",
+          DEFAULT: "rgba(var(--primary))",
+          foreground: "rgba(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "rgb(var(--secondary))",
-          foreground: "rgb(var(--secondary-foreground))",
+          DEFAULT: "rgba(var(--secondary))",
+          foreground: "rgba(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "rgb(var(--destructive))",
-          foreground: "rgb(var(--destructive-foreground))",
+          DEFAULT: "rgba(var(--destructive))",
+          foreground: "rgba(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "rgb(var(--muted))",
-          foreground: "rgb(var(--muted-foreground))",
+          DEFAULT: "rgba(var(--muted))",
+          foreground: "rgba(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "rgb(var(--accent))",
-          foreground: "rgb(var(--accent-foreground))",
+          DEFAULT: "rgba(var(--accent))",
+          foreground: "rgba(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "rgb(var(--popover))",
-          foreground: "rgb(var(--popover-foreground))",
+          DEFAULT: "rgba(var(--popover))",
+          foreground: "rgba(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "rgb(var(--card))",
-          foreground: "rgb(var(--card-foreground))",
+          DEFAULT: "rgba(var(--card))",
+          foreground: "rgba(var(--card-foreground))",
         },
       },
       fontFamily: {
