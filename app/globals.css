@@ -4,8 +4,6 @@
 
 @layer base {
   :root {
-    font-size: 12px;
-
     --background: 246, 244, 245;
     --foreground: 0, 0, 0;
 

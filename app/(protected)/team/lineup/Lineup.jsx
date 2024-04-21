@@ -60,7 +60,6 @@ const Lineup = () => {
 
   return (
     <>
-      <Section>
         <LineupCourt />
         {isRecording && (
           <FormSelect
@@ -74,7 +73,6 @@ const Lineup = () => {
             onChange={setFirstServe}
           />
         )}
-      </Section>
       <Section type="fixed">
         <LineupOptions />
       </Section>

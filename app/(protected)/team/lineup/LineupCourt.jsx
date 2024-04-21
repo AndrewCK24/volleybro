@@ -16,7 +16,7 @@ const LineupCourt = () => {
 
   return (
     <CourtContainer>
-      <Outside className="left">
+      <Outside className="inner">
         {status.optionMode === "" ? (
           <AdjustButton onClick={() => dispatch(teamActions.rotateLineupCw())}>
             <FiRefreshCw />
@@ -75,7 +75,6 @@ const LineupCourt = () => {
           );
         })}
       </Inside>
-      <Outside className="right" />
     </CourtContainer>
   );
 };

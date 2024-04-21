@@ -1,6 +1,6 @@
 .header {
   position: fixed;
-  height: 3.5rem;
+  height: 3rem;
   width: 100%;
   padding: 0 5%;
   display: flex;
@@ -12,8 +12,8 @@
   background-color: var(--primary-100);
   svg {
     color: var(--primary-500);
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   &__title {
@@ -23,7 +23,7 @@
     align-items: center;
     justify-content: flex-start;
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.625rem;
     font-weight: 500;
     line-height: 3rem;
 
@@ -35,7 +35,7 @@
 
 .main {
   flex: 1 1;
-  padding: 4rem 0 5.5rem;
+  padding: 3.5rem 0 4.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
