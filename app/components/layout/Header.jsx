@@ -3,9 +3,8 @@ import { usePathname, useRouter } from "next/navigation";
 
 import styles from "./styles.module.scss";
 
-import { IconButton } from "../common/Button";
-import { FiArrowLeft } from "react-icons/fi";
-import { IoNotificationsSharp } from "react-icons/io5";
+import { Button } from "@/components/ui/button";
+import { FiArrowLeft, FiBell } from "react-icons/fi";
 
 const Container = ({ children }) => (
   <header className={styles.header}>{children}</header>
@@ -21,9 +20,9 @@ export const Header = () => {
   return (
     <Container>
       {isIndex || (
-        <IconButton onClick={handleBack} type="secondary" ariaLabel="previous page" >
+        <Button onClick={handleBack} variant="ghost" size="icon">
           <FiArrowLeft />
-        </IconButton>
+        </Button>
       )}
       <h1
         className={`${styles.header__title} ${
@@ -32,7 +31,9 @@ export const Header = () => {
       >
         V-Stats
       </h1>
-      <IoNotificationsSharp />
+      <Button variant="ghost" size="icon">
+        <FiBell />
+      </Button>
     </Container>
   );
 };
