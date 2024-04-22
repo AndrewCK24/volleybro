@@ -1,15 +1,4 @@
 .form {
-  &__title {
-    width: 100%;
-    padding: 0 0 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--primary-900);
-  }
-
   &__container {
     flex: 1 1;
     width: 100%;
@@ -154,18 +143,6 @@
       color: var(--secondary-500);
       background-color: transparent;
       border: none;
-    }
-  }
-
-  &__link {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    padding: 0 0.5rem;
-    a {
-      color: var(--secondary-500);
-      font-weight: 500;
-      text-decoration: none;
     }
   }
 }
@@ -538,17 +515,6 @@
     flex: 1 1;
     overflow: scroll;
     overscroll-behavior-y: contain;
-  }
-
-  &__inner {
-    flex: 1;
-    width: 100%;
-    padding: 0.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 1rem;
   }
 
   &__hr {

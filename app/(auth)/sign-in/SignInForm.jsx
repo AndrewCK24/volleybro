@@ -4,14 +4,16 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/(protected)/user/user-slice";
 import { teamActions } from "@/app/(protected)/team/team-slice";
-import { Section, SectionHr } from "@/app/components/common/Section";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  FormTitle,
-  FormContainer,
-  FormControl,
-  FormButton,
-  FormLink,
-} from "@/app/components/common/Form";
+  CardHeader,
+  CardTitle,
+  CardBtnGroup,
+  CardFooter,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { FormContainer, FormControl } from "@/app/components/common/Form";
 
 const SignInForm = () => {
   const router = useRouter();
@@ -67,7 +69,7 @@ const SignInForm = () => {
         } else {
           const response = await fetch("/api/teams");
           const teams = await response.json();
-          dispatch(userActions.setTeamsDetails(teams));      
+          dispatch(userActions.setTeamsDetails(teams));
           return router.push("/team/invitations");
         }
       }
@@ -82,9 +84,11 @@ const SignInForm = () => {
   };
 
   return (
-    <Section>
+    <>
+      <CardHeader>
+        <CardTitle>歡迎使用 V-Stats</CardTitle>
+      </CardHeader>
       <FormContainer onSubmit={handleSubmit}>
-        <FormTitle>歡迎使用 V-Stats</FormTitle>
         <FormControl
           name="email"
           labelText="帳號"
@@ -103,14 +107,24 @@ const SignInForm = () => {
           onChange={handlePasswordChange}
           warn={passwordError}
         />
-        <FormLink href="/auth/password">忘記密碼？</FormLink>
-        <FormButton errorArr={errorArr}>登入</FormButton>
+        <CardBtnGroup>
+          <Link
+            className={buttonVariants({ variant: "link", size: "xs" })}
+            href="/auth/password"
+          >
+            忘記密碼？
+          </Link>
+        </CardBtnGroup>
+        <Button size="lg" disabled={errorArr.some((error) => error.length > 0)}>
+          登入
+        </Button>
       </FormContainer>
-      <SectionHr content="或使用以下方式登入" />
-      <FormButton type="outlined" onClick={handleSignUp}>
+      <Separator content="或使用以下方式登入" />
+      <Button size="lg" variant="outline" onClick={() => handleSignUp()}>
         註冊
-      </FormButton>
-    </Section>
+      </Button>
+      <CardFooter />
+    </>
   );
 };
 

@@ -1,16 +1,12 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/(protected)/user/user-slice";
-import { Section, SectionHr } from "@/app/components/common/Section";
-import {
-  FormTitle,
-  FormContainer,
-  FormControl,
-  FormButton,
-} from "../../components/common/Form";
+import { Button } from "@/components/ui/button";
+import { CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { FormContainer, FormControl } from "../../components/common/Form";
 
 const SignUpForm = () => {
   const router = useRouter();
@@ -107,9 +103,11 @@ const SignUpForm = () => {
   };
 
   return (
-    <Section>
+    <>
+      <CardHeader>
+        <CardTitle>開始註冊 V-Stats</CardTitle>
+      </CardHeader>
       <FormContainer onSubmit={handleSubmit}>
-        <FormTitle>開始註冊 V-Stats</FormTitle>
         <FormControl
           name="email"
           labelText="帳號"
@@ -146,13 +144,16 @@ const SignUpForm = () => {
           onChange={handleNameChange}
           warn={nameError}
         />
-        <FormButton errorArr={errorArr}>註冊</FormButton>
+        <Button size="lg" disabled={errorArr.some((error) => error.length > 0)}>
+          註冊
+        </Button>
       </FormContainer>
-      <SectionHr content="已有帳號了嗎？" />
-      <FormButton type="text" onClick={handleSignIn}>
+      <Separator />
+      <Button size="lg" variant="outline" onClick={handleSignIn}>
         返回登入頁
-      </FormButton>
-    </Section>
+      </Button>
+      <CardFooter />
+    </>
   );
 };
 

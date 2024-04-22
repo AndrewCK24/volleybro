@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styles from "./styles.module.scss";
 
 export const FormContainer = ({ children, onSubmit }) => {
@@ -7,10 +6,6 @@ export const FormContainer = ({ children, onSubmit }) => {
       {children}
     </form>
   );
-};
-
-export const FormTitle = ({ children }) => {
-  return <h2 className={styles.form__title}>{children}</h2>;
 };
 
 export const FormControl = (props) => {
@@ -129,13 +124,5 @@ export const FormButton = ({ children, errorArr = [], type, onClick }) => {
     >
       {children}
     </button>
-  );
-};
-
-export const FormLink = ({ children, href }) => {
-  return (
-    <div className={styles.form__link}>
-      <Link href={href}>{children}</Link>
-    </div>
   );
 };
