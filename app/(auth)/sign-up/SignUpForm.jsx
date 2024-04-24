@@ -1,79 +1,61 @@
 "use client";
-import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/(protected)/user/user-slice";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { FormContainer, FormControl } from "../../components/common/Form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+const formSchema = z
+  .object({
+    email: z.string().email({ message: "請輸入有效的 email" }),
+    password: z
+      .string()
+      .min(6, { message: "請輸入長度 6-20 密碼" })
+      .max(20, { message: "請輸入長度 6-20 密碼" }),
+    confirm_password: z
+      .string()
+      .min(6, { message: "請輸入長度 6-20 密碼" })
+      .max(20, { message: "請輸入長度 6-20 密碼" }),
+    name: z
+      .string()
+      .min(1, { message: "請輸入姓名" })
+      .max(20, { message: "姓名不得超過20字" }),
+  })
+  .required()
+  .refine((data) => data.password === data.confirm_password, {
+    message: "密碼不一致",
+    path: ["confirm_password"],
+  });
 
 const SignUpForm = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [emailValue, setEmailValue] = useState("");
-  const [emailError, setEmailError] = useState(" ");
-  const [passwordValue, setPasswordValue] = useState("");
-  const [passwordError, setPasswordError] = useState(" ");
-  const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState(" ");
-  const [nameValue, setNameValue] = useState("");
-  const [nameError, setNameError] = useState(" ");
-  const errorArr = [emailError, passwordError, confirmPasswordError, nameError];
 
-  const handleEmailChange = (value) => {
-    setEmailValue(value);
-    const validEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-    if (value.length === 0) {
-      setEmailError("帳號不得為空");
-    } else if (!value.match(validEmailRegex)) {
-      setEmailError("請輸入有效的 email");
-    } else {
-      setEmailError("");
-    }
-  };
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirm_password: "",
+      name: "",
+    },
+  });
 
-  const handlePasswordChange = (value) => {
-    setPasswordValue(value);
-    if (value.length === 0) {
-      setPasswordError("密碼不得為空");
-    } else if (value.length > 20) {
-      setPasswordError("密碼不得超過20字");
-    } else {
-      setPasswordError("");
-    }
-  };
-
-  const handleConfirmPasswordChange = (value) => {
-    setConfirmPasswordValue(value);
-    if (value !== passwordValue) {
-      setConfirmPasswordError("密碼不一致");
-    } else {
-      setConfirmPasswordError("");
-    }
-  };
-
-  const handleNameChange = (value) => {
-    setNameValue(value);
-    if (value.length === 0) {
-      setNameError("使用者名稱不得為空");
-    } else if (value.length > 20) {
-      setNameError("使用者名稱不得超過20字");
-    } else {
-      setNameError("");
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = {
-      email: emailValue,
-      password: passwordValue,
-      confirm_password: confirmPasswordValue,
-      name: nameValue,
-    };
-    console.log(formData);
-
+  const onSubmit = async (formData) => {
     try {
       const res = await fetch("/api/sign-up", {
         method: "POST",
@@ -98,60 +80,79 @@ const SignUpForm = () => {
     }
   };
 
-  const handleSignIn = () => {
-    router.push("/sign-in");
-  };
-
   return (
     <>
       <CardHeader>
         <CardTitle>開始註冊 V-Stats</CardTitle>
       </CardHeader>
-      <FormContainer onSubmit={handleSubmit}>
-        <FormControl
+      <Form
+        form={form}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mt-4"
+      >
+        <FormField
+          control={form.control}
           name="email"
-          labelText="帳號"
-          type="email"
-          placeholder="請輸入 email"
-          required={true}
-          onChange={handleEmailChange}
-          warn={emailError}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="v-stats@example.com" {...field} />
+              </FormControl>
+              <FormDescription>請輸入有效的 email</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormControl
+        <FormField
+          control={form.control}
           name="password"
-          labelText="密碼"
-          type="password"
-          placeholder="請輸入密碼"
-          required={true}
-          onChange={handlePasswordChange}
-          warn={passwordError}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>密碼</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormDescription>請輸入長度 6-20 密碼</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormControl
-          name="confirmPassword"
-          labelText="確認密碼"
-          type="password"
-          placeholder="請再次輸入密碼"
-          required={true}
-          onChange={handleConfirmPasswordChange}
-          warn={confirmPasswordError}
+        <FormField
+          control={form.control}
+          name="confirm_password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>確認密碼</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormDescription>請再次輸入密碼</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormControl
+        <FormField
+          control={form.control}
           name="name"
-          labelText="使用者名稱"
-          type="text"
-          placeholder="請輸入中英文名稱"
-          required={true}
-          onChange={handleNameChange}
-          warn={nameError}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>使用者名稱</FormLabel>
+              <FormControl>
+                <Input placeholder="Yuki Ishikawa" {...field} />
+              </FormControl>
+              <FormDescription>登入後可更改</FormDescription>
+            </FormItem>
+          )}
         />
-        <Button size="lg" disabled={errorArr.some((error) => error.length > 0)}>
+        <Button type="submit" size="lg" className="w-full">
           註冊
         </Button>
-      </FormContainer>
+      </Form>
       <Separator />
-      <Button size="lg" variant="outline" onClick={handleSignIn}>
+      <Link
+        className={buttonVariants({ variant: "outline", size: "lg" })}
+        href="/sign-in"
+      >
         返回登入頁
-      </Button>
+      </Link>
       <CardFooter />
     </>
   );

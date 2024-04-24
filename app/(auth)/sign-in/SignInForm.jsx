@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/(protected)/user/user-slice";
@@ -13,43 +15,33 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { FormContainer, FormControl } from "@/app/components/common/Form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+const formSchema = z
+  .object({
+    email: z.string().email({ message: "請輸入有效的 email" }),
+    password: z.string().min(6, { message: "請輸入長度 6-20 密碼" }),
+  })
+  .required();
 
 const SignInForm = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [emailValue, setEmailValue] = useState("");
-  const [emailError, setEmailError] = useState(" ");
-  const [passwordValue, setPasswordValue] = useState("");
-  const [passwordError, setPasswordError] = useState(" ");
-  const errorArr = [emailError, passwordError];
 
-  const handleEmailChange = (value) => {
-    setEmailValue(value);
-    const validEmailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-    if (value.length === 0) {
-      setEmailError("帳號不得為空");
-    } else if (!value.match(validEmailRegex)) {
-      setEmailError("請輸入有效的 email");
-    } else {
-      setEmailError("");
-    }
-  };
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
-  const handlePasswordChange = (value) => {
-    setPasswordValue(value);
-    if (value.length === 0) {
-      setPasswordError("密碼不得為空");
-    } else if (value.length > 20) {
-      setPasswordError("密碼不得超過20字");
-    } else {
-      setPasswordError("");
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = { email: emailValue, password: passwordValue };
+  const onSubmit = async (formData) => {
     try {
       const res = await fetch("/api/sign-in", {
         method: "POST",
@@ -57,8 +49,10 @@ const SignInForm = () => {
         body: JSON.stringify(formData),
       });
 
-      if (res.status === 404) return setEmailError("帳號不存在");
-      if (res.status === 401) return setPasswordError("密碼有誤");
+      if (res.status === 404)
+        return form.setError("email", { message: "帳號不存在" });
+      if (res.status === 401)
+        return form.setError("password", { message: "密碼錯誤" });
 
       if (res.status === 200) {
         const { userData, teamData, membersData } = await res.json();
@@ -79,33 +73,37 @@ const SignInForm = () => {
     }
   };
 
-  const handleSignUp = () => {
-    router.push("/sign-up");
-  };
-
   return (
     <>
       <CardHeader>
         <CardTitle>歡迎使用 V-Stats</CardTitle>
       </CardHeader>
-      <FormContainer onSubmit={handleSubmit}>
-        <FormControl
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
+        <FormField
+          control={form.control}
           name="email"
-          labelText="帳號"
-          type="email"
-          placeholder="請輸入 email"
-          required={true}
-          onChange={handleEmailChange}
-          warn={emailError}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="v-stats@example.com" {...field} />
+              </FormControl>
+              <FormDescription>請輸入有效的 email</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormControl
+        <FormField
+          control={form.control}
           name="password"
-          labelText="密碼"
-          type="password"
-          placeholder="請輸入密碼"
-          required={true}
-          onChange={handlePasswordChange}
-          warn={passwordError}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>密碼</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormDescription>請輸入長度 6-20 密碼</FormDescription>
+            </FormItem>
+          )}
         />
         <CardBtnGroup>
           <Link
@@ -115,14 +113,15 @@ const SignInForm = () => {
             忘記密碼？
           </Link>
         </CardBtnGroup>
-        <Button size="lg" disabled={errorArr.some((error) => error.length > 0)}>
-          登入
-        </Button>
-      </FormContainer>
+        <Button size="lg">登入</Button>
+      </Form>
       <Separator content="或使用以下方式登入" />
-      <Button size="lg" variant="outline" onClick={() => handleSignUp()}>
+      <Link
+        className={buttonVariants({ variant: "outline", size: "lg" })}
+        href="/sign-up"
+      >
         註冊
-      </Button>
+      </Link>
       <CardFooter />
     </>
   );
