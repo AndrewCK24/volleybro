@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 
@@ -49,4 +50,16 @@ const Button = React.forwardRef(
 );
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+const ButtonLink = React.forwardRef(
+  ({ className, variant, size, ...props }, ref) => {
+    return (
+      <Link
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+
+export { Button, ButtonLink as Link, buttonVariants };
