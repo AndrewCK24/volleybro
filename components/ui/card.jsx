@@ -17,7 +17,10 @@ Card.displayName = "Card";
 const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-row justify-start items-center h-10 py-2", className)}
+    className={cn(
+      "flex flex-row justify-start items-center h-10 py-2",
+      className
+    )}
     {...props}
   />
 ));
@@ -26,7 +29,10 @@ CardHeader.displayName = "CardHeader";
 const CardBtnGroup = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-row justify-end items-center gap-2", className)}
+    className={cn(
+      "flex-1 flex flex-row justify-end items-center gap-2",
+      className
+    )}
     {...props}
   />
 ));
@@ -36,7 +42,7 @@ const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
   <h3
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
+      "flex flex-row justify-start items-center text-2xl font-semibold leading-none tracking-tight gap-1",
       className
     )}
     {...props}
