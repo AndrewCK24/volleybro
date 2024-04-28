@@ -17,7 +17,10 @@ import { Input } from "@/components/ui/input";
 
 const formSchema = z
   .object({
-    name: z.string().min(1, { message: "隊伍名稱不得為空" }).max(20, { message: "請輸入長度小於 20 的隊伍名稱" }),
+    name: z
+      .string()
+      .min(1, { message: "隊伍名稱不得為空" })
+      .max(20, { message: "請輸入長度小於 20 的隊伍名稱" }),
     nickname: z.string().max(8, { message: "請輸入長度小於 8 的隊伍簡稱" }),
   })
   .required();
