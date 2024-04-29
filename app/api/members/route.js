@@ -28,7 +28,7 @@ export const POST = async (req) => {
     }
     // only admins can create admins
     const userIsAdmin = userIsMember.meta.admin;
-    if (formData.meta.admin && !userIsAdmin) {
+    if (formData.admin && !userIsAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -42,9 +42,9 @@ export const POST = async (req) => {
       );
     }
 
-    if (formData.meta.email) {
+    if (formData.email) {
       const hasSameEmail = members.find(
-        (member) => member.meta.email === formData.meta.email
+        (member) => member.meta.email === formData.email
       );
       if (hasSameEmail) {
         return NextResponse.json(
@@ -57,8 +57,8 @@ export const POST = async (req) => {
     const newMember = new Member({
       team_id: formData.team_id,
       meta: {
-        admin: formData.meta.admin,
-        email: formData.meta.email,
+        admin: formData.admin,
+        email: formData.email,
       },
       name: formData.name,
       number: formData.number,
@@ -66,8 +66,8 @@ export const POST = async (req) => {
     });
 
     // find the user and send invitation
-    if (formData.meta.email) {
-      const targetUser = await User.findOne({ email: formData.meta.email });
+    if (formData.email) {
+      const targetUser = await User.findOne({ email: formData.email });
       if (targetUser) {
         targetUser.teams.inviting.push(formData.team_id);
         await targetUser.save();
@@ -125,6 +125,7 @@ export const PUT = async (req) => {
       member._id.equals(formData._id)
     );
     if (targetIndex === -1) {
+      console.log(`[put-teams] Member not found`);
       return NextResponse.json({ error: "Member not found" }, { status: 404 });
     }
     const updatingMember = await Member.findById(formData._id);
@@ -145,11 +146,11 @@ export const PUT = async (req) => {
       updatingMember.number = formData.number;
     }
 
-    const isEmailChanged = updatingMember.meta.email !== formData.meta.email;
+    const isEmailChanged = updatingMember.meta.email !== formData.email;
     if (isEmailChanged) {
-      if (formData.meta.email) {
+      if (formData.email) {
         const hasSameEmail = members.find(
-          (member) => member.meta.email === formData.meta.email
+          (member) => member.meta.email === formData.email
         );
         if (hasSameEmail) {
           return NextResponse.json(
@@ -179,10 +180,10 @@ export const PUT = async (req) => {
           await removedUser.save();
         }
       }
-      if (formData.meta.email) {
-        updatingMember.meta.email = formData.meta.email;
+      if (formData.email) {
+        updatingMember.meta.email = formData.email;
         const invitingUser = await User.findOne({
-          email: formData.meta.email,
+          email: formData.email,
         });
         if (invitingUser) {
           if (!invitingUser.teams.inviting.includes(formData.team_id)) {
@@ -194,7 +195,7 @@ export const PUT = async (req) => {
         updatingMember.meta.email = null;
       }
     }
-    updatingMember.meta.admin = formData.meta.admin;
+    updatingMember.meta.admin = formData.admin;
     console.log(updatingMember);
     await updatingMember.save();
 
