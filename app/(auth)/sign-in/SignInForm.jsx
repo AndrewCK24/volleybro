@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/(protected)/user/user-slice";
 import { teamActions } from "@/app/(protected)/team/team-slice";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, Link } from "@/components/ui/button";
 import {
   CardHeader,
   CardTitle,
@@ -106,20 +105,14 @@ const SignInForm = () => {
           )}
         />
         <CardBtnGroup>
-          <Link
-            className={buttonVariants({ variant: "link", size: "xs" })}
-            href="/auth/password"
-          >
+          <Link variant="link" size="xs" href="/auth/password">
             忘記密碼？
           </Link>
         </CardBtnGroup>
         <Button size="lg">登入</Button>
       </Form>
       <Separator content="或使用以下方式登入" />
-      <Link
-        className={buttonVariants({ variant: "outline", size: "lg" })}
-        href="/sign-up"
-      >
+      <Link variant="outline" size="lg" href="/sign-up">
         註冊
       </Link>
       <CardFooter />
