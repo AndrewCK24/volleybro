@@ -111,18 +111,3 @@ export const FormSelect = (props) => {
     </div>
   );
 };
-
-export const FormButton = ({ children, errorArr = [], type, onClick }) => {
-  const hasError = errorArr.some((error) => error);
-
-  return (
-    <button
-      type="submit"
-      disabled={hasError}
-      className={`${styles.form__button} ${styles[`form__button--${type}`]}`}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};

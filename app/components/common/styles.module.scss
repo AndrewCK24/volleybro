@@ -110,41 +110,6 @@
     font-weight: 400;
     color: var(--danger-600);
   }
-
-  &__button {
-    height: 2.75rem;
-    width: 100%;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-100);
-    background-color: var(--secondary-500);
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    &:disabled {
-      background-color: var(--secondary-300);
-    }
-    &--outlined {
-      font-weight: 500;
-      color: var(--secondary-500);
-      background-color: var(--primary-100);
-      border: solid 0.5px var(--secondary-500);
-      &:disabled {
-        color: var(--primary-300);
-        background-color: var(--primary-100);
-        border: solid 1px var(--primary-300);
-      }
-    }
-    &--text {
-      font-weight: 500;
-      color: var(--secondary-500);
-      background-color: transparent;
-      border: none;
-    }
-  }
 }
 
 .list {
