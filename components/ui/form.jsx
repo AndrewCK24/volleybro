@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Controller, FormProvider, useFormContext } from "react-hook-form";
+import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -149,6 +151,65 @@ const FormDescription = React.forwardRef(({ className, ...props }, ref) => {
 });
 FormDescription.displayName = "FormDescription";
 
+const FormRadioGroup = React.forwardRef(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <RadioGroupPrimitive.Root
+        className={cn("grid gap-2", className)}
+        onValueChange={props.onChange}
+        defaultValue={props.value}
+        {...props}
+        ref={ref}
+      >
+        {children}
+      </RadioGroupPrimitive.Root>
+    );
+  }
+);
+FormRadioGroup.displayName = "FormRadioGroup";
+
+const radioItemVariants = cva(
+  "flex flex-row items-center justify-center text-lg font-medium transition-colors border-2 rounded-md h-9",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-primary has-[:checked]:bg-primary has-[:checked]:text-primary-foreground",
+        destructive:
+          "border-destructive has-[:checked]:bg-destructive has-[:checked]:text-destructive-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+const FormRadioItem = React.forwardRef(
+  ({ children, variant, className, value, id, ...props }, ref) => {
+    return (
+      <FormItem>
+        <Label
+          htmlFor={id}
+          className={cn(radioItemVariants({ variant, className }))}
+        >
+          <FormControl>
+            <RadioGroupPrimitive.Item
+              ref={ref}
+              id={id}
+              value={value}
+              className="hidden"
+              {...props}
+            />
+          </FormControl>
+          {children}
+        </Label>
+      </FormItem>
+    );
+  }
+);
+FormRadioItem.displayName = "FormRadioItem";
+
 export {
   useFormField,
   Form,
@@ -158,4 +219,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FormRadioGroup,
+  FormRadioItem,
 };
