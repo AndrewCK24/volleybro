@@ -5,8 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { userActions } from "@/app/(protected)/user/user-slice";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, Link } from "@/components/ui/button";
 import { CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -85,11 +84,7 @@ const SignUpForm = () => {
       <CardHeader>
         <CardTitle>開始註冊 V-Stats</CardTitle>
       </CardHeader>
-      <Form
-        form={form}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-4"
-      >
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
         <FormField
           control={form.control}
           name="email"
@@ -147,10 +142,7 @@ const SignUpForm = () => {
         </Button>
       </Form>
       <Separator />
-      <Link
-        className={buttonVariants({ variant: "outline", size: "lg" })}
-        href="/sign-in"
-      >
+      <Link variant="outline" size="lg" href="/sign-in">
         返回登入頁
       </Link>
       <CardFooter />
