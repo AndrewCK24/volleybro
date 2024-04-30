@@ -198,7 +198,7 @@ const FormRadioItem = React.forwardRef(
               ref={ref}
               id={id}
               value={value}
-              className="hidden"
+              className="sr-only"
               {...props}
             />
           </FormControl>
