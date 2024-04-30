@@ -11,7 +11,7 @@ import {
 import MemberInfo from "../MemberInfo";
 
 const MemberPage = ({ params }) => {
-  const { id: memberId } = params;
+  const { memberId } = params;
   const { members } = useSelector((state) => state.team);
   const member = members.find((member) => member._id === memberId);
 

@@ -8,7 +8,7 @@ import { teamActions } from "../../../team-slice";
 const EditMemberPage = ({ params }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { id: memberId } = params;
+  const { memberId } = params;
   const user = useSelector((state) => state.user);
   const { _id: teamId } = useSelector((state) => state.team);
   const member = useSelector((state) =>
