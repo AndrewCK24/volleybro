@@ -2,9 +2,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { teamActions } from "../team-slice";
+import { useSelector } from "react-redux";
 import { Button, Link } from "@/components/ui/button";
 import {
   Form,
@@ -34,11 +32,8 @@ const formSchema = z.object({
   admin: z.coerce.boolean().optional(),
 });
 
-const MemberForm = ({ member = null, setIsEditing }) => {
-  const router = useRouter();
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const { _id: teamId, admin: isAdmin } = useSelector((state) => state.team);
+const MemberForm = ({ member = null, onSubmit }) => {
+  const { admin: isAdmin } = useSelector((state) => state.team);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -50,30 +45,6 @@ const MemberForm = ({ member = null, setIsEditing }) => {
       admin: member?.meta.admin ? "true" : "false",
     },
   });
-
-  const onSubmit = async (formData) => {
-    formData.team_id = teamId;
-    formData._id = member?._id;
-    const isEditing = member;
-
-    try {
-      const response = await fetch("/api/members", {
-        method: isEditing ? "PUT" : "POST", // PUT for update, POST for create
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const { teamData, membersData, member } = await response.json();
-
-      dispatch(teamActions.setTeam({ userData: user, teamData, membersData }));
-      if (isEditing) {
-        setIsEditing(false);
-      } else {
-        router.push(`/team/member/${member._id}`);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   return (
     <>
@@ -180,9 +151,9 @@ const MemberForm = ({ member = null, setIsEditing }) => {
         <Button size="lg">{member ? "儲存變更" : "新增隊員"}</Button>
       </Form>
       {member ? (
-        <Button variant="outline" size="lg" onClick={() => setIsEditing(false)}>
+        <Link variant="outline" size="lg" href={`/team/member/${member._id}`}>
           取消編輯
-        </Button>
+        </Link>
       ) : (
         <Link variant="outline" size="lg" href="/team">
           取消新增

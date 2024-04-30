@@ -1,37 +1,39 @@
-"use client";
-import { useState } from "react";
-import { FiEdit2 } from "react-icons/fi";
+import { FiHash, FiUser, FiMail, FiShield } from "react-icons/fi";
 import {
-  ListHeader,
-  ListTitle,
-  ListBtnContainer,
-  ListBtn,
+  ListItemContainer,
+  ListItem,
+  ListItemText,
 } from "@/app/components/common/List";
-import MemberForm from "./MemberForm";
-import MemberView from "./MemberView";
+import { Separator } from "@/components/ui/separator";
 
 const MemberInfo = ({ member }) => {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleEdit = () => setIsEditing(true);
-
   return (
     <>
-      <ListHeader>
-        <ListTitle>隊員詳細資料</ListTitle>
-        <ListBtnContainer>
-          {!isEditing && (
-            <ListBtn onClick={handleEdit}>
-              <FiEdit2 />
-            </ListBtn>
-          )}
-        </ListBtnContainer>
-      </ListHeader>
-      {isEditing ? (
-        <MemberForm member={member} setIsEditing={setIsEditing} />
-      ) : (
-        <MemberView member={member} />
-      )}
+      <ListItemContainer>
+        <ListItem type="secondary" text>
+          <FiHash />
+          <ListItemText bold>背號：{member.number || " "}</ListItemText>
+        </ListItem>
+        <ListItem type="secondary" text>
+          <FiShield />
+          <ListItemText bold>位置：{member?.position || " "}</ListItemText>
+        </ListItem>
+      </ListItemContainer>
+      <ListItem type="secondary" text>
+        <FiUser />
+        <ListItemText bold>姓名：{member.name}</ListItemText>
+      </ListItem>
+      <Separator />
+      <ListItem type="secondary" text>
+        <FiMail />
+        <ListItemText>信箱：{member.meta.email}</ListItemText>
+      </ListItem>
+      <ListItem type="secondary" text>
+        <FiShield />
+        <ListItemText>
+          權限：{member.meta.admin ? "管理者" : "一般成員"}
+        </ListItemText>
+      </ListItem>
     </>
   );
 };
