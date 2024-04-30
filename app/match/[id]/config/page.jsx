@@ -1,12 +1,16 @@
 "use client";
-import { Section } from "@/app/components/common/Section";
+import { useSelector } from "react-redux";
+import { Card } from "@/components/ui/card";
 import Info from "./Info";
 
-const ConfigPage = () => {
+const ConfigPage = ({ params }) => {
+  const { id } = params;
+  const match = useSelector((state) => state.match);
+
   return (
-    <Section type="fixed">
-      <Info />
-    </Section>
+    <Card className="w-full">
+      <Info match={match} matchId={id} />
+    </Card>
   );
 };
 
