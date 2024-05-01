@@ -1,4 +1,4 @@
-import { Main } from "../components/layout/Main";
+import { Main } from "../../components/layout/Main";
 
 const AuthLayout = ({ children }) => {
   return (

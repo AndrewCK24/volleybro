@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { matchActions } from "@/app/match/match-slice";
-import { Main } from "@/app/components/layout/Main";
+import { Main } from "@/components/layout/Main";
 import Header from "../Header";
 
 const RecordLayout = ({ params, children }) => {
