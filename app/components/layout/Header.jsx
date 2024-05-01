@@ -1,14 +1,8 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-
-import styles from "./styles.module.scss";
-
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { FiArrowLeft, FiBell } from "react-icons/fi";
-
-const Container = ({ children }) => (
-  <header className={styles.header}>{children}</header>
-);
+import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   const pathname = usePathname();
@@ -18,22 +12,28 @@ export const Header = () => {
   const handleBack = () => router.push(`/${pathArr[0]}`);
 
   return (
-    <Container>
+    <header className="fixed w-full h-12 px-[5%] flex flex-row items-center justify-center gap-4 overscroll-none bg-primary-foreground">
       {isIndex || (
-        <Button onClick={handleBack} variant="ghost" size="icon">
+        <Button
+          onClick={handleBack}
+          variant="ghost"
+          size="icon"
+          className="svg-[2rem]"
+        >
           <FiArrowLeft />
         </Button>
       )}
       <h1
-        className={`${styles.header__title} ${
-          !isIndex && styles["header__title--center"]
-        }`}
+        className={cn(
+          "flex-1 text-[1.625rem] font-medium text-left m-0",
+          isIndex || "text-center"
+        )}
       >
         V-Stats
       </h1>
-      <Button variant="ghost" size="icon">
+      <Button variant="ghost" size="icon" className="svg-[2rem]">
         <FiBell />
       </Button>
-    </Container>
+    </header>
   );
 };
