@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require("tailwindcss/plugin");
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -76,5 +78,24 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    plugin(function ({ matchUtilities, theme }) {
+      matchUtilities(
+        {
+          svg: (value) => ({
+            svg: {
+              height: value,
+              width: value,
+            },
+          }),
+        },
+        {
+          values: theme("spacing"),
+          type: "any",
+          variantValue: "svg-[]",
+        }
+      );
+    }),
+  ],
 };
