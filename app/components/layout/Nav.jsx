@@ -1,5 +1,5 @@
 "use client";
-import styled from "styled-components";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -12,99 +12,55 @@ import {
   FiMenu as MenuIcon,
 } from "react-icons/fi";
 
-const Container = styled.nav`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  height: 3.875rem;
-  width: 100%;
-  padding: 0 5% 1rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--secondary-500);
-`;
-
-const NavLink = styled(Link)`
-  flex: 1 1;
-  height: 100%;
-  padding: 0.25rem 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: var(--primary-200);
-  font-size: 0.75rem;
-  gap: 0.125rem;
-
-  transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out,
-    border 0.2s ease-in-out;
-
-  svg {
-    stroke: var(--primary-200);
-    height: 1.75rem;
-    width: 1.75rem;
-  }
-
-  &.active {
-    border-top: 0.25rem solid var(--primary-100);
-    padding: 0;
-    color: var(--primary-100);
-    font-weight: 600;
-
-    svg {
-      stroke: var(--primary-100);
-    }
-  }
-
-  &.large {
-    svg {
-      width: 3rem;
-      height: 3rem;
-    }
-  }
-`;
+const NavLink = ({ children, className, ...props }) => (
+  <Link
+    className={cn(
+      "flex flex-col items-center justify-center flex-1 h-full pt-1 no-underline text-primary-foreground svg-[1.75rem] text-xs transition-all duration-200 ease-in-out",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </Link>
+);
 
 export const Nav = () => {
   const dispatch = useDispatch();
   const pathname = usePathname();
+
+  const active = (path) => {
+    const activeClass =
+      "p-0 font-semibold border-t-4 border-primary-foreground";
+    if (path === "/") return pathname === "/" ? activeClass : "";
+    return pathname.startsWith(path) ? activeClass : "";
+  };
+
   return (
-    <Container>
-      <NavLink href="/" className={pathname === "/" && "active"}>
+    <nav className="fixed bottom-0 left-0 w-full h-16 px-[5%] pt-0 pb-4 flex flex-row items-center justify-center bg-primary">
+      <NavLink href="/" className={active("/")}>
         <HomeIcon />
         首頁
       </NavLink>
-      <NavLink
-        href="/team"
-        className={pathname.startsWith("/team") && "active"}
-      >
+      <NavLink href="/team" className={active("/team")}>
         <TeamIcon />
         隊伍
       </NavLink>
       <NavLink
         href="/match/new/config"
-        className="large"
+        className="svg-[3rem]"
         aria-label="Start recording match"
         onClick={() => dispatch(matchActions.resetMatch())}
       >
         <RecordIcon />
       </NavLink>
-      <NavLink
-        href="/history"
-        className={pathname.startsWith("/history") && "active"}
-      >
+      <NavLink href="/history" className={active("/history")}>
         <HistoryIcon />
         紀錄
       </NavLink>
-      <NavLink
-        href="/user"
-        className={pathname.startsWith("/user") && "active"}
-      >
+      <NavLink href="/user" className={active("/user")}>
         <MenuIcon />
         選項
       </NavLink>
-    </Container>
+    </nav>
   );
 };
