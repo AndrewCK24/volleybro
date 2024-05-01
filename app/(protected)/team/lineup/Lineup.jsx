@@ -1,13 +1,12 @@
+"use client";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-
 import { teamActions } from "../team-slice";
 import { matchActions } from "@/app/match/match-slice";
-import { FiRotateCcw, FiSave, FiX } from "react-icons/fi";
-import { Section } from "@/app/components/common/Section";
-import { ListItemContainer, ListItem } from "@/app/components/common/List";
-import { FormSelect } from "@/app/components/common/Form";
+import { FiSave } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import LineupCourt from "./LineupCourt";
 import LineupOptions from "./LineupOptions";
 
@@ -60,56 +59,48 @@ const Lineup = () => {
 
   return (
     <>
-        <LineupCourt />
-        {isRecording && (
-          <FormSelect
-            name="firstServe"
-            options={[
-              { id: "ours", value: true, text: "我方先發" },
-              { id: "oppo", value: false, text: "對方先發" },
-            ]}
-            defaultValue={firstServe}
-            required
-            onChange={setFirstServe}
-          />
-        )}
-      <Section type="fixed">
+      <LineupCourt />
+      <Card className="flex-1 w-full">
         <LineupOptions />
-      </Section>
-      <Section type="transparent">
-        <ListItemContainer>
-          {isRecording ? (
-            <>
-              <ListItem type="secondary" text center onClick={handleCancel}>
-                <FiRotateCcw />
-                恢復預設
-              </ListItem>
-              <ListItem type="primary" center onClick={handleSave}>
-                <FiSave />
-                確認陣容
-              </ListItem>
-            </>
-          ) : (
-            <>
-              <ListItem type="secondary" text center onClick={handleCancel}>
-                <FiX />
-                取消編輯
-              </ListItem>
-              <ListItem
-                type={
-                  !status.edited || status.editingZone ? "secondary" : "primary"
-                }
-                center
-                disabled={!status.edited || status.editingZone}
-                onClick={handleSave}
-              >
-                <FiSave />
-                儲存陣容
-              </ListItem>
-            </>
-          )}
-        </ListItemContainer>
-      </Section>
+      </Card>
+      {status.optionMode || (
+        <Card className="w-full py-0 bg-transparent shadow-none">
+          <Button size="lg" onClick={handleSave}>
+            <FiSave />
+            儲存陣容
+          </Button>
+          {/* {isRecording ? (
+          <>
+            <ListItem type="secondary" text center onClick={handleCancel}>
+              <FiRotateCcw />
+              恢復預設
+            </ListItem>
+            <ListItem type="primary" center onClick={onSubmit}>
+              <FiSave />
+              確認陣容
+            </ListItem>
+          </>
+        ) : (
+          <>
+            <ListItem type="secondary" text center onClick={handleCancel}>
+              <FiX />
+              取消編輯
+            </ListItem>
+            <ListItem
+              type={
+                !status.edited || status.editingZone ? "secondary" : "primary"
+              }
+              center
+              disabled={!status.edited || status.editingZone}
+              onClick={onSubmit}
+            >
+              <FiSave />
+              儲存陣容
+            </ListItem>
+          </>
+        )} */}
+        </Card>
+      )}
     </>
   );
 };
