@@ -25,7 +25,7 @@ const RecordLayout = ({ params, children }) => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <Main full halfGap>
+    <Main className="p-0 pb-4 overflow-hidden overscroll-y-none">
       <Header matchId={matchId} />
       {children}
     </Main>

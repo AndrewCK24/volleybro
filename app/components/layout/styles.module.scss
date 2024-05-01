@@ -32,35 +32,3 @@
     }
   }
 }
-
-.main {
-  flex: 1 1;
-  padding: 3.5rem 0 4.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  flex-wrap: nowrap;
-  overflow: scroll;
-  overscroll-behavior-y: contain;
-  background-color: var(--primary-200);
-  z-index: 0;
-
-  &--full-height {
-    overflow: hidden;
-    overscroll-behavior-y: none;
-    padding: 0;
-  }
-
-  &--no-gap {
-    gap: 0;
-  }
-
-  @media screen and (min-width: 768px) {
-    padding: 4rem 5%;
-    &--full-height {
-      padding: 0;
-    }
-  }
-}
