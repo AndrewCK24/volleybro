@@ -1,4 +1,4 @@
-import { Header } from "../components/layout/Header";
+import { Header } from "../../components/layout/Header";
 import { Main } from "../../components/layout/Main";
 import { Nav } from "../../components/layout/Nav";
 
