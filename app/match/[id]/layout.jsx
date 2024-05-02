@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { matchActions } from "@/app/match/match-slice";
-import { Main } from "@/app/components/layout/Main";
+import { Main } from "@/components/layout/Main";
 import Header from "../Header";
 
 const RecordLayout = ({ params, children }) => {
@@ -25,7 +25,7 @@ const RecordLayout = ({ params, children }) => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <Main full halfGap>
+    <Main className="p-0 pb-4 overflow-hidden overscroll-y-none">
       <Header matchId={matchId} />
       {children}
     </Main>

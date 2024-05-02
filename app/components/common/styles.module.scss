@@ -1,245 +1,3 @@
-.button {
-  &__container {
-    flex: 1 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    font-size: 1.5rem;
-
-    &--row {
-      flex-direction: row;
-    }
-
-    @media screen and (min-width: 768px) {
-      flex: 0 0;
-      flex-direction: column;
-      justify-content: center;
-    }
-  }
-
-  &__icon {
-    flex: 0 0 3rem;
-    height: 3rem;
-    padding: 0.25rem;
-    border: none;
-    background-color: transparent;
-    svg {
-      width: 2.5rem;
-      height: 2.5rem;
-      color: var(--secondary-500);
-    }
-
-    &:hover,
-    &:active {
-      svg {
-        color: var(--secondary-300);
-      }
-    }
-
-    &--secondary {
-      svg {
-        color: var(--primary-400);
-      }
-      &:hover,
-      &:active {
-        svg {
-          color: var(--primary-200);
-        }
-      }
-    }
-
-    &--danger {
-      svg {
-        color: var(--danger-500);
-      }
-      &:hover,
-      &:active {
-        svg {
-          color: var(--danger-300);
-        }
-      }
-    }
-  }
-}
-
-.form {
-  &__title {
-    width: 100%;
-    padding: 0 0 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    font-size: 2rem;
-    font-weight: 500;
-    color: var(--primary-900);
-  }
-
-  &__container {
-    flex: 1 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: left;
-    justify-content: flex-start;
-    gap: 1rem;
-  }
-
-  // FormControl
-  &__inputContainer {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: left;
-    justify-content: center;
-    gap: 0.25rem;
-  }
-  &__LabelGroup {
-    height: 1.25rem;
-    display: flex;
-    flex-direction: row;
-  }
-  &__label {
-    height: 1.25rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: left;
-    padding-left: 0.5rem;
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1rem;
-
-    &--required {
-      &::after {
-        content: "*";
-        width: fit-content;
-        display: inline-flex;
-        color: var(--danger-500);
-        font-size: 1.25rem;
-        font-weight: 500;
-      }
-    }
-  }
-  &__helper {
-    align-items: center;
-    padding: 0 0.5rem;
-    color: var(--danger-500);
-  }
-  &__input {
-    height: 3.5rem;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border-radius: 1rem;
-    border: solid 1px var(--gray-primary);
-    font-size: 1.75rem;
-    font-weight: 500;
-    line-height: 3rem;
-    color: var(--primary-900);
-    caret-color: var(--primary-400);
-    &:focus {
-      outline: none;
-      -webkit-box-shadow: inset 0 0 0.25rem var(--primary-400);
-      -moz-box-shadow: inset 0 0 0.25rem var(--primary-400);
-      box-shadow: inset 0 0 0.25rem var(--primary-400);
-    }
-    &--danger {
-      border: solid 2px var(--danger-500);
-    }
-  }
-
-  // FormSelect
-  &__radioSet {
-    width: 100%;
-    padding: none;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: left;
-    border: none;
-    gap: 0.5rem;
-  }
-  &__radioGroup {
-    flex: 1 1 3rem;
-  }
-  &__radioInput {
-    display: none;
-    &:disabled ~ label {
-      border-color: var(--primary-500);
-      color: var(--primary-500);
-    }
-    &:checked ~ label {
-      background-color: var(--danger-600);
-      font-weight: 500;
-      color: var(--primary-100);
-    }
-    &:checked:disabled ~ label {
-      background-color: var(--primary-500);
-    }
-  }
-  &__radioLabel {
-    width: 100%;
-    height: 3.5rem;
-    padding: 0.5rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 1rem;
-    border: solid 1px var(--danger-600);
-    font-size: 1.75rem;
-    font-weight: 400;
-    color: var(--danger-600);
-  }
-
-  &__button {
-    height: 3.5rem;
-    width: 100%;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-100);
-    background-color: var(--secondary-500);
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1.75rem;
-    font-weight: 700;
-    &:disabled {
-      background-color: var(--secondary-300);
-    }
-    &--outlined {
-      font-weight: 500;
-      color: var(--secondary-500);
-      background-color: var(--primary-100);
-      border: solid 1px var(--secondary-500);
-      &:disabled {
-        color: var(--primary-300);
-        background-color: var(--primary-100);
-        border: solid 1px var(--primary-300);
-      }
-    }
-    &--text {
-      font-weight: 500;
-      color: var(--secondary-500);
-      background-color: transparent;
-      border: none;
-    }
-  }
-
-  &__link {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    padding: 0 0.5rem;
-    a {
-      color: var(--secondary-500);
-      font-weight: 500;
-      text-decoration: none;
-    }
-  }
-}
-
 .list {
   &__header {
     flex: 0 0;
@@ -253,25 +11,25 @@
 
   &__title {
     flex: 1;
-    height: 3rem;
+    height: 2.5rem;
     padding: 0 0.5rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     /* TODO: 新增 subtitle */
-    max-width: calc(100vw - 5rem);
+    max-width: calc(100vw - 4.5rem);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 1.75rem;
+    font-size: 1.375rem;
     font-weight: 500;
-    line-height: 3rem;
+    line-height: 2rem;
     color: var(--primary-800);
     gap: 0.5rem;
     svg {
-      width: 2rem;
-      height: 2rem;
+      width: 1.5rem;
+      height: 1.5rem;
       color: var(--secondary-700);
     }
 
@@ -294,19 +52,19 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
-    height: 3rem;
+    height: 2rem;
   }
 
   &__btn {
-    flex: 0 0 3rem;
-    height: 3rem;
-    padding: 0.5rem;
+    flex: 0 0 2rem;
+    height: 2rem;
+    padding: 0.25rem;
     border: none;
     background-color: transparent;
     aspect-ratio: 1;
     svg {
-      width: 2rem;
-      height: 2rem;
+      width: 1.5rem;
+      height: 1.5rem;
     }
 
     &--primary {
@@ -346,35 +104,35 @@
   &__item_container {
     flex: 0 0;
     width: 100%;
-    min-height: max(3.5rem, fit-content);
+    min-height: max(2.75rem, fit-content);
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0.5rem;
   }
 
   &__item {
-    flex: 0 0 3.5rem;
+    flex: 0 0 2.75rem;
     width: 100%;
-    min-height: 3.5rem;
+    min-height: 2.75rem;
     min-width: fit-content;
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
     background-color: var(--primary-100);
     box-shadow: 0 0 0.5rem var(--primary-300);
     border: none;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
     color: var(--primary-900);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     user-select: none;
     -webkit-user-select: none;
     transition: box-shadow 0.2s ease-in-out, background-color 0.1s ease-in-out;
     svg {
-      width: 2rem;
-      height: 2rem;
+      width: 1.5rem;
+      height: 1.5rem;
     }
 
     &:empty {
@@ -457,7 +215,7 @@
   }
 
   &__item_text {
-    flex: 1 1 2.25rem;
+    flex: 1 1 2rem;
     height: 2rem;
     display: flex;
     flex-direction: row;
@@ -467,7 +225,7 @@
     text-overflow: ellipsis;
     align-items: center;
     justify-content: flex-start;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     line-height: 2rem;
 
     &:empty {
@@ -484,7 +242,7 @@
     }
 
     &--minimized {
-      flex: 0 0 2.25rem;
+      flex: 0 0 2rem;
       justify-content: flex-end;
     }
 
@@ -500,9 +258,9 @@
   &__indicator {
     min-width: fit-content;
     flex: 0 0;
-    height: 2rem;
-    padding: 0rem 0.5rem;
-    border-radius: 0.5rem;
+    height: 1.5rem;
+    padding: 0rem 0.25rem;
+    border-radius: 0.25rem;
     border: 1px solid var(--secondary-600);
     display: flex;
     flex-direction: row;
@@ -510,13 +268,13 @@
     justify-content: flex-start;
     background-color: transparent;
     color: var(--secondary-600);
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 400;
-    line-height: 1.5rem;
+    line-height: 1rem;
     gap: 0.25rem;
     svg {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1rem;
+      height: 1rem;
     }
 
     &--primary {
@@ -587,15 +345,15 @@
 .section {
   flex: 0 0;
   width: 100%;
-  border-radius: 1.5rem;
-  padding: 1rem 1rem;
+  border-radius: 1rem;
+  padding: 0.75rem;
   background-color: var(--primary-100);
   box-shadow: 0 0 1rem var(--primary-300);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 1rem;
+  gap: 0.75rem;
 
   &--transparent {
     gap: 0.5rem;
@@ -610,26 +368,15 @@
     overscroll-behavior-y: contain;
   }
 
-  &__inner {
-    flex: 1;
-    width: 100%;
-    padding: 0.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 1rem;
-  }
-
   &__hr {
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 1rem 0;
+    padding: 0.75rem 0;
     border: 0;
-    font-size: 1rem;
+    font-size: 0.75rem;
     color: var(--primary-500);
     overflow: hidden;
     -webkit-mask-image: linear-gradient(

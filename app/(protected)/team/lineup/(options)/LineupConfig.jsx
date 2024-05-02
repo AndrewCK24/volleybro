@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { FiEdit2 } from "react-icons/fi";
 import { teamActions } from "../../team-slice";
+import { Button } from "@/components/ui/button";
 import {
   ListHeader,
   ListTitle,
@@ -21,14 +22,10 @@ const LineupConfig = () => {
     <>
       <ListHeader>
         <ListTitle>陣容資訊</ListTitle>
-        <ListItem
-          type="primary"
-          center
-          onClick={() => dispatch(teamActions.setOptionMode("others"))}
-        >
-          <FiEdit2 />
+        <Button onClick={() => dispatch(teamActions.setOptionMode("others"))}>
+          <FiEdit2 className="w-6 h-6" />
           <ListItemText fit> 調整替補</ListItemText>
-        </ListItem>
+        </Button>
       </ListHeader>
       <ListItemContainer>
         <ListItem type="secondary" text>

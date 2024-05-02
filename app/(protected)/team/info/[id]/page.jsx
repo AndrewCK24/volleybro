@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import TeamInfo from "../../TeamInfo";
 
 const getTeamData = async (teamId) => {
@@ -9,7 +10,11 @@ const getTeamData = async (teamId) => {
 const TeamInfoPage = async ({ params }) => {
   const { id: teamId } = params;
   const { teamData, membersData } = await getTeamData(teamId);
-  return <TeamInfo teamData={teamData} membersData={membersData} />;
+  return (
+    <Card className="w-full">
+      <TeamInfo teamData={teamData} membersData={membersData} />
+    </Card>
+  );
 };
 
 export default TeamInfoPage;

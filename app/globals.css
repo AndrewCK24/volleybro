@@ -1,78 +1,104 @@
-:root {
-  --secondary-100: #e7f0f2; /* black text */
-  --secondary-200: #b7d2d8; /* black text */
-  --secondary-300: #88b4bf; /* black text */
-  --secondary-400: #408698; /* white text */
-  --secondary-500: #10687e; /* white text */
-  --secondary-600: #0d5365; /* white text */
-  --secondary-700: #0a3e4c; /* white text */
-  --secondary-800: #062a32; /* white text */
-  --secondary-900: #031519; /* white text */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  --primary-100: #f6f4f5; /* black text */
-  --primary-200: #dddcdd; /* black text */
-  --primary-300: #c5c3c4; /* black text */
-  --primary-400: #949293; /* black text */
-  --primary-500: #626262; /* white text */
-  --primary-600: #4a4949; /* white text */
-  --primary-700: #313131; /* white text */
-  --primary-800: #191818; /* white text */
-  --primary-900: #000000; /* white text */
+@layer base {
+  :root {
+    --background: 246, 244, 245;
+    --foreground: 0, 0, 0;
 
-  --danger-100: #fff2ee; /* black text */
-  --danger-200: #fed7cc; /* black text */
-  --danger-300: #febdab; /* black text */
-  --danger-400: #fda289; /* black text */
-  --danger-500: #fc7a56; /* black text */
-  --danger-600: #ca6245; /* white text */
-  --danger-700: #974934; /* white text */
-  --danger-800: #653122; /* white text */
-  --danger-900: #321811; /* white text */
+    --card: 246, 244, 245;
+    --card-foreground: 0, 0, 0;
 
-  overscroll-behavior-y: none;
-}
+    --popover: 246, 244, 245;
+    --popover-foreground: 0, 0, 0;
 
-* {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  
-  font-size: 12px;
-  font-weight: 400;
-  font-family: var(--font-saira), var(--font-noto-sans-tc), sans-serif;
-  margin: 0;
-  overscroll-behavior-x: none;
-  overscroll-behavior-y: contain;
+    --primary: 16, 104, 126;
+    --primary-foreground: 246, 244, 245;
 
-  user-select: none;
-}
+    --secondary: 221, 220, 221;
+    --secondary-foreground: 25, 24, 24;
 
-body {
-  width: 100vw;
-  height: 100vh;
-  max-height: -webkit-fill-available;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  touch-action: none;
-  background-color: var(--primary-100);
-  transition: background-color 0.3s ease-in-out;
-}
+    --muted: 98, 98, 98;
+    --muted-foreground: 197, 195, 196;
 
-.scrollbar-hidden {
-  -ms-overflow-style: none; /* Hide scrollbar for Edge */
-  scrollbar-width: none; /* FireFox */
-}
+    --accent: 221, 220, 221;
+    --accent-foreground: 25, 24, 24;
 
-.scrollbar-hidden::-webkit-scrollbar {
-  /* Chrome, Safari and Opera */
-  display: none;
-}
+    --destructive: 252, 122, 86;
+    --destructive-foreground: 246, 244, 245;
 
-@media screen and (min-width: 768px) {
+    --border: 197, 195, 196;
+    --input: 197, 195, 196;
+    --ring: 221, 220, 221;
+
+    --radius: 0.5rem;
+
+    --secondary-100: rgba(231, 240, 242, 1);
+    --secondary-200: rgba(183, 210, 216, 1);
+    --secondary-300: rgba(136, 180, 191, 1);
+    --secondary-400: rgba(64, 134, 152, 1);
+    --secondary-500: rgba(16, 104, 126, 1);
+    --secondary-600: rgba(13, 83, 101, 1);
+    --secondary-700: rgba(10, 62, 76, 1);
+    --secondary-800: rgba(6, 42, 50, 1);
+    --secondary-900: rgba(3, 21, 25, 1);
+
+    --primary-100: rgba(246, 244, 245, 1);
+    --primary-200: rgba(221, 220, 221, 1);
+    --primary-300: rgba(197, 195, 196, 1);
+    --primary-400: rgba(148, 146, 147, 1);
+    --primary-500: rgba(98, 98, 98, 1);
+    --primary-600: rgba(74, 73, 73, 1);
+    --primary-700: rgba(49, 49, 49, 1);
+    --primary-800: rgba(25, 24, 24, 1);
+    --primary-900: rgba(0, 0, 0, 1);
+
+    --danger-100: rgba(255, 242, 238, 1);
+    --danger-200: rgba(254, 215, 204, 1);
+    --danger-300: rgba(254, 189, 171, 1);
+    --danger-400: rgba(253, 162, 137, 1);
+    --danger-500: rgba(252, 122, 86, 1);
+    --danger-600: rgba(202, 98, 69, 1);
+    --danger-700: rgba(151, 73, 52, 1);
+    --danger-800: rgba(101, 49, 34, 1);
+    --danger-900: rgba(50, 24, 17, 1);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
   * {
-    font-size: 16px;
+    @apply border-border box-border overscroll-x-none overscroll-y-none select-none;
+  }
+  body {
+    @apply bg-background text-foreground w-screen h-screen flex flex-col flex-nowrap transition-colors overscroll-y-contain;
   }
 }

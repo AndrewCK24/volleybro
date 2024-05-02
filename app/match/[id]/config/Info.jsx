@@ -1,45 +1,55 @@
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+"use client";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { matchActions } from "@/app/match/match-slice";
+import { Button } from "@/components/ui/button";
 import {
-  FormContainer,
+  Form,
   FormControl,
-  FormSelect,
-} from "@/app/components/common/Form";
-import { ListItem } from "@/app/components/common/List";
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormRadioGroup,
+  FormRadioItem,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-const Info = () => {
+const formSchema = z.object({
+  matchName: z.coerce.string().optional(),
+  oursName: z.coerce.string().optional(),
+  oppoName: z.coerce.string().optional(),
+  setCount: z.coerce.number({ message: "請選擇比賽局數" }),
+  finalSetPoint: z.coerce.number({ message: "請選擇最終局分數" }),
+});
+
+const Info = ({ match, matchId }) => {
   const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
   const {
     _id: teamId,
     name: teamName,
     members,
   } = useSelector((state) => state.team);
-  const { _id: matchId, info } = useSelector((state) => state.match);
-  const isNew = pathname.includes("/match/new");
+  const { info } = match;
+  const isNew = matchId === "new";
 
-  const [matchName, setMatchName] = useState(info.match.name || "");
-  const [oursName, setOursName] = useState(info.team.ours.name || teamName);
-  const [oppoName, setOppoName] = useState(info.team.oppo.name || "");
-  const [setCount, setSetCount] = useState(info.match.setCount || 3);
-  const [finalSetPoint, setFinalSetPoint] = useState(
-    info.match.finalSetPoint || 15
-  );
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      matchName: info?.match.name || "",
+      oursName: info?.team.ours.name || teamName,
+      oppoName: info?.team.oppo.name || "",
+      setCount: info?.match.setCount || 3,
+      finalSetPoint: info?.match.finalSetPoint || 15,
+    },
+  });
 
-  const handleSave = () => {
-    const formData = {
-      teamId,
-      members,
-      oursName: oursName,
-      oppoName: oppoName,
-      matchName: matchName,
-      setCount: setCount,
-      finalSetPoint: finalSetPoint,
-    };
-    dispatch(matchActions.configMatchInfo(formData));
+  const onSubmit = (formData) => {
+    dispatch(matchActions.configMatchInfo({ teamId, members, ...formData }));
     isNew
       ? router.replace(`/match/new/lineup`)
       : router.push(`/match/${matchId}`);
@@ -47,55 +57,82 @@ const Info = () => {
 
   return (
     <>
-      <FormContainer>
-        <FormControl
+      <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
           name="matchName"
-          labelText="比賽名稱"
-          type="text"
-          placeholder="請輸入比賽名稱"
-          onChange={setMatchName}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>比賽名稱</FormLabel>
+              <FormControl>
+                <Input placeholder="V-Stats Cup" {...field} />
+              </FormControl>
+              <FormDescription>請輸入比賽名稱</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormControl
+        <FormField
+          control={form.control}
           name="oursName"
-          labelText="我方隊伍名稱"
-          type="text"
-          placeholder="請輸入我方隊伍名稱"
-          defaultValue={teamName}
-          onChange={setOursName}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>我方隊伍名稱</FormLabel>
+              <FormControl>
+                <Input placeholder="Japan" {...field} />
+              </FormControl>
+              <FormDescription>請輸入我方隊伍名稱</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormControl
+        <FormField
+          control={form.control}
           name="oppoName"
-          labelText="對手隊伍名稱"
-          type="text"
-          placeholder="請輸入對手隊伍名稱"
-          onChange={setOppoName}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>對手隊伍名稱</FormLabel>
+              <FormControl>
+                <Input placeholder="USA" {...field} />
+              </FormControl>
+              <FormDescription>請輸入對手隊伍名稱</FormDescription>
+            </FormItem>
+          )}
         />
-        <FormSelect
+        <FormField
+          control={form.control}
           name="setCount"
-          labelText="比賽局數"
-          options={[
-            { id: "3", value: 3, text: "3局2勝" },
-            { id: "5", value: 5, text: "5局3勝" },
-          ]}
-          defaultValue={3}
-          required
-          onChange={setSetCount}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>比賽局數</FormLabel>
+              <FormRadioGroup className="grid-cols-2" {...field}>
+                <FormRadioItem variant="destructive" value={3} id="3">
+                  3局2勝
+                </FormRadioItem>
+                <FormRadioItem variant="destructive" value={5} id="5">
+                  5局3勝
+                </FormRadioItem>
+              </FormRadioGroup>
+            </FormItem>
+          )}
         />
-        <FormSelect
+        <FormField
+          control={form.control}
           name="finalSetPoint"
-          labelText="最終局分數"
-          options={[
-            { id: "15", value: 15, text: "15分" },
-            { id: "25", value: 25, text: "25分" },
-          ]}
-          defaultValue={15}
-          required
-          onChange={setFinalSetPoint}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel required>最終局分數</FormLabel>
+              <FormRadioGroup className="grid-cols-2" {...field}>
+                <FormRadioItem variant="destructive" value={15} id="15">
+                  15分
+                </FormRadioItem>
+                <FormRadioItem variant="destructive" value={25} id="25">
+                  25分
+                </FormRadioItem>
+              </FormRadioGroup>
+            </FormItem>
+          )}
         />
-      </FormContainer>
-      <ListItem type="primary" center onClick={handleSave}>
-        {isNew ? "下一步" : "儲存資訊"}
-      </ListItem>
+        <Button size="lg">{isNew ? "下一步" : "儲存資訊"}</Button>
+      </Form>
     </>
   );
 };

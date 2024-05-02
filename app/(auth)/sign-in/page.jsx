@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import Logo from "@/app/components/common/Logo";
 import SignInForm from "./SignInForm";
 
@@ -5,7 +6,9 @@ const SignInPage = () => {
   return (
     <>
       <Logo type="maximized" />
-      <SignInForm />
+      <Card className="w-full">
+        <SignInForm />
+      </Card>
     </>
   );
 };

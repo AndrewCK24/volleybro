@@ -1,28 +1,31 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { teamActions } from "@/app/(protected)/team/team-slice";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import MemberForm from "../MemberForm";
+import MemberForm from "../../MemberForm";
+import { teamActions } from "../../../team-slice";
 
-const MemberCreatePage = () => {
+const EditMemberPage = ({ params }) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { memberId } = params;
   const user = useSelector((state) => state.user);
   const { _id: teamId } = useSelector((state) => state.team);
+  const member = useSelector((state) =>
+    state.team.members.find((member) => member._id === memberId)
+  );
 
   const onSubmit = async (formData) => {
-    formData.team_id = teamId;
+    formData.teamId = teamId;
     try {
-      const res = await fetch("/api/members", {
-        method: "POST",
+      const res = await fetch(`/api/members/${memberId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const { teamData, membersData, member } = await res.json();
-      
+      const { teamData, membersData } = await res.json();
       dispatch(teamActions.setTeam({ userData: user, teamData, membersData }));
-      router.push(`/team/member/${member._id}`);
+      return router.push(`/team/member/${memberId}`);
     } catch (error) {
       console.error(error);
     }
@@ -31,11 +34,11 @@ const MemberCreatePage = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>新增隊員</CardTitle>
+        <CardTitle>編輯隊員資訊</CardTitle>
       </CardHeader>
-      <MemberForm onSubmit={onSubmit} />
+      <MemberForm member={member} onSubmit={onSubmit} />
     </Card>
   );
 };
 
-export default MemberCreatePage;
+export default EditMemberPage;

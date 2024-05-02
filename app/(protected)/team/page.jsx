@@ -1,7 +1,6 @@
-"use client";
 import TeamMembers from "./TeamMembers";
 
-const TeamPage = async () => {
+const TeamPage = () => {
   return <TeamMembers />;
 };
 
