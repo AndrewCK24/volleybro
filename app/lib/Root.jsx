@@ -19,7 +19,7 @@ const Root = ({ data }) => {
       document.body.style.backgroundColor = "var(--primary-100)";
       if (!data && !isSignIn) router.push("/sign-in");
     }
-  }, [pathname]);
+  }, [pathname, data, isSignIn, router]);
 
   if (data && isSignIn === false) {
     const { userData, teamData, membersData } = data;
