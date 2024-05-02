@@ -21,6 +21,7 @@ const Form = React.forwardRef(
     );
   }
 );
+Form.displayName = "Form";
 
 const FormFieldContext = React.createContext({});
 

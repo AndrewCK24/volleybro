@@ -61,5 +61,6 @@ const ButtonLink = React.forwardRef(
     );
   }
 );
+ButtonLink.displayName = "ButtonLink";
 
 export { Button, ButtonLink as Link, buttonVariants };
