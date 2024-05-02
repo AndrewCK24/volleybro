@@ -12,6 +12,8 @@ import Member from "@/app/models/member";
 export const GET = async (req) => {
   const data = await verifyJwt();
   if (data.error) {
+    console.log("[sign-in] verifyJwt error:", data);
+    console.log("[sign-in] verifyJwt error:", data.error);
     const response = NextResponse.json({ error: data.error }, { status: 500 });
     response.cookies.set({
       name: "token",
