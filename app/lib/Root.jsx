@@ -14,9 +14,9 @@ const Root = ({ data }) => {
 
   useEffect(() => {
     if (pathname.startsWith("/sign")) {
-      document.body.style.backgroundColor = "var(--primary-200)";
+      document.body.style.backgroundColor = "rgba(var(--primary))";
     } else {
-      document.body.style.backgroundColor = "var(--primary-100)";
+      document.body.style.backgroundColor = "rgba(var(--background))";
       if (!data && !isSignIn) router.push("/sign-in");
     }
   }, [pathname, data, isSignIn, router]);
@@ -26,8 +26,6 @@ const Root = ({ data }) => {
     dispatch(userActions.setUser(userData));
     dispatch(teamActions.setTeam({ userData, teamData, membersData }));
   }
-
-  return <></>;
 };
 
 export default Root;
