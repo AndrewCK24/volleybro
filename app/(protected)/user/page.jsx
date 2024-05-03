@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Menu from "./Menu";
 
-const userPage = () => {
+const UserPage = () => {
   const dispatch = useDispatch();
   const handleSignOut = async () => {
     try {
@@ -41,4 +41,4 @@ const userPage = () => {
   );
 };
 
-export default userPage;
+export default UserPage;
