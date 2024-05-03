@@ -1,5 +1,5 @@
 "use client";
-import { Section } from "../../components/common/Section";
+import { Card } from "@/components/ui/card";
 import MatchCourt from "../MatchCourt";
 import Preview from "../Preview";
 import Options from "../Options";
@@ -7,15 +7,15 @@ import Options from "../Options";
 const RecordPage = () => {
   return (
     <>
-      <Section>
+      <Card className="w-full">
         <MatchCourt />
-      </Section>
-      <Section>
+      </Card>
+      <Card className="w-full">
         <Preview />
-      </Section>
-      <Section type="fixed" style={{ minHeight: "50rem" }}>
+      </Card>
+      <Card className="flex-1 w-full">
         <Options />
-      </Section>
+      </Card>
     </>
   );
 };

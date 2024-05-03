@@ -1,8 +1,9 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { teamActions } from "@/app/(protected)/team/team-slice";
-import { Section } from "@/app/components/common/Section";
-import { ListItem } from "@/app/components/common/List";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import ConfirmCourt from "./ConfirmCourt";
 import ConfirmInfo from "./ConfirmInfo";
 
@@ -30,17 +31,17 @@ const Confirm = () => {
 
   return (
     <>
-      <Section>
+      <Card className="w-full">
         <ConfirmCourt />
-      </Section>
-      <Section type="fixed">
+      </Card>
+      <Card className="flex-1 w-full">
         <ConfirmInfo />
-      </Section>
-      <Section type="transparent">
-        <ListItem type="primary" center onClick={handleSave}>
+      </Card>
+      <Card className="w-full py-0 bg-transparent shadow-none">
+        <Button size="wide" onClick={handleSave}>
           確認比賽資訊
-        </ListItem>
-      </Section>
+        </Button>
+      </Card>
     </>
   );
 };

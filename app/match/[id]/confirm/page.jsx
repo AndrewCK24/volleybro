@@ -1,8 +1,7 @@
-"use client";
 import Confirm from "./Confirm";
 
-const OverviewPage = () => {
+const ConfirmPage = () => {
   return <Confirm />;
 };
 
-export default OverviewPage;
+export default ConfirmPage;

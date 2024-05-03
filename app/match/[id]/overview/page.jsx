@@ -1,12 +1,11 @@
-"use client";
-import { Section } from "@/app/components/common/Section";
+import { Card } from "@/components/ui/card";
 import Overview from "./Overview";
 
 const OverviewPage = () => {
   return (
-    <Section fixed>
+    <Card className="flex-1 w-full">
       <Overview />
-    </Section>
+    </Card>
   );
 };
 
