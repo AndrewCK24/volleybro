@@ -1,14 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { teamActions } from "../../team-slice";
 import { FiUserCheck, FiUser, FiChevronLeft } from "react-icons/fi";
-import { SectionHr } from "@/app/components/common/Section";
-import {
-  ListHeader,
-  ListTitle,
-  ListBtn,
-  ListItem,
-  ListItemText,
-} from "@/app/components/common/List";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ListItem, ListItemText } from "@/app/components/common/List";
+import { Button } from "@/components/ui/button";
 
 const BenchList = () => {
   const dispatch = useDispatch();
@@ -51,12 +47,16 @@ const BenchList = () => {
 
   return (
     <>
-      <ListHeader>
-        <ListBtn onClick={() => dispatch(teamActions.setOptionMode(""))}>
+      <CardHeader>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => dispatch(teamActions.setOptionMode(""))}
+        >
           <FiChevronLeft />
-        </ListBtn>
-        <ListTitle>{`替補名單 (${substituteCount}/${substituteLimit})`}</ListTitle>
-      </ListHeader>
+        </Button>
+        <CardTitle>{`替補名單 (${substituteCount}/${substituteLimit})`}</CardTitle>
+      </CardHeader>
       {editingLineup.substitutes.map((player, index) => {
         const member = members.find((m) => m._id === player._id);
         return (
@@ -73,7 +73,8 @@ const BenchList = () => {
           </ListItem>
         );
       })}
-      <SectionHr content="以上為正式比賽 12 + 2 人名單" />
+      <Separator />
+      <p className="text-center">以上為正式比賽 12 + 2 人名單</p>
       {editingLineup.others.map((player, index) => {
         const member = members.find((m) => m._id === player._id);
         return (

@@ -1,29 +1,24 @@
-import { Section } from "@/app/components/common/Section";
-import {
-  ListHeader,
-  ListTitle,
-  ListItem,
-  ListItemText,
-} from "@/app/components/common/List";
+import { Card } from "@/components/ui/card";
+import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const Loading = () => {
   return (
-    <Section>
-      <ListHeader>
-        <ListTitle />
-      </ListHeader>
-      <ListItem>
-        <ListItemText minimized={true} />
-        <ListItemText minimized={true} />
-        <ListItemText />
-      </ListItem>
-      <ListItem>
-        <ListItemText minimized={true} />
-        <ListItemText minimized={true} />
-        <ListItemText />
-      </ListItem>
-      <ListItem />
-    </Section>
+    <Card className="w-full">
+      <div className="flex flex-col gap-2 animate-pulse">
+        <div className="h-12" />
+        <ListItem>
+          <ListItemText minimized={true} />
+          <ListItemText minimized={true} />
+          <ListItemText />
+        </ListItem>
+        <ListItem>
+          <ListItemText minimized={true} />
+          <ListItemText minimized={true} />
+          <ListItemText />
+        </ListItem>
+        <ListItem />
+      </div>
+    </Card>
   );
 };
 

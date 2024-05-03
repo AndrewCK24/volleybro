@@ -1,12 +1,12 @@
 "use client";
-import { Section } from "@/app/components/common/Section";
+import { Card } from "@/components/ui/card";
 
 const MemberError = () => {
   return (
-    <Section>
+    <Card className="w-full">
       <h1>Member Error</h1>
-    </Section>
+    </Card>
   );
-}
+};
 
 export default MemberError;

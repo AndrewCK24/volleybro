@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { ListItem, ListItemText } from "@/app/components/common/List";

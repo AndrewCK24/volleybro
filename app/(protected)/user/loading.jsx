@@ -1,10 +1,10 @@
-import { Section } from "@/app/components/common/Section";
+import { Card } from "@/components/ui/card";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const Loading = () => {
   return (
     <>
-      <Section>
+      <Card className="w-full">
         <ListItem />
         <ListItem>
           <ListItemText minimized={true} />
@@ -16,10 +16,10 @@ const Loading = () => {
           <ListItemText minimized={true} />
           <ListItemText />
         </ListItem>
-      </Section>
-      <Section transparent={true}>
+      </Card>
+      <Card className="w-full py-0 bg-transparent shadow-none">
         <ListItem />
-      </Section>
+      </Card>
     </>
   );
 };

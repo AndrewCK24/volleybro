@@ -1,37 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-
-import { Section } from "@/app/components/common/Section";
+import { FiUser, FiPlus } from "react-icons/fi";
+import { Link } from "@/components/ui/button";
 import {
-  ListHeader,
-  ListTitle,
-  ListBtnContainer,
-  ListBtn,
   ListItem,
   ListItemText,
   ListIndicator,
 } from "@/app/components/common/List";
-import { BsGrid3X2Gap } from "react-icons/bs";
-import { FiUser, FiPlus, FiChevronRight } from "react-icons/fi";
 
 const TeamMembers = () => {
   const router = useRouter();
-  const { name: teamName, members } = useSelector((state) => state.team);
+  const { members } = useSelector((state) => state.team);
 
   return (
-    <Section>
-      <ListHeader>
-        <ListTitle onClick={() => router.push("/team/info")}>
-          {teamName}
-          <FiChevronRight />
-        </ListTitle>
-        <ListBtnContainer>
-          <ListBtn onClick={() => router.push("/team/lineup")}>
-            <BsGrid3X2Gap />
-          </ListBtn>
-        </ListBtnContainer>
-      </ListHeader>
+    <>
       {members.map((member) => (
         <ListItem
           key={member._id}
@@ -45,14 +28,10 @@ const TeamMembers = () => {
           <ListIndicator member={member} />
         </ListItem>
       ))}
-      <ListItem
-        type="secondary"
-        center={true}
-        onClick={() => router.push("/team/member/new")}
-      >
+      <Link variant="secondary" size="lg" href="/team/member/new">
         <FiPlus />
-      </ListItem>
-    </Section>
+      </Link>
+    </>
   );
 };
 

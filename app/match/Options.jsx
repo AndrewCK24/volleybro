@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { FiPlus, FiMinus, FiCheck, FiRepeat } from "react-icons/fi";
 import { matchActions } from "./match-slice";
-import { ListHeader, ListTitle } from "../components/common/List";
+import { CardHeader, CardTitle } from "@/components/ui/card";
 import {
   recordTypes,
   recordFrontTypes,
@@ -135,9 +135,9 @@ const Options = () => {
     <>
       {oppo.num === null ? (
         <>
-          <ListHeader>
-            <ListTitle>我方得失分紀錄</ListTitle>
-          </ListHeader>
+          <CardHeader>
+            <CardTitle>我方得失分紀錄</CardTitle>
+          </CardHeader>
           <Container className={zone === 0 && "column"}>
             {oursOptions.map((option) => (
               <OptionBtn
@@ -165,9 +165,9 @@ const Options = () => {
         </>
       ) : (
         <>
-          <ListHeader>
-            <ListTitle>對方得失分紀錄</ListTitle>
-          </ListHeader>
+          <CardHeader>
+            <CardTitle>對方得失分紀錄</CardTitle>
+          </CardHeader>
           <Container className="column">
             {oppoOptions.map((option) => (
               <OptionBtn

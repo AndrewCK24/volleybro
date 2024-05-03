@@ -1,12 +1,11 @@
-"use client";
-import { Section } from "@/app/components/common/Section";
+import { Card } from "@/components/ui/card";
 import Records from "./Records";
 
 const RecordsPage = () => {
   return (
-    <Section type="fixed">
+    <Card className="flex-1 w-full">
       <Records />
-    </Section>
+    </Card>
   );
 };
 

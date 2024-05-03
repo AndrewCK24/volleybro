@@ -14,20 +14,18 @@ const Root = ({ data }) => {
 
   useEffect(() => {
     if (pathname.startsWith("/sign")) {
-      document.body.style.backgroundColor = "var(--primary-200)";
+      document.body.style.backgroundColor = "rgba(var(--primary))";
     } else {
-      document.body.style.backgroundColor = "var(--primary-100)";
+      document.body.style.backgroundColor = "rgba(var(--background))";
       if (!data && !isSignIn) router.push("/sign-in");
     }
-  }, [pathname]);
+  }, [pathname, data, isSignIn, router]);
 
   if (data && isSignIn === false) {
     const { userData, teamData, membersData } = data;
     dispatch(userActions.setUser(userData));
     dispatch(teamActions.setTeam({ userData, teamData, membersData }));
   }
-
-  return <></>;
 };
 
 export default Root;

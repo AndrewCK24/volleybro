@@ -5,45 +5,7 @@ import {
   MdCheckCircleOutline,
   MdOutlineAccessTime,
   MdOutlineHighlightOff,
-  MdOutlineSportsVolleyball,
 } from "react-icons/md";
-
-export const ListHeader = ({ children }) => (
-  <div className={styles.list__header}>{children}</div>
-);
-
-export const ListTitle = ({ children, onClick }) => (
-  <h2 className={styles.list__title} onClick={onClick}>
-    {children}
-  </h2>
-);
-
-export const ListBtnContainer = ({ children }) => (
-  <div className={styles.list__btn_container}>{children}</div>
-);
-
-export const ListBtn = ({ children, type, onClick, rotate }) => {
-  const handleClick = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    onClick();
-  };
-  return (
-    <div
-      onClick={handleClick}
-      disabled={!onClick}
-      className={`${styles.list__btn} ${styles[`list__btn--${type}`]} ${
-        rotate && styles[`list__btn--rotate`]
-      }`}
-    >
-      {children}
-    </div>
-  );
-};
-
-export const ListItemContainer = ({ children }) => (
-  <div className={styles.list__item_container}>{children}</div>
-);
 
 export const ListItem = ({
   children,
@@ -137,55 +99,7 @@ export const ListItemText = ({ children, minimized, bold, fit }) => {
 //   );
 // };
 
-export const ListIndicator = ({ position, member }) => {
-  if (position) {
-    const identities = [
-      {
-        symbol: "S",
-        text: "舉球 (S)",
-        type: "primary",
-        icon: <MdOutlineSportsVolleyball />,
-      },
-      {
-        symbol: "OH",
-        text: "主攻 (OH)",
-        type: "",
-        icon: <MdOutlineSportsVolleyball />,
-      },
-      {
-        symbol: "MB",
-        text: "攔中 (MB)",
-        type: "",
-        icon: <MdOutlineSportsVolleyball />,
-      },
-      {
-        symbol: "OP",
-        text: "副攻 (OP)",
-        type: "",
-        icon: <MdOutlineSportsVolleyball />,
-      },
-      {
-        symbol: "L",
-        text: "自由 (L)",
-        type: "",
-        icon: <MdOutlineSportsVolleyball />,
-      },
-    ];
-    const { text, type, icon } = identities.find(
-      (identity) => identity.symbol === position
-    );
-    return (
-      <div
-        className={`${styles.list__indicator} ${
-          styles[`list__indicator--${type}`]
-        }`}
-      >
-        {icon}
-        {text}
-      </div>
-    );
-  }
-
+export const ListIndicator = ({ member }) => {
   const { admin, user_id, email } = member.meta;
   const identity = !email
     ? {

@@ -1,15 +1,11 @@
 import { FiHash, FiUser, FiMail, FiShield } from "react-icons/fi";
-import {
-  ListItemContainer,
-  ListItem,
-  ListItemText,
-} from "@/app/components/common/List";
+import { ListItem, ListItemText } from "@/app/components/common/List";
 import { Separator } from "@/components/ui/separator";
 
 const MemberInfo = ({ member }) => {
   return (
     <>
-      <ListItemContainer>
+      <div className="grid grid-cols-2 gap-2">
         <ListItem type="secondary" text>
           <FiHash />
           <ListItemText bold>背號：{member.number || " "}</ListItemText>
@@ -18,7 +14,7 @@ const MemberInfo = ({ member }) => {
           <FiShield />
           <ListItemText bold>位置：{member?.position || " "}</ListItemText>
         </ListItem>
-      </ListItemContainer>
+      </div>
       <ListItem type="secondary" text>
         <FiUser />
         <ListItemText bold>姓名：{member.name}</ListItemText>

@@ -20,7 +20,7 @@ const RecordLayout = ({ params, children }) => {
 
   useEffect(() => {
     if (data) dispatch(matchActions.setMatch(data));
-  }, [data]);
+  }, [data, dispatch]);
   if (error) throw error;
   if (isLoading) return <div>Loading...</div>;
 

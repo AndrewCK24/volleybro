@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { ListHeader, ListTitle } from "@/app/components/common/List";
 import LineupConfig from "./(options)/LineupConfig";
 import MemberInfo from "../member/MemberInfo";
 import BenchList from "./(options)/BenchList";
@@ -17,12 +16,7 @@ const LineupOptions = () => {
       ) : optionMode === "substitutes" || optionMode === "others" ? (
         <BenchList />
       ) : optionMode === "positions" ? (
-        <>
-          <ListHeader>
-            <ListTitle>選擇位置</ListTitle>
-          </ListHeader>
-          <PositionList />
-        </>
+        <PositionList />
       ) : (
         <LineupConfig />
       )}
