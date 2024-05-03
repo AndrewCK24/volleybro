@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { teamActions } from "../../team-slice";
 import { FiUserCheck, FiUserX } from "react-icons/fi";
+import { CardHeader, CardTitle } from "@/components/ui/card";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const PositionList = () => {
@@ -73,6 +74,9 @@ const PositionList = () => {
 
   return (
     <>
+      <CardHeader>
+        <CardTitle>選擇位置</CardTitle>
+      </CardHeader>
       {isEditingBenches ? (
         <ListItem onClick={() => dispatch(teamActions.setPlayerPosition(""))}>
           <ListItemText minimized bold>
