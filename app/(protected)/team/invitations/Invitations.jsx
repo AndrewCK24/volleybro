@@ -1,15 +1,11 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-
-import { FiPlus, FiCheck, FiX } from "react-icons/fi";
-import { Section, SectionHr } from "@/app/components/common/Section";
-import {
-  ListHeader,
-  ListTitle,
-  ListItem,
-  ListItemText,
-  ListBtn,
-} from "@/app/components/common/List";
+import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
+import { Button, Link } from "@/components/ui/button";
+import { CardDescription } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const Invitations = () => {
   const router = useRouter();
@@ -33,28 +29,33 @@ const Invitations = () => {
     }
   };
 
-  const handleCreateTeam = () => router.push("/team/new");
-
   return (
-    <Section>
-      <ListHeader>
-        <ListTitle>隊伍邀請</ListTitle>
-      </ListHeader>
+    <>
       {invitingTeams.map((team) => (
-        <ListItem key={team._id}>
+        <ListItem div key={team._id}>
+          <FiUsers />
           <ListItemText>{team.name}</ListItemText>
-          <ListBtn type="primary" onClick={() => handleAccept(team._id)} div={true}>
+          <Button
+            variant="link"
+            size="icon"
+            onClick={() => handleAccept(team._id)}
+          >
             <FiCheck />
-          </ListBtn>
+          </Button>
         </ListItem>
       ))}
-      <SectionHr content="沒有找到你的隊伍嗎？你可以..." />
-      <ListItem type="primary" onClick={handleCreateTeam}>
+      <Separator />
+      <CardDescription className="text-center">
+        沒有找到你的隊伍嗎？你可以...
+      </CardDescription>
+      <Link size="lg" href="/team/new">
         <FiPlus />
         建立隊伍
-      </ListItem>
-      <p>或聯絡你的隊伍管理者</p>
-    </Section>
+      </Link>
+      <CardDescription className="text-center">
+        或聯絡你的隊伍管理者
+      </CardDescription>
+    </>
   );
 };
 
