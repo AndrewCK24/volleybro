@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
 import { userActions } from "../user/user-slice";
 import { teamActions } from "../team/team-slice";
 import {
@@ -18,13 +17,6 @@ import { Button, Link } from "@/components/ui/button";
 import { CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ListItem, ListItemText } from "../../components/common/List";
-
-const ExtendTeamsIcon = styled(FiChevronDown)`
-  transition: transform 0.2s ease-in-out;
-  &.up {
-    transform: rotate(180deg);
-  }
-`;
 
 const Menu = () => {
   const dispatch = useDispatch();
@@ -77,7 +69,11 @@ const Menu = () => {
         <FiUserPlus />
         <ListItemText>隊伍與邀請</ListItemText>
         <ListItemText minimized>{invitingTeams.length}</ListItemText>
-        <ExtendTeamsIcon className={extendTeams && "up"} />
+        <FiChevronDown
+          className={`transition-transform duration-200 ${
+            extendTeams ? "rotate-180" : ""
+          }`}
+        />
       </ListItem>
       {extendTeams && (
         <>
