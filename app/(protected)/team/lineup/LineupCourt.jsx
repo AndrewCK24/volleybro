@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { teamActions } from "../team-slice";
 import { FiRefreshCw } from "react-icons/fi";
 import {
-  CourtContainer,
+  Court,
   Outside,
   Inside,
   PlayerCard,
@@ -15,7 +15,7 @@ const LineupCourt = () => {
   const { starting, liberos, status } = editingLineup;
 
   return (
-    <CourtContainer>
+    <Court>
       <Outside className="inner">
         {status.optionMode === "" ? (
           <AdjustButton onClick={() => dispatch(teamActions.rotateLineupCw())}>
@@ -75,7 +75,7 @@ const LineupCourt = () => {
           );
         })}
       </Inside>
-    </CourtContainer>
+    </Court>
   );
 };
 

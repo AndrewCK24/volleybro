@@ -1,150 +1,97 @@
-import styled from "styled-components";
+import { cn } from "@/lib/utils";
 import { FiPlus, FiX, FiRepeat } from "react-icons/fi";
 
-export const CourtContainer = styled.div`
-  width: 100%;
-  max-height: 35vh;
-  aspect-ratio: 11 / 9;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.5rem;
-  background-color: var(--secondary-500);
-  padding: 0.5rem;
-`;
+export const Court = ({ children }) => {
+  return (
+    <div className="flex flex-row items-center justify-center w-full max-h-[35vh] aspect-[11/9] rounded-lg bg-primary p-2">
+      {children}
+    </div>
+  );
+};
 
-export const Outside = styled.div`
-  position: relative;
-  height: 100%;
-  display: grid;
-  grid-template-rows: repeat(3, 1fr);
-  grid-gap: 0.5rem;
-  border: 0.25rem solid transparent;
-  border-left: 0;
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    width: 100%;
-    min-height: calc((100% - 1rem) / 3);
-    border-bottom: 0.25rem dashed var(--primary-100);
-  }
-  &.inner {
-    padding-right: 0.25rem;
-    flex: 2;
-  }
-  &.outer {
-    // TODO: 目前手機版未使用，未來需注意其他螢幕大小的排版
-    display: flex;
-    flex: 0.5 10 0;
-  }
-`;
+export const Outside = ({ children }) => {
+  return (
+    <div className="relative grid h-full grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1">
+      {children}
+    </div>
+  );
+};
+// TODO: 目前手機版未沒有寬度更大的球場，未來需注意其他螢幕大小的排版
 
-export const Inside = styled.div`
-  position: relative;
-  flex: 9;
-  aspect-ratio: 1 / 1;
-  height: 100%;
-  padding: 5% 0.5rem;
-  display: grid;
-  grid-template-areas:
-    "z4 z3 z2"
-    "z5 z6 z1";
-  grid-gap: 0.5rem;
-  background-color: var(--danger-400);
-  border: 0.25rem solid var(--primary-100);
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    width: 100%;
-    min-height: calc((100% - 1rem) / 3);
-    background-color: var(--danger-500);
-    border-bottom: 0.25rem solid var(--primary-100);
-  }
-`;
+export const Inside = ({ children }) => {
+  return (
+    <div className="relative flex-[9] aspect-[1/1] h-full py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4">
+      {children}
+    </div>
+  );
+};
 
-export const PlayerCardContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  border: 0.25rem solid var(--primary-100);
-  background-color: var(--primary-100);
-  transition: all 0.2s ease-in-out;
-  z-index: 1;
-  p {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-height: 3rem;
-    min-height: 3rem;
-    max-width: 3rem;
-    min-width: 3rem;
-    font-size: 3rem;
-    font-weight: 700;
-    svg {
-      font-size: 3rem;
-    }
-  }
-  span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-height: 1.25rem;
-    min-height: 1.25rem;
-    max-width: 1.25rem;
-    min-width: 1.25rem;
-    font-size: 1.25rem;
-    font-weight: 400;
-    svg {
-      font-size: 1.25rem;
-    }
-  }
-  &.empty {
-    opacity: 50%;
-    svg {
-      opacity: 100%;
-      color: var(--primary-500);
-      font-size: 4rem;
-    }
-  }
-  &.toggled {
-    background-color: var(--secondary-500);
-    color: var(--primary-100);
-  }
-`;
+const Card = ({ children, className, onClick, empty, toggled, ...props }) => {
+  return (
+    <div
+      className={cn(
+        "relative w-full h-full flex flex-col items-center justify-center",
+        "p-1 rounded-lg border-4 border-primary-foreground bg-primary-foreground",
+        "transition-all duration-200 z-1",
+        empty && "bg-primary-foreground/50 border-primary-foreground/50",
+        toggled && "bg-primary text-primary-foreground",
+        className
+      )}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
-export const Button = styled.div`
-  position: absolute;
-  width: 1.5rem;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0.25rem;
-  border: 0.125rem solid var(--primary-100);
-  border-radius: 50%;
-  color: var(--primary-100);
-  font-size: 1.25rem;
-  transition: all 0.2s ease-in-out;
-  &.left {
-    top: -0.75rem;
-    left: -0.75rem;
-    background-color: var(--secondary-500);
-  }
-  &.right {
-    top: -0.75rem;
-    right: -0.75rem;
-    background-color: var(--danger-500);
-  }
-`;
+const Number = ({ children }) => {
+  return (
+    <p
+      className={cn(
+        "flex items-center justify-center",
+        "max-h-[3rem] min-h-[3rem] max-w-[3rem] min-w-[3rem]",
+        "text-[3rem] font-bold svg-[3rem]"
+      )}
+    >
+      {children}
+    </p>
+  );
+};
+
+const Position = ({ children }) => {
+  return (
+    <p
+      className={cn(
+        "flex items-center justify-center",
+        "max-h-[1.25rem] min-h-[1.25rem] max-w-[1.25rem] min-w-[1.25rem]",
+        "text-[1.25rem] font-normal svg-[1.25rem]"
+      )}
+    >
+      {children}
+    </p>
+  );
+};
+
+const Button = ({ children, onClick, right }) => {
+  return (
+    <div
+      className={cn(
+        "absolute w-[1.5rem] h-[1.5rem] aspect-[1/1]",
+        "flex items-center justify-center",
+        "m-1 border-2 border-primary-foreground rounded-full",
+        "transition-all duration-200",
+        "text-primary-foreground svg-[1.25rem]",
+        right
+          ? "top-[-0.75rem] right-[-0.75rem] bg-destructive"
+          : "top-[-0.75rem] left-[-0.75rem] bg-primary"
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const PlayerCard = ({
   member,
@@ -157,9 +104,10 @@ export const PlayerCard = ({
 }) => {
   const toggled = editingMember.list === list && editingMember.zone === zone;
   return (
-    <PlayerCardContainer
+    <Card
       style={list === "starting" ? { gridArea: `z${zone}` } : {}}
-      className={`${toggled && "toggled"} ${member || "empty"}`}
+      toggled={toggled}
+      empty={!member}
       onClick={(e) => {
         e.stopPropagation();
         onCardClick();
@@ -167,12 +115,12 @@ export const PlayerCard = ({
     >
       {member ? (
         <>
-          <p>{member.number}</p>
-          <span>{member.position}</span>
+          <Number>{member.number}</Number>
+          <Position>{member.position}</Position>
           {toggled && (
             <>
               <Button
-                className="left"
+                right={false}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSwitchClick();
@@ -182,7 +130,7 @@ export const PlayerCard = ({
               </Button>
               {onCrossClick && (
                 <Button
-                  className="right"
+                  right={true}
                   onClick={(e) => {
                     e.stopPropagation();
                     onCrossClick();
@@ -196,27 +144,27 @@ export const PlayerCard = ({
         </>
       ) : (
         <>
-          <p>
+          <Number>
             <FiPlus />
-          </p>
-          <span />
+          </Number>
+          <Position />
         </>
       )}
-    </PlayerCardContainer>
+    </Card>
   );
 };
 
-export const AdjustButton = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary-100);
-  gap: 0.25rem;
-  z-index: 1;
-  cursor: pointer;
-  svg {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-`;
+export const AdjustButton = ({ children, onClick }) => {
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center gap-2",
+        "text-primary-foreground svg-[2.5rem]",
+        "z-10"
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+};

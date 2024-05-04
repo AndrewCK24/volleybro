@@ -1,32 +1,8 @@
 "use client";
-import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { GiWhistle } from "react-icons/gi";
 import { matchActions } from "./match-slice";
-import {
-  CourtContainer,
-  Outside,
-  Inside,
-  PlayerCard,
-} from "../components/common/Court";
-
-const MultiFunctionButton = styled.div`
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  border-radius: 0.5rem;
-  color: var(--primary-100);
-  gap: 0.5rem;
-  svg {
-    width: 80%;
-    height: auto;
-    color: var(--secondary-100);
-  }
-`;
+import { Court, Outside, Inside, PlayerCard, AdjustButton } from "../components/common/Court";
 
 const MatchCourt = () => {
   const dispatch = useDispatch();
@@ -41,11 +17,11 @@ const MatchCourt = () => {
     dispatch(matchActions.setRecordingPlayer({ player, zone }));
   };
   return (
-    <CourtContainer>
+    <Court>
       <Outside className="left">
-        <MultiFunctionButton>
+        <AdjustButton>
           <GiWhistle />
-        </MultiFunctionButton>
+        </AdjustButton>
         {liberos.map((libero, index) => {
           const arr = libero.inOutArr;
           const liberoId =
@@ -87,7 +63,7 @@ const MatchCourt = () => {
         })}
       </Inside>
       <Outside className="right" />
-    </CourtContainer>
+    </Court>
   );
 };
 

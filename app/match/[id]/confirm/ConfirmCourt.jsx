@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import {
-  CourtContainer,
+  Court,
   Outside,
   Inside,
   PlayerCard,
@@ -15,7 +15,7 @@ const ConfirmCourt = () => {
 
   return (
     <>
-      <CourtContainer>
+      <Court>
         <Outside className="left">
           <AdjustButton />
           {liberos.map((libero, index) => {
@@ -40,7 +40,7 @@ const ConfirmCourt = () => {
           })}
         </Inside>
         <Outside className="right" />
-      </CourtContainer>
+      </Court>
     </>
   );
 };
