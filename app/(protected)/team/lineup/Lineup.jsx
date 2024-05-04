@@ -63,7 +63,7 @@ const Lineup = () => {
       <Card className="flex-1 w-full">
         <LineupOptions />
       </Card>
-      {status.optionMode || (
+      {!status.optionMode && (
         <Card className="w-full py-0 bg-transparent shadow-none">
           <Button size="lg" onClick={handleSave}>
             <FiSave />
