@@ -5,12 +5,12 @@ import {
   Inside,
   PlayerCard,
   AdjustButton,
-} from "@/app/components/common/Court";
+} from "@/components/custom/Court";
 
 const ConfirmCourt = () => {
-  const { sets, status } = useSelector((state) => state.match);
+  const { sets, status, recording } = useSelector((state) => state.match);
   const { setNum } = status.editingData;
-  const { starters, liberos } = sets[setNum].lineup.ours;
+  const { starting, liberos } = sets[setNum].lineup.ours;
   const { members } = useSelector((state) => state.team);
 
   return (
@@ -21,25 +21,52 @@ const ConfirmCourt = () => {
           {liberos.map((libero, index) => {
             const member = members.find((m) => m._id === libero.starting);
             return (
-              <PlayerCard key={index}>
-                <h3>{member.number || ""}</h3>
-                <span>{libero.position || ""}</span>
-              </PlayerCard>
+              <PlayerCard
+                key={index}
+                member={member}
+                list="liberos"
+                zone={index + 1}
+                onCardClick={() =>
+                  dispatch(
+                    teamActions.setRecordingPlayer({
+                      _id: member?._id || null,
+                      list: "liberos",
+                      zone: index + 1,
+                    })
+                  )
+                }
+                editingMember={recording}
+              />
             );
           })}
         </Outside>
         <Inside>
-          {starters.map((starter, index) => {
-            const member = members.find((m) => m._id === starter.starting);
+          {starting.map((starting, index) => {
+            const member = members.find((m) => m._id === starting.starting);
             return (
-              <PlayerCard key={index} style={{ gridArea: `z${index + 1}` }}>
-                <h3>{member.number || ""}</h3>
-                <span>{starter.position || ""}</span>
-              </PlayerCard>
+              <PlayerCard
+                key={index}
+                member={member}
+                list="starting"
+                zone={index + 1}
+                onCardClick={() =>
+                  dispatch(
+                    teamActions.setRecordingPlayer({
+                      _id: member?._id || null,
+                      list: "starting",
+                      zone: index + 1,
+                    })
+                  )
+                }
+                onSwitchClick={() =>
+                  dispatch(teamActions.setOptionMode("substitutes"))
+                }
+                onCrossClick={() => dispatch(teamActions.removeEditingPlayer())}
+                editingMember={recording}
+              />
             );
           })}
         </Inside>
-        <Outside className="right" />
       </Court>
     </>
   );

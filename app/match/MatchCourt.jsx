@@ -2,20 +2,23 @@
 import { useDispatch, useSelector } from "react-redux";
 import { GiWhistle } from "react-icons/gi";
 import { matchActions } from "./match-slice";
-import { Court, Outside, Inside, PlayerCard, AdjustButton } from "../components/common/Court";
+import {
+  Court,
+  Outside,
+  Inside,
+  PlayerCard,
+  AdjustButton,
+} from "@/components/custom/Court";
 
 const MatchCourt = () => {
   const dispatch = useDispatch();
-  const { player } = useSelector((state) => state.match.recording.ours);
+  const { recording } = useSelector((state) => state.match);
   const { members } = useSelector((state) => state.team);
   const { setNum } = useSelector((state) => state.match.status.editingData);
-  const { starters, liberos } = useSelector(
+  const { starting, liberos } = useSelector(
     (state) => state.match.sets[setNum].lineup.ours
   );
 
-  const handleClick = (player, zone) => {
-    dispatch(matchActions.setRecordingPlayer({ player, zone }));
-  };
   return (
     <Court>
       <Outside className="left">
@@ -23,46 +26,56 @@ const MatchCourt = () => {
           <GiWhistle />
         </AdjustButton>
         {liberos.map((libero, index) => {
-          const arr = libero.inOutArr;
-          const liberoId =
-            (arr[0] === null) === (arr[1] === null)
-              ? libero.starting
-              : libero.substitute;
-          const member = members.find((m) => m._id === liberoId);
+          const member = members.find((m) => m._id === libero.starting);
+          // FIXME: starting 只是暫時防止錯誤顯示
           return (
             <PlayerCard
               key={index}
-              // onClick={() => handleClick(member, index + 7)}
-              className={player === member?._id && "toggled"}
-            >
-              <h3>{member?.number}</h3>
-              <span>{libero?.position}</span>
-            </PlayerCard>
+              member={member}
+              list="liberos"
+              zone={index + 1}
+              onCardClick={() =>
+                dispatch(
+                  matchActions.setRecordingPlayer({
+                    _id: member?._id || null,
+                    list: "liberos",
+                    zone: index + 1,
+                  })
+                )
+              }
+              // FIXME: 須重新檢視 setRecordingPlayer 的邏輯與 recordingPlayer 的資料結構
+              // FIXME: 須重新檢視 editingPlayer 的用詞
+              editingMember={recording}
+            />
           );
         })}
       </Outside>
       <Inside>
-        {starters.map((starter, index) => {
-          const arr = starter.inOutArr;
-          const starterId =
-            (arr[0] === null) === (arr[1] === null)
-              ? starter.starting
-              : starter.substitute;
-          const member = members.find((m) => m._id === starterId);
+        {starting.map((starting, index) => {
+          const member = members.find((m) => m._id === starting.starting);
           return (
             <PlayerCard
               key={index}
-              style={{ gridArea: `z${index + 1}` }}
-              onClick={() => handleClick(member, index + 1)}
-              className={player === member?._id && "toggled"}
-            >
-              <h3>{member?.number}</h3>
-              <span>{starter.position}</span>
-            </PlayerCard>
+              member={member}
+              list="starting"
+              zone={index + 1}
+              onCardClick={() =>
+                dispatch(
+                  matchActions.setRecordingPlayer({
+                    _id: member?._id || null,
+                    list: "starting",
+                    zone: index + 1,
+                  })
+                )
+              }
+              onSwitchClick={() =>
+                dispatch(teamActions.setOptionMode("substitutes"))
+              }
+              editingMember={recording}
+            />
           );
         })}
       </Inside>
-      <Outside className="right" />
     </Court>
   );
 };

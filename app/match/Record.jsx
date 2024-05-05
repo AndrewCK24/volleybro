@@ -1,27 +1,36 @@
 import styled from "styled-components";
-import { FiPlus, FiMinus, FiTriangle } from "react-icons/fi";
+import { FiPlus, FiMinus } from "react-icons/fi";
 import { recordTypes } from "@/app/lib/record-types";
 
-export const RecordContainer = styled.div`
-  flex: 0 0 2rem;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.25rem;
-`;
+const Container = ({ children, onClick }) => {
+  return (
+    <div
+      className="flex flex-row items-center justify-start flex-none w-full gap-1 basis-8"
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+};
 
-export const Score = styled.div`
+const ScoreCell = ({ children }) => {
+  return (
+    <div className="flex items-center justify-center flex-none basis-8 w-8 h-8 bg-primary-200 text-primary-900 rounded-[0.5rem] font-semibold">
+      {children}
+    </div>
+  );
+};
+
+const Score = styled.div`
   flex: 0 0;
-  min-width: 3rem;
-  min-height: 3rem;
+  min-width: 2rem;
+  min-height: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 0.5rem;
   background-color: var(--primary-200);
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--primary-900);
   &.win {
@@ -33,18 +42,18 @@ export const Score = styled.div`
   }
 `;
 
-export const RecordText = styled.div`
+const RecordText = styled.div`
   max-width: calc(100% - 9rem);
   flex: 1 0;
-  padding: 0 0.75rem;
+  padding: 0 0.5rem;
   display: flex;
   flex-direction: row;
-  font-size: 2rem;
-  gap: 0.5rem;
-  border-left: 0.25rem solid var(--secondary-500);
+  font-size: 1.5rem;
+  gap: 0.25rem;
+  border-left: 0.125rem solid var(--secondary-500);
   span {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 600;
   }
   &.editing {
     animation: skeleton 0.75s linear infinite alternate;
@@ -59,23 +68,16 @@ export const RecordText = styled.div`
   }
 `;
 
-export const IconWin = styled(FiPlus)`
-  width: 2rem;
-  height: 2rem;
+const IconWin = styled(FiPlus)`
+  width: 1.5rem;
+  height: 1.5rem;
   color: var(--secondary-500);
   stroke-width: 3;
 `;
 
-export const IconLose = styled(FiMinus)`
-  width: 2rem;
-  height: 2rem;
-  color: var(--danger-500);
-  stroke-width: 3;
-`;
-
-export const IconError = styled(FiTriangle)`
-  width: 2rem;
-  height: 2rem;
+const IconLose = styled(FiMinus)`
+  width: 1.5rem;
+  height: 1.5rem;
   color: var(--danger-500);
   stroke-width: 3;
 `;
@@ -86,7 +88,7 @@ const Record = ({ record, players, editingItem, onClick }) => {
   const oppoType = recordTypes[oppo.num];
 
   return (
-    <RecordContainer onClick={onClick}>
+    <Container onClick={onClick}>
       {ours.type ? (
         <>
           <Score
@@ -138,7 +140,7 @@ const Record = ({ record, players, editingItem, onClick }) => {
             </>
           ))}
       </RecordText>
-    </RecordContainer>
+    </Container>
   );
 };
 

@@ -7,7 +7,7 @@ import {
   Inside,
   PlayerCard,
   AdjustButton,
-} from "@/app/components/common/Court";
+} from "@/components/custom/Court";
 
 const LineupCourt = () => {
   const dispatch = useDispatch();

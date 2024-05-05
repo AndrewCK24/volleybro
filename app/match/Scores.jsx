@@ -1,42 +1,20 @@
 import { useSelector } from "react-redux";
-import styled from "styled-components";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
 
-const Score = styled.div`
-  height: 6rem;
-  min-width: 6rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: var(--primary-900);
-  svg {
-    width: 4rem;
-    height: 4rem;
-  }
-  div {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.5rem;
-    &.score {
-      font-size: 4rem;
-      font-weight: 700;
-    }
-    &.team {
-      font-size: 1.5rem;
-      font-weight: 500;
-      width: 8rem;
-      max-width: 8rem;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-  }
-`;
+const Container = ({ children }) => {
+  return (
+    <div className="flex flex-col items-center justify-center w-16 h-16 text-[3rem] svg-[3rem] leading-none font-bold">
+      {children}
+    </div>
+  );
+};
+const Team = ({ children }) => {
+  return (
+    <div className="flex items-center justify-center text-[1rem] font-medium w-full max-w-16 overflow-hidden whitespace-nowrap text-ellipsis">
+      {children}
+    </div>
+  );
+};
 
 const Scores = () => {
   const { ours, oppo } = useSelector((state) => state.match.status.scores);
@@ -45,22 +23,21 @@ const Scores = () => {
 
   return (
     <>
-      <Score>
-        <div className="score">{ours}</div>
-        <div className="team">{team.ours.name || "我方"}</div>
-      </Score>
-      <Score>
+      <Container>
+        {ours}
+        <Team>{team.ours.name || "我方"}</Team>
+      </Container>
+      <Container>
         <MdOutlineSportsVolleyball />
-        <div>
-          <div>{sets.filter((set) => set.win === true).length}</div>
-          <div> - </div>
+        <div className="flex flex-row text-[1.25rem] gap-1 leading-none">
+          <div>{sets.filter((set) => set.win === true).length}</div>-
           <div>{sets.filter((set) => set.win === false).length}</div>
         </div>
-      </Score>
-      <Score>
-        <div className="score">{oppo}</div>
-        <div className="team">{team.oppo.name || "對手"}</div>
-      </Score>
+      </Container>
+      <Container>
+        {oppo}
+        <Team>{team.oppo.name || "對手"}</Team>
+      </Container>
     </>
   );
 };

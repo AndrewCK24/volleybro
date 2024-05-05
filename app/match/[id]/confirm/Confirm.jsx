@@ -31,9 +31,7 @@ const Confirm = () => {
 
   return (
     <>
-      <Card className="w-full">
-        <ConfirmCourt />
-      </Card>
+      <ConfirmCourt />
       <Card className="flex-1 w-full">
         <ConfirmInfo />
       </Card>
