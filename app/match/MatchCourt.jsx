@@ -2,7 +2,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { GiWhistle } from "react-icons/gi";
 import { matchActions } from "./match-slice";
-import { Court, Outside, Inside, PlayerCard, AdjustButton } from "../components/common/Court";
+import {
+  Court,
+  Outside,
+  Inside,
+  PlayerCard,
+  AdjustButton,
+} from "../../components/custom/Court";
 
 const MatchCourt = () => {
   const dispatch = useDispatch();

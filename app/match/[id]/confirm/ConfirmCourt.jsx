@@ -5,7 +5,7 @@ import {
   Inside,
   PlayerCard,
   AdjustButton,
-} from "@/app/components/common/Court";
+} from "@/components/custom/Court";
 
 const ConfirmCourt = () => {
   const { sets, status } = useSelector((state) => state.match);
