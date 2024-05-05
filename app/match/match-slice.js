@@ -65,7 +65,7 @@ const initialState = {
       records: [],
       lineup: {
         ours: {
-          starters: [
+          starting: [
             {
               starting: "",
               substitute: "",
@@ -110,6 +110,12 @@ const initialState = {
               position: "",
               inOutArr: [null, null],
             },
+            {
+              starting: "",
+              substitute: "",
+              position: "",
+              inOutArr: [null, null],
+            },
           ],
         },
         oppo: {},
@@ -130,6 +136,7 @@ const initialState = {
       num: null,
       player: "",
     },
+    list: "",
     zone: 0,
   },
   status: {
@@ -240,9 +247,8 @@ const matchSlice = createSlice({
       const { starting, liberos } = lineup;
       let backRowMbIndex;
       starting.map((starting, index) => {
-        state.sets[setNum].lineup.ours.starters[index].starting =
-          starting._id;
-        state.sets[setNum].lineup.ours.starters[index].position =
+        state.sets[setNum].lineup.ours.starting[index].starting = starting._id;
+        state.sets[setNum].lineup.ours.starting[index].position =
           starting.position;
         if (
           starting.position === "MB" &&
@@ -252,25 +258,24 @@ const matchSlice = createSlice({
         }
       });
       liberos.map((libero, index) => {
-        state.sets[setNum].lineup.ours.liberos[index].starting =
-          libero._id;
+        state.sets[setNum].lineup.ours.liberos[index].starting = libero._id;
         state.sets[setNum].lineup.ours.liberos[index].position =
           libero.position;
       });
       if (backRowMbIndex) {
         const backRowMb = {
-          ...state.sets[setNum].lineup.ours.starters[backRowMbIndex],
+          ...state.sets[setNum].lineup.ours.starting[backRowMbIndex],
         };
-        state.sets[setNum].lineup.ours.starters[backRowMbIndex].starting =
+        state.sets[setNum].lineup.ours.starting[backRowMbIndex].starting =
           liberos[0]._id;
-        state.sets[setNum].lineup.ours.starters[backRowMbIndex].position =
+        state.sets[setNum].lineup.ours.starting[backRowMbIndex].position =
           liberos[0].position;
         state.sets[setNum].lineup.ours.liberos[0].starting = backRowMb.starting;
         state.sets[setNum].lineup.ours.liberos[0].position = backRowMb.position;
       }
     },
     setRecordingPlayer: (state, action) => {
-      if (action.payload.player._id === state.recording.ours.player) {
+      if (action.payload._id === state.recording.ours.player) {
         state.recording = {
           ...initialState.recording,
           ours: {
@@ -287,13 +292,14 @@ const matchSlice = createSlice({
           ...initialState.recording,
           ours: {
             ...initialState.recording.ours,
-            player: action.payload.player._id,
+            player: action.payload._id,
             score: state.status.scores.ours,
           },
           oppo: {
             ...initialState.recording.oppo,
             score: state.status.scores.oppo,
           },
+          list: action.payload.list,
           zone: action.payload.zone,
         };
       }
@@ -360,13 +366,13 @@ const matchSlice = createSlice({
           ].successful[setNum] += 1;
         }
         if (!state.status.isServing) {
-          const servingPlayer = state.sets[setNum].lineup.ours.starters.shift();
-          state.sets[setNum].lineup.ours.starters.push(servingPlayer);
-          if (state.sets[setNum].lineup.ours.starters[3].position === "L") {
+          const servingPlayer = state.sets[setNum].lineup.ours.starting.shift();
+          state.sets[setNum].lineup.ours.starting.push(servingPlayer);
+          if (state.sets[setNum].lineup.ours.starting[3].position === "L") {
             const frontRowL = {
-              ...state.sets[setNum].lineup.ours.starters[3],
+              ...state.sets[setNum].lineup.ours.starting[3],
             };
-            state.sets[setNum].lineup.ours.starters[3] =
+            state.sets[setNum].lineup.ours.starting[3] =
               state.sets[setNum].lineup.ours.liberos[0];
             state.sets[setNum].lineup.ours.liberos[0] = frontRowL;
           }
@@ -384,11 +390,11 @@ const matchSlice = createSlice({
         }
         if (state.status.isServing) {
           state.status.isServing = false;
-          if (state.sets[setNum].lineup.ours.starters[0].position === "MB") {
+          if (state.sets[setNum].lineup.ours.starting[0].position === "MB") {
             const backRowMb = {
-              ...state.sets[setNum].lineup.ours.starters[0],
+              ...state.sets[setNum].lineup.ours.starting[0],
             };
-            state.sets[setNum].lineup.ours.starters[0] =
+            state.sets[setNum].lineup.ours.starting[0] =
               state.sets[setNum].lineup.ours.liberos[0];
             state.sets[setNum].lineup.ours.liberos[0] = backRowMb;
           }

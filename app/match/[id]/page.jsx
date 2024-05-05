@@ -7,9 +7,7 @@ import Options from "../Options";
 const RecordPage = () => {
   return (
     <>
-      <Card className="w-full">
-        <MatchCourt />
-      </Card>
+      <MatchCourt />
       <Card className="w-full">
         <Preview />
       </Card>
