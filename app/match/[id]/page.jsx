@@ -8,10 +8,10 @@ const RecordPage = () => {
   return (
     <>
       <MatchCourt />
-      <Card className="w-full">
+      <Card className="w-full p-2">
         <Preview />
       </Card>
-      <Card className="flex-1 w-full">
+      <Card className="flex-1 w-full p-2 pb-4">
         <Options />
       </Card>
     </>

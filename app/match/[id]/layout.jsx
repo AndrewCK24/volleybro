@@ -25,7 +25,7 @@ const RecordLayout = ({ params, children }) => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <Main className="p-0 pb-4 overflow-hidden overscroll-y-none">
+    <Main className="p-0 overflow-hidden overscroll-y-none">
       <Header matchId={matchId} />
       {children}
     </Main>

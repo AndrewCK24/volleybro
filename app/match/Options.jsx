@@ -1,3 +1,4 @@
+"use client";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { FiPlus, FiMinus, FiCheck, FiRepeat } from "react-icons/fi";
@@ -28,7 +29,7 @@ const Container = styled.div`
 
 const OptionBtn = styled.button`
   width: 100%;
-  flex: 1 0 4rem;
+  flex: 1 0 2rem;
   min-width: fit-content;
   padding: 0.5rem 0.75rem 0.5rem 0.5rem;
   display: flex;
@@ -37,8 +38,8 @@ const OptionBtn = styled.button`
   justify-content: center;
   background-color: var(--primary-200);
   border: none;
-  border-radius: 1rem;
-  font-size: 2rem;
+  border-radius: 0.5rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary-900);
   gap: 0.5rem;
