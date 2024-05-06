@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import { cn } from "@/lib/utils";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import { recordTypes } from "@/app/lib/record-types";
 
@@ -13,74 +13,40 @@ const Container = ({ children, onClick }) => {
   );
 };
 
-const ScoreCell = ({ children }) => {
+const Score = ({ children, win = false }) => {
   return (
-    <div className="flex items-center justify-center flex-none basis-8 w-8 h-8 bg-primary-200 text-primary-900 rounded-[0.5rem] font-semibold">
+    <div
+      className={cn(
+        "flex items-center justify-center flex-none",
+        "basis-8 w-8 h-8 bg-accent text-[1.5rem] rounded-[0.5rem] font-semibold",
+        win && "bg-primary text-primary-foreground"
+      )}
+    >
       {children}
     </div>
   );
 };
 
-const Score = styled.div`
-  flex: 0 0;
-  min-width: 2rem;
-  min-height: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.5rem;
-  background-color: var(--primary-200);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--primary-900);
-  &.win {
-    background-color: var(--secondary-500);
-    color: var(--primary-100);
-  }
-  &.lose {
-    opacity: 0;
-  }
-`;
+const RecordText = ({ children, editing }) => (
+  <p
+    className={cn(
+      "flex flex-row flex-1 text-[1.5rem] gap-2 px-2 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
+      editing && "animate-pulse duration-1000"
+    )}
+  >
+    {children}
+  </p>
+);
 
-const RecordText = styled.div`
-  max-width: calc(100% - 9rem);
-  flex: 1 0;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: row;
-  font-size: 1.5rem;
-  gap: 0.25rem;
-  border-left: 0.125rem solid var(--secondary-500);
-  span {
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-  &.editing {
-    animation: skeleton 0.75s linear infinite alternate;
-    @keyframes skeleton {
-      0% {
-        opacity: 0.3;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  }
-`;
+const Number = ({ children }) => (
+  <span className="text-[1.5rem] font-semibold">{children}</span>
+);
 
-const IconWin = styled(FiPlus)`
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--secondary-500);
-  stroke-width: 3;
-`;
+const IconWin = () => <FiPlus className="w-6 h-6 text-primary stroke-[3px]" />;
 
-const IconLose = styled(FiMinus)`
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--danger-500);
-  stroke-width: 3;
-`;
+const IconLose = () => (
+  <FiMinus className="w-6 h-6 text-destructive stroke-[3px]" />
+);
 
 const Record = ({ record, players, editingItem, onClick }) => {
   const { win, ours, oppo } = record;
@@ -91,16 +57,8 @@ const Record = ({ record, players, editingItem, onClick }) => {
     <Container onClick={onClick}>
       {ours.type ? (
         <>
-          <Score
-            className={win ? "win" : editingItem === undefined ? "lose" : ""}
-          >
-            {ours.score}
-          </Score>
-          <Score
-            className={!win ? "win" : editingItem === undefined ? "lose" : ""}
-          >
-            {oppo.score}
-          </Score>
+          <Score win={win}>{ours.score}</Score>
+          <Score win={!win}>{oppo.score}</Score>
         </>
       ) : (
         <>
@@ -108,7 +66,7 @@ const Record = ({ record, players, editingItem, onClick }) => {
           <Score>{oppo.score}</Score>
         </>
       )}
-      <RecordText className={editingItem === "ours" && "editing"}>
+      <RecordText editing={editingItem === "ours"}>
         {ours.type ? (
           ours.type === "oppo-error" ? (
             <>
@@ -117,16 +75,16 @@ const Record = ({ record, players, editingItem, onClick }) => {
             </>
           ) : (
             <>
-              <span>{players[ours.player]?.number}</span>
+              <Number>{players[ours.player]?.number}</Number>
               {oursType?.text}
               {ours.type && (win ? <IconWin /> : <IconLose />)}
             </>
           )
         ) : (
-          <span>{players[ours.player]?.number}</span>
+          <Number>{players[ours.player]?.number}</Number>
         )}
       </RecordText>
-      <RecordText className={editingItem === "oppo" && "editing"}>
+      <RecordText editing={editingItem === "oppo"}>
         {oppo.type &&
           (oppo.type === "oppo-error" ? (
             <>

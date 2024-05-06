@@ -58,7 +58,7 @@ const Header = ({ matchId }) => {
         )}
       </Content>
       {matchId === "new" || segment === "config" ? (
-        <Button />
+        <Button variant="ghost" />
       ) : (
         <Button
           variant="ghost"
