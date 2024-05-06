@@ -1,12 +1,5 @@
 import styles from "./styles.module.scss";
 
-import {
-  MdOutlineAdminPanelSettings,
-  MdCheckCircleOutline,
-  MdOutlineAccessTime,
-  MdOutlineHighlightOff,
-} from "react-icons/md";
-
 export const ListItem = ({
   children,
   type = "",
@@ -98,41 +91,3 @@ export const ListItemText = ({ children, minimized, bold, fit }) => {
 //     </Container>
 //   );
 // };
-
-export const ListIndicator = ({ member }) => {
-  const { admin, user_id, email } = member.meta;
-  const identity = !email
-    ? {
-        text: "未邀請",
-        type: "secondary",
-        icon: <MdOutlineHighlightOff />,
-      }
-    : !user_id
-    ? {
-        text: "邀請中",
-        type: "",
-        icon: <MdOutlineAccessTime />,
-      }
-    : !admin
-    ? {
-        text: "已加入",
-        type: "primary",
-        icon: <MdCheckCircleOutline />,
-      }
-    : {
-        text: "管理者",
-        type: "danger",
-        icon: <MdOutlineAdminPanelSettings />,
-      };
-
-  return (
-    <div
-      className={`${styles.list__indicator} ${
-        styles[`list__indicator--${identity.type}`]
-      }`}
-    >
-      {identity.icon}
-      {identity.text}
-    </div>
-  );
-};
