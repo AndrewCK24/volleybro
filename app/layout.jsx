@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { Saira, Noto_Sans_TC } from "next/font/google";
-import StyledComponentsRegistry from "./lib/registry";
 import Root from "./lib/Root";
 import "normalize.css";
 import "./globals.css";
@@ -115,10 +114,8 @@ export default async function RootLayout({ children }) {
       </head>
       <body>
         <ReduxProvider>
-          <StyledComponentsRegistry>
-            <Root data={data} />
-            {children}
-          </StyledComponentsRegistry>
+          <Root data={data} />
+          {children}
         </ReduxProvider>
         <Analytics />
       </body>
