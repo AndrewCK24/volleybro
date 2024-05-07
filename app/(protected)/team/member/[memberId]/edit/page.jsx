@@ -16,7 +16,7 @@ const EditMemberPage = ({ params }) => {
   );
 
   const onSubmit = async (formData) => {
-    formData.teamId = teamId;
+    formData.team_id = teamId;
     try {
       const res = await fetch(`/api/members/${memberId}`, {
         method: "PUT",
