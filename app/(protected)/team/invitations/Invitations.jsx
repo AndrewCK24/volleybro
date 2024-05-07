@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useUserTeams } from "@/hooks/use-data";
 import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
 import { Button, Link } from "@/components/ui/button";
 import { CardDescription } from "@/components/ui/card";
@@ -9,11 +9,9 @@ import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const Invitations = () => {
   const router = useRouter();
-  const invitingTeams = useSelector((state) => state.user.teams.inviting);
+  const { teams, isLoading } = useUserTeams();
 
   const handleAccept = async (teamId) => {
-    // e.preventDefault();
-    console.log("accept invitation", teamId);
     try {
       const response = await fetch("/api/members", {
         method: "PATCH",
@@ -31,19 +29,23 @@ const Invitations = () => {
 
   return (
     <>
-      {invitingTeams.map((team) => (
-        <ListItem div key={team._id}>
-          <FiUsers />
-          <ListItemText>{team.name}</ListItemText>
-          <Button
-            variant="link"
-            size="icon"
-            onClick={() => handleAccept(team._id)}
-          >
-            <FiCheck />
-          </Button>
-        </ListItem>
-      ))}
+      {isLoading ? (
+        <>loading...</>
+      ) : (
+        teams.inviting.map((team) => (
+          <ListItem div key={team._id}>
+            <FiUsers />
+            <ListItemText>{team.name}</ListItemText>
+            <Button
+              variant="link"
+              size="icon"
+              onClick={() => handleAccept(team._id)}
+            >
+              <FiCheck />
+            </Button>
+          </ListItem>
+        ))
+      )}
       <Separator />
       <CardDescription className="text-center">
         沒有找到你的隊伍嗎？你可以...
