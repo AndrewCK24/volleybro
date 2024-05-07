@@ -16,7 +16,6 @@ import { GoArrowSwitch } from "react-icons/go";
 import { Button, Link } from "@/components/ui/button";
 import { CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ListItem, ListItemText } from "../../components/common/List";
 
 const Menu = () => {
   const dispatch = useDispatch();
@@ -26,7 +25,6 @@ const Menu = () => {
   const joinedTeams = useSelector((state) => state.user.teams.joined);
   const invitingTeams = useSelector((state) => state.user.teams.inviting);
   const isDetailsLoaded = joinedTeams[0]?._id || invitingTeams[0]?._id || false;
-  // TODO: 以 ListItemDetailContent 呈現隊伍名稱與 nickname
 
   const handleExtendTeams = async () => {
     if (extendTeams) return setExtendTeams(!extendTeams);
@@ -63,34 +61,34 @@ const Menu = () => {
     <>
       <Button size="wide">
         <FiUser />
-        <ListItemText>{userName}</ListItemText>
+        {userName}
       </Button>
-      <ListItem onClick={() => handleExtendTeams()}>
+      <Button variant="outline" size="wide" onClick={() => handleExtendTeams()}>
         <FiUserPlus />
-        <ListItemText>隊伍與邀請</ListItemText>
-        <ListItemText minimized>{invitingTeams.length}</ListItemText>
+        <span className="flex justify-start flex-1">隊伍與邀請</span>
+        {invitingTeams.length}
         <FiChevronDown
           className={`transition-transform duration-200 ${
             extendTeams ? "rotate-180" : ""
           }`}
         />
-      </ListItem>
+      </Button>
       {extendTeams && (
         <>
           {joinedTeams.length > 0 && (
             <CardDescription>已加入隊伍</CardDescription>
           )}
           {joinedTeams.map((team, index) => (
-            <ListItem
-              key={index}
-              type="primary"
-              text
+            <Button
+              key={team._id}
+              variant="ghost"
+              size="wide"
               onClick={() => handleTeamSwitch(index, team)}
             >
               <FiUsers />
-              <ListItemText>{team.name || ""}</ListItemText>
+              {team.name || ""}
               {index !== 0 && <GoArrowSwitch />}
-            </ListItem>
+            </Button>
           ))}
           {invitingTeams.length > 0 && (
             <>
@@ -98,16 +96,16 @@ const Menu = () => {
               <CardDescription>收到的邀請</CardDescription>
             </>
           )}
-          {invitingTeams.map((team, index) => (
-            <ListItem
-              key={index}
-              type="primary"
-              text
+          {invitingTeams.map((team) => (
+            <Button
+              key={team._id}
+              variant="ghost"
+              size="wide"
               onClick={() => router.push(`/team/info/${team._id}`)}
             >
               <FiUsers />
-              <ListItemText>{team.name || ""}</ListItemText>
-            </ListItem>
+              {team.name || ""}
+            </Button>
           ))}
           <CardDescription>
             沒有你的隊伍嗎？你可以聯絡你的隊伍管理者，或...
@@ -118,10 +116,10 @@ const Menu = () => {
           </Link>
         </>
       )}
-      <ListItem>
+      <Button variant="outline" size="wide">
         <FiSettings />
         設定
-      </ListItem>
+      </Button>
     </>
   );
 };
