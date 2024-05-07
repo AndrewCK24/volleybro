@@ -1,13 +1,14 @@
-import { connect } from "mongoose";
+import { connect, connection } from "mongoose";
 const mongodbUri = process.env.MONGODB_URI;
 
 const connectMongoDB = async () => {
   try {
-    console.log("Connecting to MongoDB...");
+    if (connection.readyState === 1) return;
+
     await connect(mongodbUri, {});
-    console.log("Connected to MongoDB!");
+    console.log("[Connect Mongodb] Connected to MongoDB!");
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    console.error("[Connect Mongodb] error:", error);
   }
 };
 
