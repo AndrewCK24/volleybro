@@ -60,9 +60,6 @@ const SignInForm = () => {
           dispatch(teamActions.setTeam({ userData, teamData, membersData }));
           return router.push("/");
         } else {
-          const response = await fetch("/api/teams");
-          const teams = await response.json();
-          dispatch(userActions.setTeamsDetails(teams));
           return router.push("/team/invitations");
         }
       }
