@@ -37,9 +37,6 @@ const TeamInfo = ({ teamData }) => {
       } else {
         const { userData } = await response.json();
         dispatch(userActions.setUser(userData));
-        const detailRes = await fetch("/api/teams");
-        const teams = await detailRes.json();
-        dispatch(userActions.setTeamsDetails(teams));
       }
     } catch (error) {
       console.log(error);
