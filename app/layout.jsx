@@ -5,6 +5,7 @@ import "normalize.css";
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ReduxProvider } from "./store/provider";
 
 const saira = Saira({
@@ -118,6 +119,7 @@ export default async function RootLayout({ children }) {
           {children}
         </ReduxProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
