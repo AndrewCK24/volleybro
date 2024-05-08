@@ -3,6 +3,8 @@ import verifyJwt from "../../utils/verify-jwt";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 
+export const dynamic = 'force-dynamic'
+
 export const GET = async (req) => {
   try {
     const { userData } = await verifyJwt(req);
