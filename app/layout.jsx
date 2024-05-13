@@ -1,12 +1,11 @@
-import { cookies } from "next/headers";
 import { Saira, Noto_Sans_TC } from "next/font/google";
-import Root from "./lib/Root";
 import "normalize.css";
-import "./globals.css";
+import "@/app/globals.css";
 
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ReduxProvider } from "./store/provider";
+import { ReduxProvider } from "@/app/store/provider";
+import { BackgroundColorHandler } from "@/lib/BackgroundColorHandler";
 
 const saira = Saira({
   subsets: ["latin"],
@@ -44,29 +43,7 @@ export const viewport = {
   userScalable: false,
 };
 
-const getAuthData = async () => {
-  const cookieStore = cookies();
-  const cookie = cookieStore.get("token");
-  const token = cookie ? cookie.value : "";
-  if (!cookie || !token) return null;
-
-  const response = await fetch(process.env.URL + "/api/sign-in", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      cookie: `token=${token}`,
-    },
-    next: { revalidate: 60 },
-  });
-  const data = await response.json();
-  if (data.error) return null;
-
-  return data;
-};
-
 export default async function RootLayout({ children }) {
-  const data = await getAuthData();
   return (
     <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
       <head>
@@ -114,10 +91,8 @@ export default async function RootLayout({ children }) {
         {/* TODO: apple splash screen images 待補 */}
       </head>
       <body>
-        <ReduxProvider>
-          <Root data={data} />
-          {children}
-        </ReduxProvider>
+        <ReduxProvider>{children}</ReduxProvider>
+        <BackgroundColorHandler />
         <Analytics />
         <SpeedInsights />
       </body>

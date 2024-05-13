@@ -5,14 +5,26 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
+      trim: true,
+    },
+    emailVerified: {
+      type: Date,
+      required: false,
+      trim: true,
+    },
+    image: {
+      type: String,
+      required: false,
+      trim: true,
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     teams: {
       joined: [
@@ -43,6 +55,8 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.index({ email: 1 });
 
 const User = models.User || model("User", userSchema, "users");
 export default User;
