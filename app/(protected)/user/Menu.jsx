@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useUser } from "@/hooks/use-data";
 import { useUserTeams } from "@/hooks/use-data";
 import { userActions } from "../user/user-slice";
 import { teamActions } from "../team/team-slice";
@@ -22,8 +23,8 @@ const Menu = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [extendTeams, setExtendTeams] = useState(false);
-  const { teams, isLoading } = useUserTeams();
-  const { name: userName } = useSelector((state) => state.user);
+  const { user, isLoading: isUserLoading } = useUser();
+  const { teams, isLoading: isUserTeamsLoading } = useUserTeams();
 
   const handleTeamSwitch = async (index, team) => {
     if (index === 0) return router.push("/team");
@@ -49,7 +50,7 @@ const Menu = () => {
     <>
       <Button size="wide">
         <FiUser />
-        {userName}
+        {user?.name || ""}
       </Button>
       <Button
         variant="outline"
@@ -66,7 +67,7 @@ const Menu = () => {
         />
       </Button>
       {extendTeams &&
-        (isLoading ? (
+        (isUserTeamsLoading ? (
           <>loading...</>
         ) : (
           <>
