@@ -2,9 +2,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { userActions } from "@/app/(protected)/user/user-slice";
+import { signUp } from "@/lib/auth-actions";
 import { Button, Link } from "@/components/ui/button";
 import { CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -41,9 +39,6 @@ const formSchema = z
   });
 
 const SignUpForm = () => {
-  const router = useRouter();
-  const dispatch = useDispatch();
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,23 +51,13 @@ const SignUpForm = () => {
 
   const onSubmit = async (formData) => {
     try {
-      const res = await fetch("/api/sign-up", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.status === 409) return setEmailError("帳號已存在");
-      if (res.status === 400) return setConfirmPasswordError("密碼不一致");
-
-      if (res.status === 201) {
-        const { userData } = await res.json();
-        dispatch(userActions.setUser(userData));
-        return router.push("/team/invitations");
+      const session = await signUp("credentials", formData);
+      if (session?.error) {
+        return form.setError("email", { message: session.error });
       }
     } catch (err) {
-      setEmailError("發生未知錯誤，請稍後再試");
       console.log(err);
+      form.setError("email", { message: err });
     }
   };
 

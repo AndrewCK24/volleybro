@@ -2,10 +2,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { userActions } from "@/app/(protected)/user/user-slice";
-import { teamActions } from "@/app/(protected)/team/team-slice";
+import { signIn } from "@/lib/auth-actions";
 import { Button, Link } from "@/components/ui/button";
 import {
   CardHeader,
@@ -24,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const formSchema = z
+export const SignInSchema = z
   .object({
     email: z.string().email({ message: "請輸入有效的 email" }),
     password: z.string().min(6, { message: "請輸入長度 6-20 密碼" }),
@@ -32,40 +29,19 @@ const formSchema = z
   .required();
 
 const SignInForm = () => {
-  const router = useRouter();
-  const dispatch = useDispatch();
-
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(SignInSchema),
     defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (formData) => {
     try {
-      const res = await fetch("/api/sign-in", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.status === 404)
-        return form.setError("email", { message: "帳號不存在" });
-      if (res.status === 401)
-        return form.setError("password", { message: "密碼錯誤" });
-
-      if (res.status === 200) {
-        const { userData, teamData, membersData } = await res.json();
-        dispatch(userActions.setUser(userData));
-        if (teamData) {
-          dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-          return router.push("/");
-        } else {
-          return router.push("/team/invitations");
-        }
+      const session = await signIn("credentials", formData);
+      if (session?.error) {
+        return form.setError("email", { message: "帳號或密碼錯誤" });
       }
     } catch (err) {
-      setEmailError("發生未知錯誤，請稍後再試");
-      console.log(err);
+      form.setError("email", { message: "發生未知錯誤，請稍後再試" });
     }
   };
 
