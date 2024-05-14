@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 
+export const dynamic = "force-dynamic";
+
 export const GET = async () => {
   try {
     const session = await auth();

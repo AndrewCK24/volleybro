@@ -37,4 +37,5 @@ export default auth((req) => {
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  unstable_allowDynamic: ["/node_modules/mongoose/dist/browser.umd.js"],
 };
