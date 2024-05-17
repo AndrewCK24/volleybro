@@ -3,6 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "@/lib/auth-actions";
+import { FcGoogle } from "react-icons/fc";
 import { Button, Link } from "@/components/ui/button";
 import {
   CardHeader,
@@ -85,8 +86,16 @@ const SignInForm = () => {
         <Button size="lg">登入</Button>
       </Form>
       <Separator content="或使用以下方式登入" />
-      <Link variant="outline" size="lg" href="/sign-up">
-        註冊
+      {/* <Button
+        variant="outline"
+        size="lg"
+        onClick={async () => await signIn("google")}
+      >
+        <FcGoogle />
+        使用 Google 繼續
+      </Button> */}
+      <Link variant="ghost" size="lg" href="/sign-up">
+        註冊新帳號
       </Link>
       <CardFooter />
     </>
