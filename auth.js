@@ -19,5 +19,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
+  pages: {
+    signIn: "/auth/sign-in",
+    error: "/auth/error",
+    newUser: "/team/invitations",
+  },
   ...authConfig,
 });

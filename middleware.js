@@ -30,7 +30,7 @@ export default auth((req) => {
   }
 
   if (!isSignedIn && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/sign-in", nextUrl));
+    return NextResponse.redirect(new URL("/auth/sign-in", nextUrl));
   }
   return NextResponse.next();
 });

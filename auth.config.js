@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
 import { compareSync } from "bcryptjs";
+import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import connectToMongoDB from "@/lib/connect-to-mongodb";
 
 const authConfig = {
   providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
@@ -34,9 +39,14 @@ const authConfig = {
       },
     }),
   ],
-  pages: {
-    signIn: "/",
-    newUser: "/team/invitations",
+  events: {
+    linkAccount: async ({ user }) => {
+      await connectToMongoDB();
+      await mongoose.models.User.findOneAndUpdate(
+        { email: user.email },
+        { $set: { emailVerified: new Date() } }
+      );
+    },
   },
 };
 
