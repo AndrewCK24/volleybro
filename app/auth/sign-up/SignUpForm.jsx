@@ -125,14 +125,14 @@ const SignUpForm = () => {
         </Button>
       </Form>
       <Separator content="或使用以下方式註冊" />
-      {/* <Button
+      <Button
         variant="outline"
         size="lg"
         onClick={async () => await signIn("google")}
       >
         <FcGoogle />
         使用 Google 繼續
-      </Button> */}
+      </Button>
       <Link variant="ghost" size="lg" href="/auth/sign-in">
         返回登入頁
       </Link>

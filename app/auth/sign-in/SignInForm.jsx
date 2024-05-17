@@ -1,9 +1,13 @@
 "use client";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "@/lib/auth-actions";
 import { FcGoogle } from "react-icons/fc";
+import { FiAlertTriangle } from "react-icons/fi";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button, Link } from "@/components/ui/button";
 import {
   CardHeader,
@@ -30,6 +34,14 @@ export const SignInSchema = z
   .required();
 
 const SignInForm = () => {
+  const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const urlError = searchParams.get("error");
+  const errorMessage =
+    urlError === "OAuthAccountNotLinked"
+      ? "看來您已使用其他方式註冊，請使用原註冊方式登入"
+      : "";
+
   const form = useForm({
     resolver: zodResolver(SignInSchema),
     defaultValues: { email: "", password: "" },
@@ -38,11 +50,9 @@ const SignInForm = () => {
   const onSubmit = async (formData) => {
     try {
       const session = await signIn("credentials", formData);
-      if (session?.error) {
-        return form.setError("email", { message: "帳號或密碼錯誤" });
-      }
+      if (session?.error) return setError("帳號或密碼錯誤");
     } catch (err) {
-      form.setError("email", { message: "發生未知錯誤，請稍後再試" });
+      return setError("發生未知錯誤，請稍後再試");
     }
   };
 
@@ -51,6 +61,11 @@ const SignInForm = () => {
       <CardHeader>
         <CardTitle>歡迎使用 V-Stats</CardTitle>
       </CardHeader>
+      <Alert variant="destructive" hidden={!error && !urlError}>
+        <FiAlertTriangle />
+        <AlertTitle>登入失敗</AlertTitle>
+        <AlertDescription>{error || errorMessage}</AlertDescription>
+      </Alert>
       <Form form={form} onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
         <FormField
           control={form.control}
@@ -86,14 +101,14 @@ const SignInForm = () => {
         <Button size="lg">登入</Button>
       </Form>
       <Separator content="或使用以下方式登入" />
-      {/* <Button
+      <Button
         variant="outline"
         size="lg"
         onClick={async () => await signIn("google")}
       >
         <FcGoogle />
         使用 Google 繼續
-      </Button> */}
+      </Button>
       <Link variant="ghost" size="lg" href="/auth/sign-up">
         註冊新帳號
       </Link>
