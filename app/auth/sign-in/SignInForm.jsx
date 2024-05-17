@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -33,14 +33,24 @@ export const SignInSchema = z
   })
   .required();
 
-const SignInForm = () => {
-  const [error, setError] = useState("");
+const SignInError = ({ error }) => {
   const searchParams = useSearchParams();
   const urlError = searchParams.get("error");
   const errorMessage =
     urlError === "OAuthAccountNotLinked"
       ? "看來您已使用其他方式註冊，請使用原註冊方式登入"
       : "";
+  return (
+    <Alert variant="destructive" hidden={!error && !urlError}>
+      <FiAlertTriangle />
+      <AlertTitle>登入失敗</AlertTitle>
+      <AlertDescription>{error || errorMessage}</AlertDescription>
+    </Alert>
+  );
+};
+
+const SignInForm = () => {
+  const [error, setError] = useState("");
 
   const form = useForm({
     resolver: zodResolver(SignInSchema),
@@ -61,11 +71,9 @@ const SignInForm = () => {
       <CardHeader>
         <CardTitle>歡迎使用 V-Stats</CardTitle>
       </CardHeader>
-      <Alert variant="destructive" hidden={!error && !urlError}>
-        <FiAlertTriangle />
-        <AlertTitle>登入失敗</AlertTitle>
-        <AlertDescription>{error || errorMessage}</AlertDescription>
-      </Alert>
+      <Suspense>
+        <SignInError error={error} />
+      </Suspense>
       <Form form={form} onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
         <FormField
           control={form.control}
