@@ -133,7 +133,7 @@ const SignUpForm = () => {
         <FcGoogle />
         使用 Google 繼續
       </Button> */}
-      <Link variant="ghost" size="lg" href="/sign-in">
+      <Link variant="ghost" size="lg" href="/auth/sign-in">
         返回登入頁
       </Link>
       <CardFooter />
