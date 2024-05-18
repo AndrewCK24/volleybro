@@ -54,27 +54,43 @@ export default async function RootLayout({ children }) {
           content="black-translucent"
         />
         <meta name="apple-mobile-web-app-title" content="V-Stats" />
-        {/* apple touch icons */}
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* apple touch icons, learn more: https://developer.apple.com/design/human-interface-guidelines/app-icons */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
           rel="apple-touch-icon"
-          sizes="152x152"
-          href="/icons/apple-touch-icon-152x152.png"
+          sizes="76x76"
+          href="/apple-touch-icon-76x76.png"
         />
         <link
           rel="apple-touch-icon"
-          sizes="180x180"
-          href="/icons/apple-touch-icon-180x180.png"
-        />
-        <link
-          rel="apple-touch-icon"
-          sizes="167x167"
-          href="/icons/apple-touch-icon-167x167.png"
+          sizes="114x114"
+          href="/apple-touch-icon-114x114.png"
         />
         <link
           rel="apple-touch-icon"
           sizes="120x120"
-          href="/icons/apple-touch-icon-120x120.png"
+          href="/apple-touch-icon-120x120.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="144x144"
+          href="/apple-touch-icon-144x144.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="152x152"
+          href="/apple-touch-icon-152x152.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="167x167"
+          href="/apple-touch-icon-167x167.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon-180x180.png"
         />
 
         {/* open graph */}
