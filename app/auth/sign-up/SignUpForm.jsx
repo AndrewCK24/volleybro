@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, signUp } from "@/lib/auth-actions";
 import { FcGoogle } from "react-icons/fc";
 import { Button, Link } from "@/components/ui/button";
-import { CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   Form,
@@ -39,7 +39,7 @@ const formSchema = z
     path: ["confirm_password"],
   });
 
-const SignUpForm = () => {
+const SignUpForm = ({ className }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,7 +63,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>開始註冊 V-Stats</CardTitle>
       </CardHeader>
@@ -137,7 +137,7 @@ const SignUpForm = () => {
         返回登入頁
       </Link>
       <CardFooter />
-    </>
+    </Card>
   );
 };
 

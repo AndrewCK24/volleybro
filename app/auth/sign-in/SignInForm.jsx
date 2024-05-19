@@ -10,6 +10,7 @@ import { FiAlertTriangle } from "react-icons/fi";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button, Link } from "@/components/ui/button";
 import {
+  Card,
   CardHeader,
   CardTitle,
   CardBtnGroup,
@@ -49,7 +50,7 @@ const SignInError = ({ error }) => {
   );
 };
 
-const SignInForm = () => {
+const SignInForm = ({ className }) => {
   const [error, setError] = useState("");
 
   const form = useForm({
@@ -67,7 +68,7 @@ const SignInForm = () => {
   };
 
   return (
-    <>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>歡迎使用 V-Stats</CardTitle>
       </CardHeader>
@@ -121,7 +122,7 @@ const SignInForm = () => {
         註冊新帳號
       </Link>
       <CardFooter />
-    </>
+    </Card>
   );
 };
 

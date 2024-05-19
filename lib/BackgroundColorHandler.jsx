@@ -6,7 +6,7 @@ export const BackgroundColorHandler = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname.startsWith("/sign")) {
+    if (pathname.startsWith("/auth")) {
       document.body.style.backgroundColor = "rgba(var(--primary))";
     } else {
       document.body.style.backgroundColor = "rgba(var(--background))";
