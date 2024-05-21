@@ -16,16 +16,6 @@ const defaultFetcher = async (url) => {
   return res.json();
 };
 
-export const useUser = (fetcher = defaultFetcher, options = {}) => {
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
-    "/api/users",
-    fetcher,
-    { dedupingInterval: 5 * 60 * 1000, ...options }
-  );
-
-  return { user: data, error, isLoading, isValidating, mutate };
-}
-
 export const useUserTeams = (fetcher = defaultFetcher, options = {}) => {
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     "/api/users/teams",

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { useUser } from "@/hooks/use-data";
+import { useSession } from "next-auth/react";
 import { useUserTeams } from "@/hooks/use-data";
 import { userActions } from "../user/user-slice";
 import { teamActions } from "../team/team-slice";
@@ -16,14 +16,15 @@ import {
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 import { Button, Link } from "@/components/ui/button";
-import { CardDescription } from "@/components/ui/card";
+import { Card, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-const Menu = () => {
+const Menu = ({ className }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [extendTeams, setExtendTeams] = useState(false);
-  const { user, isLoading: isUserLoading } = useUser();
+  const { data } = useSession();
+  const user = data?.user || null;
   const { teams, isLoading: isUserTeamsLoading } = useUserTeams();
 
   const handleTeamSwitch = async (index, team) => {
@@ -47,7 +48,7 @@ const Menu = () => {
   };
 
   return (
-    <>
+    <Card className={className}>
       <Button size="wide">
         <FiUser />
         {user?.name || ""}
@@ -116,7 +117,7 @@ const Menu = () => {
         <FiSettings />
         設定
       </Button>
-    </>
+    </Card>
   );
 };
 

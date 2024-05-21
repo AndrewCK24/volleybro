@@ -1,13 +1,18 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useUserTeams } from "@/hooks/use-data";
-import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
+import { FiUsers, FiPlus, FiCheck } from "react-icons/fi";
 import { Button, Link } from "@/components/ui/button";
-import { CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ListItem, ListItemText } from "@/app/components/common/List";
 
-const Invitations = () => {
+const Invitations = ({ className }) => {
   const router = useRouter();
   const { teams, isLoading } = useUserTeams();
 
@@ -28,7 +33,10 @@ const Invitations = () => {
   };
 
   return (
-    <>
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>隊伍邀請</CardTitle>
+      </CardHeader>
       {isLoading ? (
         <>loading...</>
       ) : (
@@ -43,13 +51,11 @@ const Invitations = () => {
             >
               <FiCheck />
             </Button>
+            {/* TODO: 新增拒絕邀請功能 */}
           </ListItem>
         ))
       )}
-      <Separator />
-      <CardDescription className="text-center">
-        沒有找到你的隊伍嗎？你可以...
-      </CardDescription>
+      <Separator content="沒有找到你的隊伍嗎？你可以..." />
       <Link size="lg" href="/team/new">
         <FiPlus />
         建立隊伍
@@ -57,7 +63,7 @@ const Invitations = () => {
       <CardDescription className="text-center">
         或聯絡你的隊伍管理者
       </CardDescription>
-    </>
+    </Card>
   );
 };
 

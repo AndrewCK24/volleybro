@@ -40,6 +40,15 @@ const authConfig = {
     }),
   ],
   events: {
+    // signIn: async ({ user, account }) => {
+    //   // Allow OAuth providers to sign in without email verification
+    //   if (account.provider === "credentials") {
+    //     await connectToMongoDB();
+    //     const existingUser = await mongoose.models.User.findById(user._id);
+    //     if (!existingUser?.emailVerified) return false;
+    //   }
+    //   return true;
+    // },
     linkAccount: async ({ user }) => {
       await connectToMongoDB();
       await mongoose.models.User.findOneAndUpdate(

@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,6 +41,7 @@ const formSchema = z
   });
 
 const SignUpForm = ({ className }) => {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,6 +57,10 @@ const SignUpForm = ({ className }) => {
       const session = await signUp("credentials", formData);
       if (session?.error) {
         return form.setError("email", { message: session.error });
+      }
+      if (session?.success) {
+        // TODO: redirect the user to the email verification page
+        return router.push("/auth/sign-in");
       }
     } catch (err) {
       console.log(err);
