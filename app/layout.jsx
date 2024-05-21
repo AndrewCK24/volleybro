@@ -1,10 +1,10 @@
 import { Saira, Noto_Sans_TC } from "next/font/google";
 import "normalize.css";
 import "@/app/globals.css";
-
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ReduxProvider } from "@/app/store/provider";
+import { SessionProvider } from "next-auth/react";
 import { BackgroundColorHandler } from "@/lib/BackgroundColorHandler";
 
 const saira = Saira({
@@ -151,7 +151,9 @@ export default async function RootLayout({ children }) {
         {/* TODO: twitter 設定待補 */}
       </head>
       <body>
-        <ReduxProvider>{children}</ReduxProvider>
+        <SessionProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </SessionProvider>
         <BackgroundColorHandler />
         <Analytics />
         <SpeedInsights />
