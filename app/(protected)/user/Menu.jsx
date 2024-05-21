@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -50,7 +51,17 @@ const Menu = ({ className }) => {
   return (
     <Card className={className}>
       <Button size="wide">
-        <FiUser />
+        {user?.image ? (
+          <Image
+            src={user.image}
+            alt={user.name}
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+        ) : (
+          <FiUser />
+        )}
         {user?.name || ""}
       </Button>
       <Button
