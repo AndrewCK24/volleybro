@@ -17,6 +17,24 @@ const authConfig = {
       });
     },
   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        const { password, ...rest } = user._doc;
+        token.user = { ...token.user, ...rest };
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = token.user;
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/auth/sign-in",
+    error: "/auth/error",
+    newUser: "/team/invitations",
+  },
 };
 
 export default authConfig;
