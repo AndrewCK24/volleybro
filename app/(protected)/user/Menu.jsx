@@ -1,7 +1,9 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useSession } from "next-auth/react";
 import { useUserTeams } from "@/hooks/use-data";
 import { userActions } from "../user/user-slice";
 import { teamActions } from "../team/team-slice";
@@ -15,15 +17,16 @@ import {
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 import { Button, Link } from "@/components/ui/button";
-import { CardDescription } from "@/components/ui/card";
+import { Card, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-const Menu = () => {
+const Menu = ({ className }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [extendTeams, setExtendTeams] = useState(false);
-  const { teams, isLoading } = useUserTeams();
-  const { name: userName } = useSelector((state) => state.user);
+  const { data } = useSession();
+  const user = data?.user || null;
+  const { teams, isLoading: isUserTeamsLoading } = useUserTeams();
 
   const handleTeamSwitch = async (index, team) => {
     if (index === 0) return router.push("/team");
@@ -46,10 +49,20 @@ const Menu = () => {
   };
 
   return (
-    <>
+    <Card className={className}>
       <Button size="wide">
-        <FiUser />
-        {userName}
+        {user?.image ? (
+          <Image
+            src={user.image}
+            alt={user.name}
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+        ) : (
+          <FiUser />
+        )}
+        {user?.name || ""}
       </Button>
       <Button
         variant="outline"
@@ -66,7 +79,7 @@ const Menu = () => {
         />
       </Button>
       {extendTeams &&
-        (isLoading ? (
+        (isUserTeamsLoading ? (
           <>loading...</>
         ) : (
           <>
@@ -115,7 +128,7 @@ const Menu = () => {
         <FiSettings />
         設定
       </Button>
-    </>
+    </Card>
   );
 };
 

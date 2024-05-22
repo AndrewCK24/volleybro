@@ -1,11 +1,11 @@
-import { cookies } from "next/headers";
 import { Saira, Noto_Sans_TC } from "next/font/google";
-import Root from "./lib/Root";
 import "normalize.css";
-import "./globals.css";
-
+import "@/app/globals.css";
 import { Analytics } from "@vercel/analytics/react";
-import { ReduxProvider } from "./store/provider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ReduxProvider } from "@/app/store/provider";
+import { SessionProvider } from "next-auth/react";
+import { BackgroundColorHandler } from "@/lib/BackgroundColorHandler";
 
 const saira = Saira({
   subsets: ["latin"],
@@ -43,29 +43,7 @@ export const viewport = {
   userScalable: false,
 };
 
-const getAuthData = async () => {
-  const cookieStore = cookies();
-  const cookie = cookieStore.get("token");
-  const token = cookie ? cookie.value : "";
-  if (!cookie || !token) return null;
-
-  const response = await fetch(process.env.URL + "/api/sign-in", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      cookie: `token=${token}`,
-    },
-    next: { revalidate: 60 },
-  });
-  const data = await response.json();
-  if (data.error) return null;
-
-  return data;
-};
-
 export default async function RootLayout({ children }) {
-  const data = await getAuthData();
   return (
     <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
       <head>
@@ -76,30 +54,92 @@ export default async function RootLayout({ children }) {
           content="black-translucent"
         />
         <meta name="apple-mobile-web-app-title" content="V-Stats" />
-        {/* apple touch icons */}
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* apple touch icons, learn more: https://developer.apple.com/design/human-interface-guidelines/app-icons */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
           rel="apple-touch-icon"
-          sizes="152x152"
-          href="/icons/apple-touch-icon-152x152.png"
+          sizes="76x76"
+          href="/apple-touch-icon-76x76.png"
         />
         <link
           rel="apple-touch-icon"
-          sizes="180x180"
-          href="/icons/apple-touch-icon-180x180.png"
-        />
-        <link
-          rel="apple-touch-icon"
-          sizes="167x167"
-          href="/icons/apple-touch-icon-167x167.png"
+          sizes="114x114"
+          href="/apple-touch-icon-114x114.png"
         />
         <link
           rel="apple-touch-icon"
           sizes="120x120"
-          href="/icons/apple-touch-icon-120x120.png"
+          href="/apple-touch-icon-120x120.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="144x144"
+          href="/apple-touch-icon-144x144.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="152x152"
+          href="/apple-touch-icon-152x152.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="167x167"
+          href="/apple-touch-icon-167x167.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon-180x180.png"
         />
 
-        {/* open graph */}
+        {/* apple splash screen images */}
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/750x1334_2x.png"
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/828x1792_2x.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1080x1920_3x.png"
+          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1125x2436_3x.png"
+          media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1170x2532_3x.png"
+          media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1179x2556_3x.png"
+          media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1242x2688_3x.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1284x2778_3x.png"
+          media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/apple-splash/1290x2796_3x.png"
+          media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        />
+
         <meta property="og:type" content="website" />
         <meta property="og:title" content="V-Stats" />
         <meta property="og:site_name" content="V-Stats" />
@@ -108,16 +148,15 @@ export default async function RootLayout({ children }) {
           content="Best volleyball stats app ever"
         />
         {/* TODO: 尚未補上 og 圖片 */}
-
         {/* TODO: twitter 設定待補 */}
-        {/* TODO: apple splash screen images 待補 */}
       </head>
       <body>
-        <ReduxProvider>
-          <Root data={data} />
-          {children}
-        </ReduxProvider>
+        <SessionProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </SessionProvider>
+        <BackgroundColorHandler />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
