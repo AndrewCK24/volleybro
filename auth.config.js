@@ -18,7 +18,7 @@ const authConfig = {
     },
   },
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, session, trigger }) {
       if (user) {
         const { password, ...rest } = user._doc;
         token.user = { ...token.user, ...rest };
