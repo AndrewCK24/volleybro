@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useUserTeams } from "@/hooks/use-data";
-import { userActions } from "../user/user-slice";
 import { teamActions } from "../team/team-slice";
 import {
   FiChevronDown,
@@ -24,7 +23,7 @@ const Menu = ({ className }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [extendTeams, setExtendTeams] = useState(false);
-  const { data } = useSession();
+  const { data, update } = useSession();
   const user = data?.user || null;
   const { teams, isLoading: isUserTeamsLoading } = useUserTeams();
 
@@ -40,7 +39,10 @@ const Menu = ({ className }) => {
         },
       });
       const { userData, teamData, membersData } = await response.json();
-      dispatch(userActions.setUser(userData));
+      await update({
+        ...data,
+        user: { ...data.user, ...userData },
+      });
       dispatch(teamActions.setTeam({ userData, teamData, membersData }));
       router.push("/team");
     } catch (error) {
@@ -118,7 +120,7 @@ const Menu = ({ className }) => {
             <CardDescription>
               沒有你的隊伍嗎？你可以聯絡你的隊伍管理者，或...
             </CardDescription>
-            <Link variant="ghost" size="lg" href="/team/invitations">
+            <Link variant="ghost" size="lg" href="/user/invitations">
               <FiPlus />
               查看更多
             </Link>

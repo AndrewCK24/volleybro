@@ -18,10 +18,13 @@ const authConfig = {
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         const { password, ...rest } = user._doc;
         token.user = { ...token.user, ...rest };
+      }
+      if (trigger === "update") {
+        return { ...token, user: session?.user };
       }
       return token;
     },
@@ -33,7 +36,7 @@ const authConfig = {
   pages: {
     signIn: "/auth/sign-in",
     error: "/auth/error",
-    newUser: "/team/invitations",
+    newUser: "/user/invitations",
   },
 };
 
