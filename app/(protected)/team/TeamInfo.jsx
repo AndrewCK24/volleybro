@@ -1,61 +1,56 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { userActions } from "../user/user-slice";
-import { teamActions } from "../team/team-slice";
-import { FiFileText, FiCheck, FiX, FiEdit2 } from "react-icons/fi";
+import { useUser, useTeam } from "@/hooks/use-data";
+import { FiUsers, FiCheck, FiX, FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import { CardHeader, CardTitle, CardBtnGroup } from "@/components/ui/card";
-import { ListItem, ListItemText } from "@/app/components/common/List";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBtnGroup,
+} from "@/components/ui/card";
+import TeamInfoTable from "@/app/(protected)/team/info/TeamInfoTable";
 
-const TeamInfo = ({ teamData }) => {
+const TeamInfo = ({ teamId, className }) => {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const invitingTeams = useSelector((state) => state.user.teams.inviting);
-  const isInviting =
-    invitingTeams.find((team) => team === teamData._id) ||
-    invitingTeams.find((team) => team._id === teamData._id);
-  const isDefaultTeamAdmin = useSelector((state) => state.team.admin);
-  const isAdmin =
-    teamData._id === useSelector((state) => state.team._id)
-      ? isDefaultTeamAdmin
-      : false;
+  const { user, mutate } = useUser();
+  const { team, isLoading } = useTeam(teamId);
+  const isInviting = user?.teams.inviting.find((team) => team === teamId);
+  // TODO: 更新 admin 資料結構
+  const isAdmin = team?.admins
+    ? team?.admins.find((admin) => admin.user_id === user?._id)
+    : false;
 
   const handleAccept = async (teamId, accept) => {
     if (!window.confirm(accept ? "確認接受邀請？" : "確認拒絕邀請？")) return;
     try {
-      const response = await fetch("/api/members", {
+      const response = await fetch("/api/users/teams", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teamId, accept }),
       });
-      if (accept) {
-        const { userData, teamData, membersData } = await response.json();
-        dispatch(userActions.setUser(userData));
-        dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-        router.push("/team");
-      } else {
-        const { userData } = await response.json();
-        dispatch(userActions.setUser(userData));
-      }
+      const userTeams = await response.json();
+      mutate({ ...user, teams: userTeams });
+      
+      return router.push(accept ? "/team" : "/user/invitations");
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>
-          <FiFileText />
-          隊伍資訊
+          <FiUsers />
+          {isLoading ? "Loading..." : team?.name}
         </CardTitle>
         <CardBtnGroup>
           {isAdmin && (
             <Button
               variant="link"
               size="lg"
-              onClick={() => router.push(`/team/info/${teamData._id}/edit`)}
+              onClick={() => router.push(`/team/info/${teamId}/edit`)}
             >
               <FiEdit2 />
               編輯隊伍
@@ -63,36 +58,25 @@ const TeamInfo = ({ teamData }) => {
           )}
         </CardBtnGroup>
       </CardHeader>
-      <ListItem type="secondary" text>
-        <ListItemText fit>隊伍名稱</ListItemText>
-        <ListItemText bold>{teamData.name}</ListItemText>
-      </ListItem>
-      <ListItem type="secondary" text>
-        <ListItemText fit>隊伍簡稱</ListItemText>
-        <ListItemText bold>{teamData.nickname}</ListItemText>
-      </ListItem>
-      <ListItem type="secondary" text>
-        <ListItemText fit>隊伍人數</ListItemText>
-        <ListItemText bold>{teamData.members.length}</ListItemText>
-      </ListItem>
+      {isLoading ? <>Loading...</> : <TeamInfoTable team={team} />}
       {isInviting && (
         <>
           <p>是否接受此隊伍邀請？</p>
-          <Button size="lg" onClick={() => handleAccept(teamData._id, true)}>
+          <Button size="lg" onClick={() => handleAccept(teamId, true)}>
             <FiCheck />
             同意邀請
           </Button>
           <Button
             variant="destructive"
             size="lg"
-            onClick={() => handleAccept(teamData._id, false)}
+            onClick={() => handleAccept(teamId, false)}
           >
             <FiX />
             拒絕邀請
           </Button>
         </>
       )}
-    </>
+    </Card>
   );
 };
 

@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useUserTeams } from "@/hooks/use-data";
-import { FiUsers, FiPlus, FiCheck } from "react-icons/fi";
+import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
 import { Button, Link } from "@/components/ui/button";
 import {
   Card,
@@ -16,17 +16,18 @@ const Invitations = ({ className }) => {
   const router = useRouter();
   const { teams, isLoading } = useUserTeams();
 
-  const handleAccept = async (teamId) => {
+  const handleAccept = async (teamId, accept) => {
+    if (!window.confirm(accept ? "確認接受邀請？" : "確認拒絕邀請？")) return;
     try {
-      const response = await fetch("/api/members", {
+      const response = await fetch("/api/users/teams", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamId }),
+        body: JSON.stringify({ teamId, accept }),
       });
-      const { userData, teamData, membersData } = await response.json();
-      dispatch(userActions.setUser(userData));
-      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-      router.push("/team");
+      const userTeams = await response.json();
+      mutate({ ...user, teams: userTeams });
+
+      return router.push(accept ? "/team" : "/user/invitations");
     } catch (error) {
       console.log(error);
     }
@@ -47,11 +48,17 @@ const Invitations = ({ className }) => {
             <Button
               variant="link"
               size="icon"
-              onClick={() => handleAccept(team._id)}
+              onClick={() => handleAccept(team._id, true)}
             >
               <FiCheck />
             </Button>
-            {/* TODO: 新增拒絕邀請功能 */}
+            <Button
+              variant="link"
+              size="icon"
+              onClick={() => handleAccept(team._id, false)}
+            >
+              <FiX />
+            </Button>
           </ListItem>
         ))
       )}
