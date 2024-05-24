@@ -16,6 +16,16 @@ const defaultFetcher = async (url) => {
   return res.json();
 };
 
+export const useUser = (fetcher = defaultFetcher, options = {}) => {
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    "/api/users",
+    fetcher,
+    { dedupingInterval: 5 * 60 * 1000, ...options }
+  );
+
+  return { user: data, error, isLoading, isValidating, mutate };
+};
+
 export const useUserTeams = (fetcher = defaultFetcher, options = {}) => {
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     "/api/users/teams",
@@ -24,4 +34,40 @@ export const useUserTeams = (fetcher = defaultFetcher, options = {}) => {
   );
 
   return { teams: data, error, isLoading, isValidating, mutate };
+};
+
+export const useTeam = (teamId, fetcher = defaultFetcher, options = {}) => {
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    `/api/teams/${teamId}`,
+    fetcher,
+    { dedupingInterval: 5 * 60 * 1000, ...options }
+  );
+  const { teamData, membersData } = data || {};
+
+  return {
+    data,
+    team: teamData,
+    members: membersData,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+  };
+};
+
+export const useTeamMembers = (
+  teamId,
+  fetcher = customFetcher,
+  options = {}
+) => {
+  // TODO: 新增 conditional fetching
+  // if (!teamId) teamId = useSelector((state) => state.user.teams.joined[0]);
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    `/api/teams/${teamId}/members`,
+    fetcher,
+    { dedupingInterval: 5 * 60 * 1000, ...options }
+  );
+
+  return { members: data, error, isLoading, isValidating, mutate };
 };

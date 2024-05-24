@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import verifyJwt from "../utils/verify-jwt";
-import signJwt from "../utils/sign-jwt";
-import hidePassword from "../utils/hide-password";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 import Member from "@/app/models/member";
@@ -95,76 +93,6 @@ export const POST = async (req) => {
     return response;
   } catch (error) {
     console.log("[post-teams]", error);
-    return NextResponse.json({ error }, { status: 500 });
-  }
-};
-
-export const PATCH = async (req) => {
-  try {
-    const { userData } = await verifyJwt(req);
-    const { teamId, accept } = await req.json();
-
-    const team = await Team.findById(teamId);
-    if (!team) {
-      return NextResponse.json({ error: "Team not found" }, { status: 404 });
-    }
-
-    const member = await Member.findOne({
-      team_id: teamId,
-      "meta.email": userData.email,
-    });
-    const user = await User.findById(userData._id);
-
-    if (accept) {
-      member.meta.user_id = userData._id;
-      user.teams.joined.push(teamId);
-      user.teams.inviting = user.teams.inviting.filter(
-        (teamId) => !teamId.equals(teamId)
-      );
-    } else {
-      member.meta.email = null;
-      user.teams.inviting = user.teams.inviting.filter(
-        (teamId) => !teamId.equals(teamId)
-      );
-    }
-
-    await member.save();
-    await user.save();
-
-    const token = await signJwt(user);
-    const hidePasswordUser = hidePassword(user);
-    if (accept) {
-      const members = await Member.find({ team_id: teamId });
-      const response = NextResponse.json(
-        { userData: hidePasswordUser, teamData: team, membersData: members },
-        { status: 200 }
-      );
-      response.cookies.set({
-        name: "token",
-        value: token,
-        options: {
-          httpOnly: true,
-          maxAge: 60 * 60 * 24 * 30,
-        },
-      });
-      return response;
-    } else {
-      const response = NextResponse.json(
-        { userData: hidePasswordUser },
-        { status: 200 }
-      );
-      response.cookies.set({
-        name: "token",
-        value: token,
-        options: {
-          httpOnly: true,
-          maxAge: 60 * 60 * 24 * 30,
-        },
-      });
-      return response;
-    }
-  } catch (error) {
-    console.log("[patch-teams]", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 };

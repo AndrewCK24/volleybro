@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useUserTeams } from "@/hooks/use-data";
-import { FiUsers, FiPlus, FiCheck } from "react-icons/fi";
+import { useUser, useUserTeams } from "@/hooks/use-data";
+import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
 import { Button, Link } from "@/components/ui/button";
 import {
   Card,
@@ -14,19 +14,25 @@ import { ListItem, ListItemText } from "@/app/components/common/List";
 
 const Invitations = ({ className }) => {
   const router = useRouter();
-  const { teams, isLoading } = useUserTeams();
+  const { user, mutate: mutateUser } = useUser();
+  const { teams, isLoading, mutate: mutateUserTeams } = useUserTeams();
 
-  const handleAccept = async (teamId) => {
+  const handleAccept = async (teamId, accept) => {
+    if (!window.confirm(accept ? "確認接受邀請？" : "確認拒絕邀請？")) return;
+    const action = accept ? "accept" : "reject";
     try {
-      const response = await fetch("/api/members", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamId }),
-      });
-      const { userData, teamData, membersData } = await response.json();
-      dispatch(userActions.setUser(userData));
-      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-      router.push("/team");
+      const response = await fetch(
+        `/api/users/teams?action=${action}&teamId=${teamId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const userTeams = await response.json();
+      mutateUserTeams();
+      mutateUser({ ...user, teams: userTeams });
+
+      return accept ? router.push("/team") : null;
     } catch (error) {
       console.log(error);
     }
@@ -47,11 +53,17 @@ const Invitations = ({ className }) => {
             <Button
               variant="link"
               size="icon"
-              onClick={() => handleAccept(team._id)}
+              onClick={() => handleAccept(team._id, true)}
             >
               <FiCheck />
             </Button>
-            {/* TODO: 新增拒絕邀請功能 */}
+            <Button
+              variant="link"
+              size="icon"
+              onClick={() => handleAccept(team._id, false)}
+            >
+              <FiX />
+            </Button>
           </ListItem>
         ))
       )}
