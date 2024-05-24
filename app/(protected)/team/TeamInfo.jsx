@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useUser, useTeam } from "@/hooks/use-data";
+import { useUser, useTeam, useUserTeams } from "@/hooks/use-data";
 import { FiUsers, FiCheck, FiX, FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,8 @@ import TeamInfoTable from "@/app/(protected)/team/info/TeamInfoTable";
 
 const TeamInfo = ({ teamId, className }) => {
   const router = useRouter();
-  const { user, mutate } = useUser();
+  const { user, mutate: mutateUser } = useUser();
+  const { mutate: mutateUserTeams } = useUserTeams();
   const { team, isLoading } = useTeam(teamId);
   const isInviting = user?.teams.inviting.find((team) => team === teamId);
   // TODO: 更新 admin 資料結構
@@ -23,15 +24,19 @@ const TeamInfo = ({ teamId, className }) => {
 
   const handleAccept = async (teamId, accept) => {
     if (!window.confirm(accept ? "確認接受邀請？" : "確認拒絕邀請？")) return;
+    const action = accept ? "accept" : "reject";
     try {
-      const response = await fetch("/api/users/teams", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamId, accept }),
-      });
+      const response = await fetch(
+        `/api/users/teams?action=${action}&teamId=${teamId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       const userTeams = await response.json();
-      mutate({ ...user, teams: userTeams });
-      
+      mutateUserTeams();
+      mutateUser({ ...user, teams: userTeams });
+
       return router.push(accept ? "/team" : "/user/invitations");
     } catch (error) {
       console.log(error);

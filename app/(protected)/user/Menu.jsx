@@ -1,11 +1,10 @@
 "use client";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useUserTeams } from "@/hooks/use-data";
-import { teamActions } from "../team/team-slice";
 import {
   FiChevronDown,
   FiSettings,
@@ -21,32 +20,32 @@ import { Separator } from "@/components/ui/separator";
 
 const Menu = ({ className }) => {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const [extendTeams, setExtendTeams] = useState(false);
   const { data, update } = useSession();
   const user = data?.user || null;
-  const { teams, isLoading: isUserTeamsLoading } = useUserTeams();
+  const {
+    teams,
+    isLoading: isUserTeamsLoading,
+    mutate: mutateUserTeams,
+  } = useUserTeams();
+  const [extendTeams, setExtendTeams] = useState(false);
 
   const handleTeamSwitch = async (index, team) => {
     if (index === 0) return router.push("/team");
-
     try {
-      const response = await fetch(`/api/teams/${team._id}?switch=true`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-      const { userData, teamData, membersData } = await response.json();
-      await update({
-        ...data,
-        user: { ...data.user, ...userData },
-      });
-      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-      router.push("/team");
+      const response = await fetch(
+        `/api/users/teams?action=switch&teamId=${team._id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const userTeams = await response.json();
+      await update({ ...data, user: { ...data.user, teams: userTeams } });
+      mutateUserTeams();
+      return router.push("/team");
     } catch (error) {
       console.log(error);
+      // TODO: 錯誤提示訊息
     }
   };
 
@@ -75,9 +74,10 @@ const Menu = ({ className }) => {
         <span className="flex justify-start flex-1">隊伍與邀請</span>
         {teams && teams.inviting.length}
         <FiChevronDown
-          className={`transition-transform duration-200 ${
-            extendTeams ? "rotate-180" : ""
-          }`}
+          className={cn(
+            "transition-transform duration-200",
+            extendTeams && "rotate-180"
+          )}
         />
       </Button>
       {extendTeams &&
@@ -96,7 +96,9 @@ const Menu = ({ className }) => {
                 onClick={() => handleTeamSwitch(index, team)}
               >
                 <FiUsers />
-                {team.name || ""}
+                <span className="flex justify-start flex-1">
+                  {team.name || ""}
+                </span>
                 {index !== 0 && <GoArrowSwitch />}
               </Button>
             ))}
