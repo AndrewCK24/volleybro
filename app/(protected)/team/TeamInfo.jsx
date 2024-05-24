@@ -37,7 +37,7 @@ const TeamInfo = ({ teamId, className }) => {
       mutateUserTeams();
       mutateUser({ ...user, teams: userTeams });
 
-      return router.push(accept ? "/team" : "/user/invitations");
+      return router.push(accept ? `/team/${teamId}` : "/user/invitations");
     } catch (error) {
       console.log(error);
     }

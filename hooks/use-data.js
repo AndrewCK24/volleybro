@@ -48,7 +48,7 @@ export const useTeam = (teamId, fetcher = defaultFetcher, options = {}) => {
 
 export const useTeamMembers = (
   teamId,
-  fetcher = customFetcher,
+  fetcher = defaultFetcher,
   options = {}
 ) => {
   // TODO: 新增 conditional fetching

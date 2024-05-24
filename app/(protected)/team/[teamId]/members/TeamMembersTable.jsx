@@ -1,10 +1,7 @@
-"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
 import {
   FiUser,
-  FiPlus,
   FiShield,
   FiClock,
   FiCheckCircle,
@@ -12,7 +9,7 @@ import {
 } from "react-icons/fi";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { Badge } from "@/components/ui/badge";
-import { Button, Link } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   flexRender,
   getCoreRowModel,
@@ -97,7 +94,7 @@ const columns = [
   },
 ];
 
-const DataTable = ({ columns, data }) => {
+const TeamMembersTable = ({ data }) => {
   const [sorting, setSorting] = useState(data);
   const router = useRouter();
   const table = useReactTable({
@@ -161,18 +158,4 @@ const DataTable = ({ columns, data }) => {
   );
 };
 
-const TeamMembers = () => {
-  const { members } = useSelector((state) => state.team);
-
-  return (
-    <>
-      <DataTable columns={columns} data={members} />
-      <Link variant="secondary" size="lg" href="/team/member/new">
-        <FiPlus />
-        新增隊員
-      </Link>
-    </>
-  );
-};
-
-export default TeamMembers;
+export default TeamMembersTable;

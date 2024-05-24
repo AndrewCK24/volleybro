@@ -72,7 +72,7 @@ const TeamForm = ({ teamData, onSubmit }) => {
       </Form>
       <Link
         className={buttonVariants({ variant: "outline", size: "lg" })}
-        href="/team"
+        href={`/team/${teamId}`}
       >
         {teamId ? "取消編輯" : "取消建立"}
       </Link>

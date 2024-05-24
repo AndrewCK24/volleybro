@@ -1,6 +1,7 @@
 "use client";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { useUser } from "@/hooks/use-data";
 import { usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { matchActions } from "@/app/match/match-slice";
@@ -27,6 +28,11 @@ const NavLink = ({ children, className, ...props }) => (
 export const Nav = () => {
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const { user } = useUser();
+  const defaultTeamId = user?.teams?.joined[0] || null;
+  const defaultTeamUrl = defaultTeamId
+    ? `/team/${defaultTeamId}`
+    : "/user/invitations";
 
   const active = (path) => {
     const activeClass =
@@ -41,7 +47,7 @@ export const Nav = () => {
         <HomeIcon />
         首頁
       </NavLink>
-      <NavLink href="/team" className={active("/team")}>
+      <NavLink href={defaultTeamUrl} className={active("/team")}>
         <TeamIcon />
         隊伍
       </NavLink>

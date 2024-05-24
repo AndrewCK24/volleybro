@@ -3,8 +3,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useUserTeams } from "@/hooks/use-data";
+import { useUser, useUserTeams } from "@/hooks/use-data";
 import {
   FiChevronDown,
   FiSettings,
@@ -20,8 +19,7 @@ import { Separator } from "@/components/ui/separator";
 
 const Menu = ({ className }) => {
   const router = useRouter();
-  const { data, update } = useSession();
-  const user = data?.user || null;
+  const { user, mutate: mutateUser } = useUser();
   const {
     teams,
     isLoading: isUserTeamsLoading,
@@ -30,7 +28,7 @@ const Menu = ({ className }) => {
   const [extendTeams, setExtendTeams] = useState(false);
 
   const handleTeamSwitch = async (index, team) => {
-    if (index === 0) return router.push("/team");
+    if (index === 0) return router.push(`/team/${team._id}`);
     try {
       const response = await fetch(
         `/api/users/teams?action=switch&teamId=${team._id}`,
@@ -40,9 +38,10 @@ const Menu = ({ className }) => {
         }
       );
       const userTeams = await response.json();
-      await update({ ...data, user: { ...data.user, teams: userTeams } });
+      mutateUser({ ...user, teams: userTeams });
       mutateUserTeams();
-      return router.push("/team");
+
+      return router.push(`/team/${team._id}`);
     } catch (error) {
       console.log(error);
       // TODO: 錯誤提示訊息
