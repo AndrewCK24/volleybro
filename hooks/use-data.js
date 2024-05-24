@@ -42,17 +42,8 @@ export const useTeam = (teamId, fetcher = defaultFetcher, options = {}) => {
     fetcher,
     { dedupingInterval: 5 * 60 * 1000, ...options }
   );
-  const { teamData, membersData } = data || {};
 
-  return {
-    data,
-    team: teamData,
-    members: membersData,
-    error,
-    isLoading,
-    isValidating,
-    mutate,
-  };
+  return { team: data, error, isLoading, isValidating, mutate };
 };
 
 export const useTeamMembers = (
