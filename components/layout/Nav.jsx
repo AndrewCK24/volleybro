@@ -9,7 +9,7 @@ import {
   FiHome as HomeIcon,
   FiUsers as TeamIcon,
   FiPlusSquare as RecordIcon,
-  FiClock as HistoryIcon,
+  FiBell as NotificationsIcon,
   FiMenu as MenuIcon,
 } from "react-icons/fi";
 
@@ -59,9 +59,9 @@ export const Nav = () => {
       >
         <RecordIcon />
       </NavLink>
-      <NavLink href="/history" className={active("/history")}>
-        <HistoryIcon />
-        紀錄
+      <NavLink href="/notifications" className={active("/notifications")}>
+        <NotificationsIcon />
+        通知
       </NavLink>
       <NavLink href="/user" className={active("/user")}>
         <MenuIcon />
