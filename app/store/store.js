@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import userReducer from "../(protected)/user/user-slice";
-import teamReducer from "../(protected)/team/team-slice";
+import teamReducer from "@/app/store/team-slice";
 import matchReducer from "../match/match-slice";
 
 const store = configureStore({

@@ -1,4 +1,3 @@
-"use client";
 import Lineup from "@/components/team/lineup";
 
 const LineupPage = () => {

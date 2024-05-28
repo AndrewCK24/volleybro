@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { teamActions } from "@/app/(protected)/team/team-slice";
+import { teamActions } from "@/app/store/team-slice";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ConfirmCourt from "./ConfirmCourt";

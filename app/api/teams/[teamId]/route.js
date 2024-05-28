@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import verifyJwt from "../../utils/verify-jwt";
+import { auth } from "@/auth";
 import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
@@ -8,7 +8,6 @@ import Member from "@/app/models/member";
 export const GET = async (req, { params }) => {
   try {
     const { teamId } = params;
-    const query = req.nextUrl.searchParams;
     await connectToMongoDB();
 
     const team = await Team.findById(teamId);
@@ -26,7 +25,17 @@ export const GET = async (req, { params }) => {
 
 export const PATCH = async (req, { params }) => {
   try {
-    const { userData, token } = await verifyJwt(req);
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToMongoDB();
+    const user = await User.findById(session.user._id);
+    if (!user) {
+      console.error("[PATCH /api/users/teams] User not found");
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     const { id: teamId } = params;
     const { name, nickname } = await req.json();
@@ -37,7 +46,7 @@ export const PATCH = async (req, { params }) => {
 
     const members = await Member.find({ team_id: teamId });
     const isAdmin = members.find(
-      (member) => member.meta.user_id.toString() === userData._id.toString()
+      (member) => member.meta.user_id.toString() === user._id.toString()
     )?.meta.admin;
     if (!isAdmin) {
       return NextResponse.json(
@@ -51,21 +60,7 @@ export const PATCH = async (req, { params }) => {
 
     await team.save();
 
-    const response = NextResponse.json(
-      {
-        teamData: team,
-      },
-      { status: 200 }
-    );
-    response.cookies.set({
-      name: "token",
-      value: token,
-      options: {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 30,
-      },
-    });
-    return response;
+    return NextResponse.json(team, { status: 200 });
   } catch (error) {
     console.log("[update-team]", error);
     return NextResponse.json({ error }, { status: 500 });

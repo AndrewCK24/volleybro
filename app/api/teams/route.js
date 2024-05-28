@@ -1,21 +1,31 @@
 import { NextResponse } from "next/server";
-import verifyJwt from "../utils/verify-jwt";
-import signJwt from "../utils/sign-jwt";
-import hidePassword from "../utils/hide-password";
+import { auth } from "@/auth";
+import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 import Member from "@/app/models/member";
 
 export const POST = async (req) => {
   try {
-    const { userData } = await verifyJwt(req);
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToMongoDB();
+    const user = await User.findById(session.user._id);
+    if (!user) {
+      console.error("[POST /api/users/teams] User not found");
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const newMember = new Member({
       meta: {
         admin: true,
-        email: userData.email,
-        user_id: userData._id,
+        email: user.email,
+        user_id: user._id,
       },
-      name: userData.name,
+      name: user.name,
       number: 1,
     });
 
@@ -35,29 +45,14 @@ export const POST = async (req) => {
       },
     });
 
-    const updatedUser = await User.findById(userData._id);
     newMember.team_id = newTeam._id;
-    updatedUser.teams.joined.push(newTeam._id);
+    user.teams.joined.unshift(newTeam._id);
 
     await newMember.save();
     await newTeam.save();
-    await updatedUser.save();
+    await user.save();
 
-    const token = await signJwt(updatedUser);
-    const user = hidePassword(updatedUser);
-    const response = NextResponse.json(
-      { userData: user, teamData: newTeam, membersData: [newMember] },
-      { status: 201 }
-    );
-    response.cookies.set({
-      name: "token",
-      value: token,
-      options: {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 30,
-      },
-    });
-    return response;
+    return NextResponse.json(newTeam, { status: 201 });
   } catch (error) {
     console.log("[create-team]", error);
     return NextResponse.json({ error }, { status: 500 });
