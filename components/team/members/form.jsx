@@ -2,8 +2,8 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSelector } from "react-redux";
-import { Button, Link } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -32,22 +32,23 @@ const formSchema = z.object({
   admin: z.coerce.boolean().optional(),
 });
 
-const MemberForm = ({ member = null, onSubmit }) => {
-  const { admin: isAdmin } = useSelector((state) => state.team);
-
+const MemberForm = ({ member, onSubmit, className }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: member?.name || "",
       number: member?.number || "",
       position: member?.position || "",
-      email: member?.meta.email || "",
-      admin: member?.meta.admin ? "true" : "false",
+      email: member?.meta?.email || "",
+      admin: member?.meta?.admin ? "true" : "false",
     },
   });
 
   return (
-    <>
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>編輯隊員資訊</CardTitle>
+      </CardHeader>
       <Form form={form} onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
         <FormField
           control={form.control}
@@ -101,65 +102,42 @@ const MemberForm = ({ member = null, onSubmit }) => {
             </FormItem>
           )}
         />
-        {isAdmin && (
-          <>
-            <Separator />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>信箱</FormLabel>
-                  <FormControl>
-                    <Input placeholder="yukivb@gmail.com" {...field} />
-                  </FormControl>
-                  <FormDescription>請輸入信箱</FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="admin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>權限</FormLabel>
-                  <FormRadioGroup className="grid-cols-2" {...field}>
-                    <FormRadioItem
-                      variant="destructive"
-                      value="false"
-                      id="member"
-                    >
-                      一般成員
-                    </FormRadioItem>
-                    <FormRadioItem
-                      variant="destructive"
-                      value="true"
-                      id="admin"
-                    >
-                      管理者
-                    </FormRadioItem>
-                  </FormRadioGroup>
-                  <FormControl></FormControl>
-                  <FormDescription>
-                    是否有權限變更隊伍與隊員資訊
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-          </>
-        )}
+        <Separator />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>信箱</FormLabel>
+              <FormControl>
+                <Input placeholder="yukivb@gmail.com" {...field} />
+              </FormControl>
+              <FormDescription>請輸入信箱</FormDescription>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="admin"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>權限</FormLabel>
+              <FormRadioGroup className="grid-cols-2" {...field}>
+                <FormRadioItem variant="destructive" value="false" id="member">
+                  一般成員
+                </FormRadioItem>
+                <FormRadioItem variant="destructive" value="true" id="admin">
+                  管理者
+                </FormRadioItem>
+              </FormRadioGroup>
+              <FormControl></FormControl>
+              <FormDescription>是否有權限變更隊伍與隊員資訊</FormDescription>
+            </FormItem>
+          )}
+        />
         <Button size="lg">{member ? "儲存變更" : "新增隊員"}</Button>
       </Form>
-      {member ? (
-        <Link variant="outline" size="lg" href={`/team/member/${member._id}`}>
-          取消編輯
-        </Link>
-      ) : (
-        <Link variant="outline" size="lg" href="/team">
-          取消新增
-        </Link>
-      )}
-    </>
+    </Card>
   );
 };
 

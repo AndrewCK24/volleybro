@@ -1,37 +1,22 @@
-import { FiHash, FiUser, FiMail, FiShield } from "react-icons/fi";
-import { ListItem, ListItemText } from "@/app/components/common/List";
-import { Separator } from "@/components/ui/separator";
+"use client";
+import { useTeam, useTeamMembers } from "@/hooks/use-data";
+import { Card } from "@/components/ui/card";
+import MembersInfoTable from "@/components/team/members/info/table";
 
-const MemberInfo = ({ member }) => {
+const MembersInfo = ({ teamId, memberId, className }) => {
+  const { team } = useTeam(teamId);
+  const { members, isLoading } = useTeamMembers(teamId);
+  const member = members?.find((member) => member._id === memberId) || {};
+
   return (
-    <>
-      <div className="grid grid-cols-2 gap-2">
-        <ListItem type="secondary" text>
-          <FiHash />
-          <ListItemText bold>背號：{member.number || " "}</ListItemText>
-        </ListItem>
-        <ListItem type="secondary" text>
-          <FiShield />
-          <ListItemText bold>位置：{member?.position || " "}</ListItemText>
-        </ListItem>
-      </div>
-      <ListItem type="secondary" text>
-        <FiUser />
-        <ListItemText bold>姓名：{member.name}</ListItemText>
-      </ListItem>
-      <Separator />
-      <ListItem type="secondary" text>
-        <FiMail />
-        <ListItemText>信箱：{member.meta.email}</ListItemText>
-      </ListItem>
-      <ListItem type="secondary" text>
-        <FiShield />
-        <ListItemText>
-          權限：{member.meta.admin ? "管理者" : "一般成員"}
-        </ListItemText>
-      </ListItem>
-    </>
+    <Card className={className}>
+      {isLoading ? (
+        <>Loading...</>
+      ) : (
+        <MembersInfoTable team={team} member={member} />
+      )}
+    </Card>
   );
 };
 
-export default MemberInfo;
+export default MembersInfo;
