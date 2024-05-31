@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useUser, useUserTeams } from "@/hooks/use-data";
 import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
-import { Button, Link } from "@/components/ui/button";
+import { Link } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -10,7 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ListItem, ListItemText } from "@/app/components/common/List";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 const Invitations = ({ className }) => {
   const router = useRouter();
@@ -43,30 +43,38 @@ const Invitations = ({ className }) => {
       <CardHeader>
         <CardTitle>隊伍邀請</CardTitle>
       </CardHeader>
-      {isLoading ? (
-        <>loading...</>
-      ) : (
-        teams.inviting.map((team) => (
-          <ListItem div key={team._id}>
-            <FiUsers />
-            <ListItemText>{team.name}</ListItemText>
-            <Button
-              variant="link"
-              size="icon"
-              onClick={() => handleAccept(team._id, true)}
-            >
-              <FiCheck />
-            </Button>
-            <Button
-              variant="link"
-              size="icon"
-              onClick={() => handleAccept(team._id, false)}
-            >
-              <FiX />
-            </Button>
-          </ListItem>
-        ))
-      )}
+      <Table>
+        <TableBody className="text-xl">
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={4}>Loading...</TableCell>
+            </TableRow>
+          ) : (
+            teams.inviting.map((team) => (
+              <TableRow key={team._id}>
+                <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                  <FiUsers />
+                </TableCell>
+                <TableCell onClick={() => router.push(`/team/${team._id}`)}>
+                  {team.name}
+                </TableCell>
+                <TableCell
+                  className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-primary"
+                  onClick={() => handleAccept(team._id, true)}
+                >
+                  <FiCheck />
+                </TableCell>
+                <TableCell
+                  className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-destructive"
+                  onClick={() => handleAccept(team._id, false)}
+                >
+                  <FiX />
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
       <Separator content="沒有找到你的隊伍嗎？你可以..." />
       <Link size="lg" href="/team/new">
         <FiPlus />

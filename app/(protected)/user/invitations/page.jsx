@@ -1,4 +1,4 @@
-import Invitations from "./Invitations";
+import Invitations from "@/components/user/invitations";
 
 const InvitationsPage = () => {
   return <Invitations className="w-full" />;
