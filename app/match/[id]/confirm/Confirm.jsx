@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { teamActions } from "@/app/store/team-slice";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ConfirmCourt from "./ConfirmCourt";
@@ -22,7 +22,7 @@ const Confirm = () => {
         body: JSON.stringify(matchData),
       });
       const { teamData, matchId } = await response.json();
-      dispatch(teamActions.updateTeamOnly(teamData));
+      dispatch(lineupsActions.updateTeamOnly(teamData));
       router.push(`/match/${matchId}`);
     } catch (error) {
       console.log(error);

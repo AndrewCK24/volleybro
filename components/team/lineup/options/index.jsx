@@ -1,24 +1,28 @@
 import { useSelector } from "react-redux";
 import MemberInfo from "@/components/team/members/info";
-import LineupConfig from "@/components/team/lineup/options/LineupConfig";
-import BenchList from "@/components/team/lineup/options/BenchList";
-import PositionList from "@/components/team/lineup/options/PositionList";
+import LineupConfig from "@/components/team/lineup/options/config";
+import Substitutes from "@/components/team/lineup/options/substitutes";
+import Positions from "@/components/team/lineup/options/positions";
 
-const LineupOptions = () => {
-  const { members, editingLineup } = useSelector((state) => state.team);
-  const { optionMode, editingMember } = editingLineup.status;
-  const member = members.find((m) => m._id === editingMember._id);
+const LineupOptions = ({ team, members, className }) => {
+  const { lineups, status } = useSelector((state) => state.lineups);
+  const { optionMode, editingMember } = status;
+  const member = members?.find((m) => m._id === editingMember._id) || null;
 
   return (
     <>
       {optionMode === "playerInfo" ? (
-        <MemberInfo member={member} />
+        <MemberInfo
+          teamId={team._id}
+          memberId={editingMember._id}
+          className={className}
+        />
       ) : optionMode === "substitutes" || optionMode === "others" ? (
-        <BenchList />
+        <Substitutes members={members} className={className} />
       ) : optionMode === "positions" ? (
-        <PositionList />
+        <Positions className={className} />
       ) : (
-        <LineupConfig />
+        <LineupConfig members={members} className={className} />
       )}
     </>
   );

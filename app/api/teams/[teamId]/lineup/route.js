@@ -1,19 +1,36 @@
 import { NextResponse } from "next/server";
-import verifyJwt from "@/app/api/utils/verify-jwt";
+import { auth } from "@/auth";
+import connectToMongoDB from "@/lib/connect-to-mongodb";
+import User from "@/app/models/user";
 import Team from "@/app/models/team";
 import Member from "@/app/models/member";
 
 export const PATCH = async (req, { params }) => {
   try {
+    const session = await auth();
+    if (!session) {
+      console.error("[PATCH /api/teams/[teamId]/lineup] Unauthorized");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToMongoDB();
+    const user = await User.findById(session.user._id);
+    if (!user) {
+      console.error("[PATCH /api/teams/[teamId]/lineup] User not found");
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const { teamId } = params;
-    const { userData, token } = await verifyJwt(req);
+
     const team = await Team.findById(teamId);
     if (!team) {
+      console.error("[PATCH /api/teams/[teamId]/lineup] Team not found");
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
+
     const members = await Member.find({ team_id: teamId });
     const isAdmin = members.find(
-      (member) => member.meta.user_id.toString() === userData._id.toString()
+      (member) => member.meta?.user_id?.toString() === user._id.toString()
     )?.meta.admin;
     if (!isAdmin) {
       return NextResponse.json(
@@ -27,23 +44,9 @@ export const PATCH = async (req, { params }) => {
 
     await team.save();
 
-    const response = NextResponse.json(
-      {
-        teamData: team,
-      },
-      { status: 200 }
-    );
-    response.cookies.set({
-      name: "token",
-      value: token,
-      options: {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 30,
-      },
-    });
-    return response;
+    return NextResponse.json(lineup, { status: 200 });
   } catch (error) {
-    console.log("[patch-team-lineup]", error);
+    console.error("[PATCH /api/teams/[teamId]/lineup] Error:", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 };

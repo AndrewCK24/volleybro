@@ -1,14 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import { teamActions } from "@/app/store/team-slice";
-import { FiUserCheck, FiUserX } from "react-icons/fi";
+import { lineupsActions } from "@/app/store/lineups-slice";
+import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { ListItem, ListItemText } from "@/app/components/common/List";
 
-const PositionList = () => {
+const Positions = () => {
   const dispatch = useDispatch();
-  const { starting, status } = useSelector((state) => state.team.editingLineup);
+  const { lineups, status } = useSelector((state) => state.lineups);
+  const { starting } = lineups[status.lineupNum];
   const { editingMember } = status;
-  const isEditingBenches = editingMember.zone <= 0;
   const isEditingLiberos = editingMember.zone > 6;
   const oppositeZone =
     editingMember.zone > 3 ? editingMember.zone - 3 : editingMember.zone + 3;
@@ -77,42 +76,27 @@ const PositionList = () => {
       <CardHeader>
         <CardTitle>選擇位置</CardTitle>
       </CardHeader>
-      {isEditingBenches ? (
-        <ListItem onClick={() => dispatch(teamActions.setPlayerPosition(""))}>
-          <ListItemText minimized bold>
-            {editingMember.position === "others" ? (
-              <FiUserCheck />
-            ) : (
-              <FiUserX />
-            )}
-          </ListItemText>
-          <ListItemText>
-            {editingMember.position === "others"
-              ? "移入替補球員名單"
-              : "移出替補球員名單"}
-          </ListItemText>
-        </ListItem>
-      ) : (
-        <>
-          {positions.map((position, index) => (
-            <ListItem
-              key={index}
-              type={position.disabled && "secondary"}
-              onClick={() =>
-                dispatch(teamActions.setPlayerPosition(position.value))
-              }
-              disabled={position.disabled}
-            >
-              <ListItemText minimized bold>
-                {position.value}
-              </ListItemText>
-              <ListItemText>{position.text}</ListItemText>
-            </ListItem>
-          ))}
-        </>
-      )}
+      <>
+        {positions.map((position) => (
+          <Button
+            key={position.value}
+            type={position.disabled && "secondary"}
+            size="wide"
+            onClick={() =>
+              dispatch(lineupsActions.setPlayerPosition(position.value))
+            }
+            disabled={position.disabled}
+            className="text-xl"
+          >
+            <span className="flex justify-end font-semibold basis-8">
+              {position.value}
+            </span>
+            {position.text}
+          </Button>
+        ))}
+      </>
     </>
   );
 };
 
-export default PositionList;
+export default Positions;

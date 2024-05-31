@@ -28,7 +28,7 @@ const ConfirmCourt = () => {
                 zone={index + 1}
                 onCardClick={() =>
                   dispatch(
-                    teamActions.setRecordingPlayer({
+                    lineupsActions.setRecordingPlayer({
                       _id: member?._id || null,
                       list: "liberos",
                       zone: index + 1,
@@ -51,7 +51,7 @@ const ConfirmCourt = () => {
                 zone={index + 1}
                 onCardClick={() =>
                   dispatch(
-                    teamActions.setRecordingPlayer({
+                    lineupsActions.setRecordingPlayer({
                       _id: member?._id || null,
                       list: "starting",
                       zone: index + 1,
@@ -59,9 +59,9 @@ const ConfirmCourt = () => {
                   )
                 }
                 onSwitchClick={() =>
-                  dispatch(teamActions.setOptionMode("substitutes"))
+                  dispatch(lineupsActions.setOptionMode("substitutes"))
                 }
-                onCrossClick={() => dispatch(teamActions.removeEditingPlayer())}
+                onCrossClick={() => dispatch(lineupsActions.removeEditingPlayer())}
                 editingMember={recording}
               />
             );
