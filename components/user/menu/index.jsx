@@ -112,7 +112,7 @@ const Menu = ({ className }) => {
                 key={team._id}
                 variant="ghost"
                 size="wide"
-                onClick={() => router.push(`/team/info/${team._id}`)}
+                onClick={() => router.push(`/team/${team._id}`)}
               >
                 <FiUsers />
                 {team.name || ""}
