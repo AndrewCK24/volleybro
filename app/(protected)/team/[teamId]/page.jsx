@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TeamHero from "@/components/team/hero";
+import ConfirmInvitation from "@/components/team/confirmation";
 import LatestMatch from "@/components/team/feeds/latest-match";
 import TeamInfo from "@/components/team/info";
 import TeamMembers from "@/components/team/members";
@@ -10,6 +11,7 @@ const TeamPage = ({ params, searchParams }) => {
 
   return (
     <Tabs defaultValue={defaultTab} className="relative w-full">
+      <ConfirmInvitation teamId={teamId} />
       <TeamHero teamId={teamId} />
       <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3">
         <TabsTrigger value="feeds">動態</TabsTrigger>
