@@ -1,14 +1,11 @@
 "use client";
+import { useSWRConfig } from "swr";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { userActions } from "@/app/(protected)/user/user-slice";
-import { teamActions } from "@/app/(protected)/team/team-slice";
-import { Card } from "@/components/ui/card";
-import TeamForm from "../TeamForm";
+import TeamForm from "@/components/team/form";
 
 const NewTeamPage = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const { mutate } = useSWRConfig();
 
   const onSubmit = async (formData) => {
     try {
@@ -18,10 +15,9 @@ const NewTeamPage = () => {
         body: JSON.stringify(formData),
       });
 
-      const { userData, teamData, membersData } = await res.json();
-      dispatch(userActions.setUser(userData));
-      dispatch(teamActions.setTeam({ userData, teamData, membersData }));
-      return router.push(`/team`);
+      const team = await res.json();
+      mutate(`/api/teams/${team._id}`, team);
+      return router.push(`/team/${team._id}?tab=about`);
     } catch (err) {
       console.log(err);
       // TODO: 改為彈出式警告
@@ -29,11 +25,7 @@ const NewTeamPage = () => {
     }
   };
 
-  return (
-    <Card className="w-full">
-      <TeamForm onSubmit={onSubmit} />
-    </Card>
-  );
+  return <TeamForm onSubmit={onSubmit} className="w-full" />;
 };
 
 export default NewTeamPage;

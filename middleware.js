@@ -29,6 +29,15 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  if (isSignedIn && nextUrl.pathname === "/team") {
+    const defaultTeamId = req.auth?.user?.teams?.joined[0];
+    if (!defaultTeamId) {
+      return NextResponse.redirect(new URL("/user/invitations", nextUrl));
+    }
+
+    return NextResponse.redirect(new URL(`/team/${defaultTeamId}`, nextUrl));
+  }
+
   if (!isSignedIn && !isPublicRoute) {
     return NextResponse.redirect(new URL("/auth/sign-in", nextUrl));
   }

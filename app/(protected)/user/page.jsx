@@ -1,14 +1,14 @@
 import { signOut } from "@/auth";
 import { FiLogOut } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import Menu from "./Menu";
+import Menu from "@/components/user/menu";
 
 const UserPage = () => {
   return (
     <>
       <Menu className="w-full" />
       <form
-        className="flex flex-col w-full px-4"
+        className="grid w-full px-4"
         action={async () => {
           "use server";
           await signOut();

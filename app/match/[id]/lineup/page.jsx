@@ -1,5 +1,5 @@
 "use client";
-import Lineup from "@/app/(protected)/team/lineup/Lineup";
+import Lineup from "@/components/team/lineup";
 
 const LineupPage = () => {
   return <Lineup />;

@@ -154,6 +154,15 @@ export const PlayerCard = ({
   );
 };
 
+export const LoadingCard = () => {
+  return (
+    <Card className="motion-safe:animate-pulse">
+      <Number />
+      <Position />
+    </Card>
+  );
+};
+
 export const AdjustButton = ({ children, onClick }) => {
   return (
     <div

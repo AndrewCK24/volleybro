@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
-import verifyJwt from "../../utils/verify-jwt";
+import { auth } from "@/auth";
+import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
 import Member from "@/app/models/member";
 
 export const PUT = async (req, { params }) => {
   try {
-    const { userData, token } = await verifyJwt(req);
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToMongoDB();
+    const user = await User.findById(session.user._id);
+    if (!user) {
+      console.error("[PUT /api/users/teams] User not found");
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const formData = await req.json();
     const { memberId } = params;
 
@@ -24,7 +36,7 @@ export const PUT = async (req, { params }) => {
 
     // only admins can edit members
     const userIsMember = members.find(
-      (member) => member.meta.user_id.toString() === userData._id.toString()
+      (member) => member.meta?.user_id?.toString() === user._id.toString()
     );
     if (!userIsMember) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -103,23 +115,7 @@ export const PUT = async (req, { params }) => {
     console.log(updatingMember);
     await updatingMember.save();
 
-    const targetIndex = members.findIndex(
-      (member) => member._id.toString() === memberId
-    );
-    members[targetIndex] = updatingMember;
-    const response = NextResponse.json(
-      { teamData: team, membersData: members, member: updatingMember },
-      { status: 200 }
-    );
-    response.cookies.set({
-      name: "token",
-      value: token,
-      options: {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24 * 30,
-      },
-    });
-    return response;
+    return NextResponse.json(updatingMember, { status: 200 });
   } catch (error) {
     console.log("[put-teams]", error);
     return NextResponse.json({ error }, { status: 500 });
