@@ -21,7 +21,7 @@ const Lineup = ({ team, members, handleSave }) => {
   // );
 
   useEffect(() => {
-    if (team && team.lineups) dispatch(lineupsActions.initiate(team.lineups));
+    if (team && team.lineups) dispatch(lineupsActions.initialize(team.lineups));
   }, [team, dispatch]);
 
   if (!team || !members || !lineups.length) {

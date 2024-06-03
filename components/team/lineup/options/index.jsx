@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import MemberInfo from "@/components/team/members/info";
+import PlayerInfo from "@/components/team/lineup/options/player-info";
 import LineupConfig from "@/components/team/lineup/options/config";
 import Substitutes from "@/components/team/lineup/options/substitutes";
 import Positions from "@/components/team/lineup/options/positions";
@@ -20,12 +20,8 @@ const LineupOptions = ({ team, members, className }) => {
   return (
     <>
       {optionMode === "playerInfo" ? (
-        <MemberInfo
-          teamId={team._id}
-          memberId={editingMember._id}
-          className={className}
-        />
-      ) : optionMode === "substitutes" || optionMode === "others" ? (
+        <PlayerInfo members={members} className={className} />
+      ) : optionMode === "substitutes" ? (
         <Substitutes members={members} others={others} className={className} />
       ) : optionMode === "positions" ? (
         <Positions className={className} />

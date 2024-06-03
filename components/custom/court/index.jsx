@@ -94,7 +94,7 @@ const Button = ({ children, onClick, right }) => {
 };
 
 export const PlayerCard = ({
-  member,
+  player,
   list,
   zone,
   onCardClick,
@@ -107,16 +107,16 @@ export const PlayerCard = ({
     <Card
       style={list === "starting" ? { gridArea: `z${zone}` } : {}}
       toggled={toggled}
-      empty={!member}
+      empty={!player}
       onClick={(e) => {
         e.stopPropagation();
         onCardClick();
       }}
     >
-      {member ? (
+      {player ? (
         <>
-          <Number>{member.number}</Number>
-          <Position>{member.position}</Position>
+          <Number>{player.number}</Number>
+          <Position>{player.position}</Position>
           {toggled && (
             <>
               <Button
@@ -154,9 +154,9 @@ export const PlayerCard = ({
   );
 };
 
-export const LoadingCard = () => {
+export const LoadingCard = ({ className, ...props }) => {
   return (
-    <Card className="motion-safe:animate-pulse">
+    <Card className={cn("motion-safe:animate-pulse", className)} {...props}>
       <Number />
       <Position />
     </Card>

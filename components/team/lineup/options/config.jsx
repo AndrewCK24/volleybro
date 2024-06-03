@@ -56,7 +56,7 @@ const LineupConfig = ({ members, others, className }) => {
                   size="lg"
                   className="px-0 w-fit"
                   onClick={() =>
-                    dispatch(lineupsActions.setOptionMode("others"))
+                    dispatch(lineupsActions.setOptionMode("substitutes"))
                   }
                 >
                   調整
@@ -94,7 +94,7 @@ const LineupConfig = ({ members, others, className }) => {
                   size="lg"
                   className="px-0 w-fit"
                   onClick={() =>
-                    dispatch(lineupsActions.setOptionMode("others"))
+                    dispatch(lineupsActions.setOptionMode("substitutes"))
                   }
                 >
                   調整

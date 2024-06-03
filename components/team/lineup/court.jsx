@@ -7,7 +7,7 @@ import {
   Inside,
   PlayerCard,
   AdjustButton,
-} from "@/components/custom/Court";
+} from "@/components/custom/court";
 
 const LineupCourt = ({ members }) => {
   const dispatch = useDispatch();
@@ -27,10 +27,16 @@ const LineupCourt = ({ members }) => {
         {lineups[status.lineupNum]?.liberos &&
           lineups[status.lineupNum].liberos.map((libero, index) => {
             const member = members?.find((m) => m._id === libero._id);
+            const player = member
+              ? {
+                  ...member,
+                  position: libero?.position || "",
+                }
+              : null;
             return (
               <PlayerCard
                 key={index}
-                member={member}
+                player={player}
                 list="liberos"
                 zone={index + 1}
                 onCardClick={() =>
@@ -54,7 +60,7 @@ const LineupCourt = ({ members }) => {
           })}
         {lineups[status.lineupNum]?.liberos.length < 2 && (
           <PlayerCard
-            member={null}
+            player={null}
             list="liberos"
             zone={lineups[status.lineupNum]?.liberos.length + 1}
             onCardClick={() =>
@@ -78,10 +84,16 @@ const LineupCourt = ({ members }) => {
         {lineups[status.lineupNum]?.starting &&
           lineups[status.lineupNum].starting.map((starting, index) => {
             const member = members?.find((m) => m._id === starting._id);
+            const player = member
+              ? {
+                  ...member,
+                  position: starting?.position || "",
+                }
+              : null;
             return (
               <PlayerCard
                 key={index}
-                member={member}
+                player={player}
                 list="starting"
                 zone={index + 1}
                 onCardClick={() =>

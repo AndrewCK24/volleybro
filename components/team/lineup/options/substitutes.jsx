@@ -8,13 +8,11 @@ import { Separator } from "@/components/ui/separator";
 const Substitutes = ({ members, others, className }) => {
   const dispatch = useDispatch();
   const { lineups, status } = useSelector((state) => state.lineups);
-  const liberoCount = lineups[status.lineupNum].liberos.filter(
-    (player) => player._id
-  ).length;
+  const liberoCount = lineups[status.lineupNum].liberos.length;
   const substituteCount = lineups[status.lineupNum].substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
   const isSubstituteFull = substituteCount >= substituteLimit;
-  const isEditingStarting = status.optionMode === "substitutes";
+  const isEditingStarting = !!status.editingMember.zone;
 
   const handleSubstituteClick = (member, index) => {
     if (isEditingStarting) {
@@ -22,7 +20,7 @@ const Substitutes = ({ members, others, className }) => {
         lineupsActions.replaceEditingPlayer({
           _id: member._id,
           list: "substitutes",
-          zone: index,
+          zone: index + 1,
         })
       );
     } else {
@@ -36,7 +34,7 @@ const Substitutes = ({ members, others, className }) => {
         lineupsActions.replaceEditingPlayer({
           _id: member._id,
           list: "",
-          zone: index,
+          zone: index + 1,
         })
       );
     } else if (!isSubstituteFull) {
