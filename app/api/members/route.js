@@ -69,7 +69,6 @@ export const POST = async (req) => {
       team_id: formData.team_id,
       name: formData.name,
       number: formData.number,
-      position: formData.position,
       meta: {
         admin: formData.admin,
         email: formData.email,

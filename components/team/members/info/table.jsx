@@ -20,7 +20,6 @@ const MembersInfoTable = ({ team, member, className }) => {
   const contents = [
     { key: "隊伍", value: team?.name, icon: <FiUsers /> },
     { key: "背號", value: member?.number, icon: <FiHash /> },
-    { key: "位置", value: member?.position, icon: <FiShield /> },
     { key: "姓名", value: member?.name, icon: <FiUser /> },
     { key: "信箱", value: member?.meta?.email, icon: <FiMail /> },
     {
