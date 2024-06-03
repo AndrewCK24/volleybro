@@ -5,16 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-const Substitutes = ({ members, className }) => {
+const Substitutes = ({ members, others, className }) => {
   const dispatch = useDispatch();
   const { lineups, status } = useSelector((state) => state.lineups);
-  const liberoCount = lineups[status.lineupNum].liberos.filter(
-    (player) => player._id
-  ).length;
+  const liberoCount = lineups[status.lineupNum].liberos.length;
   const substituteCount = lineups[status.lineupNum].substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
   const isSubstituteFull = substituteCount >= substituteLimit;
-  const isEditingStarting = status.optionMode === "substitutes";
+  const isEditingStarting = !!status.editingMember.zone;
 
   const handleSubstituteClick = (member, index) => {
     if (isEditingStarting) {
@@ -22,11 +20,11 @@ const Substitutes = ({ members, className }) => {
         lineupsActions.replaceEditingPlayer({
           _id: member._id,
           list: "substitutes",
-          zone: index,
+          zone: index + 1,
         })
       );
     } else {
-      dispatch(lineupsActions.removeSubstitutePlayer(index));
+      dispatch(lineupsActions.removeSubstitutePlayer(member._id));
     }
   };
 
@@ -35,12 +33,12 @@ const Substitutes = ({ members, className }) => {
       dispatch(
         lineupsActions.replaceEditingPlayer({
           _id: member._id,
-          list: "others",
-          zone: index,
+          list: "",
+          zone: index + 1,
         })
       );
     } else if (!isSubstituteFull) {
-      dispatch(lineupsActions.addSubstitutePlayer(index));
+      dispatch(lineupsActions.addSubstitutePlayer(member._id));
     }
   };
 
@@ -75,8 +73,7 @@ const Substitutes = ({ members, className }) => {
         );
       })}
       <Separator content="以上為正式比賽 12 + 2 人名單" />
-      {lineups[status.lineupNum].others.map((player, index) => {
-        const member = members.find((m) => m._id === player._id);
+      {others.map((member, index) => {
         return (
           <Button
             key={member._id}
@@ -87,7 +84,7 @@ const Substitutes = ({ members, className }) => {
           >
             <FiUser />
             <span className="flex justify-end font-semibold basis-8">
-              {member.number || " "}
+              {member.number}
             </span>
             {member.name}
           </Button>

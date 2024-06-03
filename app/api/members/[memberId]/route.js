@@ -47,7 +47,6 @@ export const PUT = async (req, { params }) => {
     }
 
     updatingMember.name = formData.name;
-    updatingMember.position = formData.position;
     const isNumberChanged = updatingMember.number !== formData.number;
     if (isNumberChanged) {
       const hasSameNumber = members.find(
@@ -112,7 +111,6 @@ export const PUT = async (req, { params }) => {
       }
     }
     updatingMember.meta.admin = formData.admin;
-    console.log(updatingMember);
     await updatingMember.save();
 
     return NextResponse.json(updatingMember, { status: 200 });

@@ -9,7 +9,7 @@ const LineupPage = ({ params }) => {
 
   const handleSave = async (lineups) => {
     try {
-      const response = await fetch(`/api/teams/${team._id}/lineup`, {
+      const response = await fetch(`/api/teams/${team._id}/lineups`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -17,7 +17,7 @@ const LineupPage = ({ params }) => {
         body: JSON.stringify(lineups),
       });
       const data = await response.json();
-      mutate({ ...team, lineup: data }, false);
+      mutate({ ...team, lineups: data }, false);
     } catch (error) {
       console.log(error);
     }

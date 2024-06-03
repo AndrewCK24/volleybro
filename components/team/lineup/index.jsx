@@ -21,10 +21,10 @@ const Lineup = ({ team, members, handleSave }) => {
   // );
 
   useEffect(() => {
-    if (team && team.lineup) dispatch(lineupsActions.initiate(team.lineup));
+    if (team && team.lineups) dispatch(lineupsActions.initialize(team.lineups));
   }, [team, dispatch]);
 
-  if (!team || !members) {
+  if (!team || !members || !lineups.length) {
     return (
       <>
         <LoadingCourt />
@@ -48,7 +48,7 @@ const Lineup = ({ team, members, handleSave }) => {
         <div className="flex flex-col w-full px-4">
           <Button
             size="lg"
-            onClick={() => handleSave(lineups[0])}
+            onClick={() => handleSave(lineups)}
             disabled={!status.edited}
           >
             <FiSave />

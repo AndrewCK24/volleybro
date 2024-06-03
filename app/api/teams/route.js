@@ -37,12 +37,11 @@ export const POST = async (req) => {
       name,
       nickname,
       members: [newMember._id],
-      lineup: {
-        starting: [],
+      lineups: new Array(3).fill({
+        starting: new Array(6).fill({ _id: null }),
         liberos: [],
         substitutes: [],
-        others: [{ _id: newMember._id }],
-      },
+      }),
     });
 
     newMember.team_id = newTeam._id;

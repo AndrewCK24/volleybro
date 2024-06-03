@@ -23,7 +23,6 @@ const formSchema = z.object({
     .number()
     .min(1, { message: "背號不得為空或小於 1" })
     .max(99, { message: "背號不得大於 99" }),
-  position: z.string().optional(),
   email: z
     .string()
     .email({ message: "請輸入有效的 email" })
@@ -38,7 +37,6 @@ const MemberForm = ({ member, onSubmit, className }) => {
     defaultValues: {
       name: member?.name || "",
       number: member?.number || "",
-      position: member?.position || "",
       email: member?.meta?.email || "",
       admin: member?.meta?.admin ? "true" : "false",
     },
@@ -73,32 +71,6 @@ const MemberForm = ({ member, onSubmit, className }) => {
                 <Input placeholder="14" type="number" {...field} />
               </FormControl>
               <FormDescription>請輸入背號</FormDescription>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="position"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>位置</FormLabel>
-              <FormRadioGroup className="grid-cols-2" {...field}>
-                <FormRadioItem variant="destructive" value="S" id="S">
-                  舉球 (S)
-                </FormRadioItem>
-                <FormRadioItem variant="destructive" value="OH" id="OH">
-                  主攻 (OH)
-                </FormRadioItem>
-                <FormRadioItem variant="destructive" value="MB" id="MB">
-                  攔中 (MB)
-                </FormRadioItem>
-                <FormRadioItem variant="destructive" value="OP" id="OP">
-                  副攻 (OP)
-                </FormRadioItem>
-                <FormRadioItem variant="destructive" value="L" id="L">
-                  自由 (L)
-                </FormRadioItem>
-              </FormRadioGroup>
             </FormItem>
           )}
         />

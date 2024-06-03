@@ -8,7 +8,6 @@ const teamSchema = new Schema(
     },
     nickname: {
       type: String,
-      required: false,
     },
     members: [
       // TODO: 待前端 members 狀態從 team 獨立後，刪除此欄位
@@ -19,20 +18,20 @@ const teamSchema = new Schema(
         required: true,
       },
     ],
-    lineup: {
-      type: {
+    lineups: [
+      {
         starting: {
           type: [
             {
               _id: {
                 type: Schema.Types.ObjectId,
                 ref: "Member",
-                required: false,
-                auto: false,
+              },
+              position: {
+                type: String,
               },
             },
           ],
-          required: true,
         },
         liberos: {
           type: [
@@ -40,12 +39,12 @@ const teamSchema = new Schema(
               _id: {
                 type: Schema.Types.ObjectId,
                 ref: "Member",
-                required: false,
-                auto: false,
+              },
+              position: {
+                type: String,
               },
             },
           ],
-          required: true,
         },
         substitutes: {
           type: [
@@ -53,39 +52,20 @@ const teamSchema = new Schema(
               _id: {
                 type: Schema.Types.ObjectId,
                 ref: "Member",
-                required: false,
-                auto: false,
               },
             },
           ],
-          required: true,
-        },
-        others: {
-          type: [
-            {
-              _id: {
-                type: Schema.Types.ObjectId,
-                ref: "Member",
-                required: false,
-                auto: false,
-              },
-            },
-          ],
-          required: true,
         },
       },
-      required: true,
-    },
+    ],
     matches: [
       {
         type: Schema.Types.ObjectId,
         ref: "Match",
-        required: false,
       },
     ],
     stats: {
       type: Object,
-      required: false,
     },
   },
   {
