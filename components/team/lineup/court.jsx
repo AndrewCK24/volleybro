@@ -36,11 +36,14 @@ const LineupCourt = ({ members }) => {
                 onCardClick={() =>
                   dispatch(
                     lineupsActions.setEditingPlayer({
-                      _id: member?._id || null,
+                      _id: libero?._id || null,
                       list: "liberos",
                       zone: index + 1,
                     })
                   )
+                }
+                onSwitchClick={() =>
+                  dispatch(lineupsActions.setOptionMode("substitutes"))
                 }
                 onCrossClick={() =>
                   dispatch(lineupsActions.removeEditingPlayer())
@@ -49,6 +52,27 @@ const LineupCourt = ({ members }) => {
               />
             );
           })}
+        {lineups[status.lineupNum]?.liberos.length < 2 && (
+          <PlayerCard
+            member={null}
+            list="liberos"
+            zone={lineups[status.lineupNum]?.liberos.length + 1}
+            onCardClick={() =>
+              dispatch(
+                lineupsActions.setEditingPlayer({
+                  _id: null,
+                  list: "liberos",
+                  zone: lineups[status.lineupNum]?.liberos.length + 1,
+                })
+              )
+            }
+            onSwitchClick={() =>
+              dispatch(lineupsActions.setOptionMode("substitutes"))
+            }
+            onCrossClick={() => dispatch(lineupsActions.removeEditingPlayer())}
+            editingMember={status.editingMember}
+          />
+        )}
       </Outside>
       <Inside>
         {lineups[status.lineupNum]?.starting &&
@@ -63,7 +87,7 @@ const LineupCourt = ({ members }) => {
                 onCardClick={() =>
                   dispatch(
                     lineupsActions.setEditingPlayer({
-                      _id: member?._id || null,
+                      _id: starting?._id || null,
                       list: "starting",
                       zone: index + 1,
                     })

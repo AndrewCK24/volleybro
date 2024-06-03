@@ -9,14 +9,14 @@ export const PATCH = async (req, { params }) => {
   try {
     const session = await auth();
     if (!session) {
-      console.error("[PATCH /api/teams/[teamId]/lineup] Unauthorized");
+      console.error("[PATCH /api/teams/[teamId]/lineups] Unauthorized");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectToMongoDB();
     const user = await User.findById(session.user._id);
     if (!user) {
-      console.error("[PATCH /api/teams/[teamId]/lineup] User not found");
+      console.error("[PATCH /api/teams/[teamId]/lineups] User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -24,7 +24,7 @@ export const PATCH = async (req, { params }) => {
 
     const team = await Team.findById(teamId);
     if (!team) {
-      console.error("[PATCH /api/teams/[teamId]/lineup] Team not found");
+      console.error("[PATCH /api/teams/[teamId]/lineups] Team not found");
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
@@ -39,14 +39,14 @@ export const PATCH = async (req, { params }) => {
       );
     }
 
-    const lineup = await req.json();
-    team.lineup = lineup;
+    const lineups = await req.json();
+    team.lineups = lineups;
 
     await team.save();
 
-    return NextResponse.json(lineup, { status: 200 });
+    return NextResponse.json(lineups, { status: 200 });
   } catch (error) {
-    console.error("[PATCH /api/teams/[teamId]/lineup] Error:", error);
+    console.error("[PATCH /api/teams/[teamId]/lineups] Error:", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 };

@@ -7,7 +7,15 @@ import Positions from "@/components/team/lineup/options/positions";
 const LineupOptions = ({ team, members, className }) => {
   const { lineups, status } = useSelector((state) => state.lineups);
   const { optionMode, editingMember } = status;
-  const member = members?.find((m) => m._id === editingMember._id) || null;
+  const { starting, liberos, substitutes } = lineups[status.lineupNum];
+  const listedIds = new Set([
+    ...starting.map((player) => player._id),
+    ...liberos.map((player) => player._id),
+    ...substitutes.map((player) => player._id),
+  ]);
+  const others = members
+    .filter((member) => !listedIds.has(member._id))
+    .sort((a, b) => a.number - b.number);
 
   return (
     <>
@@ -18,11 +26,11 @@ const LineupOptions = ({ team, members, className }) => {
           className={className}
         />
       ) : optionMode === "substitutes" || optionMode === "others" ? (
-        <Substitutes members={members} className={className} />
+        <Substitutes members={members} others={others} className={className} />
       ) : optionMode === "positions" ? (
         <Positions className={className} />
       ) : (
-        <LineupConfig members={members} className={className} />
+        <LineupConfig members={members} others={others} className={className} />
       )}
     </>
   );
