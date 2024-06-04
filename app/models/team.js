@@ -20,6 +20,12 @@ const teamSchema = new Schema(
     ],
     lineups: [
       {
+        config: {
+          liberoMode: {
+            type: Number,
+            enum: [0, 1, 2],
+          },
+        },
         starting: {
           type: [
             {
@@ -29,6 +35,7 @@ const teamSchema = new Schema(
               },
               position: {
                 type: String,
+                enum: ["OH", "MB", "OP", "S"],
               },
             },
           ],
@@ -42,6 +49,7 @@ const teamSchema = new Schema(
               },
               position: {
                 type: String,
+                enum: ["L"],
               },
             },
           ],

@@ -38,6 +38,9 @@ export const POST = async (req) => {
       nickname,
       members: [newMember._id],
       lineups: new Array(3).fill({
+        config: {
+          liberoMode: 0,
+        },
         starting: new Array(6).fill({ _id: null }),
         liberos: [],
         substitutes: [],
