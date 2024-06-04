@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { set } from "mongoose";
 
 const initialState = {
   status: {
@@ -43,6 +44,11 @@ const lineupsSlice = createSlice({
         state.status.editingMember = initialState.status.editingMember;
       }
     },
+    setLiberoMode: (state, action) => {
+      const { lineupNum } = state.status;
+      state.lineups[lineupNum].config.liberoMode = action.payload;
+      state.status.edited = true;
+    },
     setEditingPlayer: (state, action) => {
       const { _id, list, zone } = action.payload;
       if (
@@ -64,12 +70,18 @@ const lineupsSlice = createSlice({
       const { lineupNum } = state.status;
       const { list, zone } = state.status.editingMember;
       if (list === "starting") {
-        state.lineups[lineupNum][list][zone - 1] = {
+        state.lineups[lineupNum].starting[zone - 1] = {
           ...state.lineups[lineupNum][list][zone - 1],
           _id: null,
         };
       } else {
-        state.lineups[lineupNum][list].splice(zone - 1, 1);
+        state.lineups[lineupNum].liberos.splice(zone - 1, 1);
+        if (
+          state.lineups[lineupNum].config.liberoMode >
+          state.lineups[lineupNum].liberos.length
+        ) {
+          state.lineups[lineupNum].config.liberoMode--;
+        }
       }
       state.status = {
         ...state.status,

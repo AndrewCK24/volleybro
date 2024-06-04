@@ -12,6 +12,18 @@ import LoadingCard from "@/components/custom/loading/card";
 const Lineup = ({ team, members, handleSave }) => {
   const dispatch = useDispatch();
   const { lineups, status } = useSelector((state) => state.lineups);
+  const liberoMode = lineups[status.lineupNum]?.config.liberoMode;
+  const hasPairedMB = lineups[status.lineupNum]?.starting.some(
+    (player, index) => {
+      const oppositeIndex = index > 3 ? index - 3 : index + 3;
+      return (
+        player._id &&
+        player.position === "MB" &&
+        lineups[status.lineupNum].starting[oppositeIndex]._id &&
+        lineups[status.lineupNum].starting[oppositeIndex].position === "MB"
+      );
+    }
+  );
   // const pathname = usePathname();
   // const isRecording = pathname.includes("match");
   // const { setNum } = useSelector((state) => state.match.status.editingData);
@@ -49,7 +61,7 @@ const Lineup = ({ team, members, handleSave }) => {
           <Button
             size="lg"
             onClick={() => handleSave(lineups)}
-            disabled={!status.edited}
+            disabled={!status.edited || (!!liberoMode && !hasPairedMB)}
           >
             <FiSave />
             儲存陣容
