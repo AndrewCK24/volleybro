@@ -10,7 +10,6 @@ const memberSchema = new Schema(
     meta: {
       admin: {
         type: Boolean,
-        required: true,
       },
       email: {
         type: String,

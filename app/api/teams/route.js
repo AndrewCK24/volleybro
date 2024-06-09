@@ -20,11 +20,6 @@ export const POST = async (req) => {
     }
 
     const newMember = new Member({
-      meta: {
-        admin: true,
-        email: user.email,
-        user_id: user._id,
-      },
       name: user.name,
       number: 1,
     });
@@ -36,7 +31,14 @@ export const POST = async (req) => {
     const newTeam = new Team({
       name,
       nickname,
-      members: [newMember._id],
+      members: [
+        {
+          _id: newMember._id,
+          user_id: user._id,
+          email: user.email,
+          role: "owner",
+        },
+      ],
       lineups: new Array(3).fill({
         config: {
           liberoMode: 0,

@@ -2,6 +2,9 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useUser, useTeam, useTeamMembers } from "@/hooks/use-data";
+import { FiUser, FiUserPlus, FiShield } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,10 +14,15 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormRadioGroup,
-  FormRadioItem,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
@@ -28,26 +36,51 @@ const formSchema = z.object({
     .email({ message: "請輸入有效的 email" })
     .optional()
     .or(z.literal("")),
-  admin: z.coerce.boolean().optional(),
+  role: z.enum(["owner", "admin", "member"]),
 });
 
-const MemberForm = ({ member, onSubmit, className }) => {
+const MemberForm = ({ teamId, className }) => {
+  const router = useRouter();
+  const { user } = useUser();
+  const { team, mutate: mutateTeam } = useTeam(teamId);
+  const { members, mutate: mutateTeamMembers } = useTeamMembers(teamId);
+  const isAdmin = team?.members?.some(
+    (m) => m.user_id === user?._id && m.role === "admin"
+  );
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: member?.name || "",
-      number: member?.number || "",
-      email: member?.meta?.email || "",
-      admin: member?.meta?.admin ? "true" : "false",
+      name: "",
+      number: "",
+      email: "",
+      role: "member",
     },
   });
+
+  const onSubmit = async (formData) => {
+    formData.team_id = teamId;
+    try {
+      const res = await fetch("/api/members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const member = await res.json();
+      mutateTeam();
+      mutateTeamMembers([...members, member], false);
+      return router.push(`/team/${teamId}/members/${member._id}`);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>編輯隊員資訊</CardTitle>
+        <CardTitle>新增成員</CardTitle>
       </CardHeader>
       <Form form={form} onSubmit={form.handleSubmit(onSubmit)} className="mt-4">
+        <Separator content="基本資訊" />
         <FormField
           control={form.control}
           name="name"
@@ -68,13 +101,18 @@ const MemberForm = ({ member, onSubmit, className }) => {
             <FormItem>
               <FormLabel required>背號</FormLabel>
               <FormControl>
-                <Input placeholder="14" type="number" {...field} />
+                <Input
+                  placeholder="14"
+                  type="number"
+                  inputMode="numeric"
+                  {...field}
+                />
               </FormControl>
               <FormDescription>請輸入背號</FormDescription>
             </FormItem>
           )}
         />
-        <Separator />
+        <Separator content="邀請與權限" />
         <FormField
           control={form.control}
           name="email"
@@ -82,7 +120,7 @@ const MemberForm = ({ member, onSubmit, className }) => {
             <FormItem>
               <FormLabel>信箱</FormLabel>
               <FormControl>
-                <Input placeholder="yukivb@gmail.com" {...field} />
+                <Input placeholder="v-stats@example.com" {...field} />
               </FormControl>
               <FormDescription>請輸入信箱</FormDescription>
             </FormItem>
@@ -90,24 +128,41 @@ const MemberForm = ({ member, onSubmit, className }) => {
         />
         <FormField
           control={form.control}
-          name="admin"
+          name="role"
           render={({ field }) => (
             <FormItem>
               <FormLabel>權限</FormLabel>
-              <FormRadioGroup className="grid-cols-2" {...field}>
-                <FormRadioItem variant="destructive" value="false" id="member">
-                  一般成員
-                </FormRadioItem>
-                <FormRadioItem variant="destructive" value="true" id="admin">
-                  管理者
-                </FormRadioItem>
-              </FormRadioGroup>
-              <FormControl></FormControl>
-              <FormDescription>是否有權限變更隊伍與隊員資訊</FormDescription>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={!isAdmin}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="選擇權限" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="member">
+                    <FiUser />
+                    一般成員
+                  </SelectItem>
+                  <SelectItem value="admin">
+                    <FiShield />
+                    管理者
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                管理者有權限變更隊伍與成員資訊，以及權限設定
+              </FormDescription>
             </FormItem>
           )}
         />
-        <Button size="lg">{member ? "儲存變更" : "新增隊員"}</Button>
+        <Button size="lg">
+          <FiUserPlus />
+          新增隊員
+        </Button>
       </Form>
     </Card>
   );
