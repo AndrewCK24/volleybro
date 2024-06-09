@@ -1,15 +1,95 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "@/app/api/utils/connect-mongodb";
+import { auth } from "@/auth";
+import connectToMongoDB from "@/lib/connect-to-mongodb";
+import User from "@/app/models/user";
+import Team from "@/app/models/team";
 import Member from "@/app/models/member";
 
 export const GET = async (req, { params }) => {
   try {
     const { teamId } = params;
-    await connectMongoDB();
+    await connectToMongoDB();
     const members = await Member.find({ team_id: teamId });
     return NextResponse.json(members, { status: 200 });
   } catch (error) {
     console.log("[get-team-members]", error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
+};
+
+export const PATCH = async (req, { params }) => {
+  try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToMongoDB();
+    const user = await User.findById(session.user._id);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const { teamId } = params;
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
+    const { members } = team;
+
+    const searchParams = req.nextUrl.searchParams;
+    const memberId = searchParams.get("memberId");
+    const action = searchParams.get("action");
+    const formData = await req.json();
+
+    const memberIndex = members.findIndex((m) => m._id.toString() === memberId);
+    if (memberIndex === -1) {
+      return NextResponse.json({ error: "Member not found" }, { status: 404 });
+    }
+    const member = members[memberIndex];
+
+    if (action === "invite") {
+      if (member?.email === formData.email) {
+        return NextResponse.json(team.members, { status: 200 });
+      }
+
+      if (member?.user_id) {
+        const leavingUser = await User.findById(member.user_id);
+        if (leavingUser) {
+          leavingUser.teams.joined = leavingUser.teams.joined.filter(
+            (t) => t.toString() !== teamId
+          );
+          await leavingUser.save();
+        }
+        team.members[memberIndex].user_id = null;
+        team.members[memberIndex].email = "";
+      } else if (member?.email) {
+        const leavingUser = await User.findOne({ email: member.email });
+        if (leavingUser) {
+          leavingUser.teams.inviting = leavingUser.teams.inviting.filter(
+            (t) => t.toString() !== teamId
+          );
+          await leavingUser.save();
+        }
+        team.members[memberIndex].email = "";
+      }
+
+      if (formData.email) {
+        const invitingUser = await User.findOne({ email: formData.email });
+        if (invitingUser) {
+          invitingUser.teams.inviting.push(teamId);
+          await invitingUser.save();
+        }
+        team.members[memberIndex].email = formData.email;
+      }
+    } else if (action === "access") {
+      team.members[memberIndex].role = formData.role;
+    }
+
+    await team.save();
+    return NextResponse.json(team.members, { status: 200 });
+  } catch (error) {
+    console.log("[patch-team-members]", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 };

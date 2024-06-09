@@ -31,21 +31,31 @@ export const POST = async (req) => {
     const members = await Member.find({ team_id: formData.team_id });
 
     // any member can create members
-    const userIsMember = members.find(
-      (member) => member.meta?.user_id?.toString() === user._id.toString()
+    const userIndex = team.members.findIndex(
+      (m) => m?.user_id?.toString() === user._id.toString()
     );
+    const userIsMember = userIndex !== -1;
     if (!userIsMember) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        {
+          error:
+            "The user is not authorized to create a new member in this team",
+        },
+        { status: 403 }
+      );
     }
     // only admins can create admins
-    const userIsAdmin = userIsMember.meta.admin;
-    if (formData.admin && !userIsAdmin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const userIsAdmin = team.members[userIndex].role !== "member";
+    if (formData.admin !== "member" && !userIsAdmin) {
+      return NextResponse.json(
+        {
+          error: "The user is not authorized to grant access to other members",
+        },
+        { status: 403 }
+      );
     }
 
-    const hasSameNumber = members.find(
-      (member) => member.number === formData.number
-    );
+    const hasSameNumber = members.some((m) => m.number === formData.number);
     if (hasSameNumber) {
       return NextResponse.json(
         { error: "A member with the same number already exists" },
@@ -54,29 +64,13 @@ export const POST = async (req) => {
     }
 
     if (formData.email) {
-      const hasSameEmail = members.find(
-        (member) => member.meta.email === formData.email
-      );
+      const hasSameEmail = team.members.some((m) => m.email === formData.email);
       if (hasSameEmail) {
         return NextResponse.json(
           { error: "A member with the same email already exists" },
           { status: 409 }
         );
       }
-    }
-
-    const newMember = new Member({
-      team_id: formData.team_id,
-      name: formData.name,
-      number: formData.number,
-      meta: {
-        admin: formData.admin,
-        email: formData.email,
-      },
-    });
-
-    // find the user and send invitation
-    if (formData.email) {
       const targetUser = await User.findOne({ email: formData.email });
       if (targetUser) {
         targetUser.teams.inviting.push(formData.team_id);
@@ -84,14 +78,22 @@ export const POST = async (req) => {
       }
     }
 
-    team.members.push(newMember._id);
-    team.lineup.others.push(newMember._id);
+    const newMember = new Member({
+      team_id: formData.team_id,
+      name: formData.name,
+      number: formData.number,
+    });
+
+    team.members.push({
+      _id: newMember._id,
+      email: formData.email,
+      role: formData.admin,
+    });
     await team.save();
     await newMember.save();
 
     return NextResponse.json(newMember, { status: 201 });
   } catch (error) {
-    console.log("[post-teams]", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 };
