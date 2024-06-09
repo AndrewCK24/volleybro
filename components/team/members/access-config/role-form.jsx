@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/components/ui/use-toast";
 import { useTeam } from "@/hooks/use-data";
 import { FiSave, FiUser, FiShield } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const formSchema = z.object({
 });
 
 const RoleForm = ({ teamId, memberId }) => {
+  const { toast } = useToast();
   const { team, mutate } = useTeam(teamId);
   const member = team?.members?.find((member) => member._id === memberId);
   const form = useForm({
@@ -36,6 +38,13 @@ const RoleForm = ({ teamId, memberId }) => {
   });
 
   const onSubmit = async (formData) => {
+    if (formData.role === member.role) {
+      return toast({
+        title: "權限未變更",
+        description: "已設定此成員為此權限",
+      });
+    }
+
     try {
       const res = await fetch(
         `/api/teams/${teamId}/members?memberId=${memberId}&action=access`,
@@ -47,6 +56,10 @@ const RoleForm = ({ teamId, memberId }) => {
       );
       const members = await res.json();
       mutate({ ...team, members }, false);
+      return toast({
+        title: "權限已變更",
+        description: "成員的權限已變更",
+      });
     } catch (error) {
       console.error(error);
     }
@@ -77,7 +90,9 @@ const RoleForm = ({ teamId, memberId }) => {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <FormDescription>管理者有權限變更隊伍與成員資訊，以及權限設定</FormDescription>
+            <FormDescription>
+              管理者有權限變更隊伍與成員資訊，以及權限設定
+            </FormDescription>
           </FormItem>
         )}
       />
