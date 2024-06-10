@@ -62,7 +62,11 @@ const Menu = ({ className }) => {
         ) : (
           <FiUser />
         )}
-        {user?.name || ""}
+        {!user ? (
+          <span className="h-6 rounded-md animate-pulse bg-muted w-[16rem]" />
+        ) : (
+          user?.name
+        )}
       </Button>
       <Button
         variant="outline"
