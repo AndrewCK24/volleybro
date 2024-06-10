@@ -34,9 +34,9 @@ export const POST = async (req) => {
       members: [
         {
           _id: newMember._id,
-          user_id: user._id,
           email: user.email,
           role: "owner",
+          user_id: user._id,
         },
       ],
       lineups: new Array(3).fill({

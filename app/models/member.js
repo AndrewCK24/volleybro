@@ -7,36 +7,19 @@ const memberSchema = new Schema(
       ref: "Team",
       required: true,
     },
-    meta: {
-      admin: {
-        type: Boolean,
-      },
-      email: {
-        type: String,
-        ref: "User",
-        required: false,
-      },
-      user_id: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: false,
-      },
-    },
     name: {
       type: String,
-      required: false,
+      required: true,
     },
     number: {
       type: Number,
-      required: false,
+      required: true,
     },
     info: {
       type: Object,
-      required: false,
     },
     stats: {
       type: Object,
-      required: false,
     },
   },
   {
