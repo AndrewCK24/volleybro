@@ -6,9 +6,13 @@ const TeamHero = ({ teamId }) => {
 
   return (
     <div className="w-full h-[7.5rem] bg-primary flex flex-col justify-end p-2">
-      <p className="text-2xl text-primary-foreground">
-        {team?.name || "Loading..."}
-      </p>
+      {!team ? (
+        <p className="h-8 rounded-md animate-pulse bg-muted w-[16rem]" />
+      ) : (
+        <p className="text-2xl text-primary-foreground">
+          {team?.name || "Loading..."}
+        </p>
+      )}
     </div>
   );
 };

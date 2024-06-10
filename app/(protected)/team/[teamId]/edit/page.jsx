@@ -17,7 +17,7 @@ const EditTeamPage = ({ params }) => {
       });
 
       const teamData = await res.json();
-      mutate({ ...team, ...teamData });
+      mutate({ ...team, ...teamData }, false);
       return router.push(`/team/${teamId}?tab=about`);
     } catch (error) {
       console.error(error);

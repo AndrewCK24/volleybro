@@ -7,14 +7,14 @@ import { Card } from "@/components/ui/card";
 import TeamMembersTable from "@/components/team/members/table";
 import LoadingCard from "@/components/custom/loading/card";
 
-const TeamMembers = ({ teamId, className }) => {
-  const { team } = useTeam(teamId);
-  const { members } = useTeamMembers(teamId);
+const TeamMembers = ({ teamId }) => {
+  const { team, isLoading: isTeamLoading } = useTeam(teamId);
+  const { members, isLoading: isMemberLoading } = useTeamMembers(teamId);
 
-  if (!team || !members) return <LoadingCard className={className} />;
+  if (isTeamLoading || isMemberLoading) return <LoadingCard />;
 
   return (
-    <Card className={className}>
+    <Card>
       <div className="grid grid-cols-2 gap-2">
         <Link variant="secondary" size="lg" href={`/team/${teamId}/lineup`}>
           <BsGrid3X2Gap />
