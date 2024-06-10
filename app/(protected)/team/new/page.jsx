@@ -16,7 +16,7 @@ const NewTeamPage = () => {
       });
 
       const team = await res.json();
-      mutate(`/api/teams/${team._id}`, team);
+      mutate(`/api/teams/${team._id}`, team, false);
       return router.push(`/team/${team._id}?tab=about`);
     } catch (err) {
       console.log(err);

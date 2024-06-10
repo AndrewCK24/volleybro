@@ -30,7 +30,7 @@ const Invitations = ({ className }) => {
       );
       const userTeams = await response.json();
       mutateUserTeams();
-      mutateUser({ ...user, teams: userTeams });
+      mutateUser({ ...user, teams: userTeams }, false);
 
       return accept ? router.push(`/team/${teamId}`) : null;
     } catch (error) {

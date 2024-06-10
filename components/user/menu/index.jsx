@@ -38,7 +38,7 @@ const Menu = ({ className }) => {
         }
       );
       const userTeams = await response.json();
-      mutateUser({ ...user, teams: userTeams });
+      mutateUser({ ...user, teams: userTeams }, false);
       mutateUserTeams();
 
       return router.push(`/team/${team._id}`);
