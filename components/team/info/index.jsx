@@ -4,13 +4,13 @@ import { Card } from "@/components/ui/card";
 import TeamInfoTable from "@/components/team/info/table";
 import LoadingCard from "@/components/custom/loading/card";
 
-const TeamInfo = ({ teamId, className }) => {
+const TeamInfo = ({ teamId }) => {
   const { team, isLoading } = useTeam(teamId);
 
-  if (isLoading) return <LoadingCard className={className} />;
+  if (isLoading) return <LoadingCard />;
 
   return (
-    <Card className={className}>
+    <Card>
       <TeamInfoTable team={team} />
     </Card>
   );

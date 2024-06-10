@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TeamHero from "@/components/team/hero";
 import ConfirmInvitation from "@/components/team/confirmation";
-import LatestMatch from "@/components/team/feeds/latest-match";
+import TeamFeeds from "@/components/team/feeds";
 import TeamInfo from "@/components/team/info";
 import TeamMembers from "@/components/team/members";
 
@@ -19,7 +19,7 @@ const TeamPage = ({ params, searchParams }) => {
         <TabsTrigger value="members">成員</TabsTrigger>
       </TabsList>
       <TabsContent value="feeds">
-        <LatestMatch teamId={teamId} />
+        <TeamFeeds teamId={teamId} />
       </TabsContent>
       <TabsContent value="about">
         <TeamInfo teamId={teamId} />
