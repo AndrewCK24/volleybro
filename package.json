@@ -1,6 +1,6 @@
 {
   "name": "v-stats",
-  "version": "0.2.3-beta.2.1",
+  "version": "0.2.3-beta.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
