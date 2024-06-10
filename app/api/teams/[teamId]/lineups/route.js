@@ -3,20 +3,17 @@ import { auth } from "@/auth";
 import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
-import Member from "@/app/models/member";
 
 export const PATCH = async (req, { params }) => {
   try {
     const session = await auth();
     if (!session) {
-      console.error("[PATCH /api/teams/[teamId]/lineups] Unauthorized");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await connectToMongoDB();
     const user = await User.findById(session.user._id);
     if (!user) {
-      console.error("[PATCH /api/teams/[teamId]/lineups] User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -28,11 +25,10 @@ export const PATCH = async (req, { params }) => {
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
-    const members = await Member.find({ team_id: teamId });
-    const isAdmin = members.find(
-      (member) => member.meta?.user_id?.toString() === user._id.toString()
-    )?.meta.admin;
-    if (!isAdmin) {
+    const isMember = team.members.find(
+      (m) => m?.user_id?.toString() === user._id.toString()
+    );
+    if (!isMember) {
       return NextResponse.json(
         { error: "You are not authorized to update this team" },
         { status: 401 }

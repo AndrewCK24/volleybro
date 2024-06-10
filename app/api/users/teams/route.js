@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
-import Member from "@/app/models/member";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +55,6 @@ export const PATCH = async (req) => {
     await connectToMongoDB();
     const user = await User.findById(session.user._id);
     if (!user) {
-      console.error("[PATCH /api/users/teams] User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -74,9 +72,6 @@ export const PATCH = async (req) => {
     if (action === "switch") {
       const isJoined = user.teams.joined.find((id) => id.equals(teamId));
       if (!isJoined) {
-        console.error(
-          "[PATCH /api/users/teams] User is not a member of this team"
-        );
         return NextResponse.json(
           { error: "You are not a member of this team" },
           { status: 403 }
@@ -91,19 +86,20 @@ export const PATCH = async (req) => {
     } else if (action === "accept" || action === "reject") {
       const isInvited = user.teams.inviting.find((id) => id.equals(teamId));
       if (!isInvited) {
-        console.error("[PATCH /api/users/teams] User is not invited");
         return NextResponse.json(
           { error: "You are not invited to this team" },
           { status: 403 }
         );
       }
 
-      const member = await Member.findOne({
-        team_id: teamId,
-        "meta.email": user.email,
-      });
-      if (!member) {
-        console.error("[PATCH /api/users/teams] Member not found");
+      const team = await Team.findById(teamId);
+      if (!team) {
+        return NextResponse.json({ error: "Team not found" }, { status: 404 });
+      }
+      const memberIndex = team.members.findIndex(
+        (m) => m?.email === user.email
+      );
+      if (memberIndex === -1) {
         return NextResponse.json(
           { error: "You are not invited to this team" },
           { status: 403 }
@@ -115,16 +111,16 @@ export const PATCH = async (req) => {
         user.teams.inviting = user.teams.inviting.filter(
           (id) => !id.equals(teamId)
         );
-        member.meta.user_id = user._id;
+        team.members[memberIndex].user_id = user._id;
       } else {
         user.teams.inviting = user.teams.inviting.filter(
           (id) => !id.equals(teamId)
         );
-        member.meta.email = null;
+        team.members[memberIndex].email = "";
       }
 
       await user.save();
-      await member.save();
+      await team.save();
 
       return NextResponse.json(user.teams, { status: 200 });
     }

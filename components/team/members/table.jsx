@@ -25,80 +25,86 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const columns = [
-  {
-    accessorKey: "image",
-    header: () => <FiUser />,
-    cell: () => <FiUser />,
-    size: 32,
-  },
-  {
-    accessorKey: "number",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          size="lg"
-          className="gap-0 svg-[1rem]"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          No.
-          <HiArrowsUpDown className="w-4 h-4 ml-2" />
-        </Button>
-      );
-    },
-    size: 52,
-  },
-  {
-    accessorKey: "name",
-    header: "姓名",
-  },
-  {
-    accessorKey: "meta",
-    header: "狀態",
-    cell: ({ row }) => {
-      const member = row.original;
-      const { admin, user_id, email } = member.meta;
-      const identity = !email
-        ? {
-            text: "未邀請",
-            type: "secondary",
-            icon: <FiXCircle />,
-          }
-        : !user_id
-        ? {
-            text: "邀請中",
-            type: "outline",
-            icon: <FiClock />,
-          }
-        : !admin
-        ? {
-            text: "已加入",
-            type: "default",
-            icon: <FiCheckCircle />,
-          }
-        : {
-            text: "管理者",
-            type: "destructive",
-            icon: <FiShield />,
-          };
-
-      return (
-        <Badge variant={identity.type} className="!svg-[1rem]">
-          {identity.icon} {identity.text}
-        </Badge>
-      );
-    },
-    enableResizing: false,
-    size: 96,
-  },
-];
-
-const TeamMembersTable = ({ data, teamId }) => {
-  const [sorting, setSorting] = useState(data);
+const TeamMembersTable = ({ team, members, teamId }) => {
+  const [sorting, setSorting] = useState(members);
   const router = useRouter();
+  // FIXME: [Table] Column with id 'undefined' does not exist.
+  // https://ui.shadcn.com/docs/components/data-table#update-column-definitions
+  // https://tanstack.com/table/latest/docs/guide/column-defs
+  const columns = [
+    {
+      id: "image",
+      header: () => <FiUser />,
+      cell: () => <FiUser />,
+      size: 32,
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "number",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            size="lg"
+            className="gap-0 svg-[1rem]"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            No.
+            <HiArrowsUpDown className="w-4 h-4 ml-2" />
+          </Button>
+        );
+      },
+      size: 52,
+    },
+    {
+      accessorKey: "name",
+      header: "姓名",
+    },
+    {
+      id: "role",
+      header: "狀態",
+      cell: ({ row }) => {
+        const memberId = row.original._id;
+        const member = team.members.find((m) => m._id === memberId);
+        const { role, user_id, email } = member;
+        const isAdmin = role === "admin" || role === "owner";
+        const identity = !email
+          ? {
+              text: "未邀請",
+              type: "secondary",
+              icon: <FiXCircle />,
+            }
+          : !user_id
+          ? {
+              text: "邀請中",
+              type: "outline",
+              icon: <FiClock />,
+            }
+          : isAdmin
+          ? {
+              text: "管理者",
+              type: "destructive",
+              icon: <FiShield />,
+            }
+          : {
+              text: "已加入",
+              type: "default",
+              icon: <FiCheckCircle />,
+            };
+
+        return (
+          <Badge variant={identity.type} className="!svg-[1rem]">
+            {identity.icon} {identity.text}
+          </Badge>
+        );
+      },
+      enableResizing: false,
+      size: 96,
+    },
+  ];
   const table = useReactTable({
-    data,
+    data: members,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,

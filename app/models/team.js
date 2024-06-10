@@ -12,9 +12,9 @@ const teamSchema = new Schema(
     members: [
       {
         _id: { type: Schema.Types.ObjectId, ref: "Member" },
-        user_id: { type: Schema.Types.ObjectId, ref: "User" },
         email: { type: String },
         role: { type: String, enum: ["owner", "admin", "member"] },
+        user_id: { type: Schema.Types.ObjectId, ref: "User" },
       },
     ],
     lineups: [

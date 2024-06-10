@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import connectToMongoDB from "@/lib/connect-to-mongodb";
 import User from "@/app/models/user";
 import Team from "@/app/models/team";
-import Member from "@/app/models/member";
 
 export const GET = async (req, { params }) => {
   try {
@@ -37,17 +36,24 @@ export const PATCH = async (req, { params }) => {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const { id: teamId } = params;
+    const { teamId } = params;
     const { name, nickname } = await req.json();
     const team = await Team.findById(teamId);
     if (!team) {
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
-    const members = await Member.find({ team_id: teamId });
-    const isAdmin = members.find(
-      (member) => member.meta.user_id.toString() === user._id.toString()
-    )?.meta.admin;
+    const userIndex = team.members.findIndex(
+      (m) => m?.user_id?.toString() === user._id.toString()
+    );
+    const isMember = userIndex !== -1;
+    if (!isMember) {
+      return NextResponse.json(
+        { error: "You are not authorized to update this team" },
+        { status: 401 }
+      );
+    }
+    const isAdmin = team.members[userIndex].role !== "member";
     if (!isAdmin) {
       return NextResponse.json(
         { error: "You are not authorized to update this team" },
