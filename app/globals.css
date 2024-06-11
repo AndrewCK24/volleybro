@@ -99,6 +99,6 @@
     @apply border-border box-border overscroll-x-none overscroll-y-none select-none;
   }
   body {
-    @apply bg-background text-foreground w-screen h-screen flex flex-col flex-nowrap transition-colors overscroll-y-contain;
+    @apply bg-background text-foreground w-screen h-dvh flex flex-col flex-nowrap transition-colors overscroll-y-contain;
   }
 }
