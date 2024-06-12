@@ -27,10 +27,6 @@ const LineupPage = ({ params }) => {
     } catch (error) {
       console.log(error);
     }
-    // if (isRecording) {
-    //   dispatch(matchActions.configMatchSet({ firstServe, lineup }));
-    //   router.push(`/match/${matchId}/confirm`);
-    // }
   };
 
   return <Lineup team={team} members={members} handleSave={handleSave} />;

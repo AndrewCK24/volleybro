@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiUser } from "react-icons/fi";
 import { lineupsActions } from "@/app/store/lineups-slice";
@@ -16,15 +17,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import LineupError from "@/components/team/lineup/panels/options/lineup-error";
 import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
 
-const LineupOptions = ({ members, others, className }) => {
+const LineupOptions = ({
+  members,
+  others,
+  hasPairedSwitchPosition,
+  className,
+}) => {
   const dispatch = useDispatch();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { lineups, status } = useSelector((state) => state.lineups);
   const liberoCount = lineups[status.lineupNum]?.liberos.length;
   const substituteCount = lineups[status.lineupNum]?.substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
   const othersCount = others.length;
+
+  const handleLineupNumClick = (index) => {
+    if (index === status.lineupNum) return;
+    if (hasPairedSwitchPosition) {
+      dispatch(lineupsActions.setLineupNum(index));
+    } else {
+      setDialogOpen(true);
+    }
+  };
 
   return (
     <Card className={className}>
@@ -36,7 +53,7 @@ const LineupOptions = ({ members, others, className }) => {
               key={index}
               variant={status.lineupNum === index ? "" : "outline"}
               size="icon"
-              onClick={() => dispatch(lineupsActions.setLineupNum(index))}
+              onClick={() => handleLineupNumClick(index)}
               className="text-[1.25rem] w-8 h-8"
             >
               {index + 1}
@@ -44,6 +61,7 @@ const LineupOptions = ({ members, others, className }) => {
           ))}
         </CardBtnGroup>
       </CardHeader>
+      <LineupError open={dialogOpen} setOpen={setDialogOpen} />
       <LiberoSwitch />
       <Table>
         <TableHeader className="text-lg">

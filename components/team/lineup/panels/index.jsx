@@ -4,7 +4,7 @@ import LineupOptions from "@/components/team/lineup/panels/options";
 import Substitutes from "@/components/team/lineup/panels/substitutes";
 import Positions from "@/components/team/lineup/panels/positions";
 
-const LineupPanels = ({ members, className }) => {
+const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
   const { lineups, status } = useSelector((state) => state.lineups);
   const { optionMode } = status;
   const { starting, liberos, substitutes } = lineups[status.lineupNum];
@@ -29,6 +29,7 @@ const LineupPanels = ({ members, className }) => {
         <LineupOptions
           members={members}
           others={others}
+          hasPairedSwitchPosition={hasPairedSwitchPosition}
           className={className}
         />
       )}

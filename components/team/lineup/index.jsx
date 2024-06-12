@@ -13,17 +13,24 @@ const Lineup = ({ team, members, handleSave }) => {
   const dispatch = useDispatch();
   const { lineups, status } = useSelector((state) => state.lineups);
   const liberoSwitchMode = lineups[status.lineupNum]?.options.liberoSwitchMode;
-  const hasPairedMB = lineups[status.lineupNum]?.starting.some(
-    (player, index) => {
-      const oppositeIndex = index > 3 ? index - 3 : index + 3;
-      return (
-        player._id &&
-        player.position === "MB" &&
-        lineups[status.lineupNum].starting[oppositeIndex]._id &&
-        lineups[status.lineupNum].starting[oppositeIndex].position === "MB"
-      );
-    }
-  );
+  const liberoSwitchPosition =
+    lineups[status.lineupNum]?.options.liberoSwitchPosition;
+  const hasPairedSwitchPosition =
+    liberoSwitchMode === 0 ||
+    (liberoSwitchPosition === "OP"
+      ? lineups[status.lineupNum]?.starting.some(
+          (player) => player._id && player.position === "OP"
+        )
+      : lineups[status.lineupNum]?.starting.some((player, index) => {
+          const oppositeIndex = index >= 3 ? index - 3 : index + 3;
+          return (
+            player._id &&
+            player.position === liberoSwitchPosition &&
+            lineups[status.lineupNum].starting[oppositeIndex]._id &&
+            lineups[status.lineupNum].starting[oppositeIndex].position ===
+              liberoSwitchPosition
+          );
+        }));
 
   useEffect(() => {
     if (team && team.lineups) dispatch(lineupsActions.initialize(team.lineups));
@@ -46,6 +53,7 @@ const Lineup = ({ team, members, handleSave }) => {
       <LineupCourt members={members} />
       <LineupPanels
         members={members}
+        hasPairedSwitchPosition={hasPairedSwitchPosition}
         className="flex-1 w-full overflow-scroll"
       />
       {!status.optionMode && (
@@ -53,7 +61,7 @@ const Lineup = ({ team, members, handleSave }) => {
           <Button
             size="lg"
             onClick={() => handleSave(lineups)}
-            disabled={!status.edited || (!!liberoSwitchMode && !hasPairedMB)}
+            disabled={!status.edited || !hasPairedSwitchPosition}
           >
             <FiSave />
             儲存陣容

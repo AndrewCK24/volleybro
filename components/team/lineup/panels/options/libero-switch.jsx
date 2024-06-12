@@ -180,9 +180,11 @@ const LiberoSwitch = () => {
             替換為第一位自由球員。且在自由球員即將輪轉至前排時，自動將自由球員更換為原先之{" "}
             {liberoSwitchPosition}。
           </AlertDescription>
-          <AlertDescription className="text-destructive">
-            陣容中須有對位之 {liberoSwitchPosition}。
-          </AlertDescription>
+          {liberoSwitchPosition !== "OP" && (
+            <AlertDescription className="text-destructive">
+              陣容中須有對位之 {liberoSwitchPosition}。
+            </AlertDescription>
+          )}
         </Alert>
       )}
     </div>
