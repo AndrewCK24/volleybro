@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { lineupsActions } from "@/app/store/lineups-slice";
 import { z } from "zod";
@@ -63,6 +64,13 @@ const LiberoSwitch = () => {
       position: liberoSwitchPosition,
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      mode: liberoSwitchMode.toString(),
+      position: liberoSwitchPosition,
+    });
+  }, [form, liberoSwitchMode, liberoSwitchPosition]);
 
   const onSubmit = (formData) => {
     dispatch(
