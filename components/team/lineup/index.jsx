@@ -5,14 +5,14 @@ import { lineupsActions } from "@/app/store/lineups-slice";
 import { FiSave } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import LineupCourt from "@/components/team/lineup/court";
-import LineupOptions from "@/components/team/lineup/options";
+import LineupPanels from "@/components/team/lineup/panels";
 import LoadingCourt from "@/components/custom/loading/court";
 import LoadingCard from "@/components/custom/loading/card";
 
 const Lineup = ({ team, members, handleSave }) => {
   const dispatch = useDispatch();
   const { lineups, status } = useSelector((state) => state.lineups);
-  const liberoMode = lineups[status.lineupNum]?.config.liberoMode;
+  const liberoSwitchMode = lineups[status.lineupNum]?.options.liberoSwitchMode;
   const hasPairedMB = lineups[status.lineupNum]?.starting.some(
     (player, index) => {
       const oppositeIndex = index > 3 ? index - 3 : index + 3;
@@ -24,13 +24,6 @@ const Lineup = ({ team, members, handleSave }) => {
       );
     }
   );
-  // const pathname = usePathname();
-  // const isRecording = pathname.includes("match");
-  // const { setNum } = useSelector((state) => state.match.status.editingData);
-  // const setData = useSelector((state) => state.match.sets[setNum]);
-  // const [firstServe, setFirstServe] = useState(
-  //   setData.meta.firstServe === null ? true : setData.meta.firstServe
-  // );
 
   useEffect(() => {
     if (team && team.lineups) dispatch(lineupsActions.initialize(team.lineups));
@@ -51,8 +44,7 @@ const Lineup = ({ team, members, handleSave }) => {
   return (
     <>
       <LineupCourt members={members} />
-      <LineupOptions
-        team={team}
+      <LineupPanels
         members={members}
         className="flex-1 w-full overflow-scroll"
       />
@@ -61,7 +53,7 @@ const Lineup = ({ team, members, handleSave }) => {
           <Button
             size="lg"
             onClick={() => handleSave(lineups)}
-            disabled={!status.edited || (!!liberoMode && !hasPairedMB)}
+            disabled={!status.edited || (!!liberoSwitchMode && !hasPairedMB)}
           >
             <FiSave />
             儲存陣容
