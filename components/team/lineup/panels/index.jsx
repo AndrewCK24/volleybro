@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
-import PlayerInfo from "@/components/team/lineup/options/player-info";
-import LineupConfig from "@/components/team/lineup/options/config";
-import Substitutes from "@/components/team/lineup/options/substitutes";
-import Positions from "@/components/team/lineup/options/positions";
+import PlayerInfo from "@/components/team/lineup/panels/player-info";
+import LineupOptions from "@/components/team/lineup/panels/options";
+import Substitutes from "@/components/team/lineup/panels/substitutes";
+import Positions from "@/components/team/lineup/panels/positions";
 
-const LineupOptions = ({ team, members, className }) => {
+const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
   const { lineups, status } = useSelector((state) => state.lineups);
-  const { optionMode, editingMember } = status;
+  const { optionMode } = status;
   const { starting, liberos, substitutes } = lineups[status.lineupNum];
   const listedIds = new Set([
     ...starting.map((player) => player._id),
@@ -26,10 +26,15 @@ const LineupOptions = ({ team, members, className }) => {
       ) : optionMode === "positions" ? (
         <Positions className={className} />
       ) : (
-        <LineupConfig members={members} others={others} className={className} />
+        <LineupOptions
+          members={members}
+          others={others}
+          hasPairedSwitchPosition={hasPairedSwitchPosition}
+          className={className}
+        />
       )}
     </>
   );
 };
 
-export default LineupOptions;
+export default LineupPanels;

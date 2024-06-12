@@ -40,8 +40,9 @@ export const POST = async (req) => {
         },
       ],
       lineups: new Array(3).fill({
-        config: {
-          liberoMode: 0,
+        options: {
+          liberoSwitchMode: 0,
+          liberoSwitchPosition: "",
         },
         starting: new Array(6).fill({ _id: null }),
         liberos: [],

@@ -40,7 +40,7 @@ export const PATCH = async (req, { params }) => {
 
     await team.save();
 
-    return NextResponse.json(lineups, { status: 200 });
+    return NextResponse.json(team.lineups, { status: 200 });
   } catch (error) {
     console.error("[PATCH /api/teams/[teamId]/lineups] Error:", error);
     return NextResponse.json({ error }, { status: 500 });

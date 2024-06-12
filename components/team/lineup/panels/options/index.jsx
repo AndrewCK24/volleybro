@@ -1,13 +1,7 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  FiUser,
-  FiCheck,
-  FiX,
-  FiHelpCircle,
-  FiAlertTriangle,
-} from "react-icons/fi";
+import { FiUser } from "react-icons/fi";
 import { lineupsActions } from "@/app/store/lineups-slice";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,30 +17,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
+import LineupError from "@/components/team/lineup/panels/options/lineup-error";
+import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
 
-const LineupConfig = ({ members, others, className }) => {
+const LineupOptions = ({
+  members,
+  others,
+  hasPairedSwitchPosition,
+  className,
+}) => {
   const dispatch = useDispatch();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { lineups, status } = useSelector((state) => state.lineups);
   const liberoCount = lineups[status.lineupNum]?.liberos.length;
   const substituteCount = lineups[status.lineupNum]?.substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
   const othersCount = others.length;
-  const liberoMode = lineups[status.lineupNum]?.config.liberoMode;
-  const hasPairedMB = lineups[status.lineupNum]?.starting.some(
-    (player, index) => {
-      const oppositeIndex = index > 3 ? index - 3 : index + 3;
-      return (
-        player._id &&
-        player.position === "MB" &&
-        lineups[status.lineupNum].starting[oppositeIndex]._id &&
-        lineups[status.lineupNum].starting[oppositeIndex].position === "MB"
-      );
-    }
-  );
 
-  const handleLiberoMode = (mode) => {
-    if (mode !== liberoMode) dispatch(lineupsActions.setLiberoMode(mode));
+  const handleLineupNumClick = (index) => {
+    if (index === status.lineupNum) return;
+    if (hasPairedSwitchPosition) {
+      dispatch(lineupsActions.setLineupNum(index));
+    } else {
+      setDialogOpen(true);
+    }
   };
 
   return (
@@ -59,7 +53,7 @@ const LineupConfig = ({ members, others, className }) => {
               key={index}
               variant={status.lineupNum === index ? "" : "outline"}
               size="icon"
-              onClick={() => dispatch(lineupsActions.setLineupNum(index))}
+              onClick={() => handleLineupNumClick(index)}
               className="text-[1.25rem] w-8 h-8"
             >
               {index + 1}
@@ -67,61 +61,8 @@ const LineupConfig = ({ members, others, className }) => {
           ))}
         </CardBtnGroup>
       </CardHeader>
-      <h4 className="px-2 text-lg font-medium text-muted-foreground">
-        自由球員替換模式
-      </h4>
-      <Separator />
-      <div className="flex flex-col gap-2 pt-2 text-xl">
-        {!!liberoMode && !hasPairedMB && (
-          <Alert variant="destructive">
-            <FiAlertTriangle />
-            <AlertTitle>無對位 MB</AlertTitle>
-            <AlertDescription>
-              陣容中未設定對位 MB，無法使用自動替換自由球員功能。
-            </AlertDescription>
-          </Alert>
-        )}
-        <Button
-          variant={liberoMode === 0 ? "destructive" : "outline"}
-          size="lg"
-          onClick={() => handleLiberoMode(0)}
-        >
-          <FiX />
-          手動替換
-        </Button>
-        <Button
-          variant={liberoMode === 1 ? "default" : "outline"}
-          size="lg"
-          onClick={() => handleLiberoMode(1)}
-          disabled={liberoCount < 1}
-        >
-          <FiCheck />
-          自動替換
-        </Button>
-        {liberoMode === 0 ? (
-          <Alert>
-            <FiHelpCircle />
-            <AlertTitle>手動替換自由球員</AlertTitle>
-            <AlertDescription>
-              記錄比賽過程中不會隨著輪轉自動替換自由球員，仍可以手動替換。
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <Alert>
-            <FiHelpCircle />
-            <AlertTitle>自動替換自由球員</AlertTitle>
-            <AlertDescription>
-              記錄比賽過程中，當我方失分且該球是由我方 MB 進行發球時，自動將該名
-              MB
-              替換為第一位自由球員。且在自由球員即將輪轉至前排時，自動將自由球員更換為原先之
-              MB。
-            </AlertDescription>
-            <AlertDescription className="text-destructive">
-              使用此模式時，陣容中須有對位之 MB。
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
+      <LineupError open={dialogOpen} setOpen={setDialogOpen} />
+      <LiberoSwitch />
       <Table>
         <TableHeader className="text-lg">
           <TableRow>
@@ -203,4 +144,4 @@ const LineupConfig = ({ members, others, className }) => {
   );
 };
 
-export default LineupConfig;
+export default LineupOptions;
