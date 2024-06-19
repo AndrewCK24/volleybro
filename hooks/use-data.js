@@ -51,9 +51,6 @@ export const useTeamMembers = (
   fetcher = defaultFetcher,
   options = {}
 ) => {
-  // TODO: 新增 conditional fetching
-  // if (!teamId) teamId = useSelector((state) => state.user.teams.joined[0]);
-
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     `/api/teams/${teamId}/members`,
     fetcher,

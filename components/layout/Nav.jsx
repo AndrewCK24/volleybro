@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useSelectedLayoutSegments } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/use-data";
 import { usePathname } from "next/navigation";
@@ -16,7 +17,9 @@ import {
 const NavLink = ({ children, className, ...props }) => (
   <Link
     className={cn(
-      "flex flex-col items-center justify-center flex-1 h-full pt-1 no-underline text-primary-foreground svg-[1.75rem] text-xs transition-all duration-200 ease-in-out",
+      "flex flex-col items-center justify-center flex-1 h-full pt-1",
+      "no-underline text-primary-foreground [&>svg]:w-7 [&>svg]:h-7 text-xs",
+      "transition-all duration-200 ease-in-out",
       className
     )}
     {...props}
@@ -28,6 +31,7 @@ const NavLink = ({ children, className, ...props }) => (
 export const Nav = () => {
   const dispatch = useDispatch();
   const pathname = usePathname();
+  const segments = useSelectedLayoutSegments();
   const { user } = useUser();
   const defaultTeamId = user?.teams?.joined[0] || null;
   const defaultTeamUrl = defaultTeamId
@@ -40,6 +44,8 @@ export const Nav = () => {
     if (path === "/") return pathname === "/" ? activeClass : "";
     return pathname.startsWith(path) ? activeClass : "";
   };
+
+  if (segments.length > 2) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 w-full h-16 px-[5%] pt-0 pb-4 flex flex-row items-center justify-center bg-primary">
