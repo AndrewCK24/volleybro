@@ -11,7 +11,7 @@ export const Header = () => {
   const isIndex = pathArr.length <= 1;
 
   return (
-    <header className="fixed w-full h-12 px-[5%] flex flex-row items-center justify-center gap-4 overscroll-none bg-primary-foreground">
+    <header className="fixed w-full h-12 px-[5%] flex flex-row items-center justify-center gap-4 overscroll-none bg-primary-foreground shadow-md">
       {isIndex || (
         <Button
           onClick={() => router.back()}
