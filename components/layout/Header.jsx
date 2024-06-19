@@ -9,13 +9,12 @@ export const Header = () => {
   const router = useRouter();
   const pathArr = pathname.split("/").filter(Boolean);
   const isIndex = pathArr.length <= 1;
-  const handleBack = () => router.push(`/${pathArr[0]}`);
 
   return (
     <header className="fixed w-full h-12 px-[5%] flex flex-row items-center justify-center gap-4 overscroll-none bg-primary-foreground">
       {isIndex || (
         <Button
-          onClick={handleBack}
+          onClick={() => router.back()}
           variant="ghost"
           size="icon"
           className="svg-[2rem]"

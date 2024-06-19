@@ -3,7 +3,7 @@ import { FiPlus, FiX, FiRepeat } from "react-icons/fi";
 
 export const Court = ({ children }) => {
   return (
-    <div className="flex flex-row items-center justify-center w-full max-h-[35vh] aspect-[11/9] rounded-lg bg-primary p-2">
+    <div className="flex flex-row items-center justify-center w-full max-h-[35vh] aspect-[11/9] bg-primary p-2">
       {children}
     </div>
   );
