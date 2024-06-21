@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { matchActions } from "@/app/match/match-slice";
+import { matchActions } from "@/app/store/match-slice";
 import { Button } from "@/components/ui/button";
 import {
   Form,

@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import lineupsReducer from "@/app/store/lineups-slice";
-import matchReducer from "../match/match-slice";
+import matchReducer from "@/app/store/match-slice";
 
 const store = configureStore({
   reducer: {

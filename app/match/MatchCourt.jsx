@@ -1,7 +1,7 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
 import { GiWhistle } from "react-icons/gi";
-import { matchActions } from "./match-slice";
+import { matchActions } from "../store/match-slice";
 import {
   Court,
   Outside,

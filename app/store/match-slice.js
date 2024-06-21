@@ -1,6 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { recordTypes } from "../lib/record-types";
 
+const infoState = {
+  name: "",
+  number: 0,
+  phase: "", // 可選值 ["", "elim", "seed", "qual", "final"]
+  division: "", // 可選值 ["", "men", "women", "mixed"]
+  category: "", // 可選值 ["", "senior", "junior", "youth"]
+  scoring: {
+    setCount: 0,
+    decidingSetPoints: 0,
+  },
+  location: {
+    city: "",
+    hall: "",
+  },
+  time: {
+    date: "",
+    start: "",
+    end: "",
+  },
+};
+
 const playerStats = {
   number: null,
   name: "",
@@ -34,21 +55,7 @@ const initialState = {
   _id: "",
   win: null,
   team_id: "",
-  info: {
-    team: {
-      ours: {
-        name: "",
-      },
-      oppo: {
-        name: "",
-      },
-    },
-    match: {
-      name: "",
-      setCount: null,
-      finalSetPoint: null,
-    },
-  },
+  info: infoState,
   players: {
     oppo: { ...playerStats },
   },
@@ -157,86 +164,12 @@ const matchSlice = createSlice({
   name: "match",
   initialState,
   reducers: {
-    setMatch: (state, action) => {
-      const { matchData } = action.payload;
-      const setNum = matchData.sets.length - 1;
-      const recordNum = matchData.sets[setNum].records.length - 1;
-      const lastRecord = matchData.sets[setNum].records[recordNum];
-
-      state._id = matchData._id;
-      state.team_id = matchData.team_id;
-      state.info = matchData.info;
-      state.players = matchData.players;
-      state.sets = matchData.sets;
-      state.recording = {
-        ...initialState.recording,
-        ours: {
-          ...initialState.recording.ours,
-          score: lastRecord?.ours.score || 0,
-        },
-        oppo: {
-          ...initialState.recording.oppo,
-          score: lastRecord?.oppo.score || 0,
-        },
-      };
-      state.status = {
-        isServing: lastRecord?.win || matchData.sets[setNum].meta.firstServe,
-        scores: {
-          ours: lastRecord?.ours.score || 0,
-          oppo: lastRecord?.oppo.score || 0,
-        },
-        editingData: {
-          isEditing: false,
-          setNum: setNum,
-          recordNum: recordNum + 1,
-        },
-      };
-    },
-    resetMatch: (state) => {
-      state._id = initialState._id;
-      state.team_id = initialState.team_id;
-      state.info = initialState.info;
-      state.players = initialState.players;
-      state.sets = initialState.sets;
-      state.recording = initialState.recording;
-      state.status = initialState.status;
-    },
-    configMatchInfo: (state, action) => {
-      const {
-        teamId,
-        members,
-        oursName,
-        oppoName,
-        matchName,
-        setCount,
-        finalSetPoint,
-      } = action.payload;
-      members.map((member) => {
-        state.players = {
-          ...state.players,
-          [member._id]: {
-            ...playerStats,
-            number: member.number,
-            name: member.name,
-          },
-        };
-      });
+    setMatchInfo: (state, action) => {
+      const matchInfo = action.payload;
       state.info = {
-        team: {
-          ours: {
-            name: oursName,
-          },
-          oppo: {
-            name: oppoName,
-          },
-        },
-        match: {
-          name: matchName,
-          setCount: setCount,
-          finalSetPoint: finalSetPoint,
-        },
+        ...state.info,
+        ...matchInfo,
       };
-      if (!state.team_id) state.team_id = teamId;
     },
     configMatchSet: (state, action) => {
       const { setNum } = state.status.editingData;

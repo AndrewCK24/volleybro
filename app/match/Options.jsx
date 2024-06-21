@@ -1,6 +1,6 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
-import { matchActions } from "./match-slice";
+import { matchActions } from "../store/match-slice";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
