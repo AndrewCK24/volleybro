@@ -2,44 +2,24 @@
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { FiArrowLeft, FiSettings } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import Scores from "./Scores";
-
-const Container = ({ children }) => {
-  return (
-    <section className="flex flex-row items-center justify-center flex-none w-full bg-background rounded-b-[0.5rem] px-2 gap-2 shadow">
-      {children}
-    </section>
-  );
-};
+import { Scores } from "@/components/match/header/scores";
 
 const Content = ({ children }) => {
   return (
-    <div className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] pb-2 text-[1.625rem] font-medium">
+    <div className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] text-[1.625rem] font-medium">
       {children}
     </div>
   );
 };
 
-const Header = ({ matchId }) => {
+export const Header = ({ matchId }) => {
   const router = useRouter();
   const segment = useSelectedLayoutSegment();
   const isRecording = !segment;
 
-  const handleBack = () => {
-    if (matchId === "new") {
-      if (segment === "config") return router.push("/history");
-      if (segment === "lineup") return router.push("/match/new/config");
-      if (segment === "overview") return router.replace("/match/new/lineup");
-      return router.back();
-    }
-    if (!isRecording) return router.push(`/match/${matchId}`);
-
-    return router.push("/history");
-  };
-
   return (
-    <Container>
-      <Button variant="ghost" size="icon" onClick={() => handleBack()}>
+    <header className="flex flex-row items-center justify-center flex-none w-full bg-background rounded-b-[0.5rem] px-2 gap-2 shadow">
+      <Button variant="ghost" size="icon" onClick={() => router.back()}>
         <FiArrowLeft />
       </Button>
       <Content
@@ -68,7 +48,7 @@ const Header = ({ matchId }) => {
           <FiSettings />
         </Button>
       )}
-    </Container>
+    </header>
   );
 };
 

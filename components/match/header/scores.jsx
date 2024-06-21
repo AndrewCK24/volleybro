@@ -1,3 +1,4 @@
+"use client";
 import { useSelector } from "react-redux";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
 
@@ -16,7 +17,7 @@ const Team = ({ children }) => {
   );
 };
 
-const Scores = () => {
+export const Scores = () => {
   const { ours, oppo } = useSelector((state) => state.match.status.scores);
   const { team } = useSelector((state) => state.match.info);
   const { sets } = useSelector((state) => state.match);
