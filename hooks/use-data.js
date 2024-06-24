@@ -59,3 +59,13 @@ export const useTeamMembers = (
 
   return { members: data, error, isLoading, isValidating, mutate };
 };
+
+export const useRecord = (recordId, fetcher = defaultFetcher, options = {}) => {
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    `/api/records/${recordId}`,
+    fetcher,
+    { dedupingInterval: 5 * 60 * 1000, ...options }
+  );
+
+  return { record: data, error, isLoading, isValidating, mutate };
+};

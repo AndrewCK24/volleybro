@@ -41,7 +41,6 @@ export const POST = async (req) => {
       teams: { home: recordData.team },
       sets: [{ lineup: recordData.lineup }],
     });
-    console.log("[CREATE RECORD] New record", newRecord);
     await newRecord.save();
 
     return NextResponse.json(newRecord, { status: 201 });

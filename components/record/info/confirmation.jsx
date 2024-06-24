@@ -1,10 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
 import { useDispatch, useSelector } from "react-redux";
 import { useTeam, useTeamMembers } from "@/hooks/use-data";
-import { useToast } from "@/components/ui/use-toast";
 import {
   FiInfo,
   FiChevronRight,
@@ -36,7 +35,6 @@ const MatchConfirmation = ({ teamId }) => {
   const { mutate } = useSWRConfig();
   const dispatch = useDispatch();
   const [lineupNum, setLineupNum] = useState(0);
-  const { toast } = useToast();
   const { info } = useSelector((state) => state.match);
   const { team, isLoading: isTeamLoading } = useTeam(teamId);
   const { members, isLoading: isMembersLoading } = useTeamMembers(teamId);
@@ -56,13 +54,15 @@ const MatchConfirmation = ({ teamId }) => {
   const starting = getPlayerData("starting");
   const liberos = getPlayerData("liberos");
   const substitutes = getPlayerData("substitutes");
-  const players = starting.concat(liberos, substitutes).sort((a, b) => a.number - b.number);
+  const players = starting
+    .concat(liberos, substitutes)
+    .sort((a, b) => a.number - b.number);
 
   const onFormSave = async (formData) => {
     dispatch(matchActions.setMatchInfo(formData));
   };
 
-  const onSubmit = async () => {
+  const handleSave = async () => {
     try {
       const res = await fetch("/api/records", {
         method: "POST",
@@ -78,10 +78,10 @@ const MatchConfirmation = ({ teamId }) => {
         }),
       });
 
-      const match = await res.json();
-      if (match.error) throw new Error(match.error);
-      // mutate(`/api/records/${match._id}`, match, false);
-      // return router.push(`/match/${match._id}?tab=about`);
+      const record = await res.json();
+      if (record.error) throw new Error(record.error);
+      mutate(`/api/records/${record._id}`, record, false);
+      return router.push(`/record/${record._id}?tab=about`);
     } catch (err) {
       console.log(err);
     }
@@ -161,7 +161,7 @@ const MatchConfirmation = ({ teamId }) => {
         <RoasterTable roaster={players} />
       </Card>
       <div className="flex flex-col w-full px-4">
-        <Button size="lg" onClick={onSubmit}>
+        <Button size="lg" onClick={handleSave}>
           開始比賽
           <FiArrowRight />
         </Button>
