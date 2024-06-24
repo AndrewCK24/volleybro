@@ -1,5 +1,33 @@
 import { Schema, model, models } from "mongoose";
 
+export const lineupSchema = new Schema({
+  options: {
+    liberoSwitchMode: { type: Number, enum: [0, 1, 2], default: 0 },
+    liberoSwitchPosition: {
+      type: String,
+      enum: ["", "OH", "MB", "OP"],
+      default: "",
+    },
+  },
+  starting: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: "Member" },
+      position: { type: String, enum: ["OH", "MB", "OP", "S"] },
+    },
+  ],
+  liberos: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: "Member" },
+      position: { type: String, enum: ["L"] },
+    },
+  ],
+  substitutes: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: "Member" },
+    },
+  ],
+});
+
 const teamSchema = new Schema(
   {
     name: {
@@ -17,35 +45,7 @@ const teamSchema = new Schema(
         user_id: { type: Schema.Types.ObjectId, ref: "User" },
       },
     ],
-    lineups: [
-      {
-        options: {
-          liberoSwitchMode: { type: Number, enum: [0, 1, 2], default: 0 },
-          liberoSwitchPosition: {
-            type: String,
-            enum: ["", "OH", "MB", "OP"],
-            default: "",
-          },
-        },
-        starting: [
-          {
-            _id: { type: Schema.Types.ObjectId, ref: "Member" },
-            position: { type: String, enum: ["OH", "MB", "OP", "S"] },
-          },
-        ],
-        liberos: [
-          {
-            _id: { type: Schema.Types.ObjectId, ref: "Member" },
-            position: { type: String, enum: ["L"] },
-          },
-        ],
-        substitutes: [
-          {
-            _id: { type: Schema.Types.ObjectId, ref: "Member" },
-          },
-        ],
-      },
-    ],
+    lineups: [lineupSchema],
     matches: [
       {
         type: Schema.Types.ObjectId,

@@ -2,7 +2,7 @@
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { FiArrowLeft, FiSettings } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import { Scores } from "@/components/match/header/scores";
+import { Scores } from "@/components/record/header/scores";
 
 const Content = ({ children }) => {
   return (

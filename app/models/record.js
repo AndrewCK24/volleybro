@@ -1,6 +1,8 @@
 import { Schema, model, models } from "mongoose";
+import { lineupSchema } from "@/app/models/team";
 
-const infoSchema = new Schema({
+const matchSchema = new Schema({
+  _id: { type: Schema.Types.ObjectId },
   name: { type: String },
   number: { type: Number },
   phase: {
@@ -79,42 +81,31 @@ const staffSchema = new Schema({
     ref: "Member",
   },
   name: { type: String },
-  role: { type: String, enum: ["", "C", "AC", "T", "M"], default: "" },
+  number: { type: Number },
+  position: { type: String, enum: ["", "C", "AC", "T", "M"], default: "" },
 });
 
-const matchSchema = new Schema(
+const teamSchema = new Schema({
+  _id: {
+    type: Schema.Types.ObjectId,
+    ref: "Team",
+  },
+  name: { type: String },
+  players: [{ type: playerSchema }],
+  staffs: [{ type: staffSchema }],
+});
+
+const recordSchema = new Schema(
   {
     win: { type: Boolean },
     team_id: {
       type: Schema.Types.ObjectId,
       ref: "Team",
     },
-    info: { type: infoSchema },
+    info: { type: matchSchema },
     teams: {
-      home: {
-        _id: {
-          type: Schema.Types.ObjectId,
-          ref: "Team",
-        },
-        name: { type: String },
-      },
-      away: {
-        _id: {
-          type: Schema.Types.ObjectId,
-          ref: "Team",
-        },
-        name: { type: String },
-      },
-    },
-    rosters: {
-      home: {
-        players: [{ type: playerSchema }],
-        staffs: [{ type: staffSchema }],
-      },
-      away: {
-        players: [{ type: playerSchema }],
-        staffs: [{ type: staffSchema }],
-      },
+      home: { type: teamSchema },
+      away: { type: teamSchema },
     },
     sets: [
       {
@@ -126,8 +117,8 @@ const matchSchema = new Schema(
           substituteCount: { type: Number },
           challengeCount: { type: Number },
         },
-        records: [{ type: Object }],
-        lineup: { type: Object },
+        rallies: [{ type: Object }],
+        lineup: { type: lineupSchema },
       },
     ],
   },
@@ -136,7 +127,7 @@ const matchSchema = new Schema(
   }
 );
 
-matchSchema.index({ team_id: 1 });
+recordSchema.index({ team_id: 1 });
 
-const Match = models.Match || model("Match", matchSchema, "matches");
-export default Match;
+const Record = models.Record || model("Record", recordSchema, "records");
+export default Record;
