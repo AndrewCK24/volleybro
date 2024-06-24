@@ -1,6 +1,6 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
-import { matchActions } from "../store/match-slice";
+import { recordActions } from "../store/record-slice";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,15 +38,15 @@ const Options = () => {
   );
 
   const handleOursClick = (option) => {
-    dispatch(matchActions.setRecordingOursType({ type: option }));
+    dispatch(recordActions.setRecordingOursType({ type: option }));
   };
 
   const handleOppoClick = (option) => {
-    dispatch(matchActions.setRecordingOppoType({ type: option }));
+    dispatch(recordActions.setRecordingOppoType({ type: option }));
   };
 
   const handleConfirm = () => {
-    dispatch(matchActions.confirmRecording());
+    dispatch(recordActions.confirmRecording());
   };
 
   return (

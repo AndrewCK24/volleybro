@@ -1,12 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-
 import lineupsReducer from "@/app/store/lineups-slice";
-import matchReducer from "@/app/store/match-slice";
+import recordReducer from "@/app/store/record-slice";
 
 const store = configureStore({
   reducer: {
     lineups: lineupsReducer,
-    match: matchReducer,
+    record: recordReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

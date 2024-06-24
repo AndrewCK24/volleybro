@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
-import { useDispatch, useSelector } from "react-redux";
 import { useTeam, useTeamMembers } from "@/hooks/use-data";
+import { useDispatch, useSelector } from "react-redux";
+import { recordActions } from "@/app/store/record-slice";
 import {
   FiInfo,
   FiChevronRight,
@@ -27,7 +28,6 @@ import MatchInfoForm from "@/components/record/info/info-form";
 import MatchMiscForm from "@/components/record/info/misc-form";
 import RoasterTable from "@/components/record/info/roster-table";
 import LoadingCard from "@/components/custom/loading/card";
-import { matchActions } from "@/app/store/match-slice";
 import { phase, division, category } from "@/lib/text/match";
 
 const MatchConfirmation = ({ teamId }) => {
@@ -35,7 +35,7 @@ const MatchConfirmation = ({ teamId }) => {
   const { mutate } = useSWRConfig();
   const dispatch = useDispatch();
   const [lineupNum, setLineupNum] = useState(0);
-  const { info } = useSelector((state) => state.match);
+  const { info } = useSelector((state) => state.record);
   const { team, isLoading: isTeamLoading } = useTeam(teamId);
   const { members, isLoading: isMembersLoading } = useTeamMembers(teamId);
 
@@ -58,8 +58,8 @@ const MatchConfirmation = ({ teamId }) => {
     .concat(liberos, substitutes)
     .sort((a, b) => a.number - b.number);
 
-  const onFormSave = async (formData) => {
-    dispatch(matchActions.setMatchInfo(formData));
+  const onFormSave = (formData) => {
+    dispatch(recordActions.setMatchInfo(formData));
   };
 
   const handleSave = async () => {

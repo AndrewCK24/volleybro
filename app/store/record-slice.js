@@ -160,8 +160,8 @@ const initialState = {
   },
 };
 
-const matchSlice = createSlice({
-  name: "match",
+const recordSlice = createSlice({
+  name: "record",
   initialState,
   reducers: {
     setMatchInfo: (state, action) => {
@@ -349,6 +349,6 @@ const matchSlice = createSlice({
   },
 });
 
-export const matchActions = matchSlice.actions;
+export const recordActions = recordSlice.actions;
 
-export default matchSlice.reducer;
+export default recordSlice.reducer;
