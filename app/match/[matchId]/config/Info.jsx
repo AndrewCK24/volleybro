@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { matchActions } from "@/app/store/match-slice";
+import { recordActions } from "@/app/store/record-slice";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -49,7 +49,7 @@ const Info = ({ match, matchId }) => {
   });
 
   const onSubmit = (formData) => {
-    dispatch(matchActions.configMatchInfo({ teamId, members, ...formData }));
+    dispatch(recordActions.configMatchInfo({ teamId, members, ...formData }));
     isNew
       ? router.replace(`/match/new/lineup`)
       : router.push(`/match/${matchId}`);
