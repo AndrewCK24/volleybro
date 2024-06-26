@@ -160,7 +160,7 @@ const MatchConfirmation = ({ teamId }) => {
         </CardHeader>
         <RoasterTable roaster={players} />
       </Card>
-      <div className="flex flex-col w-full px-4">
+      <div className="flex flex-col w-full px-4 pb-4">
         <Button size="lg" onClick={handleSave}>
           開始比賽
           <FiArrowRight />

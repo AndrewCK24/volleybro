@@ -4,7 +4,7 @@ import { MdOutlineSportsVolleyball } from "react-icons/md";
 
 const Container = ({ children }) => {
   return (
-    <div className="flex flex-col items-center justify-center w-16 h-16 text-[3rem] svg-[3rem] leading-none font-bold">
+    <div className="flex flex-col items-center justify-center w-16 h-20 text-[3rem] svg-[3rem] leading-none font-bold">
       {children}
     </div>
   );
@@ -18,28 +18,27 @@ const Team = ({ children }) => {
 };
 
 export const Scores = () => {
-  const { ours, oppo } = useSelector((state) => state.match.status.scores);
-  const { team } = useSelector((state) => state.match.info);
-  const { sets } = useSelector((state) => state.match);
+  const { ours, oppo } = useSelector((state) => state.record.status.scores);
+  const { sets, teams } = useSelector((state) => state.record);
 
   return (
-    <>
+    <div className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] text-[1.625rem] font-medium">
       <Container>
-        {ours}
-        <Team>{team.ours.name || "我方"}</Team>
+        {/* {ours}
+        <Team>{teams.home.name || "我方"}</Team> */}
       </Container>
       <Container>
         <MdOutlineSportsVolleyball />
-        <div className="flex flex-row text-[1.25rem] gap-1 leading-none">
-          <div>{sets.filter((set) => set.win === true).length}</div>-
-          <div>{sets.filter((set) => set.win === false).length}</div>
+        <div className="flex flex-row text-[1.25rem] gap-1 leading-none h-5">
+          {/* <div>{sets.filter((set) => set.win === true).length}</div>-
+          <div>{sets.filter((set) => set.win === false).length}</div> */}
         </div>
       </Container>
       <Container>
-        {oppo}
-        <Team>{team.oppo.name || "對手"}</Team>
+        {/* {oppo}
+        <Team>{teams.away.name || "對手"}</Team> */}
       </Container>
-    </>
+    </div>
   );
 };
 
