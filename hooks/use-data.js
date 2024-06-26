@@ -92,3 +92,23 @@ export const useRecord = (recordId, fetcher = defaultFetcher, options = {}) => {
 
   return { record: data, error, isLoading, isValidating, mutate };
 };
+
+export const useTeamRecords = (
+  teamId,
+  fetcher = defaultFetcher,
+  options = {}
+) => {
+  const key = `/api/records?teamId=${teamId}`;
+  const hasCache = useHasCache(key);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    key,
+    fetcher,
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnMount: !hasCache,
+      ...options,
+    }
+  );
+
+  return { records: data, error, isLoading, isValidating, mutate };
+};
