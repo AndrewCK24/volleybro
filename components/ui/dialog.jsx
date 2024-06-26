@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cva } from "class-variance-authority";
 import { FiX } from "react-icons/fi";
 
 import { cn } from "@/lib/utils";
@@ -26,34 +27,38 @@ const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+const dialogContentVariants = cva(
+  "fixed left-[50%] top-[50%] z-50 flex flex-col w-full translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 overflow-scroll data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-md sm:rounded-lg max-w-[90vw] sm:max-w-lg",
+  {
+    variants: {
+      size: {
+        default: "",
+        lg: "w-full h-[calc(100%-3rem)] top-[calc(50%+1.5rem)] max-w-full p-4",
+        full: "w-full h-full max-w-full p-4 rounded-none",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+);
+
 const DialogContent = React.forwardRef(
   ({ size, className, children, ...props }, ref) => (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
-        className={cn(
-          "fixed left-[50%] top-[50%] z-50 flex flex-col w-full translate-x-[-50%] translate-y-[-50%]",
-          "gap-4 border bg-background p-6 shadow-lg duration-200 overflow-scroll",
-          "data-[state=open]:animate-in data-[state=closed]:animate-out",
-          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-          "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]",
-          "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
-          "rounded-md sm:rounded-lg",
-          "max-w-[90vw] sm:max-w-lg",
-          size === "full"
-            ? "w-full h-[calc(100%-3rem)] top-[calc(50%+1.5rem)] max-w-full p-4"
-            : "",
-          className
-        )}
+        className={cn(dialogContentVariants({ size, className }))}
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <FiX className="w-4 h-4" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
+        {size !== "full" && (
+          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <FiX className="w-4 h-4" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   )

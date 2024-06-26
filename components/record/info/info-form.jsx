@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FiCheck } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -183,6 +184,7 @@ const MatchInfoForm = ({ match, onSubmit, className, ...props }) => {
         />
         <DialogClose asChild>
           <Button type="submit" size="lg">
+            <FiCheck />
             確認
           </Button>
         </DialogClose>

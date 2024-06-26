@@ -112,7 +112,7 @@ const MatchConfirmation = ({ teamId }) => {
             team={team}
             members={members}
             onSubmit={onFormSave}
-            size="full"
+            size="lg"
           />
         </Dialog>
         <Dialog>
@@ -139,7 +139,7 @@ const MatchConfirmation = ({ teamId }) => {
             team={team}
             members={members}
             onSubmit={onFormSave}
-            size="full"
+            size="lg"
           />
         </Dialog>
         <CardHeader>
