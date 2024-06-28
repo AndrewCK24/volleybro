@@ -2,6 +2,7 @@
 import { useRecord } from "@/hooks/use-data";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import Header from "@/components/record/header";
+import RecordSetOptions from "@/components/record/set-options";
 import RecordCourt from "@/components/record/court";
 import LoadingCourt from "@/components/custom/loading/court";
 import LoadingCard from "@/components/custom/loading/card";
@@ -23,6 +24,7 @@ const Record = ({ recordId }) => {
   return (
     <>
       <Header recordId={recordId} />
+      <RecordSetOptions recordId={recordId} />
       <RecordCourt />
       <Card className="flex-1 w-full pb-4">
         <CardHeader>
