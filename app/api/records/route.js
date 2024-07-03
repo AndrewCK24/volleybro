@@ -19,16 +19,17 @@ export const GET = async (req) => {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const searchParams = req.nextUrl.searchParams
+    const searchParams = req.nextUrl.searchParams;
     const teamId = searchParams.get("teamId");
     if (!teamId) {
       console.error("[GET /api/records] Team ID is required");
-      return NextResponse.json({ error: "Team ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Team ID is required" },
+        { status: 400 }
+      );
     }
 
-    const isUserInTeam = user.teams.joined.some(
-      (t) => t.toString() === teamId
-    );
+    const isUserInTeam = user.teams.joined.some((t) => t.toString() === teamId);
     if (!isUserInTeam) {
       console.log(`[GET RECORDS] USER(${user.email}) Unauthorized`);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -40,7 +41,7 @@ export const GET = async (req) => {
     console.log("[GET /api/records]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
+};
 
 export const POST = async (req) => {
   try {
@@ -76,7 +77,7 @@ export const POST = async (req) => {
       team_id: team._id,
       info: recordData.info,
       teams: { home: recordData.team },
-      sets: [{ lineup: recordData.lineup }],
+      sets: [{ lineups: { home: recordData.lineup } }],
     });
     await newRecord.save();
 

@@ -1,5 +1,37 @@
 import { Schema, model, models } from "mongoose";
-import { lineupSchema } from "@/app/models/team";
+
+const lineupSchema = new Schema({
+  options: {
+    liberoSwitchMode: { type: Number, enum: [0, 1, 2], default: 0 },
+    liberoSwitchPosition: {
+      type: String,
+      enum: ["", "OH", "MB", "OP"],
+      default: "",
+    },
+  },
+  starting: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: "Member" },
+      position: { type: String, enum: ["OH", "MB", "OP", "S"] },
+      in: { type: Number, default: 0 },
+      out: { type: Number, default: 0 },
+    },
+  ],
+  liberos: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: "Member" },
+      position: { type: String, enum: ["L"] },
+      in: { type: Number },
+      out: { type: Number },
+    },
+  ],
+  substitutes: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: "Member" },
+      sub_id: { type: Schema.Types.ObjectId, ref: "Member" },
+    },
+  ],
+});
 
 const matchSchema = new Schema({
   _id: { type: Schema.Types.ObjectId },
@@ -95,6 +127,48 @@ const teamSchema = new Schema({
   staffs: [{ type: staffSchema }],
 });
 
+const rallySchema = new Schema({
+  challenge: [
+    {
+      team_id: { type: Schema.Types.ObjectId, ref: "Team" },
+      type: { type: String },
+      success: { type: Boolean },
+    },
+  ],
+  timeout: [{ team_id: { type: Schema.Types.ObjectId, ref: "Team" } }],
+  substitution: [
+    {
+      team_id: { type: Schema.Types.ObjectId, ref: "Team" },
+      players: {
+        in: { type: Schema.Types.ObjectId, ref: "Member" },
+        out: { type: Schema.Types.ObjectId, ref: "Member" },
+      },
+    },
+  ],
+});
+
+const setSchema = new Schema({
+  win: { type: Boolean },
+  lineups: {
+    home: { type: lineupSchema },
+    away: { type: lineupSchema },
+  },
+  options: {
+    serve: { type: Schema.Types.ObjectId, ref: "Team" },
+    time: {
+      start: { type: String },
+      end: { type: String },
+    },
+  },
+  counts: {
+    rotation: { type: Number, default: 0 },
+    timeout: { type: Number, default: 2 },
+    substitution: { type: Number, default: 6 },
+    challenge: { type: Number, default: 2 },
+  },
+  rallies: [{ type: rallySchema }],
+});
+
 const recordSchema = new Schema(
   {
     win: { type: Boolean },
@@ -107,20 +181,7 @@ const recordSchema = new Schema(
       home: { type: teamSchema },
       away: { type: teamSchema },
     },
-    sets: [
-      {
-        win: { type: Boolean },
-        info: {
-          firstServe: { type: Boolean },
-          rotateCount: { type: Number },
-          timeoutCount: { type: Number },
-          substituteCount: { type: Number },
-          challengeCount: { type: Number },
-        },
-        rallies: [{ type: Object }],
-        lineup: { type: lineupSchema },
-      },
-    ],
+    sets: [{ type: setSchema }],
   },
   {
     timestamps: true,

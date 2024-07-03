@@ -81,7 +81,7 @@ const MatchConfirmation = ({ teamId }) => {
       const record = await res.json();
       if (record.error) throw new Error(record.error);
       mutate(`/api/records/${record._id}`, record, false);
-      return router.push(`/record/${record._id}?tab=about`);
+      return router.push(`/record/${record._id}`);
     } catch (err) {
       console.log(err);
     }
