@@ -57,21 +57,37 @@ const initialState = {
   team_id: "",
   info: infoState,
   players: {
-    oppo: { ...playerStats },
+    away: { ...playerStats },
+  },
+  status: {
+    isServing: false,
+    scores: {
+      home: 0,
+      away: 0,
+    },
+    setNum: 0,
+    rallyNum: 0,
+    inPlay: false,
   },
   sets: [
     {
       win: null,
-      meta: {
-        firstServe: null,
-        rotateCount: 0,
+      options: {
+        serve: "",
+        time: {
+          start: "",
+          end: "",
+        },
+      },
+      counts: {
+        rotation: 0,
         timeoutCount: 0,
         substituteCount: 0,
         challengeCount: 0,
       },
       records: [],
       lineup: {
-        ours: {
+        home: {
           starting: [
             {
               starting: "",
@@ -125,19 +141,19 @@ const initialState = {
             },
           ],
         },
-        oppo: {},
+        away: {},
       },
     },
   ],
   recording: {
     win: null,
-    ours: {
+    home: {
       score: 0,
       type: "",
       num: null,
       player: "",
     },
-    oppo: {
+    away: {
       score: 0,
       type: "",
       num: null,
@@ -146,24 +162,27 @@ const initialState = {
     list: "",
     zone: 0,
   },
-  status: {
-    isServing: false,
-    scores: {
-      ours: 0,
-      oppo: 0,
-    },
-    editingData: {
-      isEditing: false,
-      setNum: 0,
-      recordNum: 0,
-    },
-  },
 };
 
 const recordSlice = createSlice({
   name: "record",
   initialState,
   reducers: {
+    initialize: (state, action) => {
+      const record = action.payload;
+      const setNum = record.sets.length - 1;
+      const rallyNum = record.sets[setNum]?.rallies?.length || 0;
+      const inPlay =
+        !record.sets[setNum].hasOwnProperty("win") &&
+        record.sets[setNum].hasOwnProperty("options");
+      state._id = record._id;
+      state.status = {
+        ...state.status,
+        setNum,
+        rallyNum,
+        inPlay,
+      };
+    },
     setMatchInfo: (state, action) => {
       const matchInfo = action.payload;
       state.info = {
@@ -171,8 +190,15 @@ const recordSlice = createSlice({
         ...matchInfo,
       };
     },
+    setStatus: (state, action) => {
+      const status = action.payload;
+      state.status = {
+        ...state.status,
+        ...status,
+      };
+    },
     configMatchSet: (state, action) => {
-      const { setNum } = state.status.editingData;
+      const { setNum } = state.status;
       const { firstServe, lineup } = action.payload;
       state.sets[setNum].meta.firstServe = firstServe;
       state.status.isServing = firstServe;
@@ -180,8 +206,8 @@ const recordSlice = createSlice({
       const { starting, liberos } = lineup;
       let backRowMbIndex;
       starting.map((starting, index) => {
-        state.sets[setNum].lineup.ours.starting[index].starting = starting._id;
-        state.sets[setNum].lineup.ours.starting[index].position =
+        state.sets[setNum].lineup.home.starting[index].starting = starting._id;
+        state.sets[setNum].lineup.home.starting[index].position =
           starting.position;
         if (
           starting.position === "MB" &&
@@ -191,46 +217,46 @@ const recordSlice = createSlice({
         }
       });
       liberos.map((libero, index) => {
-        state.sets[setNum].lineup.ours.liberos[index].starting = libero._id;
-        state.sets[setNum].lineup.ours.liberos[index].position =
+        state.sets[setNum].lineup.home.liberos[index].starting = libero._id;
+        state.sets[setNum].lineup.home.liberos[index].position =
           libero.position;
       });
       if (backRowMbIndex) {
         const backRowMb = {
-          ...state.sets[setNum].lineup.ours.starting[backRowMbIndex],
+          ...state.sets[setNum].lineup.home.starting[backRowMbIndex],
         };
-        state.sets[setNum].lineup.ours.starting[backRowMbIndex].starting =
+        state.sets[setNum].lineup.home.starting[backRowMbIndex].starting =
           liberos[0]._id;
-        state.sets[setNum].lineup.ours.starting[backRowMbIndex].position =
+        state.sets[setNum].lineup.home.starting[backRowMbIndex].position =
           liberos[0].position;
-        state.sets[setNum].lineup.ours.liberos[0].starting = backRowMb.starting;
-        state.sets[setNum].lineup.ours.liberos[0].position = backRowMb.position;
+        state.sets[setNum].lineup.home.liberos[0].starting = backRowMb.starting;
+        state.sets[setNum].lineup.home.liberos[0].position = backRowMb.position;
       }
     },
     setRecordingPlayer: (state, action) => {
-      if (action.payload._id === state.recording.ours.player) {
+      if (action.payload._id === state.recording.home.player) {
         state.recording = {
           ...initialState.recording,
-          ours: {
-            ...initialState.recording.ours,
-            score: state.status.scores.ours,
+          home: {
+            ...initialState.recording.home,
+            score: state.status.scores.home,
           },
-          oppo: {
-            ...initialState.recording.oppo,
-            score: state.status.scores.oppo,
+          away: {
+            ...initialState.recording.away,
+            score: state.status.scores.away,
           },
         };
       } else {
         state.recording = {
           ...initialState.recording,
-          ours: {
-            ...initialState.recording.ours,
+          home: {
+            ...initialState.recording.home,
             player: action.payload._id,
-            score: state.status.scores.ours,
+            score: state.status.scores.home,
           },
-          oppo: {
-            ...initialState.recording.oppo,
-            score: state.status.scores.oppo,
+          away: {
+            ...initialState.recording.away,
+            score: state.status.scores.away,
           },
           list: action.payload.list,
           zone: action.payload.zone,
@@ -242,15 +268,15 @@ const recordSlice = createSlice({
       state.recording = {
         ...state.recording,
         win: win,
-        ours: {
-          ...state.recording.ours,
-          score: win ? state.status.scores.ours + 1 : state.status.scores.ours,
+        home: {
+          ...state.recording.home,
+          score: win ? state.status.scores.home + 1 : state.status.scores.home,
           type: type,
           num: num,
         },
-        oppo: {
-          ...state.recording.oppo,
-          score: win ? state.status.scores.oppo : state.status.scores.oppo + 1,
+        away: {
+          ...state.recording.away,
+          score: win ? state.status.scores.away : state.status.scores.away + 1,
           type: recordTypes[outcome[0]].type,
           num: outcome[0],
         },
@@ -258,28 +284,28 @@ const recordSlice = createSlice({
     },
     setRecordingOppoType: (state, action) => {
       const { type, num } = action.payload.type;
-      if (num === state.recording.oppo.num) {
+      if (num === state.recording.away.num) {
         state.recording = {
           ...state.recording,
           win: initialState.recording.win,
-          ours: {
-            ...state.recording.ours,
-            score: state.status.scores.ours,
-            type: initialState.recording.ours.type,
-            num: initialState.recording.ours.num,
+          home: {
+            ...state.recording.home,
+            score: state.status.scores.home,
+            type: initialState.recording.home.type,
+            num: initialState.recording.home.num,
           },
-          oppo: {
-            ...state.recording.oppo,
-            score: state.status.scores.oppo,
-            type: initialState.recording.oppo.type,
-            num: initialState.recording.oppo.num,
+          away: {
+            ...state.recording.away,
+            score: state.status.scores.away,
+            type: initialState.recording.away.type,
+            num: initialState.recording.away.num,
           },
         };
       } else {
         state.recording = {
           ...state.recording,
-          oppo: {
-            ...state.recording.oppo,
+          away: {
+            ...state.recording.away,
             type: type,
             num: num,
           },
@@ -287,62 +313,62 @@ const recordSlice = createSlice({
       }
     },
     confirmRecording: (state) => {
-      const { setNum, recordNum } = state.status.editingData;
-      state.sets[setNum].records[recordNum] = state.recording;
+      const { setNum, rallyNum } = state.status;
+      state.sets[setNum].records[rallyNum] = state.recording;
       if (state.recording.win === true) {
-        state.status.scores.ours += 1;
-        if (state.recording.ours.type === "oppo-error") {
-          state.players.oppo[state.recording.oppo.type].error[setNum] += 1;
+        state.status.scores.home += 1;
+        if (state.recording.home.type === "oppo-error") {
+          state.players.away[state.recording.away.type].error[setNum] += 1;
         } else {
-          state.players[state.recording.ours.player][
-            state.recording.ours.type
+          state.players[state.recording.home.player][
+            state.recording.home.type
           ].successful[setNum] += 1;
         }
         if (!state.status.isServing) {
-          const servingPlayer = state.sets[setNum].lineup.ours.starting.shift();
-          state.sets[setNum].lineup.ours.starting.push(servingPlayer);
-          if (state.sets[setNum].lineup.ours.starting[3].position === "L") {
+          const servingPlayer = state.sets[setNum].lineup.home.starting.shift();
+          state.sets[setNum].lineup.home.starting.push(servingPlayer);
+          if (state.sets[setNum].lineup.home.starting[3].position === "L") {
             const frontRowL = {
-              ...state.sets[setNum].lineup.ours.starting[3],
+              ...state.sets[setNum].lineup.home.starting[3],
             };
-            state.sets[setNum].lineup.ours.starting[3] =
-              state.sets[setNum].lineup.ours.liberos[0];
-            state.sets[setNum].lineup.ours.liberos[0] = frontRowL;
+            state.sets[setNum].lineup.home.starting[3] =
+              state.sets[setNum].lineup.home.liberos[0];
+            state.sets[setNum].lineup.home.liberos[0] = frontRowL;
           }
           state.sets[setNum].meta.rotateCount += 1;
           state.status.isServing = true;
         }
       } else if (state.recording.win === false) {
-        state.status.scores.oppo += 1;
-        if (state.recording.oppo.type !== "oppo-error") {
-          state.players.oppo[state.recording.oppo.type].successful[setNum] += 1;
+        state.status.scores.away += 1;
+        if (state.recording.away.type !== "oppo-error") {
+          state.players.away[state.recording.away.type].successful[setNum] += 1;
         } else {
-          state.players[state.recording.ours.player][
-            state.recording.ours.type
+          state.players[state.recording.home.player][
+            state.recording.home.type
           ].error[setNum] += 1;
         }
         if (state.status.isServing) {
           state.status.isServing = false;
-          if (state.sets[setNum].lineup.ours.starting[0].position === "MB") {
+          if (state.sets[setNum].lineup.home.starting[0].position === "MB") {
             const backRowMb = {
-              ...state.sets[setNum].lineup.ours.starting[0],
+              ...state.sets[setNum].lineup.home.starting[0],
             };
-            state.sets[setNum].lineup.ours.starting[0] =
-              state.sets[setNum].lineup.ours.liberos[0];
-            state.sets[setNum].lineup.ours.liberos[0] = backRowMb;
+            state.sets[setNum].lineup.home.starting[0] =
+              state.sets[setNum].lineup.home.liberos[0];
+            state.sets[setNum].lineup.home.liberos[0] = backRowMb;
           }
         }
       }
-      state.status.editingData.recordNum += 1;
+      state.status.rallyNum += 1;
       state.recording = {
         ...initialState.recording,
-        ours: {
-          ...initialState.recording.ours,
-          score: state.status.scores.ours,
+        home: {
+          ...initialState.recording.home,
+          score: state.status.scores.home,
         },
-        oppo: {
-          ...initialState.recording.oppo,
-          score: state.status.scores.oppo,
+        away: {
+          ...initialState.recording.away,
+          score: state.status.scores.away,
         },
       };
     },

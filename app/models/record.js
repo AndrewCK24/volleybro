@@ -154,7 +154,7 @@ const setSchema = new Schema({
     away: { type: lineupSchema },
   },
   options: {
-    serve: { type: Schema.Types.ObjectId, ref: "Team" },
+    serve: { type: String, enum: ["home", "away"] },
     time: {
       start: { type: String },
       end: { type: String },
