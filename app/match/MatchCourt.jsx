@@ -1,7 +1,7 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
 import { GiWhistle } from "react-icons/gi";
-import { matchActions } from "./match-slice";
+import { recordActions } from "../store/record-slice";
 import {
   Court,
   Outside,
@@ -36,7 +36,7 @@ const MatchCourt = () => {
               zone={index + 1}
               onCardClick={() =>
                 dispatch(
-                  matchActions.setRecordingPlayer({
+                  recordActions.setRecordingPlayer({
                     _id: member?._id || null,
                     list: "liberos",
                     zone: index + 1,
@@ -61,7 +61,7 @@ const MatchCourt = () => {
               zone={index + 1}
               onCardClick={() =>
                 dispatch(
-                  matchActions.setRecordingPlayer({
+                  recordActions.setRecordingPlayer({
                     _id: member?._id || null,
                     list: "starting",
                     zone: index + 1,

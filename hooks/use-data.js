@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 const defaultFetcher = async (url) => {
   const res = await fetch(url);
@@ -14,6 +14,11 @@ const defaultFetcher = async (url) => {
   }
 
   return res.json();
+};
+
+const useHasCache = (key) => {
+  const { cache } = useSWRConfig();
+  return cache.has(key);
 };
 
 export const useUser = (fetcher = defaultFetcher, options = {}) => {
@@ -37,10 +42,16 @@ export const useUserTeams = (fetcher = defaultFetcher, options = {}) => {
 };
 
 export const useTeam = (teamId, fetcher = defaultFetcher, options = {}) => {
+  const key = `/api/teams/${teamId}`;
+  const hasCache = useHasCache(key);
   const { data, error, isLoading, isValidating, mutate } = useSWR(
-    `/api/teams/${teamId}`,
+    key,
     fetcher,
-    { dedupingInterval: 5 * 60 * 1000, ...options }
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnMount: !hasCache,
+      ...options,
+    }
   );
 
   return { team: data, error, isLoading, isValidating, mutate };
@@ -51,11 +62,53 @@ export const useTeamMembers = (
   fetcher = defaultFetcher,
   options = {}
 ) => {
+  const key = `/api/teams/${teamId}/members`;
+  const hasCache = useHasCache(key);
   const { data, error, isLoading, isValidating, mutate } = useSWR(
-    `/api/teams/${teamId}/members`,
+    key,
     fetcher,
-    { dedupingInterval: 5 * 60 * 1000, ...options }
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnMount: !hasCache,
+      ...options,
+    }
   );
 
   return { members: data, error, isLoading, isValidating, mutate };
+};
+
+export const useRecord = (recordId, fetcher = defaultFetcher, options = {}) => {
+  const key = `/api/records/${recordId}`;
+  const hasCache = useHasCache(key);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    key,
+    fetcher,
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnMount: !hasCache,
+      ...options,
+    }
+  );
+
+  return { record: data, error, isLoading, isValidating, mutate };
+};
+
+export const useTeamRecords = (
+  teamId,
+  fetcher = defaultFetcher,
+  options = {}
+) => {
+  const key = `/api/records?teamId=${teamId}`;
+  const hasCache = useHasCache(key);
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    key,
+    fetcher,
+    {
+      dedupingInterval: 5 * 60 * 1000,
+      revalidateOnMount: !hasCache,
+      ...options,
+    }
+  );
+
+  return { records: data, error, isLoading, isValidating, mutate };
 };

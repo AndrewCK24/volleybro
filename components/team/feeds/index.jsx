@@ -1,14 +1,8 @@
 "use client";
-import { useTeam } from "@/hooks/use-data";
-import LatestMatch from "@/components/team/feeds/latest-match";
-import LoadingCard from "@/components/custom/loading/card";
+import TeamMatches from "@/components/team/matches";
 
 const TeamFeeds = ({ teamId }) => {
-  const { isLoading } = useTeam(teamId);
-
-  if (isLoading) return <LoadingCard />;
-
-  return <LatestMatch teamId={teamId} />;
+  return <TeamMatches teamId={teamId} className="w-full" />;
 };
 
 export default TeamFeeds;

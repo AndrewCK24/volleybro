@@ -4,8 +4,6 @@ import { useSelectedLayoutSegments } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/use-data";
 import { usePathname } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { matchActions } from "@/app/match/match-slice";
 import {
   FiHome as HomeIcon,
   FiUsers as TeamIcon,
@@ -29,7 +27,6 @@ const NavLink = ({ children, className, ...props }) => (
 );
 
 export const Nav = () => {
-  const dispatch = useDispatch();
   const pathname = usePathname();
   const segments = useSelectedLayoutSegments();
   const { user } = useUser();
@@ -58,10 +55,9 @@ export const Nav = () => {
         隊伍
       </NavLink>
       <NavLink
-        href="/match/new/config"
-        className="svg-[3rem]"
+        href={`/record/new?team=${defaultTeamId}`}
+        className="[&>svg]:w-12 [&>svg]:h-12"
         aria-label="Start recording match"
-        onClick={() => dispatch(matchActions.resetMatch())}
       >
         <RecordIcon />
       </NavLink>
