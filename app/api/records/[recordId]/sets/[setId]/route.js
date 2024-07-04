@@ -28,7 +28,8 @@ export const PUT = async (req, { params }) => {
       return NextResponse.json({ error: "Set not found" }, { status: 404 });
     }
 
-    const { lineup, options } = req.body;
+    const setData = await req.json();
+    const { lineup, options } = setData;
     record.sets[setId] = {
       ...set,
       lineups: { home: lineup },
