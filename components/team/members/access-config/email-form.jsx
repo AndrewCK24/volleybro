@@ -89,7 +89,7 @@ const EmailForm = ({ teamId, memberId }) => {
           <FormItem>
             <FormLabel>電子郵件</FormLabel>
             <FormControl>
-              <Input placeholder="v-stats@example.com" {...field} />
+              <Input placeholder="volleybro@example.com" {...field} />
             </FormControl>
             <FormDescription>
               受邀者將在以此 email 註冊之帳號收到邀請

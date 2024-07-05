@@ -29,7 +29,7 @@ const SignInForm = ({ className }) => {
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>歡迎使用 V-Stats</CardTitle>
+        <CardTitle>歡迎使用 VolleyBro</CardTitle>
       </CardHeader>
       <Suspense>
         <SignInError />
