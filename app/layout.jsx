@@ -22,11 +22,11 @@ const notoSansTC = Noto_Sans_TC({
 
 export const metadata = {
   manifest: "/manifest.json",
-  applicationName: "V-Stats",
-  title: { default: "V-Stats", template: "%s | V-Stats" },
+  applicationName: "VolleyBro",
+  title: { default: "VolleyBro", template: "%s | VolleyBro" },
   description: "Best volleyball stats app ever",
-  keywords: ["volleyball", "stats", "app", "vstats", "v-stats"],
-  authors: [{ name: "V-Stats" }, { name: "Andrew Tseng" }],
+  keywords: ["volleyball", "stats", "app", "volleybro", "VolleyBro"],
+  authors: [{ name: "VolleyBro" }, { name: "Andrew Tseng" }],
   colorTheme: "light",
   formatDetection: {
     email: false,
@@ -54,7 +54,7 @@ export default async function RootLayout({ children }) {
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
-        <meta name="apple-mobile-web-app-title" content="V-Stats" />
+        <meta name="apple-mobile-web-app-title" content="VolleyBro" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         {/* apple touch icons, learn more: https://developer.apple.com/design/human-interface-guidelines/app-icons */}
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -142,8 +142,8 @@ export default async function RootLayout({ children }) {
         />
 
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="V-Stats" />
-        <meta property="og:site_name" content="V-Stats" />
+        <meta property="og:title" content="VolleyBro" />
+        <meta property="og:site_name" content="VolleyBro" />
         <meta
           property="og:description"
           content="Best volleyball stats app ever"

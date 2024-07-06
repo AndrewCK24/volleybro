@@ -5,8 +5,8 @@
     "orientation": "portrait",
     "scope": "/",
     "start_url": "/",
-    "name": "V-Stats",
-    "short_name": "V-Stats",
+    "name": "VolleyBro",
+    "short_name": "VolleyBro",
     "icons": [
         {
             "src": "/icon-192x192.png",

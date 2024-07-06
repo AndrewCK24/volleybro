@@ -65,7 +65,7 @@ const Info = ({ match, matchId }) => {
             <FormItem>
               <FormLabel>比賽名稱</FormLabel>
               <FormControl>
-                <Input placeholder="V-Stats Cup" {...field} />
+                <Input placeholder="VolleyBro Cup" {...field} />
               </FormControl>
               <FormDescription>請輸入比賽名稱</FormDescription>
             </FormItem>

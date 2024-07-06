@@ -120,7 +120,7 @@ const MemberForm = ({ teamId, className }) => {
             <FormItem>
               <FormLabel>信箱</FormLabel>
               <FormControl>
-                <Input placeholder="v-stats@example.com" {...field} />
+                <Input placeholder="volleybro@example.com" {...field} />
               </FormControl>
               <FormDescription>請輸入信箱</FormDescription>
             </FormItem>

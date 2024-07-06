@@ -31,7 +31,7 @@ const Record = ({ recordId }) => {
   return (
     <>
       <Header recordId={recordId} />
-      <RecordCourt />
+      <RecordCourt recordId={recordId} />
       <RecordPanels recordId={recordId} />
     </>
   );

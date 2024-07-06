@@ -28,7 +28,7 @@ export const Header = () => {
           isIndex || "text-center"
         )}
       >
-        V-Stats
+        VolleyBro
       </h1>
       <Button variant="ghost" size="icon" className="svg-[2rem]">
         <FiBell />
