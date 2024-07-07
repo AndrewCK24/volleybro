@@ -13,8 +13,8 @@ const lineupSchema = new Schema({
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
       position: { type: String, enum: ["OH", "MB", "OP", "S"] },
-      in: { type: Number, default: 0 },
-      out: { type: Number, default: 0 },
+      in: { type: Number },
+      out: { type: Number },
     },
   ],
   liberos: [

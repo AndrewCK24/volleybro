@@ -163,6 +163,15 @@ export const LoadingCard = ({ className, ...props }) => {
   );
 };
 
+export const PlaceholderCard = ({ className, ...props }) => {
+  return (
+    <Card className={cn("bg-transparent border-none", className)} {...props}>
+      <Number />
+      <Position />
+    </Card>
+  );
+};
+
 export const AdjustButton = ({ children, onClick }) => {
   return (
     <div

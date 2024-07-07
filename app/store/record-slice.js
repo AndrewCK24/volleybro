@@ -69,6 +69,63 @@ const initialState = {
     rallyNum: 0,
     inPlay: false,
   },
+  lineups: {
+    home: {
+      starting: [
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+      ],
+      liberos: [
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+        {
+          starting: "",
+          position: "",
+          in: null,
+          out: null,
+        },
+      ],
+    },
+    away: {},
+  },
   sets: [
     {
       win: null,
@@ -81,68 +138,11 @@ const initialState = {
       },
       counts: {
         rotation: 0,
-        timeoutCount: 0,
-        substituteCount: 0,
-        challengeCount: 0,
+        timeout: 0,
+        substitution: 0,
+        challenge: 0,
       },
       records: [],
-      lineup: {
-        home: {
-          starting: [
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-          ],
-          liberos: [
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-            {
-              starting: "",
-              substitute: "",
-              position: "",
-              inOutArr: [null, null],
-            },
-          ],
-        },
-        away: {},
-      },
     },
   ],
   recording: {
@@ -169,19 +169,48 @@ const recordSlice = createSlice({
   initialState,
   reducers: {
     initialize: (state, action) => {
-      const record = action.payload;
+      const record = structuredClone(action.payload);
       const setNum = record.sets.length - 1;
       const rallyNum = record.sets[setNum]?.rallies?.length || 0;
       const inPlay =
         !record.sets[setNum].hasOwnProperty("win") &&
         record.sets[setNum].hasOwnProperty("options");
+      const isServing =
+        inPlay || rallyNum === 0
+          ? record.sets[setNum]?.options?.serve === "home"
+          : record.sets[setNum].rallies[rallyNum - 1].win;
+      const lineups = record.sets[setNum].lineups;
+      const switchTargetIndex = lineups.home.starting.findIndex(
+        (player, index) =>
+          player.position === lineups.home.options.liberoSwitchPosition &&
+          ((index === 0 && !isServing) || index >= 4)
+      );
+      if (inPlay) {
+        if (switchTargetIndex !== -1) {
+          const switchTarget = {
+            ...lineups.home.starting[switchTargetIndex],
+          };
+          lineups.home.starting[switchTargetIndex] = lineups.home.liberos[0];
+          lineups.home.liberos[0] = switchTarget;
+        }
+        const actualRotation = record.sets[setNum].counts.rotation % 6;
+        if (actualRotation) {
+          const rotatedPlayers = lineups.home.starting.splice(
+            0,
+            actualRotation
+          );
+          lineups.home.starting.push(...rotatedPlayers);
+        }
+      }
       state._id = record._id;
       state.status = {
         ...state.status,
+        isServing,
         setNum,
         rallyNum,
         inPlay,
       };
+      state.lineups = lineups;
     },
     setMatchInfo: (state, action) => {
       const matchInfo = action.payload;
@@ -196,42 +225,6 @@ const recordSlice = createSlice({
         ...state.status,
         ...status,
       };
-    },
-    configMatchSet: (state, action) => {
-      const { setNum } = state.status;
-      const { firstServe, lineup } = action.payload;
-      state.sets[setNum].meta.firstServe = firstServe;
-      state.status.isServing = firstServe;
-
-      const { starting, liberos } = lineup;
-      let backRowMbIndex;
-      starting.map((starting, index) => {
-        state.sets[setNum].lineup.home.starting[index].starting = starting._id;
-        state.sets[setNum].lineup.home.starting[index].position =
-          starting.position;
-        if (
-          starting.position === "MB" &&
-          (index > 4 || (!firstServe && index === 0))
-        ) {
-          backRowMbIndex = index;
-        }
-      });
-      liberos.map((libero, index) => {
-        state.sets[setNum].lineup.home.liberos[index].starting = libero._id;
-        state.sets[setNum].lineup.home.liberos[index].position =
-          libero.position;
-      });
-      if (backRowMbIndex) {
-        const backRowMb = {
-          ...state.sets[setNum].lineup.home.starting[backRowMbIndex],
-        };
-        state.sets[setNum].lineup.home.starting[backRowMbIndex].starting =
-          liberos[0]._id;
-        state.sets[setNum].lineup.home.starting[backRowMbIndex].position =
-          liberos[0].position;
-        state.sets[setNum].lineup.home.liberos[0].starting = backRowMb.starting;
-        state.sets[setNum].lineup.home.liberos[0].position = backRowMb.position;
-      }
     },
     setRecordingPlayer: (state, action) => {
       if (action.payload._id === state.recording.home.player) {

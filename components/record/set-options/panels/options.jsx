@@ -51,9 +51,7 @@ const LineupOptions = ({ members, hasPairedSwitchPosition }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       serve:
-        setNum === 0
-          ? "home"
-          : record.sets[setNum - 1].options.serve === "home"
+        setNum === 0 || record.sets[setNum - 1].options.serve === "home"
           ? "away"
           : "home",
       time: {
@@ -70,13 +68,15 @@ const LineupOptions = ({ members, hasPairedSwitchPosition }) => {
   useEffect(() => {
     form.reset({
       serve:
-        setNum === 0
-          ? "home"
-          : record.sets[setNum - 1].options.serve === "home"
+        setNum === 0 || record.sets[setNum - 1].options.serve === "home"
           ? "away"
           : "home",
       time: {
-        start: new Date().toISOString(),
+        start: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
         end: "",
       },
     });
@@ -94,12 +94,7 @@ const LineupOptions = ({ members, hasPairedSwitchPosition }) => {
     const set = await res.json();
     record.sets[setNum] = set;
     mutate({ ...record }, false);
-    dispatch(
-      recordActions.setStatus({
-        isServing: formData.serve === "home",
-        inPlay: true,
-      })
-    );
+    dispatch(recordActions.initialize(record));
   };
 
   return (
@@ -154,12 +149,7 @@ const LineupOptions = ({ members, hasPairedSwitchPosition }) => {
       </Card>
       <DialogFooter>
         <DialogClose asChild>
-          <Button
-            type="submit"
-            size="lg"
-            // onClick={handleSave}
-            disabled={!hasPairedSwitchPosition}
-          >
+          <Button type="submit" size="lg" disabled={!hasPairedSwitchPosition}>
             <FiCheck />
             確認
           </Button>
