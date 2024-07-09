@@ -7,20 +7,40 @@ import {
   Inside,
   PlayerCard,
   AdjustButton,
+  PlaceholderCard,
 } from "@/components/custom/court";
 
 const RecordCourt = ({ recordId }) => {
   const dispatch = useDispatch();
   const { record } = useRecord(recordId);
-  const { status, recording } = useSelector((state) => state.record);
+  const { status, recording, lineups } = useSelector((state) => state.record);
   const members = record.teams.home.players;
-  const lineup = record.sets[status.setNum]?.lineups.home;
+
+  if (!status.inPlay) {
+    return (
+      <Court>
+        <Outside className="inner">
+          <PlaceholderCard />
+          <PlaceholderCard />
+          <PlaceholderCard />
+        </Outside>
+        <Inside>
+          <PlaceholderCard />
+          <PlaceholderCard />
+          <PlaceholderCard />
+          <PlaceholderCard />
+          <PlaceholderCard />
+          <PlaceholderCard />
+        </Inside>
+      </Court>
+    );
+  }
 
   return (
     <Court>
       <Outside className="inner">
         <AdjustButton />
-        {lineup.liberos.map((libero, index) => {
+        {lineups.home.liberos.map((libero, index) => {
           const member = members.find((m) => m._id === libero._id);
           const player = {
             ...member,
@@ -47,7 +67,7 @@ const RecordCourt = ({ recordId }) => {
         })}
       </Outside>
       <Inside>
-        {lineup.starting.map((starting, index) => {
+        {lineups.home.starting.map((starting, index) => {
           const member = members.find((m) => m._id === starting._id);
           const player = {
             ...member,

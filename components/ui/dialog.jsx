@@ -34,7 +34,6 @@ const dialogContentVariants = cva(
       size: {
         default: "",
         lg: "w-full h-[calc(100%-3rem)] top-[calc(50%+1.5rem)] max-w-full p-4",
-        full: "w-full h-full max-w-full px-0 py-4 rounded-none",
       },
     },
     defaultVariants: {

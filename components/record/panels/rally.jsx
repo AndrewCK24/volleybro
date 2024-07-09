@@ -1,16 +1,16 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
-import { recordActions } from "../store/record-slice";
+import { recordActions } from "@/app/store/record-slice";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { FiPlus, FiMinus, FiCheck, FiRepeat } from "react-icons/fi";
 import {
-  recordTypes,
-  recordFrontTypes,
-  recordBackTypes,
-  recordErrorTypes,
-} from "../lib/record-types";
+  rallyOutcomes,
+  rallyFrontOutcomes,
+  rallyBackOutcomes,
+  rallyErrorOutcomes,
+} from "@/lib/rally-outcomes";
 
 const Container = ({ children, className }) => {
   return (
@@ -20,21 +20,19 @@ const Container = ({ children, className }) => {
   );
 };
 
-const Options = () => {
+const RecordRally = () => {
   const dispatch = useDispatch();
-  const { isServing } = useSelector((state) => state.match.status);
-  const { zone, ours, oppo, win } = useSelector(
-    (state) => state.match.recording
-  );
+  const { isServing } = useSelector((state) => state.record.status);
+  const { zone, home, away } = useSelector((state) => state.record.recording);
   const oursOptions =
     zone === 0
-      ? recordErrorTypes
+      ? rallyErrorOutcomes
       : zone === 1 || zone >= 5
-      ? recordBackTypes
-      : recordFrontTypes;
+      ? rallyBackOutcomes
+      : rallyFrontOutcomes;
 
-  const oppoOptions = recordTypes.filter((option) =>
-    recordTypes[ours.num]?.outcome.includes(option.num)
+  const oppoOptions = rallyOutcomes.filter((option) =>
+    rallyOutcomes[home.num]?.outcome.includes(option.num)
   );
 
   const handleOursClick = (option) => {
@@ -50,12 +48,12 @@ const Options = () => {
   };
 
   return (
-    <>
-      {oppo.num === null ? (
+    <Card className="flex-1 w-full pb-4">
+      <CardHeader>
+        <CardTitle>{away.num === null ? "我方" : "對方"}得失分紀錄</CardTitle>
+      </CardHeader>
+      {away.num === null ? (
         <>
-          <CardHeader>
-            <CardTitle>我方得失分紀錄</CardTitle>
-          </CardHeader>
           <Container className={zone === 0 && "grid-cols-1"}>
             {oursOptions.map((option) => (
               <Button
@@ -64,10 +62,10 @@ const Options = () => {
                   option.win === null
                     ? "secondary"
                     : option.win
-                    ? ours.num === option.num
+                    ? home.num === option.num
                       ? "default"
                       : "option_win"
-                    : ours.num === option.num
+                    : home.num === option.num
                     ? "destructive"
                     : "option_lose"
                 }`}
@@ -92,9 +90,6 @@ const Options = () => {
         </>
       ) : (
         <>
-          <CardHeader>
-            <CardTitle>對方得失分紀錄</CardTitle>
-          </CardHeader>
           <Container className="grid-cols-1">
             {oppoOptions.map((option) => (
               <Button
@@ -103,10 +98,10 @@ const Options = () => {
                   option.win === null
                     ? "secondary"
                     : option.win
-                    ? oppo.num === option.num
+                    ? away.num === option.num
                       ? "default"
                       : "option_win"
-                    : oppo.num === option.num
+                    : away.num === option.num
                     ? "destructive"
                     : "option_lose"
                 }`}
@@ -132,8 +127,8 @@ const Options = () => {
           </Button>
         </>
       )}
-    </>
+    </Card>
   );
 };
 
-export default Options;
+export default RecordRally;

@@ -1,5 +1,4 @@
 "use client";
-import useSWRMutation from "swr/mutation";
 import { useRecord } from "@/hooks/use-data";
 import { useDispatch, useSelector } from "react-redux";
 import { lineupsActions } from "@/app/store/lineups-slice";
@@ -16,9 +15,8 @@ import RecordSetPanels from "@/components/record/set-options/panels";
 
 const RecordSetOptions = ({ recordId }) => {
   const dispatch = useDispatch();
-  const { record, mutate } = useRecord(recordId);
-  const { status } = useSelector((state) => state.record);
-  const { setNum } = status;
+  const { record } = useRecord(recordId);
+  const { setNum } = useSelector((state) => state.record.status);
   const { lineups } = useSelector((state) => state.lineups);
   const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
   const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;
@@ -37,22 +35,6 @@ const RecordSetOptions = ({ recordId }) => {
             lineups[0].starting[oppositeIndex].position === liberoSwitchPosition
           );
         }));
-
-  const postRequest = async (url, { arg }) => {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(arg),
-    });
-    const data = await res.json();
-    return data;
-  };
-  const { trigger, mutate: mutateRecord } = useSWRMutation(
-    `/api/records/${recordId}`,
-    postRequest
-  );
 
   return (
     <Dialog>

@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import {
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 
 const RecordOptions = ({ options, onSubmit, className, ...props }) => {
@@ -11,12 +13,17 @@ const RecordOptions = ({ options, onSubmit, className, ...props }) => {
     <DialogContent className={className} {...props}>
       <DialogHeader>
         <DialogTitle>Options</DialogTitle>
-        <DialogClose />
       </DialogHeader>
-      <div>Options</div>
-      <Button size="lg" onClick={onSubmit}>Save</Button>
+      <DialogDescription>Options</DialogDescription>
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button size="lg" onClick={onSubmit}>
+            Save
+          </Button>
+        </DialogClose>
+      </DialogFooter>
     </DialogContent>
   );
-}
+};
 
 export default RecordOptions;

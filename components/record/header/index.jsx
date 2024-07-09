@@ -23,7 +23,7 @@ export const Header = ({ recordId }) => {
             <span className="sr-only">Options</span>
           </Button>
         </DialogTrigger>
-        <RecordOptions size="full" />
+        <RecordOptions size="lg" />
       </Dialog>
     </header>
   );

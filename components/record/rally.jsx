@@ -1,17 +1,6 @@
 import { cn } from "@/lib/utils";
 import { FiPlus, FiMinus } from "react-icons/fi";
-import { recordTypes } from "@/app/lib/record-types";
-
-const Container = ({ children, onClick }) => {
-  return (
-    <div
-      className="flex flex-row items-center justify-start flex-none w-full gap-1 basis-8"
-      onClick={onClick}
-    >
-      {children}
-    </div>
-  );
-};
+import { rallyOutcomes } from "@/lib/rally-outcomes";
 
 const Score = ({ children, win = false }) => {
   return (
@@ -30,7 +19,7 @@ const Score = ({ children, win = false }) => {
 const RecordText = ({ children, editing }) => (
   <p
     className={cn(
-      "flex flex-row flex-1 text-[1.5rem] gap-2 px-2 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
+      "flex flex-row flex-1 text-[1.5rem] gap-1 px-2 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
       editing && "animate-pulse duration-1000"
     )}
   >
@@ -48,45 +37,49 @@ const IconLose = () => (
   <FiMinus className="w-6 h-6 text-destructive stroke-[3px]" />
 );
 
-const Record = ({ record, players, editingItem, onClick }) => {
-  const { win, ours, oppo } = record;
-  const oursType = recordTypes[ours.num];
-  const oppoType = recordTypes[oppo.num];
+const Rally = ({ rally, players, editingItem, onClick }) => {
+  const { win, home, away } = rally;
+  const oursType = rallyOutcomes[home.num];
+  const oppoType = rallyOutcomes[away.num];
+  const playerNumber = players.find((p) => p._id === home.player)?.number;
 
   return (
-    <Container onClick={onClick}>
-      {ours.type ? (
+    <div
+      className="flex flex-row items-center justify-start flex-none w-full gap-1 basis-8"
+      onClick={onClick}
+    >
+      {home.type ? (
         <>
-          <Score win={win}>{ours.score}</Score>
-          <Score win={!win}>{oppo.score}</Score>
+          <Score win={win}>{home.score}</Score>
+          <Score win={!win}>{away.score}</Score>
         </>
       ) : (
         <>
-          <Score>{ours.score}</Score>
-          <Score>{oppo.score}</Score>
+          <Score>{home.score}</Score>
+          <Score>{away.score}</Score>
         </>
       )}
       <RecordText editing={editingItem === "ours"}>
-        {ours.type ? (
-          ours.type === "oppo-error" ? (
+        {home.type ? (
+          home.type === "oppo-error" ? (
             <>
               對方失誤
               <IconWin />
             </>
           ) : (
             <>
-              <Number>{players[ours.player]?.number}</Number>
+              <Number>{playerNumber}</Number>
               {oursType?.text}
-              {ours.type && (win ? <IconWin /> : <IconLose />)}
+              {home.type && (win ? <IconWin /> : <IconLose />)}
             </>
           )
         ) : (
-          <Number>{players[ours.player]?.number}</Number>
+          <Number>{playerNumber}</Number>
         )}
       </RecordText>
       <RecordText editing={editingItem === "oppo"}>
-        {oppo.type &&
-          (oppo.type === "oppo-error" ? (
+        {away.type &&
+          (away.type === "oppo-error" ? (
             <>
               我方失誤
               <IconWin />
@@ -98,8 +91,8 @@ const Record = ({ record, players, editingItem, onClick }) => {
             </>
           ))}
       </RecordText>
-    </Container>
+    </div>
   );
 };
 
-export default Record;
+export default Rally;
