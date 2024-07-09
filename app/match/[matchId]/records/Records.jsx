@@ -1,6 +1,6 @@
 "use client";
 import { useSelector } from "react-redux";
-import Record from "../../Record";
+import Rally from "../../../../components/record/rally";
 
 const Records = () => {
   const { players } = useSelector((state) => state.match);
@@ -10,7 +10,7 @@ const Records = () => {
   return (
     <>
       {records.map((record, index) => (
-        <Record record={record} players={players} key={index} />
+        <Rally record={record} players={players} key={index} />
       ))}
     </>
   );

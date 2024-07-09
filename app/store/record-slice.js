@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { recordTypes } from "../lib/record-types";
+import { rallyOutcomes } from "@/lib/rally-outcomes";
 
 const infoState = {
   name: "",
@@ -203,6 +203,7 @@ const recordSlice = createSlice({
         }
       }
       state._id = record._id;
+      state.info = record.info;
       state.status = {
         ...state.status,
         isServing,
@@ -270,7 +271,7 @@ const recordSlice = createSlice({
         away: {
           ...state.recording.away,
           score: win ? state.status.scores.away : state.status.scores.away + 1,
-          type: recordTypes[outcome[0]].type,
+          type: rallyOutcomes[outcome[0]].type,
           num: outcome[0],
         },
       };
@@ -310,45 +311,46 @@ const recordSlice = createSlice({
       state.sets[setNum].records[rallyNum] = state.recording;
       if (state.recording.win === true) {
         state.status.scores.home += 1;
-        if (state.recording.home.type === "oppo-error") {
-          state.players.away[state.recording.away.type].error[setNum] += 1;
-        } else {
-          state.players[state.recording.home.player][
-            state.recording.home.type
-          ].successful[setNum] += 1;
-        }
+        // if (state.recording.home.type === "oppo-error") {
+        //   state.players.away[state.recording.away.type].error[setNum] += 1;
+        // } else {
+        //   state.players[state.recording.home.player][
+        //     state.recording.home.type
+        //   ].successful[setNum] += 1;
+        // }
         if (!state.status.isServing) {
-          const servingPlayer = state.sets[setNum].lineup.home.starting.shift();
-          state.sets[setNum].lineup.home.starting.push(servingPlayer);
-          if (state.sets[setNum].lineup.home.starting[3].position === "L") {
+          const servingPlayer = state.lineups.home.starting.shift();
+          state.lineups.home.starting.push(servingPlayer);
+          if (state.lineups.home.starting[3].position === "L") {
             const frontRowL = {
-              ...state.sets[setNum].lineup.home.starting[3],
+              ...state.lineups.home.starting[3],
             };
-            state.sets[setNum].lineup.home.starting[3] =
-              state.sets[setNum].lineup.home.liberos[0];
-            state.sets[setNum].lineup.home.liberos[0] = frontRowL;
+            state.lineups.home.starting[3] = state.lineups.home.liberos[0];
+            state.lineups.home.liberos[0] = frontRowL;
           }
-          state.sets[setNum].meta.rotateCount += 1;
+          state.sets[setNum].counts.rotation += 1;
           state.status.isServing = true;
         }
       } else if (state.recording.win === false) {
         state.status.scores.away += 1;
-        if (state.recording.away.type !== "oppo-error") {
-          state.players.away[state.recording.away.type].successful[setNum] += 1;
-        } else {
-          state.players[state.recording.home.player][
-            state.recording.home.type
-          ].error[setNum] += 1;
-        }
+        // if (state.recording.away.type !== "oppo-error") {
+        //   state.players.away[state.recording.away.type].successful[setNum] += 1;
+        // } else {
+        //   state.players[state.recording.home.player][
+        //     state.recording.home.type
+        //   ].error[setNum] += 1;
+        // }
         if (state.status.isServing) {
           state.status.isServing = false;
-          if (state.sets[setNum].lineup.home.starting[0].position === "MB") {
-            const backRowMb = {
-              ...state.sets[setNum].lineup.home.starting[0],
+          if (
+            state.lineups.home.starting[0].position ===
+            state.lineups.home.options.liberoSwitchPosition
+          ) {
+            const targetPayer = {
+              ...state.lineups.home.starting[0],
             };
-            state.sets[setNum].lineup.home.starting[0] =
-              state.sets[setNum].lineup.home.liberos[0];
-            state.sets[setNum].lineup.home.liberos[0] = backRowMb;
+            state.lineups.home.starting[0] = state.lineups.home.liberos[0];
+            state.lineups.home.liberos[0] = targetPayer;
           }
         }
       }

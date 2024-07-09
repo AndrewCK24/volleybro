@@ -5,6 +5,7 @@ import { recordActions } from "@/app/store/record-slice";
 import { useRecord } from "@/hooks/use-data";
 import Header from "@/components/record/header";
 import RecordCourt from "@/components/record/court";
+import RecordPreview from "@/components/record/preview";
 import RecordPanels from "@/components/record/panels";
 import LoadingCourt from "@/components/custom/loading/court";
 import LoadingCard from "@/components/custom/loading/card";
@@ -32,6 +33,7 @@ const Record = ({ recordId }) => {
     <>
       <Header recordId={recordId} />
       <RecordCourt recordId={recordId} />
+      <RecordPreview recordId={recordId} />
       <RecordPanels recordId={recordId} />
     </>
   );
