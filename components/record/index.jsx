@@ -48,7 +48,12 @@ const Record = ({ recordId }) => {
       <RecordCourt recordId={recordId} />
       <RecordPreview recordId={recordId} handleOptionOpen={handleOptionOpen} />
       <RecordPanels recordId={recordId} />
-      <RecordOptions size="lg" tabValue={tabValue} setTabValue={setTabValue} />
+      <RecordOptions
+        size="lg"
+        recordId={recordId}
+        tabValue={tabValue}
+        setTabValue={setTabValue}
+      />
     </Dialog>
   );
 };

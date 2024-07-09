@@ -4,7 +4,12 @@ import LineupOptions from "@/components/record/set-options/panels/options";
 import Positions from "@/components/team/lineup/panels/positions";
 import Substitutes from "@/components/record/set-options/panels/substitutes";
 
-const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
+const LineupPanels = ({
+  recordId,
+  members,
+  hasPairedSwitchPosition,
+  className,
+}) => {
   const { status } = useSelector((state) => state.lineups);
   const { optionMode } = status;
 
@@ -18,6 +23,7 @@ const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
         <Positions className={className} />
       ) : (
         <LineupOptions
+          recordId={recordId}
           members={members}
           hasPairedSwitchPosition={hasPairedSwitchPosition}
         />
