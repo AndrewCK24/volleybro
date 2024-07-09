@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Card } from "@/components/ui/card";
 import Rally from "@/components/record/rally";
 
-const RecordPreview = ({ recordId }) => {
+const RecordPreview = ({ recordId, handleOptionOpen }) => {
   const { record } = useRecord(recordId);
   const { players } = record.teams.home;
   const {
@@ -26,7 +26,12 @@ const RecordPreview = ({ recordId }) => {
 
   return (
     <Card className="grid w-full p-2">
-      <Rally rally={rally} players={players} editingItem={editingItem} />
+      <Rally
+        rally={rally}
+        players={players}
+        editingItem={editingItem}
+        onClick={() => handleOptionOpen("rallies")}
+      />
     </Card>
   );
 };

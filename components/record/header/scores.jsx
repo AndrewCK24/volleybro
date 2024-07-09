@@ -1,5 +1,6 @@
 "use client";
 import { useSelector } from "react-redux";
+import { useRecord } from "@/hooks/use-data";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
 
 const Container = ({ children }) => {
@@ -17,26 +18,30 @@ const Team = ({ children }) => {
   );
 };
 
-export const Scores = () => {
-  const { ours, oppo } = useSelector((state) => state.record.status.scores);
-  const { sets, teams } = useSelector((state) => state.record);
+export const Scores = ({ recordId, ...props }) => {
+  const { record } = useRecord(recordId);
+  const { sets, status } = useSelector((state) => state.record);
+  const { home, away } = status.scores;
 
   return (
-    <div className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] text-[1.625rem] font-medium">
+    <div
+      className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] text-[1.625rem] font-medium"
+      {...props}
+    >
       <Container>
-        {/* {ours}
-        <Team>{teams.home.name || "我方"}</Team> */}
+        {home}
+        <Team>{record?.teams?.home?.name || "我方"}</Team>
       </Container>
       <Container>
         <MdOutlineSportsVolleyball />
         <div className="flex flex-row text-[1.25rem] gap-1 leading-none h-5">
-          {/* <div>{sets.filter((set) => set.win === true).length}</div>-
-          <div>{sets.filter((set) => set.win === false).length}</div> */}
+          <div>{sets.filter((set) => set.win === true).length}</div>-
+          <div>{sets.filter((set) => set.win === false).length}</div>
         </div>
       </Container>
       <Container>
-        {/* {oppo}
-        <Team>{teams.away.name || "對手"}</Team> */}
+        {away}
+        <Team>{record?.teams?.away?.name || "對手"}</Team>
       </Container>
     </div>
   );
