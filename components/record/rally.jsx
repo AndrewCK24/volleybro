@@ -19,7 +19,7 @@ const Score = ({ children, win = false }) => {
 const RecordText = ({ children, editing }) => (
   <p
     className={cn(
-      "flex flex-row flex-1 text-[1.5rem] gap-1 px-2 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
+      "flex flex-row flex-1 text-[1.5rem] gap-1 px-1 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
       editing && "animate-pulse duration-1000"
     )}
   >

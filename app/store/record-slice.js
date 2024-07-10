@@ -142,7 +142,7 @@ const initialState = {
         substitution: 0,
         challenge: 0,
       },
-      records: [],
+      rallies: [],
     },
   ],
   recording: {
@@ -220,8 +220,9 @@ const recordSlice = createSlice({
         ...matchInfo,
       };
     },
-    setStatus: (state, action) => {
-      const status = action.payload;
+    setEditingStatus: (state, action) => {
+      const { recording, ...status } = action.payload;
+      state.recording = recording;
       state.status = {
         ...state.status,
         ...status,
@@ -308,9 +309,8 @@ const recordSlice = createSlice({
     },
     confirmRecording: (state) => {
       const { setNum, rallyNum } = state.status;
-      state.sets[setNum].records[rallyNum] = state.recording;
+      state.sets[setNum].rallies[rallyNum] = state.recording;
       if (state.recording.win === true) {
-        state.status.scores.home += 1;
         // if (state.recording.home.type === "oppo-error") {
         //   state.players.away[state.recording.away.type].error[setNum] += 1;
         // } else {
@@ -329,10 +329,8 @@ const recordSlice = createSlice({
             state.lineups.home.liberos[0] = frontRowL;
           }
           state.sets[setNum].counts.rotation += 1;
-          state.status.isServing = true;
         }
       } else if (state.recording.win === false) {
-        state.status.scores.away += 1;
         // if (state.recording.away.type !== "oppo-error") {
         //   state.players.away[state.recording.away.type].successful[setNum] += 1;
         // } else {
@@ -341,7 +339,6 @@ const recordSlice = createSlice({
         //   ].error[setNum] += 1;
         // }
         if (state.status.isServing) {
-          state.status.isServing = false;
           if (
             state.lineups.home.starting[0].position ===
             state.lineups.home.options.liberoSwitchPosition
@@ -354,7 +351,15 @@ const recordSlice = createSlice({
           }
         }
       }
-      state.status.rallyNum += 1;
+      state.status = {
+        ...state.status,
+        isServing: state.recording.win,
+        scores: {
+          home: state.recording.home.score,
+          away: state.recording.away.score,
+        },
+        rallyNum: state.status.rallyNum + 1,
+      };
       state.recording = {
         ...initialState.recording,
         home: {

@@ -12,10 +12,10 @@ const RecordPreview = ({ recordId, handleOptionOpen }) => {
     status: { setNum, rallyNum },
   } = useSelector((state) => state.record);
   const lastRally = useSelector(
-    (state) => state.record.sets[setNum].records[rallyNum - 1]
+    (state) => state.record.sets[setNum].rallies[rallyNum - 1]
   );
   const rally =
-    recording.home.player._id || recording.home.type || rallyNum === 0
+    recording.home.player || recording.home.type || rallyNum === 0
       ? recording
       : lastRally;
   const editingItem = recording.away.type
