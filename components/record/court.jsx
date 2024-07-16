@@ -1,6 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useRecord } from "@/hooks/use-data";
-import { recordActions } from "@/app/store/record-slice";
 import {
   Court,
   Outside,
@@ -10,10 +9,10 @@ import {
   PlaceholderCard,
 } from "@/components/custom/court";
 
-const RecordCourt = ({ recordId }) => {
+const RecordCourt = ({ recordId, recordState, recordActions }) => {
   const dispatch = useDispatch();
   const { record } = useRecord(recordId);
-  const { status, recording, lineups } = useSelector((state) => state.record);
+  const { status, recording, lineups } = recordState;
   const members = record.teams.home.players;
 
   if (!status.inPlay) {

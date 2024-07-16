@@ -4,13 +4,13 @@ import { useSelector } from "react-redux";
 import { Card } from "@/components/ui/card";
 import Rally from "@/components/record/rally";
 
-const RecordPreview = ({ recordId, handleOptionOpen }) => {
+const RecordPreview = ({ recordId, recordState, handleOptionOpen }) => {
   const { record } = useRecord(recordId);
   const { players } = record.teams.home;
   const {
     recording,
     status: { setNum, rallyNum },
-  } = useSelector((state) => state.record);
+  } = recordState;
   const lastRally = useSelector(
     (state) => state.record.sets[setNum].rallies[rallyNum - 1]
   );
@@ -30,7 +30,7 @@ const RecordPreview = ({ recordId, handleOptionOpen }) => {
         rally={rally}
         players={players}
         editingItem={editingItem}
-        onClick={() => handleOptionOpen("rallies")}
+        onClick={handleOptionOpen ? () => handleOptionOpen("rallies") : null}
       />
     </Card>
   );

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { recordActions } from "@/app/store/record-slice";
 import { useRecord } from "@/hooks/use-data";
 import { Card } from "@/components/ui/card";
@@ -17,6 +17,7 @@ const Record = ({ recordId }) => {
   const dispatch = useDispatch();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [tabValue, setTabValue] = useState("overview");
+  const recordState = useSelector((state) => state.record);
   const { record, isLoading, error } = useRecord(recordId);
 
   const handleOptionOpen = (tabValue) => {
@@ -45,9 +46,21 @@ const Record = ({ recordId }) => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <Header recordId={recordId} handleOptionOpen={handleOptionOpen} />
-      <RecordCourt recordId={recordId} />
-      <RecordPreview recordId={recordId} handleOptionOpen={handleOptionOpen} />
-      <RecordPanels recordId={recordId} />
+      <RecordCourt
+        recordId={recordId}
+        recordState={recordState}
+        recordActions={recordActions}
+      />
+      <RecordPreview
+        recordId={recordId}
+        recordState={recordState}
+        handleOptionOpen={handleOptionOpen}
+      />
+      <RecordPanels
+        recordId={recordId}
+        recordState={recordState}
+        recordActions={recordActions}
+      />
       <RecordOptions
         size="lg"
         recordId={recordId}
