@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { recordActions } from "@/app/store/record-slice";
+import { editingActions } from "@/app/store/editing-slice";
 import { useRecord } from "@/hooks/use-data";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
@@ -21,6 +22,7 @@ const Record = ({ recordId }) => {
   const { record, isLoading, error } = useRecord(recordId);
 
   const handleOptionOpen = (tabValue) => {
+    dispatch(editingActions.initialize(record));
     setTabValue(tabValue);
     setDialogOpen(true);
   };

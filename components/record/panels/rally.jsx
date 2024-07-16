@@ -19,7 +19,7 @@ const Container = ({ children, className }) => {
   );
 };
 
-const RecordRally = ({ recordState, recordActions }) => {
+const RecordRally = ({ recordState, recordActions, className }) => {
   const dispatch = useDispatch();
   const {
     status: { isServing },
@@ -49,7 +49,7 @@ const RecordRally = ({ recordState, recordActions }) => {
   };
 
   return (
-    <Card className="flex-1 w-full pb-4">
+    <Card className={cn("flex-1 w-full pb-4", className)}>
       <CardHeader>
         <CardTitle>{away.num === null ? "我方" : "對方"}得失分紀錄</CardTitle>
       </CardHeader>

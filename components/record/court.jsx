@@ -15,7 +15,7 @@ const RecordCourt = ({ recordId, recordState, recordActions }) => {
   const { status, recording, lineups } = recordState;
   const members = record.teams.home.players;
 
-  if (!status.inPlay) {
+  if (status.inPlay === false) {
     return (
       <Court>
         <Outside className="inner">

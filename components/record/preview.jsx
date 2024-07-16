@@ -1,10 +1,16 @@
 "use client";
 import { useRecord } from "@/hooks/use-data";
 import { useSelector } from "react-redux";
+import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import Rally from "@/components/record/rally";
 
-const RecordPreview = ({ recordId, recordState, handleOptionOpen }) => {
+const RecordPreview = ({
+  recordId,
+  recordState,
+  handleOptionOpen,
+  className,
+}) => {
   const { record } = useRecord(recordId);
   const { players } = record.teams.home;
   const {
@@ -25,7 +31,7 @@ const RecordPreview = ({ recordId, recordState, handleOptionOpen }) => {
     : "";
 
   return (
-    <Card className="grid w-full p-2">
+    <Card className={cn("grid w-full p-2", className)}>
       <Rally
         rally={rally}
         players={players}

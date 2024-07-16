@@ -81,7 +81,7 @@ const lineupsState = {
 };
 
 const initialState = {
-  _id: "",
+  isEditing: false,
   win: null,
   info: infoState,
   status: {
@@ -92,7 +92,6 @@ const initialState = {
     },
     setNum: 0,
     rallyNum: 0,
-    inPlay: false,
   },
   lineups: lineupsState,
   sets: [
@@ -133,19 +132,16 @@ const initialState = {
   },
 };
 
-const recordSlice = createSlice({
-  name: "record",
+const editingSlice = createSlice({
+  name: "editing",
   initialState,
   reducers: {
     initialize: (state, action) => {
       const record = structuredClone(action.payload);
       const setNum = record.sets.length - 1;
       const rallyNum = record.sets[setNum]?.rallies?.length || 0;
-      const inPlay =
-        !record.sets[setNum].hasOwnProperty("win") &&
-        record.sets[setNum].hasOwnProperty("options");
       const isServing =
-        inPlay || rallyNum === 0
+        rallyNum === 0
           ? record.sets[setNum]?.options?.serve === "home"
           : record.sets[setNum].rallies[rallyNum - 1].win;
       const lineups = record.sets[setNum].lineups;
@@ -154,30 +150,28 @@ const recordSlice = createSlice({
           player.position === lineups.home.options.liberoSwitchPosition &&
           ((index === 0 && !isServing) || index >= 4)
       );
-      if (inPlay) {
-        if (switchTargetIndex !== -1) {
-          const switchTarget = {
-            ...lineups.home.starting[switchTargetIndex],
-          };
-          lineups.home.starting[switchTargetIndex] = lineups.home.liberos[0];
-          lineups.home.liberos[0] = switchTarget;
-        }
-        const rotation = record.sets[setNum].counts.rotation % 6;
-        if (rotation) {
-          const rotatedPlayers = lineups.home.starting.splice(0, rotation);
-          lineups.home.starting.push(...rotatedPlayers);
-        }
+      if (switchTargetIndex !== -1) {
+        const switchTarget = {
+          ...lineups.home.starting[switchTargetIndex],
+        };
+        lineups.home.starting[switchTargetIndex] = lineups.home.liberos[0];
+        lineups.home.liberos[0] = switchTarget;
       }
-      state._id = record._id;
+      const rotation = record.sets[setNum].counts.rotation % 6;
+      if (rotation) {
+        const rotatedPlayers = lineups.home.starting.splice(0, rotation);
+        lineups.home.starting.push(...rotatedPlayers);
+      }
+      state.isEditing = false;
       state.info = record.info;
       state.status = {
         ...state.status,
         isServing,
         setNum,
         rallyNum,
-        inPlay,
       };
       state.lineups = lineups;
+      state.recording = initialState.recording;
     },
     setMatchInfo: (state, action) => {
       const matchInfo = action.payload;
@@ -186,13 +180,17 @@ const recordSlice = createSlice({
         ...matchInfo,
       };
     },
-    setEditingStatus: (state, action) => {
-      const { editingLineups, editing, ...editingStatus } = action.payload;
-      state.editingLineups = editingLineups;
-      state.editing = editing;
-      state.editingStatus = {
-        ...state.editingStatus,
-        ...editingStatus,
+    setSetNum: (state, action) => {
+      state.status.setNum = action.payload;
+    },
+    setStatus: (state, action) => {
+      const { lineups, recording, ...status } = action.payload;
+      state.isEditing = true;
+      state.lineups = lineups;
+      state.recording = recording;
+      state.status = {
+        ...state.status,
+        ...status,
       };
     },
     setRecordingPlayer: (state, action) => {
@@ -338,10 +336,10 @@ const recordSlice = createSlice({
           score: state.status.scores.away,
         },
       };
+      state.isEditing = false;
     },
   },
 });
 
-export const recordActions = recordSlice.actions;
-
-export default recordSlice.reducer;
+export const editingActions = editingSlice.actions;
+export default editingSlice.reducer;

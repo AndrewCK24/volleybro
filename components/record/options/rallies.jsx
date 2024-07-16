@@ -1,39 +1,40 @@
 "use client";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRecord } from "@/hooks/use-data";
-import { recordActions } from "@/app/store/record-slice";
+import { editingActions } from "@/app/store/editing-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import { DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import Rally from "@/components/record/rally";
 
 const RecordOptionsRallies = ({ recordId }) => {
   const dispatch = useDispatch();
   const { record } = useRecord(recordId);
-  const { status, sets } = useSelector((state) => state.record);
-  const [setNum, setSetNum] = useState(status.setNum);
+  const { sets } = useSelector((state) => state.record);
+  const {
+    status: { setNum },
+  } = useSelector((state) => state.editing);
   const { rallies } = sets[setNum];
   const { players } = record.teams.home;
 
-  // const handleRallyClick = (rallyNum) => {
-  //   dispatch(
-  //     recordActions.setEditingStatus({
-  //       recording: rallies[rallyNum],
-  //       isServing:
-  //         rallyNum === 0
-  //           ? record.sets[setNum].options.serve === "home"
-  //           : rallies[rallyNum - 1].win,
-  //       scores: {
-  //         home: rallies[rallyNum].home.score,
-  //         away: rallies[rallyNum].away.score,
-  //       },
-  //       setNum,
-  //       rallyNum,
-  //       inPlay: true,
-  //     })
-  //   );
-  // };
+  const handleRallyClick = (rallyNum) => {
+    dispatch(
+      editingActions.setStatus({
+        lineups: record.sets[setNum].lineups,
+        recording: rallies[rallyNum],
+        isServing:
+          rallyNum === 0
+            ? record.sets[setNum].options.serve === "home"
+            : rallies[rallyNum - 1].win,
+        scores: {
+          home: rallies[rallyNum].home.score,
+          away: rallies[rallyNum].away.score,
+        },
+        setNum,
+        rallyNum,
+      })
+    );
+  };
 
   return (
     <>
@@ -41,7 +42,7 @@ const RecordOptionsRallies = ({ recordId }) => {
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => setSetNum(setNum - 1)}
+          onClick={() => dispatch(editingActions.setSetNum(setNum - 1))}
           disabled={setNum <= 0}
         >
           <FiChevronLeft />
@@ -53,25 +54,24 @@ const RecordOptionsRallies = ({ recordId }) => {
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => setSetNum(setNum + 1)}
+          onClick={() => dispatch(editingActions.setSetNum(setNum + 1))}
           disabled={setNum >= record.sets.length - 1}
         >
           <FiChevronRight />
           <span className="sr-only">next set</span>
         </Button>
       </div>
-      <DialogFooter className="flex flex-col-reverse gap-1">
+      <div className="flex flex-col-reverse gap-1">
+        <Separator content="比賽開始" />
         {rallies.map((rally, rallyNum) => (
-          // <DialogClose key={rallyNum} asChild>
           <Rally
             key={rallyNum}
             rally={rally}
             players={players}
-            // onClick={() => handleRallyClick(rallyNum)}
+            onClick={() => handleRallyClick(rallyNum)}
           />
-          // </DialogClose>
         ))}
-      </DialogFooter>
+      </div>
     </>
   );
 };
