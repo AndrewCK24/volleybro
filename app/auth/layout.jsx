@@ -1,4 +1,4 @@
-import { Main } from "@/components/layout/Main";
+import { Main } from "@/components/layout/main";
 import { Logo } from "@/components/custom/logo";
 
 const AuthLayout = ({ children }) => {
