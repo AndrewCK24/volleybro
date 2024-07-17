@@ -20,6 +20,7 @@
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
     "@reduxjs/toolkit": "^2.2.6",
+    "@serwist/next": "^9.0.5",
     "@tanstack/react-table": "^8.19.3",
     "@vercel/analytics": "^1.3.1",
     "@vercel/speed-insights": "^1.0.12",
@@ -30,7 +31,6 @@
     "mongoose": "^8.5.1",
     "next": "^14.2.5",
     "next-auth": "^5.0.0-beta.18",
-    "next-pwa": "^5.6.0",
     "normalize.css": "^8.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -47,6 +47,7 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "postcss": "^8.4.39",
+    "serwist": "^9.0.5",
     "tailwindcss": "^3.4.6"
   }
 }

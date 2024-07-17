@@ -8,6 +8,12 @@ import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundColorHandler } from "@/components/layout/bg-handler";
 
+const APP_NAME = "VolleyBro";
+const APP_DEFAULT_TITLE = "VolleyBro";
+const APP_TITLE_TEMPLATE = "%s | VolleyBro";
+const APP_DESCRIPTION = "Best volleyball stats app ever.";
+const AUTHOR = "Andrew Tseng";
+
 const saira = Saira({
   subsets: ["latin"],
   variable: "--font-saira",
@@ -22,16 +28,39 @@ const notoSansTC = Noto_Sans_TC({
 
 export const metadata = {
   manifest: "/manifest.json",
-  applicationName: "VolleyBro",
-  title: { default: "VolleyBro", template: "%s | VolleyBro" },
-  description: "Best volleyball stats app ever",
+  applicationName: APP_NAME,
+  title: { default: APP_DEFAULT_TITLE, template: APP_TITLE_TEMPLATE },
+  description: APP_DESCRIPTION,
   keywords: ["volleyball", "stats", "app", "volleybro", "VolleyBro"],
-  authors: [{ name: "VolleyBro" }, { name: "Andrew Tseng" }],
+  authors: [{ name: APP_NAME }, { name: AUTHOR }],
   colorTheme: "light",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: APP_DEFAULT_TITLE,
+    // startUpImage: [],
+  },
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
   },
 };
 
@@ -49,12 +78,6 @@ export default async function RootLayout({ children }) {
     <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-        <meta name="apple-mobile-web-app-title" content="VolleyBro" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         {/* apple touch icons, learn more: https://developer.apple.com/design/human-interface-guidelines/app-icons */}
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

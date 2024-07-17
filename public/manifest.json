@@ -1,12 +1,12 @@
 {
+    "name": "VolleyBro",
+    "short_name": "VolleyBro",
     "theme_color": "#10687e",
     "background_color": "#dddcdd",
     "display": "standalone",
     "orientation": "portrait",
     "scope": "/",
     "start_url": "/",
-    "name": "VolleyBro",
-    "short_name": "VolleyBro",
     "icons": [
         {
             "src": "/icon-192x192.png",
