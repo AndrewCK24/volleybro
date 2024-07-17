@@ -180,6 +180,9 @@ const editingSlice = createSlice({
         ...matchInfo,
       };
     },
+    setEditing: (state, action) => {
+      state.isEditing = action.payload;
+    },
     setSetNum: (state, action) => {
       state.status.setNum = action.payload;
     },
