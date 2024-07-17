@@ -6,7 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ReduxProvider } from "@/app/store/provider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
-import { BackgroundColorHandler } from "@/lib/BackgroundColorHandler";
+import { BackgroundColorHandler } from "@/components/layout/bg-handler";
 
 const saira = Saira({
   subsets: ["latin"],

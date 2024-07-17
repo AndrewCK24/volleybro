@@ -1,10 +1,8 @@
-import { Main } from "@/components/layout/Main";
+import { Main } from "@/components/layout/main";
 
 const RecordLayout = ({ children }) => {
   return (
-    <Main className="p-0 overflow-hidden overscroll-y-none">
-      {children}
-    </Main>
+    <Main className="p-0 overflow-hidden overscroll-y-none">{children}</Main>
   );
 };
 
