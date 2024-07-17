@@ -38,12 +38,11 @@ const formSchema = z.object({
     .optional(),
 });
 
-const LineupOptions = ({ members, hasPairedSwitchPosition }) => {
+const LineupOptions = ({ recordId, members, hasPairedSwitchPosition }) => {
   const dispatch = useDispatch();
   const { lineups } = useSelector((state) => state.lineups);
-  const { _id: recordId, status } = useSelector((state) => state.record);
+  const { setNum } = useSelector((state) => state.record.status);
   const { record, mutate } = useRecord(recordId);
-  const { setNum } = status;
   const liberoCount = lineups[0]?.liberos.length;
   const substituteCount = lineups[0]?.substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;

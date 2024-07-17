@@ -81,7 +81,7 @@ export const useRecord = (recordId, fetcher = defaultFetcher, options = {}) => {
   const key = `/api/records/${recordId}`;
   const hasCache = useHasCache(key);
   const { data, error, isLoading, isValidating, mutate } = useSWR(
-    key,
+    recordId ? key : null,
     fetcher,
     {
       dedupingInterval: 5 * 60 * 1000,

@@ -1,6 +1,5 @@
 "use client";
-import { useDispatch, useSelector } from "react-redux";
-import { recordActions } from "@/app/store/record-slice";
+import { useDispatch } from "react-redux";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,10 +19,12 @@ const Container = ({ children, className }) => {
   );
 };
 
-const RecordRally = () => {
+const RecordRally = ({ recordState, recordActions, className }) => {
   const dispatch = useDispatch();
-  const { isServing } = useSelector((state) => state.record.status);
-  const { zone, home, away } = useSelector((state) => state.record.recording);
+  const {
+    status: { isServing },
+    recording: { zone, home, away },
+  } = recordState;
   const oursOptions =
     zone === 0
       ? rallyErrorOutcomes
@@ -48,7 +49,7 @@ const RecordRally = () => {
   };
 
   return (
-    <Card className="flex-1 w-full pb-4">
+    <Card className={cn("flex-1 w-full pb-4", className)}>
       <CardHeader>
         <CardTitle>{away.num === null ? "我方" : "對方"}得失分紀錄</CardTitle>
       </CardHeader>

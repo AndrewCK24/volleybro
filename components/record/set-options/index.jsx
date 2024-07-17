@@ -59,6 +59,7 @@ const RecordSetOptions = ({ recordId }) => {
         </DialogHeader>
         <LineupCourt members={record.teams.home.players} />
         <RecordSetPanels
+          recordId={recordId}
           members={record.teams.home.players}
           hasPairedSwitchPosition={hasPairedSwitchPosition}
           className="flex-1 px-0 overflow-scroll shadow-none"

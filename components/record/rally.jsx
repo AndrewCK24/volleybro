@@ -19,7 +19,7 @@ const Score = ({ children, win = false }) => {
 const RecordText = ({ children, editing }) => (
   <p
     className={cn(
-      "flex flex-row flex-1 text-[1.5rem] gap-1 px-2 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
+      "flex flex-row flex-1 text-[1.375rem] gap-1 px-1 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
       editing && "animate-pulse duration-1000"
     )}
   >
@@ -28,7 +28,7 @@ const RecordText = ({ children, editing }) => (
 );
 
 const Number = ({ children }) => (
-  <span className="text-[1.5rem] font-semibold">{children}</span>
+  <span className="text-[1.375rem] font-semibold">{children}</span>
 );
 
 const IconWin = () => <FiPlus className="w-6 h-6 text-primary stroke-[3px]" />;
