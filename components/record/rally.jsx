@@ -41,7 +41,7 @@ const Rally = ({ rally, players, editingItem, onClick }) => {
   const { win, home, away } = rally;
   const oursType = rallyOutcomes[home.num];
   const oppoType = rallyOutcomes[away.num];
-  const playerNumber = players.find((p) => p._id === home.player)?.number;
+  const playerNumber = players.find((p) => p._id === home.player._id)?.number;
 
   return (
     <div

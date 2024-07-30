@@ -23,8 +23,9 @@ const RecordRally = ({ recordState, recordActions, className }) => {
   const dispatch = useDispatch();
   const {
     status: { isServing },
-    recording: { zone, home, away },
+    recording: { home, away },
   } = recordState;
+  const { zone } = home.player;
   const oursOptions =
     zone === 0
       ? rallyErrorOutcomes
@@ -37,11 +38,11 @@ const RecordRally = ({ recordState, recordActions, className }) => {
   );
 
   const handleOursClick = (option) => {
-    dispatch(recordActions.setRecordingOursType({ type: option }));
+    dispatch(recordActions.setRecordingOursType(option));
   };
 
   const handleOppoClick = (option) => {
-    dispatch(recordActions.setRecordingOppoType({ type: option }));
+    dispatch(recordActions.setRecordingOppoType(option));
   };
 
   const handleConfirm = () => {
@@ -51,44 +52,40 @@ const RecordRally = ({ recordState, recordActions, className }) => {
   return (
     <Card className={cn("flex-1 w-full pb-4", className)}>
       <CardHeader>
-        <CardTitle>{away.num === null ? "我方" : "對方"}得失分紀錄</CardTitle>
+        <CardTitle>{home.num === null ? "我方" : "對方"}得失分紀錄</CardTitle>
       </CardHeader>
-      {away.num === null ? (
-        <>
-          <Container className={zone === 0 && "grid-cols-1"}>
-            {oursOptions.map((option) => (
-              <Button
-                key={`${option.type}-${option.num}`}
-                variant={`${
-                  option.win === null
-                    ? "secondary"
-                    : option.win
-                    ? home.num === option.num
-                      ? "default"
-                      : "option_win"
-                    : home.num === option.num
-                    ? "destructive"
-                    : "option_lose"
-                }`}
-                size="lg"
-                className="h-full text-[1.5rem] pr-1 transition-colors duration-200"
-                onClick={() => handleOursClick(option)}
-                disabled={
-                  (zone !== 1 || !isServing) && option.type === "serving"
-                }
-              >
-                {zone === 0 ? `對方${option.description}` : option.text}
-                {option.win === null ? (
-                  <FiRepeat />
-                ) : option.win ? (
-                  <FiPlus className="text-primary" />
-                ) : (
-                  <FiMinus className="text-destructive" />
-                )}
-              </Button>
-            ))}
-          </Container>
-        </>
+      {home.num === null ? (
+        <Container className={zone === 0 && "grid-cols-1"}>
+          {oursOptions.map((option) => (
+            <Button
+              key={`${option.type}-${option.num}`}
+              variant={`${
+                option.win === null
+                  ? "secondary"
+                  : option.win
+                  ? home.num === option.num
+                    ? "default"
+                    : "option_win"
+                  : home.num === option.num
+                  ? "destructive"
+                  : "option_lose"
+              }`}
+              size="lg"
+              className="h-full text-[1.5rem] pr-1 transition-colors duration-200"
+              onClick={() => handleOursClick(option)}
+              disabled={(zone !== 1 || !isServing) && option.type === "serving"}
+            >
+              {zone === 0 ? `對方${option.description}` : option.text}
+              {option.win === null ? (
+                <FiRepeat />
+              ) : option.win ? (
+                <FiPlus className="text-primary" />
+              ) : (
+                <FiMinus className="text-destructive" />
+              )}
+            </Button>
+          ))}
+        </Container>
       ) : (
         <>
           <Container className="grid-cols-1">

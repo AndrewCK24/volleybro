@@ -120,16 +120,14 @@ const initialState = {
       score: 0,
       type: "",
       num: null,
-      player: "",
+      player: { _id: "", list: "", zone: 0 },
     },
     away: {
       score: 0,
       type: "",
       num: null,
-      player: "",
+      // player: { _id: "", list: "", zone: 0 },
     },
-    list: "",
-    zone: 0,
   },
 };
 
@@ -186,17 +184,8 @@ const recordSlice = createSlice({
         ...matchInfo,
       };
     },
-    setEditingStatus: (state, action) => {
-      const { editingLineups, editing, ...editingStatus } = action.payload;
-      state.editingLineups = editingLineups;
-      state.editing = editing;
-      state.editingStatus = {
-        ...state.editingStatus,
-        ...editingStatus,
-      };
-    },
     setRecordingPlayer: (state, action) => {
-      if (action.payload._id === state.recording.home.player) {
+      if (action.payload._id === state.recording.home.player._id) {
         state.recording = {
           ...initialState.recording,
           home: {
@@ -213,20 +202,22 @@ const recordSlice = createSlice({
           ...initialState.recording,
           home: {
             ...initialState.recording.home,
-            player: action.payload._id,
+            player: {
+              _id: action.payload._id,
+              list: action.payload.list,
+              zone: action.payload.zone,
+            },
             score: state.status.scores.home,
           },
           away: {
             ...initialState.recording.away,
             score: state.status.scores.away,
           },
-          list: action.payload.list,
-          zone: action.payload.zone,
         };
       }
     },
     setRecordingOursType: (state, action) => {
-      const { win, type, num, outcome } = action.payload.type;
+      const { win, type, num } = action.payload;
       state.recording = {
         ...state.recording,
         win: win,
@@ -239,13 +230,13 @@ const recordSlice = createSlice({
         away: {
           ...state.recording.away,
           score: win ? state.status.scores.away : state.status.scores.away + 1,
-          type: rallyOutcomes[outcome[0]].type,
-          num: outcome[0],
+          type: initialState.recording.away.type,
+          num: initialState.recording.away.num,
         },
       };
     },
     setRecordingOppoType: (state, action) => {
-      const { type, num } = action.payload.type;
+      const { type, num } = action.payload;
       if (num === state.recording.away.num) {
         state.recording = {
           ...state.recording,
