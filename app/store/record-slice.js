@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { rallyOutcomes } from "@/lib/rally-outcomes";
+import { scoringActions } from "@/lib/scoring-actions";
 
 const infoState = {
   name: "",
@@ -217,7 +217,7 @@ const recordSlice = createSlice({
       }
     },
     setRecordingOursType: (state, action) => {
-      const { win, type, num } = action.payload;
+      const { win, type, num, outcome } = action.payload;
       state.recording = {
         ...state.recording,
         win: win,
@@ -230,40 +230,21 @@ const recordSlice = createSlice({
         away: {
           ...state.recording.away,
           score: win ? state.status.scores.away : state.status.scores.away + 1,
-          type: initialState.recording.away.type,
-          num: initialState.recording.away.num,
+          type: scoringActions[outcome[0]].type,
+          num: outcome[0],
         },
       };
     },
     setRecordingOppoType: (state, action) => {
       const { type, num } = action.payload;
-      if (num === state.recording.away.num) {
-        state.recording = {
-          ...state.recording,
-          win: initialState.recording.win,
-          home: {
-            ...state.recording.home,
-            score: state.status.scores.home,
-            type: initialState.recording.home.type,
-            num: initialState.recording.home.num,
-          },
-          away: {
-            ...state.recording.away,
-            score: state.status.scores.away,
-            type: initialState.recording.away.type,
-            num: initialState.recording.away.num,
-          },
-        };
-      } else {
-        state.recording = {
-          ...state.recording,
-          away: {
-            ...state.recording.away,
-            type: type,
-            num: num,
-          },
-        };
-      }
+      state.recording = {
+        ...state.recording,
+        away: {
+          ...state.recording.away,
+          type: type,
+          num: num,
+        },
+      };
     },
     confirmRecording: (state) => {
       const { setNum, rallyNum } = state.status;

@@ -1,5 +1,5 @@
 import { useRecord } from "@/hooks/use-data";
-import RecordRally from "@/components/record/panels/rally";
+import RecordActions from "@/components/record/panels/actions";
 import RecordInterval from "@/components/record/panels/interval";
 
 const RecordPanels = ({ recordId, recordState, recordActions }) => {
@@ -9,7 +9,7 @@ const RecordPanels = ({ recordId, recordState, recordActions }) => {
   return (
     <>
       {status.inPlay ? (
-        <RecordRally
+        <RecordActions
           recordId={recordId}
           recordState={recordState}
           recordActions={recordActions}

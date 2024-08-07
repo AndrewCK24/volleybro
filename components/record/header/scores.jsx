@@ -2,10 +2,16 @@
 import { useSelector } from "react-redux";
 import { useRecord } from "@/hooks/use-data";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
+import { cn } from "@/lib/utils";
 
-const Container = ({ children }) => {
+const Container = ({ children, className }) => {
   return (
-    <div className="flex flex-col items-center justify-center w-16 h-20 text-[3rem] svg-[3rem] leading-none font-bold">
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center w-16 h-20 text-[3rem] svg-[3rem] leading-none font-bold",
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -28,7 +34,7 @@ export const Scores = ({ recordId, ...props }) => {
       className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] text-[1.625rem] font-medium"
       {...props}
     >
-      <Container>
+      <Container className="border-b-4 border-primary">
         {home}
         <Team>{record?.teams?.home?.name || "我方"}</Team>
       </Container>
@@ -39,7 +45,7 @@ export const Scores = ({ recordId, ...props }) => {
           <div>{sets.filter((set) => set.win === false).length}</div>
         </div>
       </Container>
-      <Container>
+      <Container className="border-b-4 border-destructive">
         {away}
         <Team>{record?.teams?.away?.name || "對手"}</Team>
       </Container>

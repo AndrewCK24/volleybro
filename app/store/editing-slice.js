@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { rallyOutcomes } from "@/lib/rally-outcomes";
+import { scoringActions } from "@/lib/scoring-actions";
 
 const infoState = {
   name: "",
@@ -240,7 +240,7 @@ const editingSlice = createSlice({
         away: {
           ...state.recording.away,
           score: win ? state.status.scores.away : state.status.scores.away + 1,
-          type: rallyOutcomes[outcome[0]].type,
+          type: scoringActions[outcome[0]].type,
           num: outcome[0],
         },
       };
