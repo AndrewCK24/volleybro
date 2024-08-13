@@ -35,9 +35,7 @@ const OppoActions = ({ recordState, recordActions }) => {
               key={`${action.type}-${action.num + 15}`}
               action={action}
               variant={`${
-                action.win === null
-                  ? "secondary"
-                  : action.win
+                action.win
                   ? recording.away.num === action.num
                     ? "default"
                     : "option_win"
@@ -47,13 +45,11 @@ const OppoActions = ({ recordState, recordActions }) => {
               }`}
               onClick={() => onOppoClick(action)}
             >
-              <span className="flex flex-row px-1 border-l-2 border-destructive">
-                {action.type === "oppo-error"
-                  ? `我方${action.description}`
-                  : `對方${action.text}`}
-                {action.win ? <FiPlus /> : <FiMinus />}
-              </span>
-              <FiSend />
+              {action.type === "oppo-error"
+                ? `我方${action.description}`
+                : `對方${action.text}`}
+              {action.win ? <FiPlus /> : <FiMinus />}
+              {recording.away.num === action.num && <FiSend />}
             </ActionButton>
           ))}
         </>

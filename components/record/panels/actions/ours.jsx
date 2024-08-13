@@ -2,6 +2,7 @@
 import { useDispatch } from "react-redux";
 import { frontActions, backActions, errorActions } from "@/lib/scoring-actions";
 import { FiPlus, FiMinus, FiRepeat } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 import { Container, ActionButton } from "@/components/record/panels/actions";
 
 const OursActions = ({ recordState, recordActions }) => {
@@ -26,9 +27,7 @@ const OursActions = ({ recordState, recordActions }) => {
           key={`${action.type}-${action.num}`}
           action={action}
           variant={
-            action.win === null
-              ? "secondary"
-              : action.win
+            action.win
               ? recording.home.num === action.num
                 ? "default"
                 : "option_win"
@@ -39,15 +38,19 @@ const OursActions = ({ recordState, recordActions }) => {
           onClick={() => onOursClick(action)}
         >
           {zone === 0 ? `對方${action.description}` : action.text}
-          {action.win === null ? (
-            <FiRepeat />
-          ) : action.win ? (
-            <FiPlus className="text-primary" />
-          ) : (
-            <FiMinus className="text-destructive" />
-          )}
+          {action.win ? <FiPlus /> : <FiMinus />}
         </ActionButton>
       ))}
+      {zone !== 0 && (
+        <Button
+          variant="secondary"
+          size="lg"
+          className="h-full text-[1.5rem] pr-1"
+        >
+          替補
+          <FiRepeat />
+        </Button>
+      )}
     </Container>
   );
 };

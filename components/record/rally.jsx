@@ -64,27 +64,32 @@ const Rally = ({ rally, players, onClick, className }) => {
       )}
       <RecordText className="border-primary">
         {home.type ? (
-          home.type !== "oppo-error" && (
+          home.type !== "oppo-error" ? (
             <>
               <Number>{playerNumber}</Number>
               {oursType?.text}
               {home.type && (win ? <IconWin /> : <IconLose />)}
             </>
+          ) : (
+            <>--</>
           )
         ) : (
           <Number>{playerNumber}</Number>
         )}
       </RecordText>
       <RecordText className="border-destructive">
-        {away.type && away.type !== "oppo-error" && (
-          <>
-            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
-              <FiUser />
-            </span>
-            {oppoType?.text}
-            {win ? <IconLose /> : <IconWin />}
-          </>
-        )}
+        {away.type &&
+          (away.type !== "oppo-error" ? (
+            <>
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
+                <FiUser />
+              </span>
+              {oppoType?.text}
+              {win ? <IconLose /> : <IconWin />}
+            </>
+          ) : (
+            <>--</>
+          ))}
       </RecordText>
     </div>
   );

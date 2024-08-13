@@ -31,7 +31,7 @@ export const ActionButton = ({ action, variant, onClick, children }) => {
 
 const RecordActions = ({ recordState, recordActions, className }) => {
   const dispatch = useDispatch();
-  const { status } = recordState;
+  const { status, recording } = recordState;
 
   return (
     <Card className={cn("flex-1 w-full pb-4", className)}>
@@ -40,9 +40,7 @@ const RecordActions = ({ recordState, recordActions, className }) => {
           onClick={() => dispatch(recordActions.setRecordingMode("home"))}
           className={cn(
             "p-1 border-l-2 border-b-2 border-primary transition-all overflow-hidden text-nowrap",
-            status.recordingMode === "home"
-              ? "w-[calc(100%-2.5rem)]"
-              : "w-[2rem]"
+            status.recordingMode === "home" ? "w-full" : "w-[2rem]"
           )}
         >
           <FiEdit2 className="w-6 min-w-6" />
@@ -53,7 +51,9 @@ const RecordActions = ({ recordState, recordActions, className }) => {
           className={cn(
             "p-1 border-l-2 border-b-2 border-destructive transition-all overflow-hidden text-nowrap",
             status.recordingMode !== "home"
-              ? "w-[calc(100%-2.5rem)]"
+              ? "w-full"
+              : recording.home.num === null
+              ? "w-0 sr-only"
               : "w-[2rem]"
           )}
         >
