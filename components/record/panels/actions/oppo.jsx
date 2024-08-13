@@ -1,46 +1,64 @@
+"use client";
+import { useDispatch } from "react-redux";
 import { scoringActions } from "@/lib/scoring-actions";
-import { FiPlus, FiMinus } from "react-icons/fi";
-import { CardHeader, CardTitle } from "@/components/ui/card";
+import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
 import { Container, ActionButton } from "@/components/record/panels/actions";
 
-const OppoActions = ({ recordState, onOppoClick }) => {
+const OppoActions = ({ recordState, recordActions }) => {
+  const dispatch = useDispatch();
   const { recording } = recordState;
 
   const oppoActions = scoringActions.filter((option) =>
     scoringActions[recording.home.num]?.outcome.includes(option.num)
   );
 
+  const onOppoClick = (action) => {
+    dispatch(recordActions.setRecordingOppoAction(action));
+  };
+
   return (
-    <>
-      <CardHeader>
-        <CardTitle>對方得失分紀錄</CardTitle>
-      </CardHeader>
-      <Container className="grid-cols-1">
-        {oppoActions.map((action) => (
-          <ActionButton
-            key={`${action.type}-${action.num + 15}`}
-            action={action}
-            variant={`${
-              action.win === null
-                ? "secondary"
-                : action.win
-                ? recording.away.num === action.num
-                  ? "default"
-                  : "option_win"
-                : recording.away.num === action.num
-                ? "destructive"
-                : "option_lose"
-            }`}
-            onClick={() => onOppoClick(action)}
-          >
-            {action.type === "oppo-error"
-              ? `我方${action.description}`
-              : `對方${action.text}`}
-            {action.win ? <FiPlus /> : <FiMinus />}
-          </ActionButton>
-        ))}
-      </Container>
-    </>
+    <Container className="grid-cols-1">
+      {recording.home.num === null ? (
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-full"
+          onClick={() => dispatch(recordActions.setRecordingMode("home"))}
+        >
+          請先選擇我方得失分紀錄
+        </Button>
+      ) : (
+        <>
+          {oppoActions.map((action) => (
+            <ActionButton
+              key={`${action.type}-${action.num + 15}`}
+              action={action}
+              variant={`${
+                action.win === null
+                  ? "secondary"
+                  : action.win
+                  ? recording.away.num === action.num
+                    ? "default"
+                    : "option_win"
+                  : recording.away.num === action.num
+                  ? "destructive"
+                  : "option_lose"
+              }`}
+              onClick={() => onOppoClick(action)}
+            >
+              <span className="flex flex-row px-1 border-l-2 border-destructive">
+                {action.type === "oppo-error"
+                  ? `我方${action.description}`
+                  : `對方${action.text}`}
+                {action.win ? <FiPlus /> : <FiMinus />}
+              </span>
+              <FiSend />
+            </ActionButton>
+          ))}
+        </>
+      )}
+    </Container>
   );
 };
 

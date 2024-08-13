@@ -92,6 +92,7 @@ const initialState = {
     },
     setNum: 0,
     rallyNum: 0,
+    recordingMode: "home",
   },
   lineups: lineupsState,
   sets: [
@@ -119,16 +120,14 @@ const initialState = {
       score: 0,
       type: "",
       num: null,
-      player: "",
+      player: { _id: "", list: "", zone: 0 },
     },
     away: {
       score: 0,
       type: "",
       num: null,
-      player: "",
+      // player: { _id: "", list: "", zone: 0 },
     },
-    list: "",
-    zone: 0,
   },
 };
 
@@ -197,7 +196,8 @@ const editingSlice = createSlice({
       };
     },
     setRecordingPlayer: (state, action) => {
-      if (action.payload._id === state.recording.home.player) {
+      state.status.recordingMode = "home";
+      if (action.payload._id === state.recording.home.player._id) {
         state.recording = {
           ...initialState.recording,
           home: {
@@ -214,20 +214,23 @@ const editingSlice = createSlice({
           ...initialState.recording,
           home: {
             ...initialState.recording.home,
-            player: action.payload._id,
+            player: {
+              _id: action.payload._id,
+              list: action.payload.list,
+              zone: action.payload.zone,
+            },
             score: state.status.scores.home,
           },
           away: {
             ...initialState.recording.away,
             score: state.status.scores.away,
           },
-          list: action.payload.list,
-          zone: action.payload.zone,
         };
       }
     },
-    setRecordingOursType: (state, action) => {
+    setRecordingOursAction: (state, action) => {
       const { win, type, num, outcome } = action.payload.type;
+      state.status.recordingMode = "away";
       state.recording = {
         ...state.recording,
         win: win,
@@ -245,7 +248,7 @@ const editingSlice = createSlice({
         },
       };
     },
-    setRecordingOppoType: (state, action) => {
+    setRecordingOppoAction: (state, action) => {
       const { type, num } = action.payload.type;
       if (num === state.recording.away.num) {
         state.recording = {
@@ -274,6 +277,9 @@ const editingSlice = createSlice({
           },
         };
       }
+    },
+    setRecordingMode: (state, action) => {
+      state.status.recordingMode = action.payload;
     },
     confirmRecording: (state) => {
       const { setNum, rallyNum } = state.status;

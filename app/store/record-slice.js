@@ -93,6 +93,7 @@ const initialState = {
     setNum: 0,
     rallyNum: 0,
     inPlay: false,
+    recordingMode: "home",
   },
   lineups: lineupsState,
   sets: [
@@ -185,6 +186,7 @@ const recordSlice = createSlice({
       };
     },
     setRecordingPlayer: (state, action) => {
+      state.status.recordingMode = "home";
       if (action.payload._id === state.recording.home.player._id) {
         state.recording = {
           ...initialState.recording,
@@ -216,8 +218,9 @@ const recordSlice = createSlice({
         };
       }
     },
-    setRecordingOursType: (state, action) => {
+    setRecordingOursAction: (state, action) => {
       const { win, type, num, outcome } = action.payload;
+      state.status.recordingMode = "away";
       state.recording = {
         ...state.recording,
         win: win,
@@ -235,7 +238,7 @@ const recordSlice = createSlice({
         },
       };
     },
-    setRecordingOppoType: (state, action) => {
+    setRecordingOppoAction: (state, action) => {
       const { type, num } = action.payload;
       state.recording = {
         ...state.recording,
@@ -245,6 +248,9 @@ const recordSlice = createSlice({
           num: num,
         },
       };
+    },
+    setRecordingMode: (state, action) => {
+      state.status.recordingMode = action.payload;
     },
     confirmRecording: (state) => {
       const { setNum, rallyNum } = state.status;

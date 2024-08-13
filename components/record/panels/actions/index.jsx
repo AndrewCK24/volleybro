@@ -1,8 +1,9 @@
 "use client";
 import { useDispatch } from "react-redux";
 import { cn } from "@/lib/utils";
+import { FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import OursActions from "@/components/record/panels/actions/ours";
 import OppoActions from "@/components/record/panels/actions/oppo";
 
@@ -30,22 +31,40 @@ export const ActionButton = ({ action, variant, onClick, children }) => {
 
 const RecordActions = ({ recordState, recordActions, className }) => {
   const dispatch = useDispatch();
-  const { home } = recordState.recording;
-
-  const onOursClick = (action) => {
-    dispatch(recordActions.setRecordingOursType(action));
-  };
-
-  const onOppoClick = (action) => {
-    dispatch(recordActions.setRecordingOppoType(action));
-  };
+  const { status } = recordState;
 
   return (
     <Card className={cn("flex-1 w-full pb-4", className)}>
-      {home.num === null ? (
-        <OursActions recordState={recordState} onOursClick={onOursClick} />
+      <CardHeader>
+        <CardTitle
+          onClick={() => dispatch(recordActions.setRecordingMode("home"))}
+          className={cn(
+            "p-1 border-l-2 border-b-2 border-primary transition-all overflow-hidden text-nowrap",
+            status.recordingMode === "home"
+              ? "w-[calc(100%-2.5rem)]"
+              : "w-[2rem]"
+          )}
+        >
+          <FiEdit2 className="w-6 min-w-6" />
+          我方得失分紀錄
+        </CardTitle>
+        <CardTitle
+          onClick={() => dispatch(recordActions.setRecordingMode("away"))}
+          className={cn(
+            "p-1 border-l-2 border-b-2 border-destructive transition-all overflow-hidden text-nowrap",
+            status.recordingMode !== "home"
+              ? "w-[calc(100%-2.5rem)]"
+              : "w-[2rem]"
+          )}
+        >
+          <FiEdit2 className="w-6 min-w-6" />
+          對方得失分紀錄
+        </CardTitle>
+      </CardHeader>
+      {status.recordingMode === "home" ? (
+        <OursActions recordState={recordState} recordActions={recordActions} />
       ) : (
-        <OppoActions recordState={recordState} onOppoClick={onOppoClick} />
+        <OppoActions recordState={recordState} recordActions={recordActions} />
       )}
     </Card>
   );
