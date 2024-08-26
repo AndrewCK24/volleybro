@@ -175,6 +175,11 @@ const recordSlice = createSlice({
         setNum,
         rallyNum,
         inPlay,
+        scores: {
+          home: record.sets[setNum].rallies[rallyNum - 1]?.home.score || 0,
+          away: record.sets[setNum].rallies[rallyNum - 1]?.away.score || 0,
+        },
+        recordingMode: "home",
       };
       state.lineups = lineups;
     },
