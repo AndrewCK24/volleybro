@@ -29,7 +29,7 @@ export const ActionButton = ({ action, variant, onClick, children }) => {
   );
 };
 
-const RecordActions = ({ recordState, recordActions, className }) => {
+const RecordActions = ({ recordId, recordState, recordActions, className }) => {
   const dispatch = useDispatch();
   const { status, recording } = recordState;
 
@@ -64,7 +64,11 @@ const RecordActions = ({ recordState, recordActions, className }) => {
       {status.recordingMode === "home" ? (
         <OursActions recordState={recordState} recordActions={recordActions} />
       ) : (
-        <OppoActions recordState={recordState} recordActions={recordActions} />
+        <OppoActions
+          recordId={recordId}
+          recordState={recordState}
+          recordActions={recordActions}
+        />
       )}
     </Card>
   );

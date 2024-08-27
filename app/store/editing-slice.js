@@ -95,25 +95,6 @@ const initialState = {
     recordingMode: "home",
   },
   lineups: lineupsState,
-  sets: [
-    {
-      win: null,
-      options: {
-        serve: "",
-        time: {
-          start: "",
-          end: "",
-        },
-      },
-      counts: {
-        rotation: 0,
-        timeout: 0,
-        substitution: 0,
-        challenge: 0,
-      },
-      rallies: [],
-    },
-  ],
   recording: {
     win: null,
     home: {
@@ -168,6 +149,12 @@ const editingSlice = createSlice({
         isServing,
         setNum,
         rallyNum,
+        inPlay,
+        scores: {
+          home: record.sets[setNum].rallies[rallyNum - 1]?.home.score || 0,
+          away: record.sets[setNum].rallies[rallyNum - 1]?.away.score || 0,
+        },
+        recordingMode: "home",
       };
       state.lineups = lineups;
       state.recording = initialState.recording;

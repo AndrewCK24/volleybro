@@ -10,11 +10,8 @@ import Rally from "@/components/record/rally";
 const RecordOptionsRallies = ({ recordId }) => {
   const dispatch = useDispatch();
   const { record } = useRecord(recordId);
-  const { sets } = useSelector((state) => state.record);
-  const {
-    status: { setNum },
-  } = useSelector((state) => state.editing);
-  const { rallies } = sets[setNum];
+  const { setNum } = useSelector((state) => state.editing.status);
+  const { rallies } = record.sets[setNum];
   const { players } = record.teams.home;
 
   const handleRallyClick = (rallyNum) => {

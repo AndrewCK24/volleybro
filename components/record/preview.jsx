@@ -1,6 +1,5 @@
 "use client";
 import { useRecord } from "@/hooks/use-data";
-import { useSelector } from "react-redux";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import Rally from "@/components/record/rally";
@@ -17,9 +16,7 @@ const RecordPreview = ({
     recording,
     status: { setNum, rallyNum },
   } = recordState;
-  const lastRally = useSelector(
-    (state) => state.record.sets[setNum].rallies[rallyNum - 1]
-  );
+  const lastRally = record.sets[setNum].rallies[rallyNum - 1];
   const isEditing = recording.home.player._id || recording.home.type;
   const rally = isEditing || rallyNum === 0 ? recording : lastRally;
 

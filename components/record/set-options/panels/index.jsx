@@ -10,8 +10,7 @@ const LineupPanels = ({
   hasPairedSwitchPosition,
   className,
 }) => {
-  const { status } = useSelector((state) => state.lineups);
-  const { optionMode } = status;
+  const { optionMode } = useSelector((state) => state.lineups.status);
 
   return (
     <>

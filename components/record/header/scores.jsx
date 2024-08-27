@@ -26,8 +26,7 @@ const Team = ({ children }) => {
 
 export const Scores = ({ recordId, ...props }) => {
   const { record } = useRecord(recordId);
-  const { sets, status } = useSelector((state) => state.record);
-  const { home, away } = status.scores;
+  const { home, away } = useSelector((state) => state.record.status.scores);
 
   return (
     <div
@@ -41,8 +40,8 @@ export const Scores = ({ recordId, ...props }) => {
       <Container>
         <MdOutlineSportsVolleyball />
         <div className="flex flex-row text-[1.25rem] gap-1 leading-none h-5">
-          <div>{sets.filter((set) => set.win === true).length}</div>-
-          <div>{sets.filter((set) => set.win === false).length}</div>
+          <div>{record?.sets.filter((set) => set.win === true).length}</div>-
+          <div>{record?.sets.filter((set) => set.win === false).length}</div>
         </div>
       </Container>
       <Container className="border-b-4 border-destructive">

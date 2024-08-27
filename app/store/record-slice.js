@@ -96,25 +96,6 @@ const initialState = {
     recordingMode: "home",
   },
   lineups: lineupsState,
-  sets: [
-    {
-      win: null,
-      options: {
-        serve: "",
-        time: {
-          start: "",
-          end: "",
-        },
-      },
-      counts: {
-        rotation: 0,
-        timeout: 0,
-        substitution: 0,
-        challenge: 0,
-      },
-      rallies: [],
-    },
-  ],
   recording: {
     win: null,
     home: {
@@ -256,6 +237,29 @@ const recordSlice = createSlice({
     },
     setRecordingMode: (state, action) => {
       state.status.recordingMode = action.payload;
+    },
+    resetRecording: (state) => {
+      state.status = {
+        ...state.status,
+        isServing: state.recording.win,
+        scores: {
+          home: state.recording.home.score,
+          away: state.recording.away.score,
+        },
+        rallyNum: state.status.rallyNum + 1,
+        recordingMode: "home",
+      };
+      state.recording = {
+        ...initialState.recording,
+        home: {
+          ...initialState.recording.home,
+          score: state.status.scores.home,
+        },
+        away: {
+          ...initialState.recording.away,
+          score: state.status.scores.away,
+        },
+      };
     },
     confirmRecording: (state) => {
       const { setNum, rallyNum } = state.status;
