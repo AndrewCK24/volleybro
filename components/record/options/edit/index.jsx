@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import RecordCourt from "@/components/record/court";
 import RecordPreview from "@/components/record/preview";
-import RecordRally from "@/components/record/panels/rally";
+import RecordActions from "@/components/record/panels/actions";
 
 const RalliesEdit = ({ recordId }) => {
   const dispatch = useDispatch();
@@ -35,7 +35,7 @@ const RalliesEdit = ({ recordId }) => {
         recordState={editingState}
         className="px-0 py-1 shadow-none"
       />
-      <RecordRally
+      <RecordActions
         recordId={recordId}
         recordState={editingState}
         recordActions={editingActions}

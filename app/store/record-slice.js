@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { rallyOutcomes } from "@/lib/rally-outcomes";
+import { scoringActions } from "@/lib/scoring-actions";
 
 const infoState = {
   name: "",
@@ -93,43 +93,23 @@ const initialState = {
     setNum: 0,
     rallyNum: 0,
     inPlay: false,
+    recordingMode: "home",
   },
   lineups: lineupsState,
-  sets: [
-    {
-      win: null,
-      options: {
-        serve: "",
-        time: {
-          start: "",
-          end: "",
-        },
-      },
-      counts: {
-        rotation: 0,
-        timeout: 0,
-        substitution: 0,
-        challenge: 0,
-      },
-      rallies: [],
-    },
-  ],
   recording: {
     win: null,
     home: {
       score: 0,
       type: "",
       num: null,
-      player: "",
+      player: { _id: "", list: "", zone: 0 },
     },
     away: {
       score: 0,
       type: "",
       num: null,
-      player: "",
+      // player: { _id: "", list: "", zone: 0 },
     },
-    list: "",
-    zone: 0,
   },
 };
 
@@ -176,6 +156,11 @@ const recordSlice = createSlice({
         setNum,
         rallyNum,
         inPlay,
+        scores: {
+          home: record.sets[setNum].rallies[rallyNum - 1]?.home.score || 0,
+          away: record.sets[setNum].rallies[rallyNum - 1]?.away.score || 0,
+        },
+        recordingMode: "home",
       };
       state.lineups = lineups;
     },
@@ -186,17 +171,9 @@ const recordSlice = createSlice({
         ...matchInfo,
       };
     },
-    setEditingStatus: (state, action) => {
-      const { editingLineups, editing, ...editingStatus } = action.payload;
-      state.editingLineups = editingLineups;
-      state.editing = editing;
-      state.editingStatus = {
-        ...state.editingStatus,
-        ...editingStatus,
-      };
-    },
     setRecordingPlayer: (state, action) => {
-      if (action.payload._id === state.recording.home.player) {
+      state.status.recordingMode = "home";
+      if (action.payload._id === state.recording.home.player._id) {
         state.recording = {
           ...initialState.recording,
           home: {
@@ -213,20 +190,23 @@ const recordSlice = createSlice({
           ...initialState.recording,
           home: {
             ...initialState.recording.home,
-            player: action.payload._id,
+            player: {
+              _id: action.payload._id,
+              list: action.payload.list,
+              zone: action.payload.zone,
+            },
             score: state.status.scores.home,
           },
           away: {
             ...initialState.recording.away,
             score: state.status.scores.away,
           },
-          list: action.payload.list,
-          zone: action.payload.zone,
         };
       }
     },
-    setRecordingOursType: (state, action) => {
-      const { win, type, num, outcome } = action.payload.type;
+    setRecordingOursAction: (state, action) => {
+      const { win, type, num, outcome } = action.payload;
+      state.status.recordingMode = "away";
       state.recording = {
         ...state.recording,
         win: win,
@@ -239,40 +219,47 @@ const recordSlice = createSlice({
         away: {
           ...state.recording.away,
           score: win ? state.status.scores.away : state.status.scores.away + 1,
-          type: rallyOutcomes[outcome[0]].type,
+          type: scoringActions[outcome[0]].type,
           num: outcome[0],
         },
       };
     },
-    setRecordingOppoType: (state, action) => {
-      const { type, num } = action.payload.type;
-      if (num === state.recording.away.num) {
-        state.recording = {
-          ...state.recording,
-          win: initialState.recording.win,
-          home: {
-            ...state.recording.home,
-            score: state.status.scores.home,
-            type: initialState.recording.home.type,
-            num: initialState.recording.home.num,
-          },
-          away: {
-            ...state.recording.away,
-            score: state.status.scores.away,
-            type: initialState.recording.away.type,
-            num: initialState.recording.away.num,
-          },
-        };
-      } else {
-        state.recording = {
-          ...state.recording,
-          away: {
-            ...state.recording.away,
-            type: type,
-            num: num,
-          },
-        };
-      }
+    setRecordingOppoAction: (state, action) => {
+      const { type, num } = action.payload;
+      state.recording = {
+        ...state.recording,
+        away: {
+          ...state.recording.away,
+          type: type,
+          num: num,
+        },
+      };
+    },
+    setRecordingMode: (state, action) => {
+      state.status.recordingMode = action.payload;
+    },
+    resetRecording: (state) => {
+      state.status = {
+        ...state.status,
+        isServing: state.recording.win,
+        scores: {
+          home: state.recording.home.score,
+          away: state.recording.away.score,
+        },
+        rallyNum: state.status.rallyNum + 1,
+        recordingMode: "home",
+      };
+      state.recording = {
+        ...initialState.recording,
+        home: {
+          ...initialState.recording.home,
+          score: state.status.scores.home,
+        },
+        away: {
+          ...initialState.recording.away,
+          score: state.status.scores.away,
+        },
+      };
     },
     confirmRecording: (state) => {
       const { setNum, rallyNum } = state.status;

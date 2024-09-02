@@ -127,16 +127,29 @@ const teamSchema = new Schema({
   staffs: [{ type: staffSchema }],
 });
 
+const rallyDetailSchema = new Schema({
+  score: { type: Number },
+  type: { type: String },
+  num: { type: Number },
+  player: {
+    _id: { type: Schema.Types.ObjectId, ref: "Member" },
+    zone: { type: Number },
+  },
+});
+
 const rallySchema = new Schema({
-  challenge: [
+  win: { type: Boolean },
+  home: { type: rallyDetailSchema },
+  away: { type: rallyDetailSchema },
+  challenges: [
     {
       team_id: { type: Schema.Types.ObjectId, ref: "Team" },
       type: { type: String },
       success: { type: Boolean },
     },
   ],
-  timeout: [{ team_id: { type: Schema.Types.ObjectId, ref: "Team" } }],
-  substitution: [
+  timeouts: [{ team_id: { type: Schema.Types.ObjectId, ref: "Team" } }],
+  substitutions: [
     {
       team_id: { type: Schema.Types.ObjectId, ref: "Team" },
       players: {

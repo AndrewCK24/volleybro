@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { FiPlus, FiMinus } from "react-icons/fi";
-import { rallyOutcomes } from "@/lib/rally-outcomes";
+import { FiPlus, FiMinus, FiUser } from "react-icons/fi";
+import { scoringActions } from "@/lib/scoring-actions";
 
 const Score = ({ children, win = false }) => {
   return (
@@ -16,11 +16,11 @@ const Score = ({ children, win = false }) => {
   );
 };
 
-const RecordText = ({ children, editing }) => (
+const RecordText = ({ children, className }) => (
   <p
     className={cn(
-      "flex flex-row flex-1 text-[1.375rem] gap-1 px-1 max-w-[calc(100%-9rem)] border-l-[0.125rem] border-primary",
-      editing && "animate-pulse duration-1000"
+      "flex flex-row flex-1 text-[1.375rem] gap-1 px-1 h-6 max-w-[calc(100%-9rem)] border-l-[0.125rem]",
+      className
     )}
   >
     {children}
@@ -37,15 +37,18 @@ const IconLose = () => (
   <FiMinus className="w-6 h-6 text-destructive stroke-[3px]" />
 );
 
-const Rally = ({ rally, players, editingItem, onClick }) => {
+const Rally = ({ rally, players, onClick, className }) => {
   const { win, home, away } = rally;
-  const oursType = rallyOutcomes[home.num];
-  const oppoType = rallyOutcomes[away.num];
-  const playerNumber = players.find((p) => p._id === home.player)?.number;
+  const oursType = scoringActions[home.num];
+  const oppoType = scoringActions[away.num];
+  const playerNumber = players.find((p) => p._id === home.player._id)?.number;
 
   return (
     <div
-      className="flex flex-row items-center justify-start flex-none w-full gap-1 basis-8"
+      className={cn(
+        "flex flex-row items-center justify-start flex-none w-full gap-1 basis-8",
+        className
+      )}
       onClick={onClick}
     >
       {home.type ? (
@@ -59,36 +62,33 @@ const Rally = ({ rally, players, editingItem, onClick }) => {
           <Score>{away.score}</Score>
         </>
       )}
-      <RecordText editing={editingItem === "ours"}>
+      <RecordText className="border-primary">
         {home.type ? (
-          home.type === "oppo-error" ? (
-            <>
-              對方失誤
-              <IconWin />
-            </>
-          ) : (
+          home.type !== "oppo-error" ? (
             <>
               <Number>{playerNumber}</Number>
               {oursType?.text}
               {home.type && (win ? <IconWin /> : <IconLose />)}
             </>
+          ) : (
+            <>--</>
           )
         ) : (
           <Number>{playerNumber}</Number>
         )}
       </RecordText>
-      <RecordText editing={editingItem === "oppo"}>
+      <RecordText className="border-destructive">
         {away.type &&
-          (away.type === "oppo-error" ? (
+          (away.type !== "oppo-error" ? (
             <>
-              我方失誤
-              <IconWin />
-            </>
-          ) : (
-            <>
-              對方{oppoType?.text}
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
+                <FiUser />
+              </span>
+              {oppoType?.text}
               {win ? <IconLose /> : <IconWin />}
             </>
+          ) : (
+            <>--</>
           ))}
       </RecordText>
     </div>

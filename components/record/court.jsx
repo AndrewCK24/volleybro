@@ -60,7 +60,7 @@ const RecordCourt = ({ recordId, recordState, recordActions }) => {
                   })
                 )
               }
-              editingMember={recording}
+              editingMember={recording.home.player}
             />
           );
         })}
@@ -87,7 +87,7 @@ const RecordCourt = ({ recordId, recordState, recordActions }) => {
                   })
                 )
               }
-              editingMember={recording}
+              editingMember={recording.home.player}
             />
           );
         })}
