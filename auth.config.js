@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Google from "next-auth/providers/google";
-import connectToMongoDB from "@/lib/connect-to-mongodb";
+import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
 
 const authConfig = {
   providers: [

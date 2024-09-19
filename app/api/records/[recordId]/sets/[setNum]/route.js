@@ -4,7 +4,7 @@ import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
 import User from "@/infrastructure/mongoose/schemas/user";
 import Record from "@/infrastructure/mongoose/schemas/record";
 
-export const POST = async (req, { params }) => {
+export const PUT = async (req, { params }) => {
   try {
     const session = await auth();
     if (!session) {
@@ -28,14 +28,18 @@ export const POST = async (req, { params }) => {
       return NextResponse.json({ error: "Set not found" }, { status: 404 });
     }
 
-    // TODO: handle race condition
-    const rally = await req.json();
-    record.sets[setNum].rallies.push(rally);
+    const setData = await req.json();
+    const { lineup, options } = setData;
+    record.sets[setNum] = {
+      ...set,
+      lineups: { home: lineup },
+      options,
+    };
     await record.save();
 
-    return NextResponse.json(record.sets[setNum].rallies, { status: 200 });
+    return NextResponse.json(record.sets[setNum], { status: 200 });
   } catch (error) {
-    console.log("[POST /api/records]", error);
+    console.log("[PUT /api/records]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };

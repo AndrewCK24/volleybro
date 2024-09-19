@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { Connection } from "mongoose";
 
 // Create Connection
-let dbConnection;
+let dbConnection: Connection;
 const options = {};
 
 export const connectToMongoDB = async () => {
@@ -22,7 +22,8 @@ export const connectToMongoDB = async () => {
       dbConnection = global._mongooseConnect;
     } else {
       // In production mode, it's best to not use a global variable.
-      dbConnection = await mongoose.connect(uri, options);
+      await mongoose.connect(uri, options);
+      dbConnection = mongoose.connection;
     }
   }
 
