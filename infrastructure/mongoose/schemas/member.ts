@@ -29,5 +29,5 @@ const memberSchema = new Schema(
 
 memberSchema.index({ team_id: 1 });
 
-const Member = models.Member || model("Member", memberSchema, "members");
+export const Member = models.Member || model("Member", memberSchema, "members");
 export default Member;

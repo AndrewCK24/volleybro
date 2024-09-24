@@ -15,5 +15,5 @@ const sessionSchema = new Schema({
   },
 });
 
-const Session = models.Session || model("Session", sessionSchema, "sessions");
+export const Session = models.Session || model("Session", sessionSchema, "sessions");
 export default Session;
