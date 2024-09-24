@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 
 const formSchema = z.object({
-  role: z.enum(["owner", "admin", "member"]),
+  role: z.coerce.number().min(0).max(2), // TODO: use Role enum from "@/entities/team"
 });
 
 const RoleForm = ({ teamId, memberId }) => {
@@ -33,7 +33,7 @@ const RoleForm = ({ teamId, memberId }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      role: member?.role || "member",
+      role: member?.role || 0,
     },
   });
 
@@ -80,11 +80,11 @@ const RoleForm = ({ teamId, memberId }) => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="member">
+                <SelectItem value="0">
                   <FiUser />
                   一般成員
                 </SelectItem>
-                <SelectItem value="admin">
+                <SelectItem value="2">
                   <FiShield />
                   管理者
                 </SelectItem>

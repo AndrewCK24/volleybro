@@ -68,7 +68,7 @@ const TeamMembersTable = ({ team, members, teamId }) => {
         const memberId = row.original._id;
         const member = team.members.find((m) => m._id === memberId);
         const { role, user_id, email } = member;
-        const isAdmin = role === "admin" || role === "owner";
+        const isAdmin = !!role;
         const identity = !email
           ? {
               text: "未邀請",

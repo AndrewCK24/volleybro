@@ -203,5 +203,5 @@ const recordSchema = new Schema(
 
 recordSchema.index({ team_id: 1 });
 
-const Record = models.Record || model("Record", recordSchema, "records");
+export const Record = models.Record || model("Record", recordSchema, "records");
 export default Record;

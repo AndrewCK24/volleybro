@@ -1,4 +1,5 @@
 import { Schema, model, models } from "mongoose";
+import { Role } from "@/entities/team";
 
 export const lineupSchema = new Schema({
   options: {
@@ -41,7 +42,7 @@ const teamSchema = new Schema(
       {
         _id: { type: Schema.Types.ObjectId, ref: "Member" },
         email: { type: String },
-        role: { type: String, enum: ["owner", "admin", "member"] },
+        role: { type: String, enum: [Role.MEMBER, Role.OWNER, Role.ADMIN] },
         user_id: { type: Schema.Types.ObjectId, ref: "User" },
       },
     ],
@@ -61,5 +62,5 @@ const teamSchema = new Schema(
   }
 );
 
-const Team = models.Team || model("Team", teamSchema, "teams");
+export const Team = models.Team || model("Team", teamSchema, "teams");
 export default Team;

@@ -55,5 +55,5 @@ const accountSchema = new Schema({
   },
 });
 
-const Account = models.Account || model("Account", accountSchema, "accounts");
+export const Account = models.Account || model("Account", accountSchema, "accounts");
 export default Account;

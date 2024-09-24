@@ -58,5 +58,5 @@ const userSchema = new Schema(
 
 userSchema.index({ email: 1 });
 
-const User = models.User || model("User", userSchema, "users");
+export const User = models.User || model("User", userSchema, "users");
 export default User;

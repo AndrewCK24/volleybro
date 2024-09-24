@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import connectToMongoDB from "@/lib/connect-to-mongodb";
-import User from "@/app/models/user";
-import Team from "@/app/models/team";
-import Member from "@/app/models/member";
+import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
+import User from "@/infrastructure/mongoose/schemas/user";
+import Team from "@/infrastructure/mongoose/schemas/team";
+import Member from "@/infrastructure/mongoose/schemas/member";
 
 export const POST = async (req) => {
   try {
@@ -45,7 +45,7 @@ export const POST = async (req) => {
       );
     }
     // only admins can create admins
-    const userIsAdmin = team.members[userIndex].role !== "member";
+    const userIsAdmin = !!team.members[userIndex].role;
     if (formData.admin !== "member" && !userIsAdmin) {
       return NextResponse.json(
         {

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import connectToMongoDB from "@/lib/connect-to-mongodb";
-import User from "@/app/models/user";
-import Team from "@/app/models/team";
-import Member from "@/app/models/member";
+import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
+import User from "@/infrastructure/mongoose/schemas/user";
+import Team from "@/infrastructure/mongoose/schemas/team";
+import Member from "@/infrastructure/mongoose/schemas/member";
 
 export const POST = async (req) => {
   try {
@@ -35,7 +35,7 @@ export const POST = async (req) => {
         {
           _id: newMember._id,
           email: user.email,
-          role: "owner",
+          role: 1, // TODO: Role.ADMIN (import { Role } from "@/entities/team")
           user_id: user._id,
         },
       ],

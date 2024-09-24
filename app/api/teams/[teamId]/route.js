@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import connectToMongoDB from "@/lib/connect-to-mongodb";
-import User from "@/app/models/user";
-import Team from "@/app/models/team";
+import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
+import User from "@/infrastructure/mongoose/schemas/user";
+import Team from "@/infrastructure/mongoose/schemas/team";
 
 export const GET = async (req, { params }) => {
   try {
@@ -53,7 +53,7 @@ export const PATCH = async (req, { params }) => {
         { status: 401 }
       );
     }
-    const isAdmin = team.members[userIndex].role !== "member";
+    const isAdmin = !!team.members[userIndex].role;
     if (!isAdmin) {
       return NextResponse.json(
         { error: "You are not authorized to update this team" },
