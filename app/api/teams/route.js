@@ -35,7 +35,7 @@ export const POST = async (req) => {
         {
           _id: newMember._id,
           email: user.email,
-          role: "owner",
+          role: 1, // TODO: Role.ADMIN (import { Role } from "@/entities/team")
           user_id: user._id,
         },
       ],

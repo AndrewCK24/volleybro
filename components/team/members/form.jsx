@@ -36,7 +36,7 @@ const formSchema = z.object({
     .email({ message: "請輸入有效的 email" })
     .optional()
     .or(z.literal("")),
-  role: z.enum(["owner", "admin", "member"]),
+  role: z.coerce.number().min(0).max(2), // TODO: use Role enum from "@/entities/team"
 });
 
 const MemberForm = ({ teamId, className }) => {
@@ -45,7 +45,7 @@ const MemberForm = ({ teamId, className }) => {
   const { team, mutate: mutateTeam } = useTeam(teamId);
   const { members, mutate: mutateTeamMembers } = useTeamMembers(teamId);
   const isAdmin = team?.members?.some(
-    (m) => m.user_id === user?._id && m.role === "admin"
+    (m) => m.user_id === user?._id && !!m.role
   );
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,7 +53,7 @@ const MemberForm = ({ teamId, className }) => {
       name: "",
       number: "",
       email: "",
-      role: "member",
+      role: "0",
     },
   });
 
@@ -143,11 +143,11 @@ const MemberForm = ({ teamId, className }) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="member">
+                  <SelectItem value="0">
                     <FiUser />
                     一般成員
                   </SelectItem>
-                  <SelectItem value="admin">
+                  <SelectItem value="2">
                     <FiShield />
                     管理者
                   </SelectItem>

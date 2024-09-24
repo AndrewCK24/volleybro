@@ -45,7 +45,7 @@ export const POST = async (req) => {
       );
     }
     // only admins can create admins
-    const userIsAdmin = team.members[userIndex].role !== "member";
+    const userIsAdmin = !!team.members[userIndex].role;
     if (formData.admin !== "member" && !userIsAdmin) {
       return NextResponse.json(
         {

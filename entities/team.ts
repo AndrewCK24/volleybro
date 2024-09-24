@@ -16,11 +16,13 @@ export type Lineup = {
   }[];
 };
 
+export enum Role { MEMBER, OWNER, ADMIN }
+
 export type Member = {
   _id: string;
   email?: string;
-  role: "owner" | "admin" | "member";
-  user_id: string;
+  role: Role;
+  user_id?: string;
 };
 
 export type Team = {

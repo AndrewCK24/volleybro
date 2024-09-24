@@ -53,7 +53,7 @@ export const PATCH = async (req, { params }) => {
         { status: 401 }
       );
     }
-    const isAdmin = team.members[userIndex].role !== "member";
+    const isAdmin = !!team.members[userIndex].role;
     if (!isAdmin) {
       return NextResponse.json(
         { error: "You are not authorized to update this team" },
