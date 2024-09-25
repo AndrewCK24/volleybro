@@ -94,9 +94,19 @@ export type Team = {
   staffs: Staff[];
 };
 
+export enum MoveType {
+  Serving = 1,
+  Blocking,
+  Attack,
+  Reception,
+  Defense,
+  Setting,
+  OppoError,
+}
+
 export type RallyDetail = {
   score: number;
-  type: string;
+  type: MoveType;
   num: number;
   player: {
     _id: string;

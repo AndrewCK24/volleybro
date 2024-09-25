@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import OursActions from "@/components/record/panels/actions/ours";
-import OppoActions from "@/components/record/panels/actions/oppo";
+import OursMoves from "@/components/record/panels/moves/ours";
+import OppoMoves from "@/components/record/panels/moves/oppo";
 
 export const Container = ({ children, className }) => {
   return (
@@ -15,21 +15,21 @@ export const Container = ({ children, className }) => {
   );
 };
 
-export const ActionButton = ({ action, variant, onClick, children }) => {
+export const MoveButton = ({ move, variant, onClick, children }) => {
   return (
     <Button
-      key={`${action.type}-${action.num}`}
+      key={`${move.type}-${move.num}`}
       variant={variant}
       size="lg"
       className="h-full text-[1.5rem] pr-1 transition-colors duration-200"
-      onClick={() => onClick(action)}
+      onClick={() => onClick(move)}
     >
       {children}
     </Button>
   );
 };
 
-const RecordActions = ({ recordId, recordState, recordActions, className }) => {
+const RecordMoves = ({ recordId, recordState, recordActions, className }) => {
   const dispatch = useDispatch();
   const { status, recording } = recordState;
 
@@ -62,9 +62,9 @@ const RecordActions = ({ recordId, recordState, recordActions, className }) => {
         </CardTitle>
       </CardHeader>
       {status.recordingMode === "home" ? (
-        <OursActions recordState={recordState} recordActions={recordActions} />
+        <OursMoves recordState={recordState} recordActions={recordActions} />
       ) : (
-        <OppoActions
+        <OppoMoves
           recordId={recordId}
           recordState={recordState}
           recordActions={recordActions}
@@ -74,4 +74,4 @@ const RecordActions = ({ recordId, recordState, recordActions, className }) => {
   );
 };
 
-export default RecordActions;
+export default RecordMoves;

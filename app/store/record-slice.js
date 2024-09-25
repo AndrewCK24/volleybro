@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { scoringActions } from "@/lib/scoring-actions";
+import { scoringMoves } from "@/lib/scoring-moves";
 
 const infoState = {
   name: "",
@@ -204,7 +204,7 @@ const recordSlice = createSlice({
         };
       }
     },
-    setRecordingOursAction: (state, action) => {
+    setRecordingHomeMove: (state, action) => {
       const { win, type, num, outcome } = action.payload;
       state.status.recordingMode = "away";
       state.recording = {
@@ -219,12 +219,12 @@ const recordSlice = createSlice({
         away: {
           ...state.recording.away,
           score: win ? state.status.scores.away : state.status.scores.away + 1,
-          type: scoringActions[outcome[0]].type,
+          type: scoringMoves[outcome[0]].type,
           num: outcome[0],
         },
       };
     },
-    setRecordingOppoAction: (state, action) => {
+    setRecordingAwayMove: (state, action) => {
       const { type, num } = action.payload;
       state.recording = {
         ...state.recording,

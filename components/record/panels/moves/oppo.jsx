@@ -1,11 +1,11 @@
 "use client";
 import { useDispatch } from "react-redux";
 import { useRecord } from "@/hooks/use-data";
-import { scoringActions } from "@/lib/scoring-actions";
+import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
-import { Container, ActionButton } from "@/components/record/panels/actions";
+import { Container, MoveButton } from "@/components/record/panels/moves";
 
-const OppoActions = ({ recordId, recordState, recordActions }) => {
+const OppoMoves = ({ recordId, recordState, recordActions }) => {
   const dispatch = useDispatch();
   const { record, mutate } = useRecord(recordId);
   const {
@@ -13,13 +13,13 @@ const OppoActions = ({ recordId, recordState, recordActions }) => {
     recording,
   } = recordState;
 
-  const oppoActions = scoringActions.filter((option) =>
-    scoringActions[recording.home.num]?.outcome.includes(option.num)
+  const oppoActions = scoringMoves.filter((option) =>
+    scoringMoves[recording.home.num]?.outcome.includes(option.num)
   );
 
-  const onOppoClick = async (action) => {
-    if (recording.away.num !== action.num) {
-      dispatch(recordActions.setRecordingOppoAction(action));
+  const onOppoClick = async (move) => {
+    if (recording.away.num !== move.num) {
+      dispatch(recordActions.setRecordingAwayMove(move));
     } else {
       const updateRallies = async () => {
         try {
@@ -52,30 +52,30 @@ const OppoActions = ({ recordId, recordState, recordActions }) => {
 
   return (
     <Container className="grid-cols-1">
-      {oppoActions.map((action) => (
-        <ActionButton
-          key={`${action.type}-${action.num + 15}`}
-          action={action}
+      {oppoActions.map((move) => (
+        <MoveButton
+          key={`${move.type}-${move.num + 15}`}
+          move={move}
           variant={`${
-            action.win
-              ? recording.away.num === action.num
+            move.win
+              ? recording.away.num === move.num
                 ? "default"
                 : "option_win"
-              : recording.away.num === action.num
+              : recording.away.num === move.num
               ? "destructive"
               : "option_lose"
           }`}
-          onClick={() => onOppoClick(action)}
+          onClick={() => onOppoClick(move)}
         >
-          {action.type === "oppo-error"
-            ? `我方${action.description}`
-            : `對方${action.text}`}
-          {action.win ? <FiPlus /> : <FiMinus />}
-          {recording.away.num === action.num && <FiSend />}
-        </ActionButton>
+          {move.type === 7
+            ? `我方${move.text}失誤`
+            : `對方${move.text}`}
+          {move.win ? <FiPlus /> : <FiMinus />}
+          {recording.away.num === move.num && <FiSend />}
+        </MoveButton>
       ))}
     </Container>
   );
 };
 
-export default OppoActions;
+export default OppoMoves;

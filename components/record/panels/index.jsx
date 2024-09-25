@@ -1,5 +1,5 @@
 import { useRecord } from "@/hooks/use-data";
-import RecordActions from "@/components/record/panels/actions";
+import RecordMoves from "@/components/record/panels/moves";
 import RecordInterval from "@/components/record/panels/interval";
 
 const RecordPanels = ({ recordId, recordState, recordActions }) => {
@@ -9,7 +9,7 @@ const RecordPanels = ({ recordId, recordState, recordActions }) => {
   return (
     <>
       {status.inPlay ? (
-        <RecordActions
+        <RecordMoves
           recordId={recordId}
           recordState={recordState}
           recordActions={recordActions}
