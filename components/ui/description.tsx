@@ -1,6 +1,11 @@
 import * as React from "react";
 
-export const Description = React.forwardRef(
+interface DescriptionProps extends React.HTMLAttributes<HTMLDivElement> {
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+}
+
+export const Description = React.forwardRef<HTMLDivElement, DescriptionProps>(
   ({ startIcon, endIcon, children, ...props }, ref) => {
     return (
       <div
@@ -17,7 +22,13 @@ export const Description = React.forwardRef(
 );
 Description.displayName = "Description";
 
-export const DescriptionTitle = React.forwardRef(({ children }, ref) => {
+interface DescriptionTitleProps
+  extends React.HTMLAttributes<HTMLParagraphElement> {}
+
+export const DescriptionTitle = React.forwardRef<
+  HTMLParagraphElement,
+  DescriptionTitleProps
+>(({ children }, ref) => {
   return (
     <p className="font-semibold" ref={ref}>
       {children}
@@ -26,7 +37,13 @@ export const DescriptionTitle = React.forwardRef(({ children }, ref) => {
 });
 DescriptionTitle.displayName = "DescriptionTitle";
 
-export const DescriptionContent = React.forwardRef(({ children }, ref) => {
+interface DescriptionContentProps
+  extends React.HTMLAttributes<HTMLParagraphElement> {}
+
+export const DescriptionContent = React.forwardRef<
+  HTMLParagraphElement,
+  DescriptionContentProps
+>(({ children }, ref) => {
   return (
     <p className="text-muted-foreground" ref={ref}>
       {children}

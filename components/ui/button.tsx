@@ -1,7 +1,7 @@
 import * as React from "react";
-import Link from "next/link";
 import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
+import Link, { type LinkProps as NextLinkProps } from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -26,12 +26,12 @@ const buttonVariants = cva(
           "bg-[rgba(254,215,204,1)] text-foreground [&>svg]:text-destructive shadow hover:bg-destructive/80",
       },
       size: {
-        default: "h-9 rounded-md px-2 py-2 text-sm svg-[1.25rem]",
-        xs: "h-4 rounded-md text-xs svg-[1rem]",
-        sm: "h-8 rounded-md p-0 md:px-3 text-xs svg-[1rem]",
-        lg: "h-10 rounded-md p-0 md:px-8 text-lg svg-[1.5rem]",
-        wide: "w-full h-10 px-3 text-lg rounded-md svg-[1.5rem] justify-start",
-        icon: "h-6 w-6 svg-[1.5rem]",
+        default: "h-9 rounded-md px-2 py-2 text-sm [&>svg]:h-5 [&>svg]:w-5",
+        xs: "h-4 rounded-md text-xs [&>svg]:h-4 [&>svg]:w-4",
+        sm: "h-8 rounded-md p-0 md:px-3 text-xs [&>svg]:h-4 [&>svg]:w-4",
+        lg: "h-10 rounded-md p-0 md:px-8 text-lg [&>svg]:h-6 [&>svg]:w-6",
+        wide: "w-full h-10 px-3 text-lg rounded-md justify-start [&>svg]:h-6 [&>svg]:w-6",
+        icon: "h-6 w-6 [&>svg]:h-6 [&>svg]:w-6",
       },
     },
     defaultVariants: {
@@ -41,7 +41,13 @@ const buttonVariants = cva(
   }
 );
 
-const Button = React.forwardRef(
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
@@ -55,7 +61,12 @@ const Button = React.forwardRef(
 );
 Button.displayName = "Button";
 
-const ButtonLink = React.forwardRef(
+export interface LinkProps
+  extends NextLinkProps,
+    React.HTMLAttributes<HTMLAnchorElement>,
+    VariantProps<typeof buttonVariants> {}
+
+const ButtonLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
   ({ className, variant, size, ...props }, ref) => {
     return (
       <Link
