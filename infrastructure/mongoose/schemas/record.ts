@@ -129,7 +129,7 @@ const teamSchema = new Schema({
 
 const rallyDetailSchema = new Schema({
   score: { type: Number },
-  type: { type: String },
+  type: { type: Number },
   num: { type: Number },
   player: {
     _id: { type: Schema.Types.ObjectId, ref: "Member" },

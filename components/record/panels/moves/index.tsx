@@ -1,11 +1,12 @@
 "use client";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { cn } from "@/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import OursActions from "@/components/record/panels/actions/ours";
-import OppoActions from "@/components/record/panels/actions/oppo";
+import OursMoves from "@/components/record/panels/moves/ours";
+import OppoMoves from "@/components/record/panels/moves/oppo";
 
 export const Container = ({ children, className }) => {
   return (
@@ -14,22 +15,34 @@ export const Container = ({ children, className }) => {
     </div>
   );
 };
+export const MoveButton = ({ move, toggled, onClick, children }) => {
+  const WIN_STYLE =
+    "bg-[rgba(183,210,216,1)] text-foreground [&>svg]:text-primary shadow hover:bg-primary/80";
+  const LOSE_STYLE =
+    "bg-[rgba(254,215,204,1)] text-foreground [&>svg]:text-destructive shadow hover:bg-destructive/80";
 
-export const ActionButton = ({ action, variant, onClick, children }) => {
   return (
     <Button
-      key={`${action.type}-${action.num}`}
-      variant={variant}
+      key={`${move.type}-${move.num}`}
+      variant={move.win ? "default" : "destructive"}
       size="lg"
-      className="h-full text-[1.5rem] pr-1 transition-colors duration-200"
-      onClick={() => onClick(action)}
+      className={cn(
+        "h-full text-[1.5rem] pr-1 transition-colors duration-200",
+        toggled || (move.win ? WIN_STYLE : LOSE_STYLE)
+      )}
+      onClick={() => onClick(move)}
     >
       {children}
     </Button>
   );
 };
 
-const RecordActions = ({ recordId, recordState, recordActions, className }) => {
+const RecordMoves: React.FC<{
+  recordId: string;
+  recordState: any;
+  recordActions: any;
+  className?: string;
+}> = ({ recordId, recordState, recordActions, className }) => {
   const dispatch = useDispatch();
   const { status, recording } = recordState;
 
@@ -62,9 +75,9 @@ const RecordActions = ({ recordId, recordState, recordActions, className }) => {
         </CardTitle>
       </CardHeader>
       {status.recordingMode === "home" ? (
-        <OursActions recordState={recordState} recordActions={recordActions} />
+        <OursMoves recordState={recordState} recordActions={recordActions} />
       ) : (
-        <OppoActions
+        <OppoMoves
           recordId={recordId}
           recordState={recordState}
           recordActions={recordActions}
@@ -74,4 +87,4 @@ const RecordActions = ({ recordId, recordState, recordActions, className }) => {
   );
 };
 
-export default RecordActions;
+export default RecordMoves;

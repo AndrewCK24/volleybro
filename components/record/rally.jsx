@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { FiPlus, FiMinus, FiUser } from "react-icons/fi";
-import { scoringActions } from "@/lib/scoring-actions";
+import { scoringMoves } from "@/lib/scoring-moves";
 
 const Score = ({ children, win = false }) => {
   return (
@@ -39,8 +39,6 @@ const IconLose = () => (
 
 const Rally = ({ rally, players, onClick, className }) => {
   const { win, home, away } = rally;
-  const oursType = scoringActions[home.num];
-  const oppoType = scoringActions[away.num];
   const playerNumber = players.find((p) => p._id === home.player._id)?.number;
 
   return (
@@ -64,10 +62,10 @@ const Rally = ({ rally, players, onClick, className }) => {
       )}
       <RecordText className="border-primary">
         {home.type ? (
-          home.type !== "oppo-error" ? (
+          home.type !== 7 ? ( // TODO: 將 7 改為 MoveType.OppoError
             <>
               <Number>{playerNumber}</Number>
-              {oursType?.text}
+              {scoringMoves[home.num]?.text}
               {home.type && (win ? <IconWin /> : <IconLose />)}
             </>
           ) : (
@@ -79,12 +77,12 @@ const Rally = ({ rally, players, onClick, className }) => {
       </RecordText>
       <RecordText className="border-destructive">
         {away.type &&
-          (away.type !== "oppo-error" ? (
+          (away.type !== 7 ? ( // TODO: 將 7 改為 MoveType.OppoError
             <>
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
                 <FiUser />
               </span>
-              {oppoType?.text}
+              {scoringMoves[away.num]?.text}
               {win ? <IconLose /> : <IconWin />}
             </>
           ) : (
