@@ -8,6 +8,8 @@ export type ScoringMove = {
   outcome: number[];
 };
 
+export { MoveType };
+
 export const scoringMoves: ScoringMove[] = [
   {
     num: 0,

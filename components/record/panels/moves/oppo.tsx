@@ -13,7 +13,7 @@ const OppoMoves = ({ recordId, recordState, recordActions }) => {
     recording,
   } = recordState;
 
-  const oppoActions = scoringMoves.filter((option) =>
+  const oppoMoves = scoringMoves.filter((option) =>
     scoringMoves[recording.home.num]?.outcome.includes(option.num)
   );
 
@@ -52,24 +52,14 @@ const OppoMoves = ({ recordId, recordState, recordActions }) => {
 
   return (
     <Container className="grid-cols-1">
-      {oppoActions.map((move) => (
+      {oppoMoves.map((move) => (
         <MoveButton
           key={`${move.type}-${move.num + 15}`}
           move={move}
-          variant={`${
-            move.win
-              ? recording.away.num === move.num
-                ? "default"
-                : "option_win"
-              : recording.away.num === move.num
-              ? "destructive"
-              : "option_lose"
-          }`}
+          toggled={recording.away.num === move.num}
           onClick={() => onOppoClick(move)}
         >
-          {move.type === 7
-            ? `我方${move.text}失誤`
-            : `對方${move.text}`}
+          {move.type === 7 ? `我方${move.text}失誤` : `對方${move.text}`}
           {move.win ? <FiPlus /> : <FiMinus />}
           {recording.away.num === move.num && <FiSend />}
         </MoveButton>

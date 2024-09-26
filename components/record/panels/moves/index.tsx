@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { cn } from "@/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
@@ -14,14 +15,21 @@ export const Container = ({ children, className }) => {
     </div>
   );
 };
+export const MoveButton = ({ move, toggled, onClick, children }) => {
+  const WIN_STYLE =
+    "bg-[rgba(183,210,216,1)] text-foreground [&>svg]:text-primary shadow hover:bg-primary/80";
+  const LOSE_STYLE =
+    "bg-[rgba(254,215,204,1)] text-foreground [&>svg]:text-destructive shadow hover:bg-destructive/80";
 
-export const MoveButton = ({ move, variant, onClick, children }) => {
   return (
     <Button
       key={`${move.type}-${move.num}`}
-      variant={variant}
+      variant={move.win ? "default" : "destructive"}
       size="lg"
-      className="h-full text-[1.5rem] pr-1 transition-colors duration-200"
+      className={cn(
+        "h-full text-[1.5rem] pr-1 transition-colors duration-200",
+        toggled || (move.win ? WIN_STYLE : LOSE_STYLE)
+      )}
       onClick={() => onClick(move)}
     >
       {children}
@@ -29,7 +37,12 @@ export const MoveButton = ({ move, variant, onClick, children }) => {
   );
 };
 
-const RecordMoves = ({ recordId, recordState, recordActions, className }) => {
+const RecordMoves: React.FC<{
+  recordId: string;
+  recordState: any;
+  recordActions: any;
+  className?: string;
+}> = ({ recordId, recordState, recordActions, className }) => {
   const dispatch = useDispatch();
   const { status, recording } = recordState;
 
