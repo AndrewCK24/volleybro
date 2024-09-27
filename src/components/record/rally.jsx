@@ -19,7 +19,7 @@ const Score = ({ children, win = false }) => {
 const RecordText = ({ children, className }) => (
   <p
     className={cn(
-      "flex flex-row flex-1 text-[1.375rem] gap-1 px-1 h-6 max-w-[calc(100%-9rem)] border-l-[0.125rem]",
+      "flex flex-row flex-1 text-[1.375rem] items-center gap-1 px-1 h-6 max-w-[calc(100%-9rem)] border-l-[0.125rem]",
       className
     )}
   >

@@ -39,7 +39,7 @@ const RecordOptions = ({
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="sr-only">Options</DialogDescription>
-          <Tabs value={tabValue} onValueChange={setTabValue} className="flex-1">
+          <Tabs value={tabValue} onValueChange={setTabValue}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">總覽</TabsTrigger>
               <TabsTrigger value="rallies">紀錄</TabsTrigger>

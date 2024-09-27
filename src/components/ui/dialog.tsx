@@ -78,7 +78,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-row justify-start items-center h-8 gap-2",
+      "flex flex-row flex-none justify-start items-center h-8 gap-2",
       className
     )}
     {...props}
