@@ -2,11 +2,17 @@ const {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
 } = require("next/constants");
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
 
 /** @type {(phase: string, defaultConfig: import("next").NextConfig) => Promise<import("next").NextConfig>} */
 module.exports = async (phase) => {
   /** @type {import("next").NextConfig} */
   const nextConfig = {
+    experimental: {
+      optimizePackageImports: ["react-icons"],
+    },
     images: {
       remotePatterns: [
         {
@@ -26,7 +32,7 @@ module.exports = async (phase) => {
       swSrc: "src/app/sw.js",
       swDest: "public/sw.js",
     });
-    return withSerwist(nextConfig);
+    return withBundleAnalyzer(withSerwist(nextConfig));
   }
 
   return nextConfig;
