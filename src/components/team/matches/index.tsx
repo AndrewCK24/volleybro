@@ -11,7 +11,13 @@ import {
 } from "@/src/components/ui/table";
 import LoadingCard from "@/src/components/custom/loading/card";
 
-const TeamMatches = ({ teamId, className }) => {
+const TeamMatches = ({
+  teamId,
+  className,
+}: {
+  teamId: string;
+  className?: string;
+}) => {
   const router = useRouter();
   const { records, isLoading } = useTeamRecords(teamId);
 

@@ -9,7 +9,13 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
-const TeamInfoTable = ({ team, className }) => {
+const TeamInfoTable = ({
+  team,
+  className,
+}: {
+  team: any;
+  className?: string;
+}) => {
   const contents = [
     { key: "簡稱", value: team.nickname, icon: <FiInfo /> },
     { key: "人數", value: team.members.length, icon: <FiUsers /> },
