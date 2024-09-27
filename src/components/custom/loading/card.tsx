@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
 
-const LoadingCard = ({ className }) => {
+const LoadingCard = ({ className }: { className?: string }) => {
   return (
     <Card className={className}>
       <CardHeader>

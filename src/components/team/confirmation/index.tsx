@@ -5,13 +5,21 @@ import { FiCheck, FiX, FiCheckCircle } from "react-icons/fi";
 import { Alert, AlertTitle, AlertDescription } from "@/src/components/ui/alert";
 import { Button } from "@/src/components/ui/button";
 
-const ConfirmInvitation = ({ teamId, className }) => {
+const ConfirmInvitation = ({
+  teamId,
+  className,
+}: {
+  teamId: string;
+  className?: string;
+}) => {
   const router = useRouter();
   const { user, mutate: mutateUser } = useUser();
   const { mutate: mutateUserTeams } = useUserTeams();
-  const isInviting = user?.teams.inviting.find((team) => team === teamId);
+  const isInviting = user?.teams.inviting.find(
+    (team: string) => team === teamId
+  );
 
-  const handleAccept = async (teamId, accept) => {
+  const handleAccept = async (teamId: string, accept: boolean) => {
     if (!window.confirm(accept ? "確認接受邀請？" : "確認拒絕邀請？")) return;
     const action = accept ? "accept" : "reject";
     try {
