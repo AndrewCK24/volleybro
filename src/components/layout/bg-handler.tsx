@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 export const BackgroundColorHandler = () => {
-  const pathname = usePathname();
+  const pathname: string = usePathname();
 
   useEffect(() => {
     if (pathname.startsWith("/auth")) {
@@ -12,6 +12,8 @@ export const BackgroundColorHandler = () => {
       document.body.style.backgroundColor = "rgba(var(--background))";
     }
   }, [pathname]);
+
+  return null;
 };
 
 export default BackgroundColorHandler;
