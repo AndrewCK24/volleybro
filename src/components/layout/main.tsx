@@ -2,7 +2,13 @@
 import { useSelectedLayoutSegments } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 
-export const Main = ({ children, className, ...props }) => {
+export const Main = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
   const segments = useSelectedLayoutSegments();
 
   return (
@@ -15,7 +21,6 @@ export const Main = ({ children, className, ...props }) => {
         segments.length > 2 && "pb-4",
         className
       )}
-      {...props}
     >
       {children}
     </main>

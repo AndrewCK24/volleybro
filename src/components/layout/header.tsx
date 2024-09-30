@@ -4,7 +4,7 @@ import { cn } from "@/src/lib/utils";
 import { FiArrowLeft, FiBell } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 
-export const Header = ({ className }) => {
+export const Header = ({ className }: { className?: string }) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathArr = pathname.split("/").filter(Boolean);
