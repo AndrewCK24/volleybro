@@ -3,7 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import { recordActions } from "@/src/app/store/record-slice";
+import { recordActions } from "@/src/lib/features/record/record-slice";
 import { useRecord } from "@/src/hooks/use-data";
 import { FiUser, FiCheck } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";

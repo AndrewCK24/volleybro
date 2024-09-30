@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
 import { useTeam, useTeamMembers } from "@/src/hooks/use-data";
 import { useDispatch, useSelector } from "react-redux";
-import { recordActions } from "@/src/app/store/record-slice";
+import { recordActions } from "@/src/lib/features/record/record-slice";
 import {
   FiInfo,
   FiChevronRight,

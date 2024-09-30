@@ -1,3 +1,14 @@
+export enum StartingPosition {
+  OH = "OH",
+  MB = "MB",
+  OP = "OP",
+  S = "S",
+}
+
+export enum LiberoPosition {
+  L = "L",
+}
+
 export type Lineup = {
   options: {
     liberoSwitchMode: 0 | 1 | 2;
@@ -5,13 +16,13 @@ export type Lineup = {
   };
   starting: {
     _id: string;
-    position: "OH" | "MB" | "OP" | "S";
+    position: "" | StartingPosition;
     in: number;
     out: number;
   }[];
   liberos: {
     _id: string;
-    position: "L";
+    position: "" | LiberoPosition;
     in: number;
     out: number;
   }[];

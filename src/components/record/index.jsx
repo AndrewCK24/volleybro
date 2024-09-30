@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { recordActions } from "@/src/app/store/record-slice";
+import { recordActions } from "@/src/lib/features/record/record-slice";
 import { editingActions } from "@/src/app/store/editing-slice";
 import { useRecord } from "@/src/hooks/use-data";
 import { Card } from "@/src/components/ui/card";

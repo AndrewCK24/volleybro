@@ -3,7 +3,7 @@ import "normalize.css";
 import "@/src/app/globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ReduxProvider } from "@/src/app/store/provider";
+import { ReduxProvider } from "@/src/lib/redux/provider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/src/components/ui/toaster";
 import { BackgroundColorHandler } from "@/src/components/layout/bg-handler";
@@ -73,7 +73,11 @@ export const viewport = {
   userScalable: false,
 };
 
-export default async function RootLayout({ children }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
       <head>
