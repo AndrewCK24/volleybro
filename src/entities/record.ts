@@ -32,13 +32,33 @@ export type Lineup = {
   }[];
 };
 
+export enum MatchPhase {
+  NONE,
+  ELIM,
+  SEED,
+  QUAL,
+  FINAL,
+}
+export enum MatchDivision {
+  NONE,
+  MEN,
+  WOMEN,
+  MIXED,
+}
+export enum MatchCategory {
+  NONE,
+  SENIOR,
+  JUNIOR,
+  YOUTH,
+}
+
 export type Match = {
   _id: string;
   name: string;
   number: number;
-  phase: "" | "elim" | "seed" | "qual" | "final";
-  division: "" | "men" | "women" | "mixed";
-  category: "" | "senior" | "junior" | "youth";
+  phase: MatchPhase;
+  division: MatchDivision;
+  category: MatchCategory;
   scoring: {
     setCount: number;
     decidingSetPoints: number;

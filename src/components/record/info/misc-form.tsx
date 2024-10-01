@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/src/components/ui/dialog";
 import {
   Form,
@@ -21,7 +22,9 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { Separator } from "@/src/components/ui/separator";
 
-const formSchema = z.object({
+import type { FormMatch } from "@/src/lib/features/record/types";
+
+const miscFormSchema = z.object({
   location: z
     .object({
       city: z.string().optional(),
@@ -37,36 +40,69 @@ const formSchema = z.object({
     .optional(),
 });
 
-const MatchMiscForm = ({ match, onSubmit, className, ...props }) => {
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+type MiscFormValues = z.infer<typeof miscFormSchema>;
+
+const MatchMiscForm = ({
+  info,
+  setInfo,
+  className,
+}: {
+  info: FormMatch;
+  setInfo: (info: FormMatch) => void;
+  className?: string;
+}) => {
+  const defaultValues = useMemo<MiscFormValues>(
+    () => ({
       location: {
-        city: match?.location?.city || "",
-        hall: match?.location?.hall || "",
+        city: info?.location?.city || "",
+        hall: info?.location?.hall || "",
       },
       time: {
-        date: match?.time?.date
-          ? new Date(match.time.date).toISOString().slice(0, 16)
+        date: info?.time?.date
+          ? new Date(info.time.date).toISOString().slice(0, 16)
           : new Date().toISOString().slice(0, 16),
-        start: match?.time?.start
-          ? new Date(match.time.start).toISOString().slice(0, 16)
+        start: info?.time?.start
+          ? new Date(info.time.start).toISOString().slice(0, 16)
           : new Date().toISOString().slice(0, 16),
-        end: match?.time?.end
-          ? new Date(match.time.end).toISOString().slice(0, 16)
+        end: info?.time?.end
+          ? new Date(info.time.end).toISOString().slice(0, 16)
           : new Date().toISOString().slice(0, 16),
       },
-    },
+    }),
+    [info]
+  );
+
+  const form = useForm<MiscFormValues>({
+    resolver: zodResolver(miscFormSchema),
+    defaultValues,
   });
 
+  const onSubmit = (data: MiscFormValues) => {
+    setInfo({
+      ...info,
+      location: {
+        city: data.location.city,
+        hall: data.location.hall,
+      },
+      time: {
+        date: data.time.date,
+        start: data.time.start,
+        end: data.time.end,
+      },
+    });
+  };
+
   useEffect(() => {
-    form.reset({ name: match?.name || "" });
-  }, [match, form]);
+    form.reset({ ...defaultValues });
+  }, [info, defaultValues, form]);
 
   return (
-    <DialogContent className={className} {...props}>
+    <DialogContent className={className} size="lg">
       <DialogHeader>
         <DialogTitle>編輯比賽資訊</DialogTitle>
+        <DialogDescription className="sr-only">
+          填寫比賽相關資訊
+        </DialogDescription>
       </DialogHeader>
       <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
         <FormField

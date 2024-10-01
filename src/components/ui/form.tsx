@@ -22,10 +22,11 @@ interface FormProps<TFieldValues extends FieldValues> {
   form: UseFormReturn<TFieldValues>;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const Form = React.forwardRef<HTMLFormElement, FormProps<FieldValues>>(
-  ({ form, onSubmit, className, ...props }, ref) => {
+  ({ form, onSubmit, className, children, ...props }, ref) => {
     return (
       <FormProvider {...form}>
         <form
@@ -33,7 +34,9 @@ const Form = React.forwardRef<HTMLFormElement, FormProps<FieldValues>>(
           onSubmit={onSubmit}
           className={cn("flex flex-col gap-4", className)}
           {...props}
-        />
+        >
+          {children}
+        </form>
       </FormProvider>
     );
   }
