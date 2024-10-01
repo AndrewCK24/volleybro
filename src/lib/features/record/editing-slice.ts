@@ -15,6 +15,7 @@ import {
 import type {
   ReduxRecordState,
   ReduxLineup,
+  ReduxStatus,
   ReduxRallyDetail,
   ReduxRecordInput,
 } from "@/src/lib/features/record/types";
@@ -43,11 +44,12 @@ const setSetNum: CaseReducer<ReduxRecordState, PayloadAction<number>> = (
   state.status.setNum = action.payload;
 };
 
-interface SetStatusPayload {
+interface SetEditingRallyStatusPayload {
   lineups: {
     home: ReduxLineup;
     away: ReduxLineup;
   };
+  status: ReduxStatus;
   recording: {
     win: boolean | null;
     home: ReduxRallyDetail;
@@ -55,9 +57,9 @@ interface SetStatusPayload {
   };
 }
 
-const setStatus: CaseReducer<
+const setEditingRallyStatus: CaseReducer<
   ReduxRecordState,
-  PayloadAction<SetStatusPayload>
+  PayloadAction<SetEditingRallyStatusPayload>
 > = (state, action) => {
   const { lineups, recording, ...status } = action.payload;
   state.isEditing = true;
@@ -76,7 +78,7 @@ const editingSlice = createSlice({
     initialize,
     setEditing,
     setSetNum,
-    setStatus,
+    setEditingRallyStatus,
     setRecordingPlayer,
     setRecordingHomeMove,
     setRecordingAwayMove,

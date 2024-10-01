@@ -1,5 +1,5 @@
 "use client";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
 import { useRecord } from "@/src/hooks/use-data";
 import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
@@ -7,28 +7,32 @@ import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
 import Rally from "@/src/components/record/rally";
 
-const RecordOptionsRallies = ({ recordId }) => {
-  const dispatch = useDispatch();
+const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
+  const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setNum } = useSelector((state) => state.editing.status);
+  const { setNum } = useAppSelector((state) => state.editing.status);
   const { rallies } = record.sets[setNum];
   const { players } = record.teams.home;
 
-  const handleRallyClick = (rallyNum) => {
+  const handleRallyClick = (rallyNum: number) => {
     dispatch(
-      editingActions.setStatus({
+      editingActions.setEditingRallyStatus({
         lineups: record.sets[setNum].lineups,
         recording: rallies[rallyNum],
-        isServing:
-          rallyNum === 0
-            ? record.sets[setNum].options.serve === "home"
-            : rallies[rallyNum - 1].win,
-        scores: {
-          home: rallies[rallyNum].home.score,
-          away: rallies[rallyNum].away.score,
+        status: {
+          isServing:
+            rallyNum === 0
+              ? record.sets[setNum].options.serve === "home"
+              : rallies[rallyNum - 1].win,
+          scores: {
+            home: rallies[rallyNum].home.score,
+            away: rallies[rallyNum].away.score,
+          },
+          setNum,
+          rallyNum,
+          inPlay: true,
+          recordingMode: "home",
         },
-        setNum,
-        rallyNum,
       })
     );
   };
@@ -60,7 +64,7 @@ const RecordOptionsRallies = ({ recordId }) => {
       </div>
       <div className="flex flex-col-reverse gap-1">
         <Separator content="比賽開始" />
-        {rallies.map((rally, rallyNum) => (
+        {rallies.map((rally, rallyNum: number) => (
           <Rally
             key={rallyNum}
             rally={rally}

@@ -64,7 +64,6 @@ const Record = ({ recordId }) => {
         recordActions={recordActions}
       />
       <RecordOptions
-        size="lg"
         recordId={recordId}
         tabValue={tabValue}
         setTabValue={setTabValue}

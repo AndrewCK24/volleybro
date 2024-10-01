@@ -9,6 +9,11 @@ const RecordPreview = ({
   recordState,
   handleOptionOpen,
   className,
+}: {
+  recordId: string;
+  recordState: any;
+  handleOptionOpen?: (value: string) => void;
+  className?: string;
 }) => {
   const { record } = useRecord(recordId);
   const { players } = record.teams.home;
