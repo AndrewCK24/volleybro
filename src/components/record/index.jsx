@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { recordActions } from "@/src/lib/features/record/record-slice";
-import { editingActions } from "@/src/app/store/editing-slice";
+import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { useRecord } from "@/src/hooks/use-data";
 import { Card } from "@/src/components/ui/card";
 import { Dialog } from "@/src/components/ui/dialog";

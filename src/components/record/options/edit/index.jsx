@@ -1,6 +1,6 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
-import { editingActions } from "@/src/app/store/editing-slice";
+import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/src/components/ui/dialog";

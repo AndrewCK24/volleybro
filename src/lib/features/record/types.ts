@@ -118,3 +118,19 @@ export type ReduxRecordInput = {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export type ReduxRecordState = {
+  _id: string;
+  win: boolean | null;
+  status: ReduxStatus;
+  isEditing?: boolean;
+  lineups: {
+    home: ReduxLineup;
+    away: ReduxLineup;
+  };
+  recording: {
+    win: boolean | null;
+    home: ReduxRallyDetail;
+    away: ReduxRallyDetail;
+  };
+};

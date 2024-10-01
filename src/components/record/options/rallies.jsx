@@ -1,7 +1,7 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
 import { useRecord } from "@/src/hooks/use-data";
-import { editingActions } from "@/src/app/store/editing-slice";
+import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";

@@ -1,12 +1,16 @@
-import { createSlice, CaseReducer, PayloadAction } from "@reduxjs/toolkit";
-import type { ScoringMove } from "@/src/lib/scoring-moves";
+import {
+  createSlice,
+  type CaseReducer,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import type {
+  ReduxRecordState,
   ReduxStatus,
   ReduxLineup,
   ReduxRallyDetail,
   ReduxRecordInput,
 } from "@/src/lib/features/record/types";
-import { scoringMoves } from "@/src/lib/scoring-moves";
+import { scoringMoves, type ScoringMove } from "@/src/lib/scoring-moves";
 
 // Define the initial states
 const statusState: ReduxStatus = {
@@ -92,23 +96,7 @@ const rallyDetailState: ReduxRallyDetail = {
   },
 };
 
-// TODO: Move to types.ts after splitting info to a separate slice
-type RecordState = {
-  _id: string;
-  win: boolean | null;
-  status: ReduxStatus;
-  lineups: {
-    home: ReduxLineup;
-    away: ReduxLineup;
-  };
-  recording: {
-    win: boolean | null;
-    home: ReduxRallyDetail;
-    away: ReduxRallyDetail;
-  };
-};
-
-const initialState: RecordState = {
+export const initialState: ReduxRecordState = {
   _id: "",
   win: null,
   status: statusState,
@@ -125,7 +113,7 @@ const initialState: RecordState = {
 
 // Define the reducers
 export const initialize: CaseReducer<
-  RecordState,
+  ReduxRecordState,
   PayloadAction<ReduxRecordInput>
 > = (state, action) => {
   const record = structuredClone(action.payload);
@@ -175,7 +163,7 @@ export const initialize: CaseReducer<
 };
 
 export const setRecordingPlayer: CaseReducer<
-  RecordState,
+  ReduxRecordState,
   PayloadAction<{ _id: string; list: string; zone: number }>
 > = (state, action) => {
   state.status.recordingMode = "home";
@@ -212,7 +200,7 @@ export const setRecordingPlayer: CaseReducer<
 };
 
 export const setRecordingHomeMove: CaseReducer<
-  RecordState,
+  ReduxRecordState,
   PayloadAction<ScoringMove>
 > = (state, action) => {
   const { win, type, num, outcome } = action.payload;
@@ -236,7 +224,7 @@ export const setRecordingHomeMove: CaseReducer<
 };
 
 export const setRecordingAwayMove: CaseReducer<
-  RecordState,
+  ReduxRecordState,
   PayloadAction<ScoringMove>
 > = (state, action) => {
   const { type, num } = action.payload;
@@ -251,13 +239,13 @@ export const setRecordingAwayMove: CaseReducer<
 };
 
 export const setRecordingMode: CaseReducer<
-  RecordState,
+  ReduxRecordState,
   PayloadAction<"home" | "away">
 > = (state, action) => {
   state.status.recordingMode = action.payload;
 };
 
-export const resetRecording: CaseReducer<RecordState> = (state) => {
+export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
   state.status = {
     ...state.status,
     isServing: state.recording.win,
