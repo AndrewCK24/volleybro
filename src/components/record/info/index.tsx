@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
 
-const MatchInfo = ({ className }) => {
+const MatchInfo = ({ className }: { className?: string }) => {
   return (
     <Card className={className}>
       <CardHeader>

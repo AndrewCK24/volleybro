@@ -9,27 +9,6 @@ import type {
 import { scoringMoves } from "@/src/lib/scoring-moves";
 
 // Define the initial states
-const infoState = {
-  name: "",
-  number: 0,
-  phase: "", // 可選值 ["", "elim", "seed", "qual", "final"]
-  division: "", // 可選值 ["", "men", "women", "mixed"]
-  category: "", // 可選值 ["", "senior", "junior", "youth"]
-  scoring: {
-    setCount: 0,
-    decidingSetPoints: 0,
-  },
-  location: {
-    city: "",
-    hall: "",
-  },
-  time: {
-    date: "",
-    start: "",
-    end: "",
-  },
-};
-
 const statusState: ReduxStatus = {
   isServing: false,
   scores: {
@@ -117,7 +96,6 @@ const rallyDetailState: ReduxRallyDetail = {
 type RecordState = {
   _id: string;
   win: boolean | null;
-  info: typeof infoState;
   status: ReduxStatus;
   lineups: {
     home: ReduxLineup;
@@ -133,7 +111,6 @@ type RecordState = {
 const initialState: RecordState = {
   _id: "",
   win: null,
-  info: infoState,
   status: statusState,
   lineups: {
     home: lineupState,
@@ -182,7 +159,6 @@ export const initialize: CaseReducer<
     }
   }
   state._id = record._id;
-  state.info = record.info;
   state.status = {
     ...state.status,
     isServing,
@@ -196,17 +172,6 @@ export const initialize: CaseReducer<
     recordingMode: "home",
   };
   state.lineups = lineups;
-};
-
-export const setMatchInfo: CaseReducer<
-  RecordState,
-  PayloadAction<RecordState["info"]>
-> = (state, action) => {
-  const matchInfo = action.payload;
-  state.info = {
-    ...state.info,
-    ...matchInfo,
-  };
 };
 
 export const setRecordingPlayer: CaseReducer<
@@ -321,7 +286,6 @@ const recordSlice = createSlice({
   initialState,
   reducers: {
     initialize,
-    setMatchInfo,
     setRecordingPlayer,
     setRecordingHomeMove,
     setRecordingAwayMove,

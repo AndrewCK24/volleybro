@@ -1,4 +1,9 @@
 import { Schema, model, models } from "mongoose";
+import {
+  MatchCategory,
+  MatchDivision,
+  MatchPhase,
+} from "@/src/entities/record";
 
 const lineupSchema = new Schema({
   options: {
@@ -39,22 +44,38 @@ const matchSchema = new Schema({
   number: { type: Number },
   phase: {
     type: String,
-    enum: ["", "elim", "seed", "qual", "final"],
-    default: "",
+    enum: [
+      MatchPhase.NONE,
+      MatchPhase.ELIM,
+      MatchPhase.SEED,
+      MatchPhase.QUAL,
+      MatchPhase.FINAL,
+    ],
+    default: MatchPhase.NONE,
   },
   division: {
     type: String,
-    enum: ["", "men", "women", "mixed"],
-    default: "",
+    enum: [
+      MatchDivision.NONE,
+      MatchDivision.MEN,
+      MatchDivision.WOMEN,
+      MatchDivision.MIXED,
+    ],
+    default: MatchDivision.NONE,
   },
   category: {
     type: String,
-    enum: ["", "senior", "junior", "youth"],
-    default: "",
+    enum: [
+      MatchCategory.NONE,
+      MatchCategory.SENIOR,
+      MatchCategory.JUNIOR,
+      MatchCategory.YOUTH,
+    ],
+    default: MatchCategory.NONE,
   },
   scoring: {
-    setCount: { type: Number },
-    decidingSetPoints: { type: Number },
+    setCount: { type: Number, default: 3 },
+    decidingSetPoints: { type: Number, default: 15 },
   },
   location: {
     city: { type: String },

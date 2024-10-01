@@ -9,17 +9,19 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
-const ListBadge = ({ list }) => {
+import type { TableRosterPlayer } from "@/src/lib/features/record/types";
+
+const ListBadge = ({ list }: { list: string }) => {
   if (list === "substitutes") return null;
 
   return (
-    <Badge variant={list === "starting" ? "" : "destructive"}>
+    <Badge variant={list === "starting" ? "default" : "destructive"}>
       {list === "starting" ? "先發" : "自由"}
     </Badge>
   );
 };
 
-const RoasterTable = ({ roaster }) => {
+const RosterTable = ({ roster }: { roster: TableRosterPlayer[] }) => {
   return (
     <Table>
       <TableHeader className="text-lg">
@@ -32,7 +34,7 @@ const RoasterTable = ({ roaster }) => {
         </TableRow>
       </TableHeader>
       <TableBody className="text-xl">
-        {roaster.map((player) => (
+        {roster.map((player) => (
           <TableRow key={player._id}>
             <TableCell>{player.number}</TableCell>
             <TableCell>{player.name}</TableCell>
@@ -46,4 +48,4 @@ const RoasterTable = ({ roaster }) => {
   );
 };
 
-export default RoasterTable;
+export default RosterTable;

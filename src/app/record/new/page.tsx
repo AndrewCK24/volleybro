@@ -2,7 +2,11 @@ import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "@/src/components/ui/button";
 import MatchConfirmation from "@/src/components/record/info/confirmation";
 
-const NewRecordPage = ({ searchParams }) => {
+const NewRecordPage = ({
+  searchParams,
+}: {
+  searchParams: { team: string };
+}) => {
   const { team: teamId } = searchParams;
 
   return (

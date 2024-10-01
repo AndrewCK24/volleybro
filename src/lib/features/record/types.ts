@@ -1,6 +1,39 @@
 import type { Record } from "@/src/entities/record";
 import type { MoveType } from "@/src/entities/record";
 
+// For Forms and Tables
+export type FormMatch = {
+  _id: string;
+  name: string;
+  number: number;
+  phase: "0" | "1" | "2" | "3" | "4";
+  division: "0" | "1" | "2" | "3";
+  category: "0" | "1" | "2" | "3";
+  scoring: {
+    setCount: string;
+    decidingSetPoints: number;
+  };
+  location: {
+    city: string;
+    hall: string;
+  };
+  time: {
+    date: string;
+    start: string;
+    end: string;
+  };
+  weather: {
+    temperature: string;
+  };
+};
+
+export type TableRosterPlayer = {
+  _id: string;
+  name: string;
+  number: number;
+  list: string;
+};
+
 // For Redux
 export type ReduxStatus = {
   isServing: boolean;

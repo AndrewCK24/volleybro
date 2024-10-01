@@ -3,8 +3,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
 import { useTeam, useTeamMembers } from "@/src/hooks/use-data";
-import { useDispatch, useSelector } from "react-redux";
-import { recordActions } from "@/src/lib/features/record/record-slice";
 import {
   FiInfo,
   FiChevronRight,
@@ -26,20 +24,45 @@ import {
 import { Dialog, DialogTrigger } from "@/src/components/ui/dialog";
 import MatchInfoForm from "@/src/components/record/info/info-form";
 import MatchMiscForm from "@/src/components/record/info/misc-form";
-import RoasterTable from "@/src/components/record/info/roster-table";
+import RosterTable from "@/src/components/record/info/roster-table";
 import LoadingCard from "@/src/components/custom/loading/card";
 import { phase, division, category } from "@/src/lib/text/match";
 
-const MatchConfirmation = ({ teamId }) => {
+import { type FormMatch } from "@/src/lib/features/record/types";
+
+const MatchConfirmation = ({ teamId }: { teamId: string }) => {
   const router = useRouter();
   const { mutate } = useSWRConfig();
-  const dispatch = useDispatch();
-  const [lineupNum, setLineupNum] = useState(0);
-  const { info } = useSelector((state) => state.record);
   const { team, isLoading: isTeamLoading } = useTeam(teamId);
   const { members, isLoading: isMembersLoading } = useTeamMembers(teamId);
 
-  const getPlayerData = (list) => {
+  const [lineupNum, setLineupNum] = useState(0);
+  const [info, setInfo] = useState<FormMatch>({
+    _id: "",
+    name: "",
+    number: null,
+    phase: "0",
+    division: "0",
+    category: "0",
+    scoring: {
+      setCount: "3",
+      decidingSetPoints: 15,
+    },
+    location: {
+      city: "",
+      hall: "",
+    },
+    time: {
+      date: "",
+      start: "",
+      end: "",
+    },
+    weather: {
+      temperature: "",
+    },
+  });
+
+  const getPlayerData = (list: string) => {
     if (!team || !members) return [];
     return team.lineups[lineupNum][list].map((player) => {
       const member = members.find((member) => member._id === player._id);
@@ -57,10 +80,6 @@ const MatchConfirmation = ({ teamId }) => {
   const players = starting
     .concat(liberos, substitutes)
     .sort((a, b) => a.number - b.number);
-
-  const onFormSave = (formData) => {
-    dispatch(recordActions.setMatchInfo(formData));
-  };
 
   const handleSave = async () => {
     try {
@@ -108,12 +127,7 @@ const MatchConfirmation = ({ teamId }) => {
               </DescriptionContent>
             </Description>
           </DialogTrigger>
-          <MatchInfoForm
-            team={team}
-            members={members}
-            onSubmit={onFormSave}
-            size="lg"
-          />
+          <MatchInfoForm info={info} setInfo={setInfo} />
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
@@ -135,12 +149,7 @@ const MatchConfirmation = ({ teamId }) => {
               </DescriptionContent>
             </Description>
           </DialogTrigger>
-          <MatchMiscForm
-            team={team}
-            members={members}
-            onSubmit={onFormSave}
-            size="lg"
-          />
+          <MatchMiscForm info={info} setInfo={setInfo} />
         </Dialog>
         <CardHeader>
           <CardTitle>陣容配置 {lineupNum + 1}</CardTitle>
@@ -148,7 +157,7 @@ const MatchConfirmation = ({ teamId }) => {
             {team?.lineups.map((_, index) => (
               <Button
                 key={index}
-                variant={lineupNum === index ? "" : "outline"}
+                variant={lineupNum === index ? "default" : "outline"}
                 size="icon"
                 onClick={() => setLineupNum(index)}
                 className="text-[1.25rem] w-8 h-8"
@@ -158,7 +167,7 @@ const MatchConfirmation = ({ teamId }) => {
             ))}
           </CardBtnGroup>
         </CardHeader>
-        <RoasterTable roaster={players} />
+        <RosterTable roster={players} />
       </Card>
       <div className="flex flex-col w-full px-4 pb-4">
         <Button size="lg" onClick={handleSave}>

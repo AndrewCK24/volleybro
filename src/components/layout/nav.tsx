@@ -12,15 +12,23 @@ import {
   FiMenu as MenuIcon,
 } from "react-icons/fi";
 
-const NavLink = ({ children, className, ...props }) => (
+const NavLink = ({
+  href,
+  className,
+  children,
+}: {
+  href: string;
+  className: string;
+  children: React.ReactNode;
+}) => (
   <Link
+    href={href}
     className={cn(
       "flex flex-col items-center justify-center flex-1 h-full pt-1",
       "no-underline text-primary-foreground [&>svg]:w-7 [&>svg]:h-7 text-xs",
       "transition-all duration-200 ease-in-out",
       className
     )}
-    {...props}
   >
     {children}
   </Link>
