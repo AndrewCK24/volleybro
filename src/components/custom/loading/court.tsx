@@ -6,7 +6,7 @@ import {
   AdjustButton,
 } from "@/src/components/custom/court";
 
-const LoadingCourt = ({ className }) => {
+const LoadingCourt = ({ className }: { className?: string }) => {
   return (
     <Court className={className}>
       <Outside>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/src/lib/utils";
 
-export const Logo = ({ className }) => (
+export const Logo = ({ className }: { className?: string }) => (
   <div
     className={cn(
       "flex items-center justify-center flex-1 w-full h-auto",
