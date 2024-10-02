@@ -1,24 +1,48 @@
 import { cn } from "@/src/lib/utils";
 import { FiPlus, FiX, FiRepeat } from "react-icons/fi";
 
-export const Court = ({ children }) => {
+import type { Player } from "@/src/entities/record";
+
+export const Court = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   return (
-    <div className="flex flex-row items-center justify-center w-full max-h-[35vh] aspect-[11/9] bg-primary p-2">
+    <div
+      className={cn(
+        "flex flex-row items-center justify-center w-full max-h-[35vh] aspect-[11/9] bg-primary p-2",
+        className
+      )}
+    >
       {children}
     </div>
   );
 };
 
-export const Outside = ({ children }) => {
+export const Outside = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   return (
-    <div className="relative grid h-full grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1">
+    <div
+      className={cn(
+        "relative grid h-full grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1",
+        className
+      )}
+    >
       {children}
     </div>
   );
 };
 // TODO: 目前手機版未沒有寬度更大的球場，未來需注意其他螢幕大小的排版
 
-export const Inside = ({ children }) => {
+export const Inside = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="relative flex-[9] aspect-[1/1] h-full py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4">
       {children}
@@ -26,7 +50,22 @@ export const Inside = ({ children }) => {
   );
 };
 
-const Card = ({ children, className, onClick, empty, toggled, ...props }) => {
+// TODO: 移除 onSwitchClick 後，重新檢視參數定義
+const Card = ({
+  children,
+  className,
+  onClick,
+  empty,
+  toggled,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  empty?: boolean;
+  toggled?: boolean;
+  [key: string]: any;
+}) => {
   return (
     <div
       className={cn(
@@ -45,7 +84,7 @@ const Card = ({ children, className, onClick, empty, toggled, ...props }) => {
   );
 };
 
-const Number = ({ children }) => {
+const Number = ({ children }: { children?: React.ReactNode }) => {
   return (
     <p
       className={cn(
@@ -59,7 +98,7 @@ const Number = ({ children }) => {
   );
 };
 
-const Position = ({ children }) => {
+const Position = ({ children }: { children?: React.ReactNode }) => {
   return (
     <p
       className={cn(
@@ -73,7 +112,16 @@ const Position = ({ children }) => {
   );
 };
 
-const Button = ({ children, onClick, right }) => {
+// TODO: 移除 onSwitchClick 後，重新檢視參數定義，刪除 right 參數
+const Button = ({
+  onClick,
+  right,
+  children,
+}: {
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  right?: boolean;
+  children: React.ReactNode;
+}) => {
   return (
     <div
       className={cn(
@@ -101,6 +149,14 @@ export const PlayerCard = ({
   onSwitchClick,
   onCrossClick,
   editingMember,
+}: {
+  player: Player & { position: string };
+  list: string;
+  zone: number;
+  onCardClick: () => void;
+  onSwitchClick?: () => void;
+  onCrossClick?: () => void;
+  editingMember: { _id: string; list: string; zone: number };
 }) => {
   const toggled = editingMember.list === list && editingMember.zone === zone;
   return (
@@ -154,25 +210,31 @@ export const PlayerCard = ({
   );
 };
 
-export const LoadingCard = ({ className, ...props }) => {
+export const LoadingCard = ({ className }: { className?: string }) => {
   return (
-    <Card className={cn("motion-safe:animate-pulse", className)} {...props}>
+    <Card className={cn("motion-safe:animate-pulse", className)}>
       <Number />
       <Position />
     </Card>
   );
 };
 
-export const PlaceholderCard = ({ className, ...props }) => {
+export const PlaceholderCard = ({ className }: { className?: string }) => {
   return (
-    <Card className={cn("bg-transparent border-none", className)} {...props}>
+    <Card className={cn("bg-transparent border-none", className)}>
       <Number />
       <Position />
     </Card>
   );
 };
 
-export const AdjustButton = ({ children, onClick }) => {
+export const AdjustButton = ({
+  onClick,
+  children,
+}: {
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  children?: React.ReactNode;
+}) => {
   return (
     <div
       className={cn(

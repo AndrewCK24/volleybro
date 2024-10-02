@@ -2,7 +2,15 @@ import { cn } from "@/src/lib/utils";
 import { FiPlus, FiMinus, FiUser } from "react-icons/fi";
 import { scoringMoves } from "@/src/lib/scoring-moves";
 
-const Score = ({ children, win = false }) => {
+import { type Rally, type Player, MoveType } from "@/src/entities/record";
+
+const Score = ({
+  win = false,
+  children,
+}: {
+  win?: boolean;
+  children: React.ReactNode;
+}) => {
   return (
     <div
       className={cn(
@@ -16,7 +24,13 @@ const Score = ({ children, win = false }) => {
   );
 };
 
-const RecordText = ({ children, className }) => (
+const RecordText = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => (
   <p
     className={cn(
       "flex flex-row flex-1 text-[1.375rem] items-center gap-1 px-1 h-6 max-w-[calc(100%-9rem)] border-l-[0.125rem]",
@@ -27,7 +41,7 @@ const RecordText = ({ children, className }) => (
   </p>
 );
 
-const Number = ({ children }) => (
+const Number = ({ children }: { children: React.ReactNode }) => (
   <span className="text-[1.375rem] font-semibold">{children}</span>
 );
 
@@ -37,7 +51,17 @@ const IconLose = () => (
   <FiMinus className="w-6 h-6 text-destructive stroke-[3px]" />
 );
 
-const Rally = ({ rally, players, onClick, className }) => {
+const Rally = ({
+  rally,
+  players,
+  onClick,
+  className,
+}: {
+  rally: Rally;
+  players: Player[];
+  onClick: () => void;
+  className?: string;
+}) => {
   const { win, home, away } = rally;
   const playerNumber = players.find((p) => p._id === home.player._id)?.number;
 
@@ -62,7 +86,7 @@ const Rally = ({ rally, players, onClick, className }) => {
       )}
       <RecordText className="border-primary">
         {home.type ? (
-          home.type !== 7 ? ( // TODO: 將 7 改為 MoveType.OppoError
+          home.type !== MoveType.OppoError ? (
             <>
               <Number>{playerNumber}</Number>
               {scoringMoves[home.num]?.text}
@@ -77,7 +101,7 @@ const Rally = ({ rally, players, onClick, className }) => {
       </RecordText>
       <RecordText className="border-destructive">
         {away.type &&
-          (away.type !== 7 ? ( // TODO: 將 7 改為 MoveType.OppoError
+          (away.type !== MoveType.OppoError ? (
             <>
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
                 <FiUser />

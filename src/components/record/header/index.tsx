@@ -4,7 +4,13 @@ import { FiArrowLeft, FiSliders } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 import { Scores } from "@/src/components/record/header/scores";
 
-export const Header = ({ recordId, handleOptionOpen }) => {
+export const Header = ({
+  recordId,
+  handleOptionOpen,
+}: {
+  recordId?: string;
+  handleOptionOpen?: (option: string) => void;
+}) => {
   const router = useRouter();
 
   return (

@@ -1,10 +1,16 @@
 "use client";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/src/lib/redux/hooks";
 import { useRecord } from "@/src/hooks/use-data";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
 import { cn } from "@/src/lib/utils";
 
-const Container = ({ children, className }) => {
+const Container = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
   return (
     <div
       className={cn(
@@ -16,7 +22,7 @@ const Container = ({ children, className }) => {
     </div>
   );
 };
-const Team = ({ children }) => {
+const Team = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex items-center justify-center text-[1rem] font-medium w-full max-w-16 overflow-hidden whitespace-nowrap text-ellipsis">
       {children}
@@ -26,7 +32,7 @@ const Team = ({ children }) => {
 
 export const Scores = ({ recordId, ...props }) => {
   const { record } = useRecord(recordId);
-  const { home, away } = useSelector((state) => state.record.status.scores);
+  const { scores } = useAppSelector((state) => state.record.status);
 
   return (
     <div
@@ -34,7 +40,7 @@ export const Scores = ({ recordId, ...props }) => {
       {...props}
     >
       <Container className="border-b-4 border-primary">
-        {home}
+        {scores.home}
         <Team>{record?.teams?.home?.name || "我方"}</Team>
       </Container>
       <Container>
@@ -45,7 +51,7 @@ export const Scores = ({ recordId, ...props }) => {
         </div>
       </Container>
       <Container className="border-b-4 border-destructive">
-        {away}
+        {scores.away}
         <Team>{record?.teams?.away?.name || "對手"}</Team>
       </Container>
     </div>

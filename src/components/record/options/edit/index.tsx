@@ -1,6 +1,6 @@
 "use client";
-import { useDispatch, useSelector } from "react-redux";
-import { editingActions } from "@/src/app/store/editing-slice";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
+import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
@@ -8,9 +8,9 @@ import RecordCourt from "@/src/components/record/court";
 import RecordPreview from "@/src/components/record/preview";
 import RecordMoves from "@/src/components/record/panels/moves";
 
-const RalliesEdit = ({ recordId }) => {
-  const dispatch = useDispatch();
-  const editingState = useSelector((state) => state.editing);
+const RalliesEdit = ({ recordId }: { recordId: string }) => {
+  const dispatch = useAppDispatch();
+  const editingState = useAppSelector((state) => state.editing);
 
   return (
     <>

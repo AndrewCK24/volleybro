@@ -1,12 +1,20 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
 import { lineupsActions } from "@/src/app/store/lineups-slice";
 import { FiUserCheck, FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
 
-const Substitutes = ({ members, className }) => {
-  const dispatch = useDispatch();
-  const { lineups, status } = useSelector((state) => state.lineups);
+import type { Player } from "@/src/entities/record";
+
+const Substitutes = ({
+  members,
+  className,
+}: {
+  members: Player[];
+  className?: string;
+}) => {
+  const dispatch = useAppDispatch();
+  const { lineups, status } = useAppSelector((state) => state.lineups);
 
   return (
     <Card className={className}>

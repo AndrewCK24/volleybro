@@ -8,8 +8,19 @@ import {
   AdjustButton,
   PlaceholderCard,
 } from "@/src/components/custom/court";
+import type { ReduxRecordState } from "@/src/lib/features/record/types";
+import type { RecordActions } from "@/src/lib/features/record/record-slice";
+import type { EditingActions } from "@/src/lib/features/record/editing-slice";
 
-const RecordCourt = ({ recordId, recordState, recordActions }) => {
+const RecordCourt = ({
+  recordId,
+  recordState,
+  recordActions,
+}: {
+  recordId: string;
+  recordState: ReduxRecordState;
+  recordActions: RecordActions | EditingActions;
+}) => {
   const dispatch = useDispatch();
   const { record } = useRecord(recordId);
   const { status, recording, lineups } = recordState;

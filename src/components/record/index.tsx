@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
 import { recordActions } from "@/src/lib/features/record/record-slice";
-import { editingActions } from "@/src/app/store/editing-slice";
+import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { useRecord } from "@/src/hooks/use-data";
 import { Card } from "@/src/components/ui/card";
 import { Dialog } from "@/src/components/ui/dialog";
@@ -14,14 +14,14 @@ import RecordOptions from "@/src/components/record/options";
 import LoadingCourt from "@/src/components/custom/loading/court";
 import LoadingCard from "@/src/components/custom/loading/card";
 
-const Record = ({ recordId }) => {
-  const dispatch = useDispatch();
+const Record = ({ recordId }: { recordId: string }) => {
+  const dispatch = useAppDispatch();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [tabValue, setTabValue] = useState("overview");
-  const recordState = useSelector((state) => state.record);
+  const recordState = useAppSelector((state) => state.record);
   const { record, isLoading, error } = useRecord(recordId);
 
-  const handleOptionOpen = (tabValue) => {
+  const handleOptionOpen = (tabValue: string) => {
     dispatch(editingActions.initialize(record));
     setTabValue(tabValue);
     setDialogOpen(true);
@@ -64,7 +64,6 @@ const Record = ({ recordId }) => {
         recordActions={recordActions}
       />
       <RecordOptions
-        size="lg"
         recordId={recordId}
         tabValue={tabValue}
         setTabValue={setTabValue}

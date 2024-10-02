@@ -1,5 +1,5 @@
 "use client";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector } from "@/src/lib/redux/hooks";
 import {
   DialogContent,
   DialogHeader,
@@ -17,16 +17,17 @@ import RecordOptionsRallies from "@/src/components/record/options/rallies";
 
 const RecordOptions = ({
   recordId,
-  options,
   tabValue,
   setTabValue,
-  className,
-  ...props
+}: {
+  recordId: string;
+  tabValue: string;
+  setTabValue: (value: string) => void;
 }) => {
-  const editingState = useSelector((state) => state.editing);
+  const editingState = useAppSelector((state) => state.editing);
 
   return (
-    <DialogContent className={className} {...props}>
+    <DialogContent size="lg">
       {editingState.isEditing ? (
         <RalliesEdit recordId={recordId} />
       ) : (
