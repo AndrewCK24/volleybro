@@ -154,4 +154,5 @@ const editingSlice = createSlice({
 });
 
 export const editingActions = editingSlice.actions;
+export type EditingActions = typeof editingActions;
 export default editingSlice.reducer;

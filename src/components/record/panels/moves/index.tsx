@@ -8,6 +8,10 @@ import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
 import OursMoves from "@/src/components/record/panels/moves/ours";
 import OppoMoves from "@/src/components/record/panels/moves/oppo";
 
+import type { ReduxRecordState } from "@/src/lib/features/record/types";
+import type { RecordActions } from "@/src/lib/features/record/record-slice";
+import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+
 export const Container = ({ children, className }) => {
   return (
     <div className={cn("grid flex-1 w-full grid-cols-2 gap-2", className)}>
@@ -39,8 +43,8 @@ export const MoveButton = ({ move, toggled, onClick, children }) => {
 
 const RecordMoves: React.FC<{
   recordId: string;
-  recordState: any;
-  recordActions: any;
+  recordState: ReduxRecordState;
+  recordActions: RecordActions | EditingActions;
   className?: string;
 }> = ({ recordId, recordState, recordActions, className }) => {
   const dispatch = useDispatch();

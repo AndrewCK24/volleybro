@@ -8,7 +8,7 @@ export const Court = ({
   children,
 }: {
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) => {
   return (
     <div
@@ -22,16 +22,27 @@ export const Court = ({
   );
 };
 
-export const Outside = ({ children }: { children: React.ReactNode }) => {
+export const Outside = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
   return (
-    <div className="relative grid h-full grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1">
+    <div
+      className={cn(
+        "relative grid h-full grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1",
+        className
+      )}
+    >
       {children}
     </div>
   );
 };
 // TODO: 目前手機版未沒有寬度更大的球場，未來需注意其他螢幕大小的排版
 
-export const Inside = ({ children }: { children: React.ReactNode }) => {
+export const Inside = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="relative flex-[9] aspect-[1/1] h-full py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4">
       {children}

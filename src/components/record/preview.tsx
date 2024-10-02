@@ -4,6 +4,8 @@ import { cn } from "@/src/lib/utils";
 import { Card } from "@/src/components/ui/card";
 import Rally from "@/src/components/record/rally";
 
+import type { ReduxRecordState } from "@/src/lib/features/record/types";
+
 const RecordPreview = ({
   recordId,
   recordState,
@@ -11,7 +13,7 @@ const RecordPreview = ({
   className,
 }: {
   recordId: string;
-  recordState: any;
+  recordState: ReduxRecordState;
   handleOptionOpen?: (value: string) => void;
   className?: string;
 }) => {

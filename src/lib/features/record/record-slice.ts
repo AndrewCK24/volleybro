@@ -348,5 +348,6 @@ const recordSlice = createSlice({
 });
 
 export const recordActions = recordSlice.actions;
+export type RecordActions = typeof recordActions;
 
 export default recordSlice.reducer;
