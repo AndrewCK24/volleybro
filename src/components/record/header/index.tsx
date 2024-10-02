@@ -8,8 +8,8 @@ export const Header = ({
   recordId,
   handleOptionOpen,
 }: {
-  recordId: string;
-  handleOptionOpen: (option: string) => void;
+  recordId?: string;
+  handleOptionOpen?: (option: string) => void;
 }) => {
   const router = useRouter();
 

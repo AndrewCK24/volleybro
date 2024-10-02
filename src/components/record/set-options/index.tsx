@@ -1,6 +1,6 @@
 "use client";
 import { useRecord } from "@/src/hooks/use-data";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
 import { lineupsActions } from "@/src/app/store/lineups-slice";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -14,10 +14,10 @@ import LineupCourt from "@/src/components/team/lineup/court";
 import RecordSetPanels from "@/src/components/record/set-options/panels";
 
 const RecordSetOptions = ({ recordId }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setNum } = useSelector((state) => state.record.status);
-  const { lineups } = useSelector((state) => state.lineups);
+  const { setNum } = useAppSelector((state) => state.record.status);
+  const { lineups } = useAppSelector((state) => state.lineups);
   const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
   const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;
   const hasPairedSwitchPosition =

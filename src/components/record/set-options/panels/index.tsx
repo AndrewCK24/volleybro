@@ -1,16 +1,23 @@
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/src/lib/redux/hooks";
 import PlayerInfo from "@/src/components/team/lineup/panels/player-info";
 import LineupOptions from "@/src/components/record/set-options/panels/options";
 import Positions from "@/src/components/team/lineup/panels/positions";
 import Substitutes from "@/src/components/record/set-options/panels/substitutes";
+
+import type { Player } from "@/src/entities/record";
 
 const LineupPanels = ({
   recordId,
   members,
   hasPairedSwitchPosition,
   className,
+}: {
+  recordId: string;
+  members: Player[];
+  hasPairedSwitchPosition: boolean;
+  className?: string;
 }) => {
-  const { optionMode } = useSelector((state) => state.lineups.status);
+  const { optionMode } = useAppSelector((state) => state.lineups.status);
 
   return (
     <>
