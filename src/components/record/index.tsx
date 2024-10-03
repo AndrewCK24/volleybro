@@ -1,6 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
+import { useState, useRef } from "react";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppStore,
+} from "@/src/lib/redux/hooks";
 import { recordActions } from "@/src/lib/features/record/record-slice";
 import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { useRecord } from "@/src/hooks/use-data";
@@ -21,15 +25,14 @@ const Record = ({ recordId }: { recordId: string }) => {
   const recordState = useAppSelector((state) => state.record);
   const { record, isLoading, error } = useRecord(recordId);
 
+  const initialized = useRef(false);
+  const store = useAppStore();
+
   const handleOptionOpen = (tabValue: string) => {
     dispatch(editingActions.initialize(record));
     setTabValue(tabValue);
     setDialogOpen(true);
   };
-
-  useEffect(() => {
-    if (record) dispatch(recordActions.initialize(record));
-  }, [record, dispatch]);
 
   if (error) throw new Error(error);
   if (isLoading) {
@@ -43,6 +46,11 @@ const Record = ({ recordId }: { recordId: string }) => {
         <LoadingCard className="flex-1 w-full pb-4" />
       </>
     );
+  }
+  
+  if (!initialized.current) {
+    store.dispatch(recordActions.initialize(record));
+    initialized.current = true;
   }
 
   return (
