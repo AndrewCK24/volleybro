@@ -1,10 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
-import {
-  useAppDispatch,
-  useAppSelector,
-  useAppStore,
-} from "@/src/lib/redux/hooks";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
 import { recordActions } from "@/src/lib/features/record/record-slice";
 import { editingActions } from "@/src/lib/features/record/editing-slice";
 import { useRecord } from "@/src/hooks/use-data";
@@ -19,14 +15,11 @@ import LoadingCourt from "@/src/components/custom/loading/court";
 import LoadingCard from "@/src/components/custom/loading/card";
 
 const Record = ({ recordId }: { recordId: string }) => {
+  const { record, isLoading, error } = useRecord(recordId);
   const dispatch = useAppDispatch();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [tabValue, setTabValue] = useState("overview");
   const recordState = useAppSelector((state) => state.record);
-  const { record, isLoading, error } = useRecord(recordId);
-
-  const initialized = useRef(false);
-  const store = useAppStore();
 
   const handleOptionOpen = (tabValue: string) => {
     dispatch(editingActions.initialize(record));
@@ -34,8 +27,12 @@ const Record = ({ recordId }: { recordId: string }) => {
     setDialogOpen(true);
   };
 
+  useEffect(() => {
+    if (record) dispatch(recordActions.initialize(record));
+  }, [recordId, record, dispatch]);
+
   if (error) throw new Error(error);
-  if (isLoading) {
+  if (isLoading || recordState._id !== recordId) {
     return (
       <>
         <Header />
@@ -47,36 +44,33 @@ const Record = ({ recordId }: { recordId: string }) => {
       </>
     );
   }
-  
-  if (!initialized.current) {
-    store.dispatch(recordActions.initialize(record));
-    initialized.current = true;
-  }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Header recordId={recordId} handleOptionOpen={handleOptionOpen} />
+    <>
+      <Header recordId={record._id} handleOptionOpen={handleOptionOpen} />
       <RecordCourt
-        recordId={recordId}
+        recordId={record._id}
         recordState={recordState}
         recordActions={recordActions}
       />
       <RecordPreview
-        recordId={recordId}
+        recordId={record._id}
         recordState={recordState}
         handleOptionOpen={handleOptionOpen}
       />
       <RecordPanels
-        recordId={recordId}
+        recordId={record._id}
         recordState={recordState}
         recordActions={recordActions}
       />
-      <RecordOptions
-        recordId={recordId}
-        tabValue={tabValue}
-        setTabValue={setTabValue}
-      />
-    </Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <RecordOptions
+          recordId={record._id}
+          tabValue={tabValue}
+          setTabValue={setTabValue}
+        />
+      </Dialog>
+    </>
   );
 };
 
