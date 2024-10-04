@@ -3,6 +3,8 @@ import {
   type CaseReducer,
   type PayloadAction,
 } from "@reduxjs/toolkit";
+import { phaseChecker } from "@/src/lib/features/record/helpers/phase.helper";
+
 import type {
   ReduxRecordState,
   ReduxStatus,
@@ -22,6 +24,7 @@ const statusState: ReduxStatus = {
   setNum: 0,
   rallyNum: 0,
   inPlay: false,
+  isSetPoint: false,
   recordingMode: "home",
 };
 
@@ -119,9 +122,11 @@ export const initialize: CaseReducer<
   const record = structuredClone(action.payload);
   const setNum = record.sets.length - 1;
   const rallyNum = record.sets[setNum]?.rallies?.length || 0;
-  const inPlay =
-    !record.sets[setNum].hasOwnProperty("win") &&
-    record.sets[setNum].hasOwnProperty("options");
+  const isDecidingSet = setNum === record.info.scoring.setCount - 1;
+  const { inPlay, isSetPoint } = phaseChecker(
+    record.sets[setNum].rallies[rallyNum - 1],
+    isDecidingSet ? record.info.scoring.decidingSetPoints : 25
+  );
   const isServing =
     inPlay || rallyNum === 0
       ? record.sets[setNum]?.options?.serve === "home"
@@ -153,6 +158,7 @@ export const initialize: CaseReducer<
     setNum,
     rallyNum,
     inPlay,
+    isSetPoint,
     scores: {
       home: record.sets[setNum].rallies[rallyNum - 1]?.home.score || 0,
       away: record.sets[setNum].rallies[rallyNum - 1]?.away.score || 0,

@@ -44,6 +44,7 @@ export type ReduxStatus = {
   setNum: number;
   rallyNum: number;
   inPlay: boolean;
+  isSetPoint: boolean;
   recordingMode: "home" | "away";
 };
 
@@ -79,6 +80,12 @@ export type ReduxRallyDetail = {
     list: string;
     zone: number;
   };
+};
+
+export type ReduxRecording = {
+  win: boolean;
+  home: ReduxRallyDetail;
+  away: ReduxRallyDetail;
 };
 
 export type ReduxRecordInput = {

@@ -32,14 +32,22 @@ const Team = ({ children }: { children: React.ReactNode }) => {
 
 export const Scores = ({ recordId, ...props }) => {
   const { record } = useRecord(recordId);
-  const { scores } = useAppSelector((state) => state.record.status);
+  const { scores, isSetPoint } = useAppSelector((state) => state.record.status);
+  // TODO: Add set point styles
 
   return (
     <div
       className="flex flex-row items-center justify-center flex-1 gap-2 min-h-[3rem] text-[1.625rem] font-medium"
       {...props}
     >
-      <Container className="border-b-4 border-primary">
+      <Container
+        className={cn(
+          "border-b-4 border-primary"
+          // isSetPoint &&
+          //   scores.home > scores.away &&
+          //   "bg-primary text-primary-foreground"
+        )}
+      >
         {scores.home}
         <Team>{record?.teams?.home?.name || "我方"}</Team>
       </Container>
@@ -50,7 +58,14 @@ export const Scores = ({ recordId, ...props }) => {
           <div>{record?.sets.filter((set) => set.win === false).length}</div>
         </div>
       </Container>
-      <Container className="border-b-4 border-destructive">
+      <Container
+        className={cn(
+          "border-b-4 border-destructive"
+          // isSetPoint &&
+          //   scores.away > scores.home &&
+          //   "bg-destructive text-destructive-foreground"
+        )}
+      >
         {scores.away}
         <Team>{record?.teams?.away?.name || "對手"}</Team>
       </Container>

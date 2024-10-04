@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/src/lib/redux/hooks";
 import {
   frontMoves,
   backMoves,
@@ -11,11 +10,18 @@ import { FiPlus, FiMinus, FiRepeat } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
 import { Container, MoveButton } from "@/src/components/record/panels/moves";
 
-const OursMoves: React.FC<{ recordState: any; recordActions: any }> = ({
+import type { ReduxRecordState } from "@/src/lib/features/record/types";
+import type { RecordActions } from "@/src/lib/features/record/record-slice";
+import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+
+const OursMoves = ({
   recordState,
   recordActions,
+}: {
+  recordState: ReduxRecordState;
+  recordActions: RecordActions | EditingActions;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { recording } = recordState;
   const { zone } = recording.home.player;
   const oursMoves =
