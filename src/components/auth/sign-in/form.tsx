@@ -21,16 +21,17 @@ const SignInError = () => {
       ? "看來您已使用其他方式註冊，請使用原註冊方式登入"
       : "";
 
-  return (
-    <Alert variant="destructive" hidden={!urlError}>
-      <FiAlertTriangle />
-      <AlertTitle>登入失敗</AlertTitle>
-      <AlertDescription>{errorMessage}</AlertDescription>
-    </Alert>
-  );
+  if (urlError)
+    return (
+      <Alert variant="destructive" hidden={!urlError}>
+        <FiAlertTriangle />
+        <AlertTitle>登入失敗</AlertTitle>
+        <AlertDescription>{errorMessage}</AlertDescription>
+      </Alert>
+    );
 };
 
-const SignInForm = ({ className }) => {
+const SignInForm = ({ className }: { className: string }) => {
   return (
     <Card className={className}>
       <CardHeader>

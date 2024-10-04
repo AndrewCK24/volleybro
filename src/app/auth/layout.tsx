@@ -1,7 +1,7 @@
 import { Main } from "@/src/components/layout/main";
 import { Logo } from "@/src/components/custom/logo";
 
-const AuthLayout = ({ children }) => {
+const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Main className="gap-0 p-0 overflow-hidden overscroll-y-none bg-primary">
       <Logo />
