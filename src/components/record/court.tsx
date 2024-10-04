@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/src/lib/redux/hooks";
 import { useRecord } from "@/src/hooks/use-data";
 import {
   Court,
@@ -21,7 +21,7 @@ const RecordCourt = ({
   recordState: ReduxRecordState;
   recordActions: RecordActions | EditingActions;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
   const { status, recording, lineups } = recordState;
   const members = record.teams.home.players;

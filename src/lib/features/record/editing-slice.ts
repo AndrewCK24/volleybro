@@ -57,6 +57,7 @@ interface SetEditingRallyStatusPayload {
   };
 }
 
+// FIXME: 修正編輯狀態 inPlay, isSetPoint 計算邏輯、減少引入參數
 const setEditingRallyStatus: CaseReducer<
   ReduxRecordState,
   PayloadAction<SetEditingRallyStatusPayload>

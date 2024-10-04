@@ -14,6 +14,7 @@ const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
   const { rallies } = record.sets[setNum];
   const { players } = record.teams.home;
 
+  // FIXME: 修正編輯狀態 inPlay, isSetPoint 計算邏輯
   const handleRallyClick = (rallyNum: number) => {
     dispatch(
       editingActions.setEditingRallyStatus({
@@ -31,7 +32,8 @@ const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
           setNum,
           rallyNum,
           inPlay: true,
-          recordingMode: "home",
+          isSetPoint: false,
+          recordingMode: "away",
         },
       })
     );

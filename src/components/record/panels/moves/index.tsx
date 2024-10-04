@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/src/lib/redux/hooks";
 import { cn } from "@/src/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
 import { Button } from "@/src/components/ui/button";
@@ -41,13 +40,18 @@ export const MoveButton = ({ move, toggled, onClick, children }) => {
   );
 };
 
-const RecordMoves: React.FC<{
+const RecordMoves = ({
+  recordId,
+  recordState,
+  recordActions,
+  className,
+}: {
   recordId: string;
   recordState: ReduxRecordState;
   recordActions: RecordActions | EditingActions;
   className?: string;
-}> = ({ recordId, recordState, recordActions, className }) => {
-  const dispatch = useDispatch();
+}) => {
+  const dispatch = useAppDispatch();
   const { status, recording } = recordState;
 
   return (
