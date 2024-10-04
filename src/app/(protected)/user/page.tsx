@@ -11,7 +11,7 @@ const UserPage = () => {
         className="grid w-full px-4"
         action={async () => {
           "use server";
-          await signOut();
+          await signOut({ redirectTo: "/auth/sign-in" });
         }}
       >
         <Button variant="destructive" size="lg">

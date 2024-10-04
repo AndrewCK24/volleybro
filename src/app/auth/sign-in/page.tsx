@@ -1,4 +1,4 @@
-import SignInForm from "./SignInForm";
+import SignInForm from "@/src/components/auth/sign-in/form";
 
 const SignInPage = () => {
   return <SignInForm className="w-full" />;
