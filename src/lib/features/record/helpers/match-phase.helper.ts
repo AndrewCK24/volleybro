@@ -1,6 +1,6 @@
 import type { ReduxRecording } from "@/src/lib/features/record/types";
 
-export const phaseChecker = (
+export const matchPhaseHelper = (
   rally: ReduxRecording,
   point: number = 25
 ): {

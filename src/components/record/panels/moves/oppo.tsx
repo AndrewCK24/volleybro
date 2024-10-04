@@ -1,12 +1,25 @@
 "use client";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/src/lib/redux/hooks";
 import { useRecord } from "@/src/hooks/use-data";
 import { scoringMoves } from "@/src/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
 import { Container, MoveButton } from "@/src/components/record/panels/moves";
+import { addRally } from "@/src/lib/features/record/actions/add-rally";
 
-const OppoMoves = ({ recordId, recordState, recordActions }) => {
-  const dispatch = useDispatch();
+import type { ReduxRecordState } from "@/src/lib/features/record/types";
+import type { RecordActions } from "@/src/lib/features/record/record-slice";
+import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+
+const OppoMoves = ({
+  recordId,
+  recordState,
+  recordActions,
+}: {
+  recordId: string;
+  recordState: ReduxRecordState;
+  recordActions: RecordActions | EditingActions;
+}) => {
+  const dispatch = useAppDispatch();
   const { record, mutate } = useRecord(recordId);
   const {
     status: { setNum, rallyNum },
@@ -21,32 +34,18 @@ const OppoMoves = ({ recordId, recordState, recordActions }) => {
     if (recording.away.num !== move.num) {
       dispatch(recordActions.setRecordingAwayMove(move));
     } else {
-      const updateRallies = async () => {
-        try {
-          const res = await fetch(
-            `/api/records/${recordId}/sets/${setNum}/rallies`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(recording),
-            }
-          );
-          if (!res.ok) throw new Error("Network response was not ok");
-          const rallies = await res.json();
-          record.sets[setNum].rallies = rallies;
-          return record;
-        } catch (error) {
-          console.error("[POST /api/records]", error);
-        }
-      };
-      mutate(updateRallies(), {
-        revalidate: false,
-        optimisticData: (record) => {
-          record.sets[setNum].rallies.push(recording);
-          return record;
-        },
-      });
-      dispatch(recordActions.resetRecording());
+      try {
+        mutate(addRally({ recordId, setNum }, recording, record), {
+          revalidate: false,
+          optimisticData: (record) => {
+            record.sets[setNum].rallies.push(recording);
+            return record;
+          },
+        });
+        dispatch(recordActions.resetRecording(record));
+      } catch (error) {
+        console.error("[POST /api/records]", error);
+      }
     }
   };
 

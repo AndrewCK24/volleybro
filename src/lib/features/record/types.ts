@@ -48,6 +48,19 @@ export type ReduxStatus = {
   recordingMode: "home" | "away";
 };
 
+export type ReduxStatusInput = {
+  isServing?: boolean;
+  scores?: {
+    home: number;
+    away: number;
+  };
+  setNum?: number;
+  rallyNum?: number;
+  inPlay?: boolean;
+  isSetPoint?: boolean;
+  recordingMode?: "home" | "away";
+};
+
 export type ReduxLineup = {
   options: {
     liberoSwitchMode: number;

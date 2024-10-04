@@ -3,11 +3,15 @@ import {
   type CaseReducer,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { phaseChecker } from "@/src/lib/features/record/helpers/phase.helper";
+import {
+  finalPointHelper,
+  matchPhaseHelper,
+} from "@/src/lib/features/record/helpers";
 
 import type {
   ReduxRecordState,
   ReduxStatus,
+  ReduxStatusInput,
   ReduxLineup,
   ReduxRallyDetail,
   ReduxRecordInput,
@@ -122,10 +126,10 @@ export const initialize: CaseReducer<
   const record = structuredClone(action.payload);
   const setNum = record.sets.length - 1;
   const rallyNum = record.sets[setNum]?.rallies?.length || 0;
-  const isDecidingSet = setNum === record.info.scoring.setCount - 1;
-  const { inPlay, isSetPoint } = phaseChecker(
+  const finalPoint = finalPointHelper(setNum, record.info);
+  const { inPlay, isSetPoint } = matchPhaseHelper(
     record.sets[setNum].rallies[rallyNum - 1],
-    isDecidingSet ? record.info.scoring.decidingSetPoints : 25
+    finalPoint
   );
   const isServing =
     inPlay || rallyNum === 0
@@ -155,17 +159,27 @@ export const initialize: CaseReducer<
   state.status = {
     ...state.status,
     isServing,
-    setNum,
-    rallyNum,
-    inPlay,
-    isSetPoint,
     scores: {
       home: record.sets[setNum].rallies[rallyNum - 1]?.home.score || 0,
       away: record.sets[setNum].rallies[rallyNum - 1]?.away.score || 0,
     },
+    setNum,
+    rallyNum,
+    inPlay,
+    isSetPoint,
     recordingMode: "home",
   };
   state.lineups = lineups;
+};
+
+export const setStatus: CaseReducer<
+  ReduxRecordState,
+  PayloadAction<ReduxStatusInput>
+> = (state, action) => {
+  state.status = {
+    ...state.status,
+    ...action.payload,
+  };
 };
 
 export const setRecordingPlayer: CaseReducer<
@@ -251,7 +265,14 @@ export const setRecordingMode: CaseReducer<
   state.status.recordingMode = action.payload;
 };
 
-export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
+export const resetRecording: CaseReducer<
+  ReduxRecordState,
+  PayloadAction<ReduxRecordInput>
+> = (state, action) => {
+  const record = structuredClone(action.payload);
+  const { setNum, rallyNum } = state.status;
+  const finalPoint = finalPointHelper(setNum, record.info);
+  const { inPlay, isSetPoint } = matchPhaseHelper(state.recording, finalPoint);
   state.status = {
     ...state.status,
     isServing: state.recording.win,
@@ -260,6 +281,8 @@ export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
       away: state.recording.away.score,
     },
     rallyNum: state.status.rallyNum + 1,
+    inPlay,
+    isSetPoint,
     recordingMode: "home",
   };
   state.recording = {
