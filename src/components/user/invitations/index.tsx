@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
-const Invitations = ({ className }) => {
+const Invitations = ({ className }: { className?: string }) => {
   const router = useRouter();
   const { user, mutate: mutateUser } = useUser();
   const { teams, isLoading, mutate: mutateUserTeams } = useUserTeams();
