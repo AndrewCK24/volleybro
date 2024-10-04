@@ -17,7 +17,7 @@ import { Button, Link } from "@/src/components/ui/button";
 import { Card, CardDescription } from "@/src/components/ui/card";
 import { Separator } from "@/src/components/ui/separator";
 
-const Menu = ({ className }) => {
+const Menu = ({ className }: { className?: string }) => {
   const router = useRouter();
   const { user, mutate: mutateUser } = useUser();
   const {
