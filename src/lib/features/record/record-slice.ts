@@ -6,12 +6,12 @@ import {
 import {
   finalPointHelper,
   matchPhaseHelper,
+  serveOrderHelper,
 } from "@/src/lib/features/record/helpers";
 
 import type {
   ReduxRecordState,
   ReduxStatus,
-  ReduxStatusInput,
   ReduxLineup,
   ReduxRallyDetail,
   ReduxRecordInput,
@@ -172,51 +172,28 @@ export const initialize: CaseReducer<
   state.lineups = lineups;
 };
 
-export const setStatus: CaseReducer<
-  ReduxRecordState,
-  PayloadAction<ReduxStatusInput>
-> = (state, action) => {
-  state.status = {
-    ...state.status,
-    ...action.payload,
-  };
-};
-
 export const setRecordingPlayer: CaseReducer<
   ReduxRecordState,
   PayloadAction<{ _id: string; list: string; zone: number }>
 > = (state, action) => {
+  const { _id, list, zone } = action.payload;
+  const isSamePlayer = _id === state.recording.home.player._id;
+
   state.status.recordingMode = "home";
-  if (action.payload._id === state.recording.home.player._id) {
-    state.recording = {
-      ...initialState.recording,
-      home: {
-        ...initialState.recording.home,
-        score: state.status.scores.home,
-      },
-      away: {
-        ...initialState.recording.away,
-        score: state.status.scores.away,
-      },
-    };
-  } else {
-    state.recording = {
-      ...initialState.recording,
-      home: {
-        ...initialState.recording.home,
-        player: {
-          _id: action.payload._id,
-          list: action.payload.list,
-          zone: action.payload.zone,
-        },
-        score: state.status.scores.home,
-      },
-      away: {
-        ...initialState.recording.away,
-        score: state.status.scores.away,
-      },
-    };
-  }
+  state.recording = {
+    ...initialState.recording,
+    home: {
+      ...initialState.recording.home,
+      player: isSamePlayer
+        ? initialState.recording.home.player
+        : { _id, list, zone },
+      score: state.status.scores.home,
+    },
+    away: {
+      ...initialState.recording.away,
+      score: state.status.scores.away,
+    },
+  };
 };
 
 export const setRecordingHomeMove: CaseReducer<
@@ -224,22 +201,21 @@ export const setRecordingHomeMove: CaseReducer<
   PayloadAction<ScoringMove>
 > = (state, action) => {
   const { win, type, num, outcome } = action.payload;
+  const { home, away } = state.status.scores;
+
   state.status.recordingMode = "away";
-  state.recording = {
-    ...state.recording,
-    win: win,
-    home: {
-      ...state.recording.home,
-      score: win ? state.status.scores.home + 1 : state.status.scores.home,
-      type: type,
-      num: num,
-    },
-    away: {
-      ...state.recording.away,
-      score: win ? state.status.scores.away : state.status.scores.away + 1,
-      type: scoringMoves[outcome[0]].type,
-      num: outcome[0],
-    },
+  state.recording.win = win;
+  state.recording.home = {
+    ...state.recording.home,
+    score: win ? home + 1 : home,
+    type,
+    num,
+  };
+  state.recording.away = {
+    ...state.recording.away,
+    score: win ? away : away + 1,
+    type: scoringMoves[outcome[0]].type,
+    num: outcome[0],
   };
 };
 
@@ -248,14 +224,7 @@ export const setRecordingAwayMove: CaseReducer<
   PayloadAction<ScoringMove>
 > = (state, action) => {
   const { type, num } = action.payload;
-  state.recording = {
-    ...state.recording,
-    away: {
-      ...state.recording.away,
-      type: type,
-      num: num,
-    },
-  };
+  state.recording.away = { ...state.recording.away, type, num };
 };
 
 export const setRecordingMode: CaseReducer<
@@ -273,6 +242,8 @@ export const resetRecording: CaseReducer<
   const { setNum, rallyNum } = state.status;
   const finalPoint = finalPointHelper(setNum, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(state.recording, finalPoint);
+  serveOrderHelper(state);
+
   state.status = {
     ...state.status,
     isServing: state.recording.win,
@@ -280,21 +251,16 @@ export const resetRecording: CaseReducer<
       home: state.recording.home.score,
       away: state.recording.away.score,
     },
-    rallyNum: state.status.rallyNum + 1,
+    rallyNum: rallyNum + 1,
     inPlay,
     isSetPoint,
     recordingMode: "home",
   };
+
   state.recording = {
     ...initialState.recording,
-    home: {
-      ...initialState.recording.home,
-      score: state.status.scores.home,
-    },
-    away: {
-      ...initialState.recording.away,
-      score: state.status.scores.away,
-    },
+    home: { ...initialState.recording.home, score: state.status.scores.home },
+    away: { ...initialState.recording.away, score: state.status.scores.away },
   };
 };
 
@@ -308,71 +274,6 @@ const recordSlice = createSlice({
     setRecordingAwayMove,
     setRecordingMode,
     resetRecording,
-    // confirmRecording: (state) => {
-    //   const { setNum, rallyNum } = state.status;
-    //   state.sets[setNum].rallies[rallyNum] = state.recording;
-    //   if (state.recording.win === true) {
-    //     // if (state.recording.home.type === "oppo-error") {
-    //     //   state.players.away[state.recording.away.type].error[setNum] += 1;
-    //     // } else {
-    //     //   state.players[state.recording.home.player][
-    //     //     state.recording.home.type
-    //     //   ].successful[setNum] += 1;
-    //     // }
-    //     if (!state.status.isServing) {
-    //       const servingPlayer = state.lineups.home.starting.shift();
-    //       state.lineups.home.starting.push(servingPlayer);
-    //       if (state.lineups.home.starting[3].position === "L") {
-    //         const frontRowL = {
-    //           ...state.lineups.home.starting[3],
-    //         };
-    //         state.lineups.home.starting[3] = state.lineups.home.liberos[0];
-    //         state.lineups.home.liberos[0] = frontRowL;
-    //       }
-    //       state.sets[setNum].counts.rotation += 1;
-    //     }
-    //   } else if (state.recording.win === false) {
-    //     // if (state.recording.away.type !== "oppo-error") {
-    //     //   state.players.away[state.recording.away.type].successful[setNum] += 1;
-    //     // } else {
-    //     //   state.players[state.recording.home.player][
-    //     //     state.recording.home.type
-    //     //   ].error[setNum] += 1;
-    //     // }
-    //     if (state.status.isServing) {
-    //       if (
-    //         state.lineups.home.starting[0].position ===
-    //         state.lineups.home.options.liberoSwitchPosition
-    //       ) {
-    //         const targetPayer = {
-    //           ...state.lineups.home.starting[0],
-    //         };
-    //         state.lineups.home.starting[0] = state.lineups.home.liberos[0];
-    //         state.lineups.home.liberos[0] = targetPayer;
-    //       }
-    //     }
-    //   }
-    //   state.status = {
-    //     ...state.status,
-    //     isServing: state.recording.win,
-    //     scores: {
-    //       home: state.recording.home.score,
-    //       away: state.recording.away.score,
-    //     },
-    //     rallyNum: state.status.rallyNum + 1,
-    //   };
-    //   state.recording = {
-    //     ...initialState.recording,
-    //     home: {
-    //       ...initialState.recording.home,
-    //       score: state.status.scores.home,
-    //     },
-    //     away: {
-    //       ...initialState.recording.away,
-    //       score: state.status.scores.away,
-    //     },
-    //   };
-    // },
   },
 });
 
