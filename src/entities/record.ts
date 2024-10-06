@@ -77,7 +77,7 @@ export type Match = {
   };
 };
 
-export type Statistics = {
+export type PlayerStats = {
   serving: {
     success: number;
     error: number;
@@ -108,7 +108,7 @@ export type Player = {
   _id: string;
   name: string;
   number: number;
-  statistics: Statistics;
+  stats: PlayerStats[];
 };
 
 export type Staff = {
@@ -126,13 +126,13 @@ export type Team = {
 };
 
 export enum MoveType {
-  Serving = 1,
-  Blocking,
-  Attack,
-  Reception,
-  Defense,
-  Setting,
-  OppoError,
+  SERVING = 1,
+  BLOCKING,
+  ATTACK,
+  RECEPTION,
+  DEFENSE,
+  SETTING,
+  UNFORCED_ERROR,
 }
 
 export type RallyDetail = {

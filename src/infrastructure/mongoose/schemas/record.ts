@@ -91,7 +91,7 @@ const matchSchema = new Schema({
   },
 });
 
-const statisticsSchema = new Schema({
+const playerStatsSchema = new Schema({
   serving: {
     success: { type: Number },
     error: { type: Number },
@@ -125,7 +125,7 @@ const playerSchema = new Schema({
   },
   name: { type: String },
   number: { type: Number },
-  statistics: { type: statisticsSchema },
+  stats: { type: [playerStatsSchema] },
 });
 
 const staffSchema = new Schema({
