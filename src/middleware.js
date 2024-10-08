@@ -10,9 +10,12 @@ import {
 
 const { auth } = NextAuth(authConfig);
 
-export default auth((req) => {
+export const middleware = auth((req) => {
   const { nextUrl } = req;
   const isSignedIn = !!req.auth;
+
+  console.log("Request Path:", nextUrl.pathname);
+  console.log("Is Signed In:", isSignedIn);
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
