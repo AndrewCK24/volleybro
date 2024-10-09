@@ -1,6 +1,6 @@
 import { FiArrowLeft } from "react-icons/fi";
-import { Link } from "@/src/components/ui/button";
-import MatchConfirmation from "@/src/components/record/info/confirmation";
+import { Link } from "@/components/ui/button";
+import MatchConfirmation from "@/components/record/info/confirmation";
 
 const NewRecordPage = ({
   searchParams,

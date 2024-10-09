@@ -1,5 +1,5 @@
-import type { Record } from "@/src/entities/record";
-import type { MoveType } from "@/src/entities/record";
+import type { Record } from "@/entities/record";
+import type { MoveType } from "@/entities/record";
 
 // For Forms and Tables
 export type FormMatch = {

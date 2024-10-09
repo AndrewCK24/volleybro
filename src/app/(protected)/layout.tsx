@@ -1,6 +1,6 @@
-import { Header } from "@/src/components/layout/header";
-import { Main } from "@/src/components/layout/main";
-import { Nav } from "@/src/components/layout/nav";
+import { Header } from "@/components/layout/header";
+import { Main } from "@/components/layout/main";
+import { Nav } from "@/components/layout/nav";
 
 const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
   return (

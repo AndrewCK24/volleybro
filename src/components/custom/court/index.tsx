@@ -1,7 +1,7 @@
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { FiPlus, FiX, FiRepeat } from "react-icons/fi";
 
-import type { Player } from "@/src/entities/record";
+import type { Player } from "@/entities/record";
 
 export const Court = ({
   className,

@@ -1,7 +1,7 @@
 import { signOut } from "@/auth";
 import { FiLogOut } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import Menu from "@/src/components/user/menu";
+import { Button } from "@/components/ui/button";
+import Menu from "@/components/user/menu";
 
 const UserPage = () => {
   return (

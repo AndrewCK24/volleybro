@@ -1,15 +1,15 @@
 "use client";
-import { useAppDispatch } from "@/src/lib/redux/hooks";
-import { cn } from "@/src/lib/utils";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { cn } from "@/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
-import OursMoves from "@/src/components/record/panels/moves/ours";
-import OppoMoves from "@/src/components/record/panels/moves/oppo";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import OursMoves from "@/components/record/panels/moves/ours";
+import OppoMoves from "@/components/record/panels/moves/oppo";
 
-import type { ReduxRecordState } from "@/src/lib/features/record/types";
-import type { RecordActions } from "@/src/lib/features/record/record-slice";
-import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+import type { ReduxRecordState } from "@/lib/features/record/types";
+import type { RecordActions } from "@/lib/features/record/record-slice";
+import type { EditingActions } from "@/lib/features/record/editing-slice";
 
 export const Container = ({ children, className }) => {
   return (

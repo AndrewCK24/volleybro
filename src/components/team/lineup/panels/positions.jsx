@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { FiChevronLeft } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const positions = [
   {

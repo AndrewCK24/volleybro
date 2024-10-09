@@ -2,10 +2,10 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/src/components/ui/use-toast";
-import { useTeam } from "@/src/hooks/use-data";
+import { useToast } from "@/components/ui/use-toast";
+import { useTeam } from "@/hooks/use-data";
 import { FiSend } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   email: z

@@ -1,7 +1,7 @@
 "use client";
 import { useSWRConfig } from "swr";
 import { useRouter } from "next/navigation";
-import TeamForm from "@/src/components/team/form";
+import TeamForm from "@/components/team/form";
 
 const NewTeamPage = () => {
   const router = useRouter();

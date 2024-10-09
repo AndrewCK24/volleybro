@@ -1,4 +1,4 @@
-import MemberForm from "@/src/components/team/members/form";
+import MemberForm from "@/components/team/members/form";
 
 const MemberCreatePage = ({ params }) => {
   const { teamId } = params;

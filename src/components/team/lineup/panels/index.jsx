@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
-import PlayerInfo from "@/src/components/team/lineup/panels/player-info";
-import LineupOptions from "@/src/components/team/lineup/panels/options";
-import Substitutes from "@/src/components/team/lineup/panels/substitutes";
-import Positions from "@/src/components/team/lineup/panels/positions";
+import PlayerInfo from "@/components/team/lineup/panels/player-info";
+import LineupOptions from "@/components/team/lineup/panels/options";
+import Substitutes from "@/components/team/lineup/panels/substitutes";
+import Positions from "@/components/team/lineup/panels/positions";
 
 const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
   const { lineups, status } = useSelector((state) => state.lineups);

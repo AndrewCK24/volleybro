@@ -1,4 +1,4 @@
-import type { Match } from "@/src/entities/record";
+import type { Match } from "@/entities/record";
 
 export const finalPointHelper = (setNum: number, info: Match) => {
   const isDecidingSet = setNum === info.scoring.setCount - 1;

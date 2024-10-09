@@ -2,13 +2,13 @@ import { useEffect, useMemo } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
-import { recordActions } from "@/src/lib/features/record/record-slice";
-import { useRecord } from "@/src/hooks/use-data";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
+import { useRecord } from "@/hooks/use-data";
 import { FiUser, FiCheck } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card } from "@/src/components/ui/card";
-import { DialogFooter, DialogClose } from "@/src/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { DialogFooter, DialogClose } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormRadioGroup,
   FormRadioItem,
-} from "@/src/components/ui/form";
+} from "@/components/ui/form";
 import {
   Table,
   TableBody,
@@ -25,10 +25,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
-import LiberoSwitch from "@/src/components/team/lineup/panels/options/libero-switch";
+} from "@/components/ui/table";
+import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
 
-import type { Player } from "@/src/entities/record";
+import type { Player } from "@/entities/record";
 
 const formSchema = z.object({
   serve: z.enum(["home", "away"]),

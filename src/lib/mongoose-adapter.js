@@ -1,7 +1,7 @@
-import User from "@/src/infrastructure/mongoose/schemas/user";
-import Session from "@/src/infrastructure/mongoose/schemas/session";
-import VerificationToken from "@/src/infrastructure/mongoose/schemas/verification-token";
-import Account from "@/src/infrastructure/mongoose/schemas/account";
+import User from "@/infrastructure/mongoose/schemas/user";
+import Session from "@/infrastructure/mongoose/schemas/session";
+import VerificationToken from "@/infrastructure/mongoose/schemas/verification-token";
+import Account from "@/infrastructure/mongoose/schemas/account";
 
 export const MongooseAdapter = (connectToMongoDB) => {
   const adaptorMethods = {

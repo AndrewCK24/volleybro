@@ -1,4 +1,4 @@
-import { Team } from "@/src/entities/team";
+import { Team } from "@/entities/team";
 
 export interface ITeamRepository {
   findById(id: string): Promise<Team | undefined>;

@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { FiUserCheck, FiUser, FiChevronLeft } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Separator } from "@/src/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const Substitutes = ({ members, others, className }) => {
   const dispatch = useDispatch();

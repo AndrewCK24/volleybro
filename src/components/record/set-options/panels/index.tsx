@@ -1,10 +1,10 @@
-import { useAppSelector } from "@/src/lib/redux/hooks";
-import PlayerInfo from "@/src/components/team/lineup/panels/player-info";
-import LineupOptions from "@/src/components/record/set-options/panels/options";
-import Positions from "@/src/components/team/lineup/panels/positions";
-import Substitutes from "@/src/components/record/set-options/panels/substitutes";
+import { useAppSelector } from "@/lib/redux/hooks";
+import PlayerInfo from "@/components/team/lineup/panels/player-info";
+import LineupOptions from "@/components/record/set-options/panels/options";
+import Positions from "@/components/team/lineup/panels/positions";
+import Substitutes from "@/components/record/set-options/panels/substitutes";
 
-import type { Player } from "@/src/entities/record";
+import type { Player } from "@/entities/record";
 
 const LineupPanels = ({
   recordId,

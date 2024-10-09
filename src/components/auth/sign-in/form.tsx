@@ -1,17 +1,12 @@
 "use client";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { signIn } from "@/src/lib/auth-actions";
+import { signIn } from "@/lib/auth-actions";
 import { FcGoogle } from "react-icons/fc";
 import { FiAlertTriangle } from "react-icons/fi";
-import { Alert, AlertTitle, AlertDescription } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/src/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
 const SignInError = () => {
   const searchParams = useSearchParams();

@@ -1,5 +1,5 @@
 import { Schema, model, models } from "mongoose";
-import { Role } from "@/src/entities/team";
+import { Role } from "@/entities/team";
 
 export const lineupSchema = new Schema({
   options: {

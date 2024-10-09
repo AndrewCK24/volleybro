@@ -15,8 +15,8 @@ import {
 } from "react-hook-form";
 import { cva } from "class-variance-authority";
 
-import { cn } from "@/src/lib/utils";
-import { Label } from "@/src/components/ui/label";
+import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 interface FormProps<TFieldValues extends FieldValues> {
   form: UseFormReturn<TFieldValues>;

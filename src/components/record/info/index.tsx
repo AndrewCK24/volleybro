@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 const MatchInfo = ({ className }: { className?: string }) => {
   return (

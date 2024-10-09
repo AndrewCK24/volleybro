@@ -1,5 +1,5 @@
 import { FiHash } from "react-icons/fi";
-import { Badge } from "@/src/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -7,9 +7,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
+} from "@/components/ui/table";
 
-import type { TableRosterPlayer } from "@/src/lib/features/record/types";
+import type { TableRosterPlayer } from "@/lib/features/record/types";
 
 const ListBadge = ({ list }: { list: string }) => {
   if (list === "substitutes") return null;

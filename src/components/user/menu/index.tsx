@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUser, useUserTeams } from "@/src/hooks/use-data";
+import { useUser, useUserTeams } from "@/hooks/use-data";
 import {
   FiChevronDown,
   FiSettings,
@@ -13,9 +13,9 @@ import {
   FiPlus,
 } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
-import { Button, Link } from "@/src/components/ui/button";
-import { Card, CardDescription } from "@/src/components/ui/card";
-import { Separator } from "@/src/components/ui/separator";
+import { Button, Link } from "@/components/ui/button";
+import { Card, CardDescription } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const Menu = ({ className }: { className?: string }) => {
   const router = useRouter();

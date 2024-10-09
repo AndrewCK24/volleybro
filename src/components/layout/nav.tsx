@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useSelectedLayoutSegments } from "next/navigation";
-import { cn } from "@/src/lib/utils";
-import { useUser } from "@/src/hooks/use-data";
+import { cn } from "@/lib/utils";
+import { useUser } from "@/hooks/use-data";
 import { usePathname } from "next/navigation";
 import {
   FiHome as HomeIcon,

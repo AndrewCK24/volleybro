@@ -1,18 +1,18 @@
 "use client";
-import { useAppDispatch } from "@/src/lib/redux/hooks";
+import { useAppDispatch } from "@/lib/redux/hooks";
 import {
   frontMoves,
   backMoves,
   errorMoves,
   type ScoringMove,
-} from "@/src/lib/scoring-moves";
+} from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiRepeat } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Container, MoveButton } from "@/src/components/record/panels/moves";
+import { Button } from "@/components/ui/button";
+import { Container, MoveButton } from "@/components/record/panels/moves";
 
-import type { ReduxRecordState } from "@/src/lib/features/record/types";
-import type { RecordActions } from "@/src/lib/features/record/record-slice";
-import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+import type { ReduxRecordState } from "@/lib/features/record/types";
+import type { RecordActions } from "@/lib/features/record/record-slice";
+import type { EditingActions } from "@/lib/features/record/editing-slice";
 
 const OursMoves = ({
   recordState,

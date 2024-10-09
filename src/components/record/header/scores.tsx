@@ -1,8 +1,8 @@
 "use client";
-import { useAppSelector } from "@/src/lib/redux/hooks";
-import { useRecord } from "@/src/hooks/use-data";
+import { useAppSelector } from "@/lib/redux/hooks";
+import { useRecord } from "@/hooks/use-data";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 
 const Container = ({
   className,

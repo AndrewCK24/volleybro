@@ -4,25 +4,25 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiCheck } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/src/components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
-import { Separator } from "@/src/components/ui/separator";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
-import type { FormMatch } from "@/src/lib/features/record/types";
+import type { FormMatch } from "@/lib/features/record/types";
 
 const miscFormSchema = z.object({
   location: z

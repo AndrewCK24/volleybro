@@ -6,7 +6,7 @@ import {
   authRoutes,
   apiAuthPrefix,
   DEFAULT_SIGN_IN_REDIRECT,
-} from "@/src/lib/routes";
+} from "@/lib/routes";
 
 const { auth } = NextAuth(authConfig);
 
@@ -14,16 +14,11 @@ export const middleware = auth((req) => {
   const { nextUrl } = req;
   const isSignedIn = !!req.auth;
 
-  console.log("Request Path:", nextUrl.pathname);
-  console.log("Is Signed In:", isSignedIn);
-
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  if (isApiAuthRoute) {
-    return NextResponse.next();
-  }
+  if (isApiAuthRoute) return NextResponse.next();
 
   if (isAuthRoute) {
     if (isSignedIn) {

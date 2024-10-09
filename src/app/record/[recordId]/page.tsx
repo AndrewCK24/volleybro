@@ -1,4 +1,4 @@
-import Record from "@/src/components/record";
+import Record from "@/components/record";
 
 const RecordPage = ({ params }: { params: { recordId: string } }) => {
   const { recordId } = params;

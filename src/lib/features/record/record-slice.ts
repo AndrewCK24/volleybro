@@ -7,7 +7,7 @@ import {
   finalPointHelper,
   matchPhaseHelper,
   serveOrderHelper,
-} from "@/src/lib/features/record/helpers";
+} from "@/lib/features/record/helpers";
 
 import type {
   ReduxRecordState,
@@ -15,8 +15,8 @@ import type {
   ReduxLineup,
   ReduxRallyDetail,
   ReduxRecordInput,
-} from "@/src/lib/features/record/types";
-import { scoringMoves, type ScoringMove } from "@/src/lib/scoring-moves";
+} from "@/lib/features/record/types";
+import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
 
 // Define the initial states
 const statusState: ReduxStatus = {

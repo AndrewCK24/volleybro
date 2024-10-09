@@ -1,7 +1,7 @@
 "use client";
-import { useToast } from "@/src/components/ui/use-toast";
-import { useTeam, useTeamMembers } from "@/src/hooks/use-data";
-import Lineup from "@/src/components/team/lineup";
+import { useToast } from "@/components/ui/use-toast";
+import { useTeam, useTeamMembers } from "@/hooks/use-data";
+import Lineup from "@/components/team/lineup";
 
 const LineupPage = ({ params }) => {
   const { toast } = useToast();

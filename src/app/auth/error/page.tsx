@@ -1,4 +1,4 @@
-import Error from "@/src/components/auth/error";
+import Error from "@/components/auth/error";
 
 const ErrorPage = () => {
   return <Error />;
