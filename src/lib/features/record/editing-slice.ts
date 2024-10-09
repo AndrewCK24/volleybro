@@ -11,14 +11,14 @@ import {
   setRecordingAwayMove,
   setRecordingMode,
   resetRecording,
-} from "@/src/lib/features/record/record-slice";
+} from "@/lib/features/record/record-slice";
 import type {
   ReduxRecordState,
   ReduxLineup,
   ReduxStatus,
   ReduxRallyDetail,
   ReduxRecordInput,
-} from "@/src/lib/features/record/types";
+} from "@/lib/features/record/types";
 
 const initialState: ReduxRecordState = { isEditing: false, ...recordInitial };
 

@@ -1,11 +1,11 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
-import { useRecord } from "@/src/hooks/use-data";
-import { editingActions } from "@/src/lib/features/record/editing-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { useRecord } from "@/hooks/use-data";
+import { editingActions } from "@/lib/features/record/editing-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Separator } from "@/src/components/ui/separator";
-import Rally from "@/src/components/record/rally";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import Rally from "@/components/record/rally";
 
 const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();

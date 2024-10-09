@@ -1,10 +1,10 @@
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { FiUserCheck, FiChevronLeft } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
-import type { Player } from "@/src/entities/record";
+import type { Player } from "@/entities/record";
 
 const Substitutes = ({
   members,

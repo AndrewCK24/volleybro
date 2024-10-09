@@ -1,6 +1,6 @@
-import { IAuthenticationService } from "@/src/applications/services/auth/authentication.service.interface";
-import { IUserRepository } from "@/src/applications/repositories/user.repository.interface";
-import { User } from "@/src/entities/user";
+import { IAuthenticationService } from "@/applications/services/auth/authentication.service.interface";
+import { IUserRepository } from "@/applications/repositories/user.repository.interface";
+import { User } from "@/entities/user";
 import { auth } from "@/auth";
 
 export class AuthenticationService implements IAuthenticationService {

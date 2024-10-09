@@ -6,11 +6,11 @@ import {
   authRoutes,
   apiAuthPrefix,
   DEFAULT_SIGN_IN_REDIRECT,
-} from "@/src/lib/routes";
+} from "@/lib/features/auth/routes";
 
 const { auth } = NextAuth(authConfig);
 
-export default auth((req) => {
+export const middleware = auth((req) => {
   const { nextUrl } = req;
   const isSignedIn = !!req.auth;
 
@@ -18,9 +18,7 @@ export default auth((req) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  if (isApiAuthRoute) {
-    return NextResponse.next();
-  }
+  if (isApiAuthRoute) return NextResponse.next();
 
   if (isAuthRoute) {
     if (isSignedIn) {

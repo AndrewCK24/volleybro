@@ -1,17 +1,17 @@
 "use client";
-import { useRecord } from "@/src/hooks/use-data";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
-import { Button } from "@/src/components/ui/button";
+import { useRecord } from "@/hooks/use-data";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupsActions } from "@/app/store/lineups-slice";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/src/components/ui/dialog";
-import LineupCourt from "@/src/components/team/lineup/court";
-import RecordSetPanels from "@/src/components/record/set-options/panels";
+} from "@/components/ui/dialog";
+import LineupCourt from "@/components/team/lineup/court";
+import RecordSetPanels from "@/components/record/set-options/panels";
 
 const RecordSetOptions = ({ recordId }) => {
   const dispatch = useAppDispatch();

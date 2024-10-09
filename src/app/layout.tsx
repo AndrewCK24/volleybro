@@ -1,12 +1,12 @@
 import { Saira, Noto_Sans_TC } from "next/font/google";
 import "normalize.css";
-import "@/src/app/globals.css";
+import "@/app/globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ReduxProvider } from "@/src/lib/redux/provider";
+import { ReduxProvider } from "@/lib/redux/provider";
 import { SessionProvider } from "next-auth/react";
-import { Toaster } from "@/src/components/ui/toaster";
-import { BackgroundColorHandler } from "@/src/components/layout/bg-handler";
+import { Toaster } from "@/components/ui/toaster";
+import { BackgroundColorHandler } from "@/components/layout/bg-handler";
 
 const APP_NAME = "VolleyBro";
 const APP_DEFAULT_TITLE = "VolleyBro";

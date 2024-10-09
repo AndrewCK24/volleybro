@@ -1,4 +1,4 @@
-import { Main } from "@/src/components/layout/main";
+import { Main } from "@/components/layout/main";
 
 const RecordLayout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -1,13 +1,13 @@
 "use client";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { FiSave } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import LineupCourt from "@/src/components/team/lineup/court";
-import LineupPanels from "@/src/components/team/lineup/panels";
-import LoadingCourt from "@/src/components/custom/loading/court";
-import LoadingCard from "@/src/components/custom/loading/card";
+import { Button } from "@/components/ui/button";
+import LineupCourt from "@/components/team/lineup/court";
+import LineupPanels from "@/components/team/lineup/panels";
+import LoadingCourt from "@/components/custom/loading/court";
+import LoadingCard from "@/components/custom/loading/card";
 
 const Lineup = ({ team, members, handleSave }) => {
   const dispatch = useDispatch();

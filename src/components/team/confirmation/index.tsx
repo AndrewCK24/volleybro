@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useUser, useUserTeams } from "@/src/hooks/use-data";
+import { useUser, useUserTeams } from "@/hooks/use-data";
 import { FiCheck, FiX, FiCheckCircle } from "react-icons/fi";
-import { Alert, AlertTitle, AlertDescription } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 const ConfirmInvitation = ({
   teamId,

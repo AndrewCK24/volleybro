@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiUser } from "react-icons/fi";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
-import { Button } from "@/src/components/ui/button";
+import { lineupsActions } from "@/app/store/lineups-slice";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardBtnGroup,
-} from "@/src/components/ui/card";
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -16,9 +16,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
-import LineupError from "@/src/components/team/lineup/panels/options/lineup-error";
-import LiberoSwitch from "@/src/components/team/lineup/panels/options/libero-switch";
+} from "@/components/ui/table";
+import LineupError from "@/components/team/lineup/panels/options/lineup-error";
+import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
 
 const LineupOptions = ({
   members,

@@ -1,13 +1,13 @@
 "use client";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiChevronRight, FiAlertTriangle, FiHelpCircle } from "react-icons/fi";
-import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
-import { Button } from "@/src/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -16,22 +16,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/src/components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/src/components/ui/form";
+} from "@/components/ui/form";
 import {
   Select,
   SelectTrigger,
   SelectItem,
   SelectValue,
   SelectContent,
-} from "@/src/components/ui/select";
-import { Separator } from "@/src/components/ui/separator";
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   mode: z.coerce.number().int().min(0).max(2),

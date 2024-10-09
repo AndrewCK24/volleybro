@@ -1,5 +1,5 @@
-import { IUserRepository } from "@/src/applications/repositories/user.repository.interface";
-import { User } from "@/src/infrastructure/mongoose/schemas/user";
+import { IUserRepository } from "@/applications/repositories/user.repository.interface";
+import { User } from "@/infrastructure/mongoose/schemas/user";
 
 export class UserRepositoryImpl implements IUserRepository {
   async findById(id: string) {

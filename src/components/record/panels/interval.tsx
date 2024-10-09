@@ -1,5 +1,5 @@
-import { Card } from "@/src/components/ui/card";
-import RecordSetOptions from "@/src/components/record/set-options";
+import { Card } from "@/components/ui/card";
+import RecordSetOptions from "@/components/record/set-options";
 
 const RecordInterval = ({ recordId }: { recordId: string }) => {
   return (

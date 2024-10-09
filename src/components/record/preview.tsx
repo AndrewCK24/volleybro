@@ -1,10 +1,10 @@
 "use client";
-import { useRecord } from "@/src/hooks/use-data";
-import { cn } from "@/src/lib/utils";
-import { Card } from "@/src/components/ui/card";
-import Rally from "@/src/components/record/rally";
+import { useRecord } from "@/hooks/use-data";
+import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import Rally from "@/components/record/rally";
 
-import type { ReduxRecordState } from "@/src/lib/features/record/types";
+import type { ReduxRecordState } from "@/lib/features/record/types";
 
 const RecordPreview = ({
   recordId,

@@ -4,7 +4,7 @@ import {
   Inside,
   LoadingCard,
   AdjustButton,
-} from "@/src/components/custom/court";
+} from "@/components/custom/court";
 
 const LoadingCourt = ({ className }: { className?: string }) => {
   return (

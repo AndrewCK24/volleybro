@@ -1,4 +1,4 @@
-import { MoveType } from "@/src/entities/record";
+import { MoveType } from "@/entities/record";
 
 export type ScoringMove = {
   num: number;

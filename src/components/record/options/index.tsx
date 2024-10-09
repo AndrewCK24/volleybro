@@ -1,19 +1,14 @@
 "use client";
-import { useAppSelector } from "@/src/lib/redux/hooks";
+import { useAppSelector } from "@/lib/redux/hooks";
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/src/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/src/components/ui/tabs";
-import RalliesEdit from "@/src/components/record/options/edit";
-import RecordOptionsRallies from "@/src/components/record/options/rallies";
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RalliesEdit from "@/components/record/options/edit";
+import RecordOptionsRallies from "@/components/record/options/rallies";
 
 const RecordOptions = ({
   recordId,

@@ -4,7 +4,7 @@ import {
   MatchDivision,
   MatchPhase,
   MoveType,
-} from "@/src/entities/record";
+} from "@/entities/record";
 
 const lineupSchema = new Schema({
   options: {

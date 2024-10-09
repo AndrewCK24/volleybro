@@ -1,18 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/hooks";
-import { recordActions } from "@/src/lib/features/record/record-slice";
-import { editingActions } from "@/src/lib/features/record/editing-slice";
-import { useRecord } from "@/src/hooks/use-data";
-import { Card } from "@/src/components/ui/card";
-import { Dialog } from "@/src/components/ui/dialog";
-import Header from "@/src/components/record/header";
-import RecordCourt from "@/src/components/record/court";
-import RecordPreview from "@/src/components/record/preview";
-import RecordPanels from "@/src/components/record/panels";
-import RecordOptions from "@/src/components/record/options";
-import LoadingCourt from "@/src/components/custom/loading/court";
-import LoadingCard from "@/src/components/custom/loading/card";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
+import { editingActions } from "@/lib/features/record/editing-slice";
+import { useRecord } from "@/hooks/use-data";
+import { Card } from "@/components/ui/card";
+import { Dialog } from "@/components/ui/dialog";
+import Header from "@/components/record/header";
+import RecordCourt from "@/components/record/court";
+import RecordPreview from "@/components/record/preview";
+import RecordPanels from "@/components/record/panels";
+import RecordOptions from "@/components/record/options";
+import LoadingCourt from "@/components/custom/loading/court";
+import LoadingCard from "@/components/custom/loading/card";
 
 const Record = ({ recordId }: { recordId: string }) => {
   const { record, isLoading, error } = useRecord(recordId);

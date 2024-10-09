@@ -5,7 +5,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/src/components/ui/dialog";
+} from "@/components/ui/dialog";
 
 const LineupError = ({ open, setOpen }) => {
   return (

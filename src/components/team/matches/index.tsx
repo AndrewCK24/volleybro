@@ -1,15 +1,10 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useTeamRecords } from "@/src/hooks/use-data";
+import { useTeamRecords } from "@/hooks/use-data";
 import { FiChevronRight } from "react-icons/fi";
-import { Card } from "@/src/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/src/components/ui/table";
-import LoadingCard from "@/src/components/custom/loading/card";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import LoadingCard from "@/components/custom/loading/card";
 
 const TeamMatches = ({
   teamId,

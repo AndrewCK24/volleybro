@@ -1,4 +1,4 @@
-import InfoForm from "@/src/components/team/members/info-form";
+import InfoForm from "@/components/team/members/info-form";
 
 const EditMemberPage = ({ params }) => {
   const { teamId, memberId } = params;

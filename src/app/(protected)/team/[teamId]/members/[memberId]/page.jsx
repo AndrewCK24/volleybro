@@ -1,4 +1,4 @@
-import MembersInfo from "@/src/components/team/members/info";
+import MembersInfo from "@/components/team/members/info";
 
 const MemberPage = ({ params }) => {
   const { teamId, memberId } = params;

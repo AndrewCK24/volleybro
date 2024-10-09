@@ -1,5 +1,5 @@
-import { useAppDispatch } from "@/src/lib/redux/hooks";
-import { useRecord } from "@/src/hooks/use-data";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { useRecord } from "@/hooks/use-data";
 import {
   Court,
   Outside,
@@ -7,10 +7,10 @@ import {
   PlayerCard,
   AdjustButton,
   PlaceholderCard,
-} from "@/src/components/custom/court";
-import type { ReduxRecordState } from "@/src/lib/features/record/types";
-import type { RecordActions } from "@/src/lib/features/record/record-slice";
-import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+} from "@/components/custom/court";
+import type { ReduxRecordState } from "@/lib/features/record/types";
+import type { RecordActions } from "@/lib/features/record/record-slice";
+import type { EditingActions } from "@/lib/features/record/editing-slice";
 
 const RecordCourt = ({
   recordId,

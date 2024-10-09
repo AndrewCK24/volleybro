@@ -1,14 +1,9 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/src/components/ui/tabs";
-import TeamHero from "@/src/components/team/hero";
-import ConfirmInvitation from "@/src/components/team/confirmation";
-import TeamFeeds from "@/src/components/team/feeds";
-import TeamInfo from "@/src/components/team/info";
-import TeamMembers from "@/src/components/team/members";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TeamHero from "@/components/team/hero";
+import ConfirmInvitation from "@/components/team/confirmation";
+import TeamFeeds from "@/components/team/feeds";
+import TeamInfo from "@/components/team/info";
+import TeamMembers from "@/components/team/members";
 
 const Team = ({ teamId, tab }: { teamId: string; tab: string }) => {
   return (

@@ -8,8 +8,8 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import { HiArrowsUpDown } from "react-icons/hi2";
-import { Badge } from "@/src/components/ui/badge";
-import { Button } from "@/src/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   flexRender,
   getCoreRowModel,
@@ -23,7 +23,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
+} from "@/components/ui/table";
 
 const TeamMembersTable = ({ team, members, teamId }) => {
   const [sorting, setSorting] = useState(members);

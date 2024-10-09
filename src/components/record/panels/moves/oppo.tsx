@@ -1,14 +1,14 @@
 "use client";
-import { useAppDispatch } from "@/src/lib/redux/hooks";
-import { useRecord } from "@/src/hooks/use-data";
-import { scoringMoves } from "@/src/lib/scoring-moves";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { useRecord } from "@/hooks/use-data";
+import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
-import { Container, MoveButton } from "@/src/components/record/panels/moves";
-import { addRally } from "@/src/lib/features/record/actions/add-rally";
+import { Container, MoveButton } from "@/components/record/panels/moves";
+import { addRally } from "@/lib/features/record/actions/add-rally";
 
-import type { ReduxRecordState } from "@/src/lib/features/record/types";
-import type { RecordActions } from "@/src/lib/features/record/record-slice";
-import type { EditingActions } from "@/src/lib/features/record/editing-slice";
+import type { ReduxRecordState } from "@/lib/features/record/types";
+import type { RecordActions } from "@/lib/features/record/record-slice";
+import type { EditingActions } from "@/lib/features/record/editing-slice";
 
 const OppoMoves = ({
   recordId,

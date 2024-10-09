@@ -2,10 +2,10 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/src/components/ui/use-toast";
-import { useTeam } from "@/src/hooks/use-data";
+import { useToast } from "@/components/ui/use-toast";
+import { useTeam } from "@/hooks/use-data";
 import { FiSave, FiUser, FiShield } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,17 +13,17 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/src/components/ui/form";
+} from "@/components/ui/form";
 import {
   Select,
   SelectTrigger,
   SelectItem,
   SelectValue,
   SelectContent,
-} from "@/src/components/ui/select";
+} from "@/components/ui/select";
 
 const formSchema = z.object({
-  role: z.coerce.number().min(0).max(2), // TODO: use Role enum from "@/src/entities/team"
+  role: z.coerce.number().min(0).max(2), // TODO: use Role enum from "@/entities/team"
 });
 
 const RoleForm = ({ teamId, memberId }) => {

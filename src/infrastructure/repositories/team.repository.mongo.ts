@@ -1,5 +1,5 @@
-import { ITeamRepository } from "@/src/applications/repositories/team.repository.interface";
-import { Team } from "@/src/infrastructure/mongoose/schemas/team";
+import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
+import { Team } from "@/infrastructure/mongoose/schemas/team";
 
 export class TeamRepositoryImpl implements ITeamRepository {
   async findById(id: string) {

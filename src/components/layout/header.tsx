@@ -1,8 +1,8 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { FiArrowLeft, FiBell } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export const Header = ({ className }: { className?: string }) => {
   const pathname = usePathname();

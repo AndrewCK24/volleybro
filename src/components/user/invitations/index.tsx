@@ -1,21 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useUser, useUserTeams } from "@/src/hooks/use-data";
+import { useUser, useUserTeams } from "@/hooks/use-data";
 import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
-import { Link } from "@/src/components/ui/button";
+import { Link } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/src/components/ui/card";
-import { Separator } from "@/src/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/src/components/ui/table";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 const Invitations = ({ className }: { className?: string }) => {
   const router = useRouter();

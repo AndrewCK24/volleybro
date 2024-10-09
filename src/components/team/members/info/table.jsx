@@ -1,10 +1,5 @@
 import { FiHash, FiUsers } from "react-icons/fi";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/src/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 const MembersInfoTable = ({ team, member, className }) => {
   const contents = [

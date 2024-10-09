@@ -1,11 +1,11 @@
 "use client";
-import { useTeam, useTeamMembers } from "@/src/hooks/use-data";
+import { useTeam, useTeamMembers } from "@/hooks/use-data";
 import { FiPlus } from "react-icons/fi";
 import { BsGrid3X2Gap } from "react-icons/bs";
-import { Link } from "@/src/components/ui/button";
-import { Card } from "@/src/components/ui/card";
-import TeamMembersTable from "@/src/components/team/members/table";
-import LoadingCard from "@/src/components/custom/loading/card";
+import { Link } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import TeamMembersTable from "@/components/team/members/table";
+import LoadingCard from "@/components/custom/loading/card";
 
 const TeamMembers = ({ teamId }) => {
   const { team, isLoading: isTeamLoading } = useTeam(teamId);
