@@ -1,4 +1,4 @@
-import { Record } from "@/src/entities/record";
+import { Record } from "@/entities/record";
 
 export interface IRecordRepository {
   findById(id: string): Promise<Record>;

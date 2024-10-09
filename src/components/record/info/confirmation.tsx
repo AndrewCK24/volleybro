@@ -2,33 +2,33 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
-import { useTeam, useTeamMembers } from "@/src/hooks/use-data";
+import { useTeam, useTeamMembers } from "@/hooks/use-data";
 import {
   FiInfo,
   FiChevronRight,
   FiFileText,
   FiArrowRight,
 } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardBtnGroup,
-} from "@/src/components/ui/card";
+} from "@/components/ui/card";
 import {
   Description,
   DescriptionTitle,
   DescriptionContent,
-} from "@/src/components/ui/description";
-import { Dialog, DialogTrigger } from "@/src/components/ui/dialog";
-import MatchInfoForm from "@/src/components/record/info/info-form";
-import MatchMiscForm from "@/src/components/record/info/misc-form";
-import RosterTable from "@/src/components/record/info/roster-table";
-import LoadingCard from "@/src/components/custom/loading/card";
-import { phase, division, category } from "@/src/lib/text/match";
+} from "@/components/ui/description";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import MatchInfoForm from "@/components/record/info/info-form";
+import MatchMiscForm from "@/components/record/info/misc-form";
+import RosterTable from "@/components/record/info/roster-table";
+import LoadingCard from "@/components/custom/loading/card";
+import { phase, division, category } from "@/lib/text/match";
 
-import { type FormMatch } from "@/src/lib/features/record/types";
+import { type FormMatch } from "@/lib/features/record/types";
 
 const MatchConfirmation = ({ teamId }: { teamId: string }) => {
   const router = useRouter();

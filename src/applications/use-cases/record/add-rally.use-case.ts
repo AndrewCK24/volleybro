@@ -1,10 +1,10 @@
-import { Record, Rally } from "@/src/entities/record";
-import { IUserRepository } from "@/src/applications/repositories/user.repository.interface";
-import { ITeamRepository } from "@/src/applications/repositories/team.repository.interface";
-import { IRecordRepository } from "@/src/applications/repositories/record.repository.interface";
-import { AuthenticationService } from "@/src/infrastructure/service/auth/authentication.service";
-import { AuthorizationService } from "@/src/infrastructure/service/auth/authorization.service";
-import { Role } from "@/src/entities/team";
+import { Record, Rally } from "@/entities/record";
+import { IUserRepository } from "@/applications/repositories/user.repository.interface";
+import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
+import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
+import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
+import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
+import { Role } from "@/entities/team";
 
 /**
  * Use case for adding a rally to a specific set in a record.

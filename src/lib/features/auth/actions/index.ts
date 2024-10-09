@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 import { hash } from "bcryptjs";
 import { AuthError } from "next-auth";
 import { signIn as authSignIn, signOut } from "@/auth";
-import { DEFAULT_SIGN_IN_REDIRECT } from "@/src/lib/routes";
-import { connectToMongoDB } from "@/src/infrastructure/mongoose/connect-to-mongodb";
-import { createVerificationToken } from "@/src/lib/data/verification-token";
+import { DEFAULT_SIGN_IN_REDIRECT } from "@/lib/features/auth/routes";
+import { connectToMongoDB } from "@/infrastructure/mongoose/connect-to-mongodb";
+import { createVerificationToken } from "@/lib/data/verification-token";
 
-export const signIn = async (provider, options) => {
+export const signIn = async (provider: string, options?) => {
   try {
     console.log("signIn", Date.now());
     const session = await authSignIn(provider, {
@@ -28,7 +28,7 @@ export const signIn = async (provider, options) => {
   }
 };
 
-export const signUp = async (provider, options) => {
+export const signUp = async (provider?: string, options?) => {
   try {
     const { email, password, name } = options;
     await connectToMongoDB();

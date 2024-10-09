@@ -1,4 +1,4 @@
-import Team from "@/src/components/team";
+import Team from "@/components/team";
 
 const TeamPage = ({ params, searchParams }) => {
   const { teamId } = params;

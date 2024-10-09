@@ -1,11 +1,6 @@
 import { FiMeh } from "react-icons/fi";
-import { Link } from "@/src/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/src/components/ui/card";
+import { Link } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
 const Error = () => {
   return (

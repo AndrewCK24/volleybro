@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/src/app/store/lineups-slice";
+import { lineupsActions } from "@/app/store/lineups-slice";
 import { FiRefreshCw } from "react-icons/fi";
 import {
   Court,
@@ -7,7 +7,7 @@ import {
   Inside,
   PlayerCard,
   AdjustButton,
-} from "@/src/components/custom/court";
+} from "@/components/custom/court";
 
 const LineupCourt = ({ members }) => {
   const dispatch = useDispatch();

@@ -1,4 +1,4 @@
-import { Role } from "@/src/entities/team";
+import { Role } from "@/entities/team";
 
 export interface IAuthorizationService {
   verifyTeamRole(teamId: string, userId: string, role: Role): Promise<void>;

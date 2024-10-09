@@ -1,5 +1,5 @@
-import VerificationToken from "@/src/infrastructure/mongoose/schemas/verification-token";
-import { connectToMongoDB } from "@/src/infrastructure/mongoose/connect-to-mongodb";
+import VerificationToken from "@/infrastructure/mongoose/schemas/verification-token";
+import { connectToMongoDB } from "@/infrastructure/mongoose/connect-to-mongodb";
 
 export const getVerificationTokenByToken = async (token) => {
   try {

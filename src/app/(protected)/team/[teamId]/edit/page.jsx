@@ -1,7 +1,7 @@
 "use client";
-import { useTeam } from "@/src/hooks/use-data";
+import { useTeam } from "@/hooks/use-data";
 import { useRouter } from "next/navigation";
-import TeamForm from "@/src/components/team/form";
+import TeamForm from "@/components/team/form";
 
 const EditTeamPage = ({ params }) => {
   const router = useRouter();

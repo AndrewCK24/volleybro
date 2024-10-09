@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addRallyController } from "@/src/interface/controllers/record/add-rally.controller";
+import { addRallyController } from "@/interface/controllers/record/add-rally.controller";
 
 export const POST = async (req: NextRequest, { params }) => {
   try {

@@ -1,8 +1,8 @@
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 import { FiPlus, FiMinus, FiUser } from "react-icons/fi";
-import { scoringMoves } from "@/src/lib/scoring-moves";
+import { scoringMoves } from "@/lib/scoring-moves";
 
-import { type Rally, type Player, MoveType } from "@/src/entities/record";
+import { type Rally, type Player, MoveType } from "@/entities/record";
 
 const Score = ({
   win = false,

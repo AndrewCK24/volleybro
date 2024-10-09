@@ -1,21 +1,21 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useTeamMembers } from "@/src/hooks/use-data";
+import { useTeamMembers } from "@/hooks/use-data";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiSave } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
-import LoadingCard from "@/src/components/custom/loading/card";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import LoadingCard from "@/components/custom/loading/card";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "姓名不得為空" }),

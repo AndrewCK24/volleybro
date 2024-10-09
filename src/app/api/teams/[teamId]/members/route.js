@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import connectToMongoDB from "@/src/infrastructure/mongoose/connect-to-mongodb";
-import User from "@/src/infrastructure/mongoose/schemas/user";
-import Team from "@/src/infrastructure/mongoose/schemas/team";
-import Member from "@/src/infrastructure/mongoose/schemas/member";
+import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
+import User from "@/infrastructure/mongoose/schemas/user";
+import Team from "@/infrastructure/mongoose/schemas/team";
+import Member from "@/infrastructure/mongoose/schemas/member";
 
 export const GET = async (req, { params }) => {
   try {

@@ -1,4 +1,4 @@
-import type { ReduxRecording } from "@/src/lib/features/record/types";
+import type { ReduxRecording } from "@/lib/features/record/types";
 
 export const matchPhaseHelper = (
   rally: ReduxRecording,

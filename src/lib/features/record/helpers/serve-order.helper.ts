@@ -1,4 +1,4 @@
-import type { ReduxRecordState } from "@/src/lib/features/record/types";
+import type { ReduxRecordState } from "@/lib/features/record/types";
 
 export const serveOrderHelper = (state: ReduxRecordState) => {
   const { win } = state.recording;

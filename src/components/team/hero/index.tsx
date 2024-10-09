@@ -1,5 +1,5 @@
 "use client";
-import { useTeam } from "@/src/hooks/use-data";
+import { useTeam } from "@/hooks/use-data";
 
 const TeamHero = ({ teamId }: { teamId: string }) => {
   const { team } = useTeam(teamId);

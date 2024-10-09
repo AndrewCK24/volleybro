@@ -1,5 +1,5 @@
 import { FiInfo, FiUsers, FiEdit2 } from "react-icons/fi";
-import { Link } from "@/src/components/ui/button";
+import { Link } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/src/components/ui/table";
+} from "@/components/ui/table";
 
 const TeamInfoTable = ({
   team,

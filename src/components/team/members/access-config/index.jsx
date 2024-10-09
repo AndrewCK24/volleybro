@@ -1,6 +1,6 @@
-import { CardHeader, CardTitle } from "@/src/components/ui/card";
-import EmailForm from "@/src/components/team/members/access-config/email-form";
-import RoleForm from "@/src/components/team/members/access-config/role-form";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import EmailForm from "@/components/team/members/access-config/email-form";
+import RoleForm from "@/components/team/members/access-config/role-form";
 
 const AccessConfig = ({ teamId, memberId }) => {
   return (

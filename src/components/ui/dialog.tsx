@@ -5,7 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { FiX } from "react-icons/fi";
 
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
 

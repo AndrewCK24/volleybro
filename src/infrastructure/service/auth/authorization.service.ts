@@ -1,6 +1,6 @@
-import { IAuthorizationService } from "@/src/applications/services/auth/authorization.service.interface";
-import { ITeamRepository } from "@/src/applications/repositories/team.repository.interface";
-import { Role } from "@/src/entities/team";
+import { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
+import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
+import { Role } from "@/entities/team";
 
 export class AuthorizationService implements IAuthorizationService {
   constructor(private teamRepository: ITeamRepository) {}

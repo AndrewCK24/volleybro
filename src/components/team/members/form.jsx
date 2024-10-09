@@ -3,10 +3,10 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useUser, useTeam, useTeamMembers } from "@/src/hooks/use-data";
+import { useUser, useTeam, useTeamMembers } from "@/hooks/use-data";
 import { FiUser, FiUserPlus, FiShield } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/src/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -14,16 +14,16 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
   SelectItem,
   SelectValue,
   SelectContent,
-} from "@/src/components/ui/select";
-import { Separator } from "@/src/components/ui/separator";
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "姓名不得為空" }),
@@ -36,7 +36,7 @@ const formSchema = z.object({
     .email({ message: "請輸入有效的 email" })
     .optional()
     .or(z.literal("")),
-  role: z.coerce.number().min(0).max(2), // TODO: use Role enum from "@/src/entities/team"
+  role: z.coerce.number().min(0).max(2), // TODO: use Role enum from "@/entities/team"
 });
 
 const MemberForm = ({ teamId, className }) => {

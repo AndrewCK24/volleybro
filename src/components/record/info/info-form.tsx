@@ -4,14 +4,14 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiCheck } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/src/components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,12 +20,12 @@ import {
   FormLabel,
   FormRadioGroup,
   FormRadioItem,
-} from "@/src/components/ui/form";
-import { Input } from "@/src/components/ui/input";
-import { Separator } from "@/src/components/ui/separator";
-import { phase, division, category } from "@/src/lib/text/match";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { phase, division, category } from "@/lib/text/match";
 
-import type { FormMatch } from "@/src/lib/features/record/types";
+import type { FormMatch } from "@/lib/features/record/types";
 
 const infoFormSchema = z.object({
   name: z.string().optional(),
@@ -93,7 +93,9 @@ const MatchInfoForm = ({
     <DialogContent className={className} size="lg">
       <DialogHeader>
         <DialogTitle>編輯比賽資訊</DialogTitle>
-        <DialogDescription className="sr-only">填寫比賽相關資訊</DialogDescription>
+        <DialogDescription className="sr-only">
+          填寫比賽相關資訊
+        </DialogDescription>
       </DialogHeader>
       <Form form={form} onSubmit={form.handleSubmit(onSubmit)}>
         <FormField

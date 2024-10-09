@@ -1,8 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { FiArrowLeft, FiSliders } from "react-icons/fi";
-import { Button } from "@/src/components/ui/button";
-import { Scores } from "@/src/components/record/header/scores";
+import { Button } from "@/components/ui/button";
+import { Scores } from "@/components/record/header/scores";
 
 export const Header = ({
   recordId,

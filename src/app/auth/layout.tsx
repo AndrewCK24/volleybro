@@ -1,5 +1,5 @@
-import { Main } from "@/src/components/layout/main";
-import { Logo } from "@/src/components/custom/logo";
+import { Main } from "@/components/layout/main";
+import { Logo } from "@/components/custom/logo";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (

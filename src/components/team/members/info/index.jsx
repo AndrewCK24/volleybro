@@ -1,17 +1,17 @@
 "use client";
 import Image from "next/image";
-import { useTeam, useTeamMembers } from "@/src/hooks/use-data";
+import { useTeam, useTeamMembers } from "@/hooks/use-data";
 import { FiUser } from "react-icons/fi";
-import { Link } from "@/src/components/ui/button";
+import { Link } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardBtnGroup,
-} from "@/src/components/ui/card";
-import MembersInfoTable from "@/src/components/team/members/info/table";
-import AccessConfig from "@/src/components/team/members/access-config";
-import LoadingCard from "@/src/components/custom/loading/card";
+} from "@/components/ui/card";
+import MembersInfoTable from "@/components/team/members/info/table";
+import AccessConfig from "@/components/team/members/access-config";
+import LoadingCard from "@/components/custom/loading/card";
 
 const MembersInfo = ({ teamId, memberId, className }) => {
   const { team } = useTeam(teamId);

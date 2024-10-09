@@ -1,5 +1,5 @@
 "use client";
-import { Card } from "@/src/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 const MemberError = () => {
   return (

@@ -1,5 +1,5 @@
-import { IRecordRepository } from "@/src/applications/repositories/record.repository.interface";
-import { Record } from "@/src/infrastructure/mongoose/schemas/record";
+import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
+import { Record } from "@/infrastructure/mongoose/schemas/record";
 
 export class RecordRepositoryImpl implements IRecordRepository {
   async findById(id: string) {

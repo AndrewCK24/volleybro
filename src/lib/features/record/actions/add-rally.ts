@@ -1,5 +1,5 @@
-import type { Record } from "@/src/entities/record";
-import type { ReduxRecording } from "@/src/lib/features/record/types";
+import type { Record } from "@/entities/record";
+import type { ReduxRecording } from "@/lib/features/record/types";
 
 export const addRally = async (
   params: { recordId: string; setNum: number },

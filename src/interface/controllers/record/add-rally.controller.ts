@@ -1,11 +1,11 @@
-import { AddRallyUseCase } from "@/src/applications/use-cases/record/add-rally.use-case";
-import { Record, Rally } from "@/src/entities/record";
+import { AddRallyUseCase } from "@/applications/use-cases/record/add-rally.use-case";
+import { Record, Rally } from "@/entities/record";
 
 import {
   UserRepositoryImpl,
   TeamRepositoryImpl,
   RecordRepositoryImpl,
-} from "@/src/infrastructure/repositories";
+} from "@/infrastructure/repositories";
 
 // TODO: 建立 presenter
 
