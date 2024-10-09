@@ -1,5 +1,10 @@
 import { Schema, model, models } from "mongoose";
-import { MatchCategory, MatchDivision, MatchPhase } from "@/entities/record";
+import {
+  MatchCategory,
+  MatchDivision,
+  MatchPhase,
+  MoveType,
+} from "@/entities/record";
 
 const lineupSchema = new Schema({
   options: {

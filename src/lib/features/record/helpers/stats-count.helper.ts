@@ -1,5 +1,5 @@
-import type { Record, Rally, MoveType } from "@/src/entities/record";
-import type { ReduxRecording } from "@/src/lib/features/record/types";
+import type { Record, Rally, MoveType } from "@/entities/record";
+import type { ReduxRecording } from "@/lib/features/record/types";
 
 export const statsCountHelper = (
   params: { recordId: string; setNum: number },
