@@ -77,28 +77,20 @@ export type Match = {
   };
 };
 
-export type Statistics = {
-  serving: {
-    success: number;
-    error: number;
-  };
-  attacking: {
-    success: number;
-    error: number;
-  };
-  blocking: {
-    success: number;
-    error: number;
-  };
-  receiving: {
-    success: number;
-    error: number;
-  };
-  digging: {
-    success: number;
-    error: number;
-  };
-  setting: {
+export enum MoveType {
+  SERVING = 1,
+  BLOCKING,
+  ATTACK,
+  RECEPTION,
+  DEFENSE,
+  SETTING,
+  UNFORCED_ERROR,
+}
+
+type PlayerStatsMoveType = Exclude<MoveType, MoveType.UNFORCED_ERROR>;
+
+export type PlayerStats = {
+  [key in PlayerStatsMoveType]: {
     success: number;
     error: number;
   };
@@ -108,7 +100,7 @@ export type Player = {
   _id: string;
   name: string;
   number: number;
-  statistics: Statistics;
+  stats: PlayerStats[];
 };
 
 export type Staff = {
@@ -118,22 +110,21 @@ export type Staff = {
   position: "" | "C" | "AC" | "T" | "M";
 };
 
+export type TeamStats = {
+  unforcedError: number;
+  rotation: number;
+  timeout: number;
+  substitution: number;
+  challenge: number;
+};
+
 export type Team = {
   _id: string;
   name: string;
   players: Player[];
   staffs: Staff[];
+  stats: TeamStats[];
 };
-
-export enum MoveType {
-  Serving = 1,
-  Blocking,
-  Attack,
-  Reception,
-  Defense,
-  Setting,
-  OppoError,
-}
 
 export type RallyDetail = {
   score: number;
@@ -178,12 +169,6 @@ export type Set = {
       start: string;
       end: string;
     };
-  };
-  counts: {
-    rotation: number;
-    timeout: number;
-    substitution: number;
-    challenge: number;
   };
   rallies: Rally[];
 };

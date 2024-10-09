@@ -39,34 +39,18 @@ const matchSchema = new Schema({
   name: { type: String },
   number: { type: Number },
   phase: {
-    type: String,
-    enum: [
-      MatchPhase.NONE,
-      MatchPhase.ELIM,
-      MatchPhase.SEED,
-      MatchPhase.QUAL,
-      MatchPhase.FINAL,
-    ],
+    type: Number,
+    enum: Object.values(MatchPhase),
     default: MatchPhase.NONE,
   },
   division: {
-    type: String,
-    enum: [
-      MatchDivision.NONE,
-      MatchDivision.MEN,
-      MatchDivision.WOMEN,
-      MatchDivision.MIXED,
-    ],
+    type: Number,
+    enum: Object.values(MatchDivision),
     default: MatchDivision.NONE,
   },
   category: {
-    type: String,
-    enum: [
-      MatchCategory.NONE,
-      MatchCategory.SENIOR,
-      MatchCategory.JUNIOR,
-      MatchCategory.YOUTH,
-    ],
+    type: Number,
+    enum: Object.values(MatchCategory),
     default: MatchCategory.NONE,
   },
   scoring: {
@@ -87,28 +71,28 @@ const matchSchema = new Schema({
   },
 });
 
-const statisticsSchema = new Schema({
-  serving: {
+const playerStatsSchema = new Schema({
+  [MoveType.SERVING]: {
     success: { type: Number },
     error: { type: Number },
   },
-  attacking: {
+  [MoveType.ATTACK]: {
     success: { type: Number },
     error: { type: Number },
   },
-  blocking: {
+  [MoveType.BLOCKING]: {
     success: { type: Number },
     error: { type: Number },
   },
-  receiving: {
+  [MoveType.RECEPTION]: {
     success: { type: Number },
     error: { type: Number },
   },
-  digging: {
+  [MoveType.DEFENSE]: {
     success: { type: Number },
     error: { type: Number },
   },
-  setting: {
+  [MoveType.SETTING]: {
     success: { type: Number },
     error: { type: Number },
   },
@@ -121,7 +105,7 @@ const playerSchema = new Schema({
   },
   name: { type: String },
   number: { type: Number },
-  statistics: { type: statisticsSchema },
+  stats: [{ type: playerStatsSchema }],
 });
 
 const staffSchema = new Schema({
@@ -134,6 +118,14 @@ const staffSchema = new Schema({
   position: { type: String, enum: ["", "C", "AC", "T", "M"], default: "" },
 });
 
+const teamStatsSchema = new Schema({
+  unforcedError: { type: Number },
+  rotation: { type: Number },
+  timeout: { type: Number },
+  substitution: { type: Number },
+  challenge: { type: Number },
+});
+
 const teamSchema = new Schema({
   _id: {
     type: Schema.Types.ObjectId,
@@ -142,11 +134,12 @@ const teamSchema = new Schema({
   name: { type: String },
   players: [{ type: playerSchema }],
   staffs: [{ type: staffSchema }],
+  stats: [{ type: teamStatsSchema }],
 });
 
 const rallyDetailSchema = new Schema({
   score: { type: Number },
-  type: { type: Number },
+  type: { type: Number, enum: Object.values(MoveType) },
   num: { type: Number },
   player: {
     _id: { type: Schema.Types.ObjectId, ref: "Member" },

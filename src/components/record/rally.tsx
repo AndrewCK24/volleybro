@@ -86,7 +86,7 @@ const Rally = ({
       )}
       <RecordText className="border-primary">
         {home.type ? (
-          home.type !== MoveType.OppoError ? (
+          home.type !== MoveType.UNFORCED_ERROR ? (
             <>
               <Number>{playerNumber}</Number>
               {scoringMoves[home.num]?.text}
@@ -101,7 +101,7 @@ const Rally = ({
       </RecordText>
       <RecordText className="border-destructive">
         {away.type &&
-          (away.type !== MoveType.OppoError ? (
+          (away.type !== MoveType.UNFORCED_ERROR ? (
             <>
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
                 <FiUser />
