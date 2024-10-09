@@ -6,7 +6,7 @@ import {
   authRoutes,
   apiAuthPrefix,
   DEFAULT_SIGN_IN_REDIRECT,
-} from "@/lib/routes";
+} from "@/lib/features/auth/routes";
 
 const { auth } = NextAuth(authConfig);
 

@@ -1,7 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { signIn } from "@/lib/auth-actions";
+import { signIn } from "@/lib/features/auth/actions";
 import { FcGoogle } from "react-icons/fc";
 import { FiAlertTriangle } from "react-icons/fi";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
