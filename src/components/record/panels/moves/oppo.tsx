@@ -35,7 +35,7 @@ const OppoMoves = ({
       dispatch(recordActions.setRecordingAwayMove(move));
     } else {
       try {
-        mutate(addRally({ recordId, setNum }, recording, record), {
+        mutate(addRally({ recordId, setNum, rallyNum }, recording, record), {
           revalidate: false,
           optimisticData: (record) => {
             record.sets[setNum].rallies.push(recording);
