@@ -84,10 +84,10 @@ export enum MoveType {
   RECEPTION,
   DEFENSE,
   SETTING,
-  UNFORCED_ERROR,
+  UNFORCED,
 }
 
-type PlayerStatsMoveType = Exclude<MoveType, MoveType.UNFORCED_ERROR>;
+type PlayerStatsMoveType = Exclude<MoveType, MoveType.UNFORCED>;
 
 export type PlayerStats = {
   [key in PlayerStatsMoveType]: {
@@ -110,8 +110,8 @@ export type Staff = {
   position: "" | "C" | "AC" | "T" | "M";
 };
 
-export type TeamStats = {
-  unforcedError: number;
+export type TeamStats = PlayerStats & {
+  [MoveType.UNFORCED]: { success: number; error: number };
   rotation: number;
   timeout: number;
   substitution: number;

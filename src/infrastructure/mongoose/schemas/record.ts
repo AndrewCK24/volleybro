@@ -124,7 +124,8 @@ const staffSchema = new Schema({
 });
 
 const teamStatsSchema = new Schema({
-  unforcedError: { type: Number },
+  ...playerStatsSchema,
+  [MoveType.UNFORCED]: { success: { type: Number }, error: { type: Number } },
   rotation: { type: Number },
   timeout: { type: Number },
   substitution: { type: Number },
