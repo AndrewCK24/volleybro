@@ -3,7 +3,7 @@ import type { MoveType } from "@/entities/record";
 
 // For Forms and Tables
 export type FormMatch = {
-  _id: string;
+  _id?: string;
   name: string;
   number: number;
   phase: "0" | "1" | "2" | "3" | "4";

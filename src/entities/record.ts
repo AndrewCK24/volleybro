@@ -140,15 +140,15 @@ export type Rally = {
   win: boolean;
   home: RallyDetail;
   away: RallyDetail;
-  challenges: {
+  challenges?: {
     team_id: string;
     type: string;
     success: boolean;
   }[];
-  timeouts: {
+  timeouts?: {
     team_id: string;
   }[];
-  substitutions: {
+  substitutions?: {
     team_id: string;
     players: {
       in: string;

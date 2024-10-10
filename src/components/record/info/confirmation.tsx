@@ -38,7 +38,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
 
   const [lineupNum, setLineupNum] = useState(0);
   const [info, setInfo] = useState<FormMatch>({
-    _id: "",
+    // _id: "",
     name: "",
     number: null,
     phase: "0",

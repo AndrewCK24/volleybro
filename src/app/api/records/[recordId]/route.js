@@ -31,3 +31,5 @@ export const GET = async (req, { params }) => {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };
+
+// TODO: 新增上場選手對應局數的 stats 物件（在開新局、換人時）
