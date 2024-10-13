@@ -146,6 +146,7 @@ const teamSchema = new Schema({
   players: [{ type: playerSchema }],
   staffs: [{ type: staffSchema }],
   stats: [{ type: teamStatsSchema }],
+  lineup: { type: lineupSchema },
 });
 
 const rallyDetailSchema = new Schema({

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -42,16 +43,19 @@ const RecordSetOptions = ({ recordId }) => {
         <Button
           size="lg"
           className="w-full"
-          onClick={() =>
-            dispatch(
-              lineupsActions.initialize([record.sets[setNum].lineups.home])
-            )
-          }
+          onClick={() => {
+            const lineup =
+              record?.sets[setNum]?.lineups?.home || record.teams.home.lineup;
+            dispatch(lineupsActions.initialize([lineup]));
+          }}
         >
           開始下一局
         </Button>
       </DialogTrigger>
       <DialogContent size="lg">
+        <DialogDescription className="sr-only">
+          設定第 {setNum + 1} 局的陣容
+        </DialogDescription>
         <DialogHeader>
           <DialogTitle className="pb-2 font-medium text-center">
             第 {setNum + 1} 局設定

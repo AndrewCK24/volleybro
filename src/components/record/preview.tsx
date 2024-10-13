@@ -21,8 +21,11 @@ const RecordPreview = ({
   const { players } = record.teams.home;
   const {
     recording,
-    status: { setNum, rallyNum },
+    status: { inPlay, setNum, rallyNum },
   } = recordState;
+
+  if (!inPlay) return null;
+
   const lastRally = record.sets[setNum].rallies[rallyNum - 1];
   const isEditing = recording.home.player._id || recording.home.type;
   const rally = isEditing || rallyNum === 0 ? recording : lastRally;

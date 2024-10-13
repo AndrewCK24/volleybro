@@ -81,13 +81,24 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
     .concat(liberos, substitutes)
     .sort((a, b) => a.number - b.number);
 
-  const handleSave = async () => {
+  const createRecord = async () => {
+    const infoData = {
+      ...info,
+      phase: Number(info.phase),
+      division: Number(info.division),
+      category: Number(info.category),
+      scoring: {
+        ...info.scoring,
+        setCount: Number(info.scoring.setCount),
+      },
+    };
+
     try {
-      const res = await fetch("/api/records", {
+      const res = await fetch(`/api/records?teamId=${teamId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          info,
+          info: infoData,
           team: {
             _id: teamId,
             name: team.name,
@@ -170,7 +181,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
         <RosterTable roster={players} />
       </Card>
       <div className="flex flex-col w-full px-4 pb-4">
-        <Button size="lg" onClick={handleSave}>
+        <Button size="lg" onClick={createRecord}>
           開始比賽
           <FiArrowRight />
         </Button>

@@ -1,11 +1,9 @@
-export enum StartingPosition {
+export enum Position {
+  NONE = "",
   OH = "OH",
   MB = "MB",
   OP = "OP",
   S = "S",
-}
-
-export enum LiberoPosition {
   L = "L",
 }
 
@@ -16,13 +14,13 @@ export type Lineup = {
   };
   starting: {
     _id: string;
-    position: "" | StartingPosition;
+    position: Position;
     in: number;
     out: number;
   }[];
   liberos: {
     _id: string;
-    position: "" | LiberoPosition;
+    position: Position;
     in: number;
     out: number;
   }[];
@@ -124,6 +122,7 @@ export type Team = {
   players: Player[];
   staffs: Staff[];
   stats: TeamStats[];
+  lineup?: Lineup;
 };
 
 export type RallyDetail = {

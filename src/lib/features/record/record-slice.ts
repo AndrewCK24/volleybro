@@ -9,6 +9,7 @@ import {
   serveOrderHelper,
 } from "@/lib/features/record/helpers";
 
+import { Position } from "@/entities/record";
 import type {
   ReduxRecordState,
   ReduxStatus,
@@ -40,37 +41,37 @@ const lineupState: ReduxLineup = {
   starting: [
     {
       _id: "",
-      position: "",
+      position: Position.NONE,
       in: null,
       out: null,
     },
     {
       _id: "",
-      position: "",
+      position: Position.NONE,
       in: null,
       out: null,
     },
     {
       _id: "",
-      position: "",
+      position: Position.NONE,
       in: null,
       out: null,
     },
     {
       _id: "",
-      position: "",
+      position: Position.NONE,
       in: null,
       out: null,
     },
     {
       _id: "",
-      position: "",
+      position: Position.NONE,
       in: null,
       out: null,
     },
     {
       _id: "",
-      position: "",
+      position: Position.NONE,
       in: null,
       out: null,
     },
@@ -78,13 +79,13 @@ const lineupState: ReduxLineup = {
   liberos: [
     {
       _id: "",
-      position: "L",
+      position: Position.L,
       in: null,
       out: null,
     },
     {
       _id: "",
-      position: "L",
+      position: Position.L,
       in: null,
       out: null,
     },
@@ -128,20 +129,22 @@ export const initialize: CaseReducer<
   const rallyNum = record.sets[setNum]?.rallies?.length || 0;
   const finalPoint = finalPointHelper(setNum, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
-    record.sets[setNum].rallies[rallyNum - 1],
+    record?.sets[setNum]?.rallies[rallyNum - 1],
     finalPoint
   );
   const isServing =
     inPlay || rallyNum === 0
       ? record.sets[setNum]?.options?.serve === "home"
       : record.sets[setNum].rallies[rallyNum - 1].win;
-  const lineups = record.sets[setNum].lineups;
-  const switchTargetIndex = lineups.home.starting.findIndex(
-    (player, index) =>
-      player.position === lineups.home.options.liberoSwitchPosition &&
-      ((index === 0 && !isServing) || index >= 4)
-  );
+  const lineups = record?.sets[setNum]?.lineups || {
+    home: record.teams.home.lineup,
+  };
   if (inPlay) {
+    const switchTargetIndex = lineups.home.starting.findIndex(
+      (player, index) =>
+        player.position === lineups.home.options.liberoSwitchPosition &&
+        ((index === 0 && !isServing) || index >= 4)
+    );
     if (switchTargetIndex !== -1) {
       const switchTarget = {
         ...lineups.home.starting[switchTargetIndex],
@@ -160,8 +163,8 @@ export const initialize: CaseReducer<
     ...state.status,
     isServing,
     scores: {
-      home: record.sets[setNum].rallies[rallyNum - 1]?.home.score || 0,
-      away: record.sets[setNum].rallies[rallyNum - 1]?.away.score || 0,
+      home: record?.sets[setNum]?.rallies[rallyNum - 1]?.home?.score || 0,
+      away: record?.sets[setNum]?.rallies[rallyNum - 1]?.away?.score || 0,
     },
     setNum,
     rallyNum,
