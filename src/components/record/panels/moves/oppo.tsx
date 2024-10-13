@@ -5,6 +5,7 @@ import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 import { addRally } from "@/lib/features/record/actions/add-rally";
+import { addRallyOptimistic } from "@/lib/features/record/helpers/add-rally.helper";
 
 import type { ReduxRecordState } from "@/lib/features/record/types";
 import type { RecordActions } from "@/lib/features/record/record-slice";
@@ -35,13 +36,16 @@ const OppoMoves = ({
       dispatch(recordActions.setRecordingAwayMove(move));
     } else {
       try {
-        mutate(addRally({ recordId, setNum }, recording, record), {
+        console.log("before addRally", record.teams.home.stats[setNum]);
+        mutate(addRally({ recordId, setNum, rallyNum }, recording, record), {
           revalidate: false,
-          optimisticData: (record) => {
-            record.sets[setNum].rallies.push(recording);
-            return record;
-          },
+          optimisticData: addRallyOptimistic(
+            { recordId, setNum, rallyNum },
+            recording,
+            record
+          ),
         });
+        console.log("after addRally", record.teams.home.stats[setNum]);
         dispatch(recordActions.resetRecording(record));
       } catch (error) {
         console.error("[POST /api/records]", error);

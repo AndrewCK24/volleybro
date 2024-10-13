@@ -7,6 +7,9 @@ export const matchPhaseHelper = (
   inPlay: boolean;
   isSetPoint: boolean;
 } => {
+  // TODO: 在修改完 create-set 之後，將 inPlay 改為 true
+  if (!rally) return { inPlay: false, isSetPoint: false };
+
   const { home, away } = rally;
   // Game is in progress if both scores are less than point - 1
   if (home.score < point - 1 && away.score < point - 1)

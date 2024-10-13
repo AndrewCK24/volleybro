@@ -42,7 +42,7 @@ export class AddRallyUseCase {
   }
 
   async execute(
-    params: { id: Record["_id"]; setNum: number },
+    params: { id: Record["_id"]; setNum: number; rallyNum: number },
     rally: Rally
   ): Promise<Rally[] | undefined> {
     const authenticationService = new AuthenticationService(
@@ -61,11 +61,13 @@ export class AddRallyUseCase {
     );
 
     // TODO: handle race condition
+    // 若傳入的 setNum, (rallyNum), scores, type, num 一致時，則視為同筆資料不新增
+    // 若 setNum, score 等資料不同時，通知後傳入之使用者，令其選擇合適之紀錄，或新增於前者紀錄之後（如何更新前者之資料？）
 
     const set = record.sets[params.setNum];
     if (!set) throw new Error("Set not found");
 
-    record.sets[params.setNum].rallies.push(rally);
+    record.sets[params.setNum].rallies[params.rallyNum] = rally;
 
     await this.recordRepository.update(params.id, record);
 

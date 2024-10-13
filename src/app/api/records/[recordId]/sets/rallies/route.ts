@@ -4,8 +4,15 @@ import { addRallyController } from "@/interface/controllers/record/add-rally.con
 export const POST = async (req: NextRequest, { params }) => {
   try {
     const rally = await req.json();
-    const { recordId, setNum } = params;
-    const rallies = await addRallyController({ id: recordId, setNum }, rally);
+    const { recordId } = params;
+    const searchParams = req.nextUrl.searchParams;
+    const setNum = parseInt(searchParams.get("setNum") || "0", 10);
+    const rallyNum = parseInt(searchParams.get("rallyNum") || "0", 10);
+
+    const rallies = await addRallyController(
+      { id: recordId, setNum, rallyNum },
+      rally
+    );
     return NextResponse.json(rallies, { status: 200 });
     // const session = await auth();
     // if (!session) {

@@ -10,7 +10,7 @@ import {
 // TODO: 建立 presenter
 
 export const addRallyController = async (
-  params: { id: Record["_id"]; setNum: number },
+  params: { id: Record["_id"]; setNum: number; rallyNum: number },
   rally: Rally
 ) => {
   const addRallyUseCase = new AddRallyUseCase(

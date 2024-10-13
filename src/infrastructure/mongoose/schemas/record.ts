@@ -45,17 +45,17 @@ const matchSchema = new Schema({
   number: { type: Number },
   phase: {
     type: Number,
-    enum: Object.values(MatchPhase),
+    enum: MatchPhase,
     default: MatchPhase.NONE,
   },
   division: {
     type: Number,
-    enum: Object.values(MatchDivision),
+    enum: MatchDivision,
     default: MatchDivision.NONE,
   },
   category: {
     type: Number,
-    enum: Object.values(MatchCategory),
+    enum: MatchCategory,
     default: MatchCategory.NONE,
   },
   scoring: {
@@ -124,7 +124,13 @@ const staffSchema = new Schema({
 });
 
 const teamStatsSchema = new Schema({
-  unforcedError: { type: Number },
+  [MoveType.SERVING]: { success: { type: Number }, error: { type: Number } },
+  [MoveType.ATTACK]: { success: { type: Number }, error: { type: Number } },
+  [MoveType.BLOCKING]: { success: { type: Number }, error: { type: Number } },
+  [MoveType.RECEPTION]: { success: { type: Number }, error: { type: Number } },
+  [MoveType.DEFENSE]: { success: { type: Number }, error: { type: Number } },
+  [MoveType.SETTING]: { success: { type: Number }, error: { type: Number } },
+  [MoveType.UNFORCED]: { success: { type: Number }, error: { type: Number } },
   rotation: { type: Number },
   timeout: { type: Number },
   substitution: { type: Number },
@@ -144,7 +150,7 @@ const teamSchema = new Schema({
 
 const rallyDetailSchema = new Schema({
   score: { type: Number },
-  type: { type: Number, enum: Object.values(MoveType) },
+  type: { type: Number, enum: MoveType },
   num: { type: Number },
   player: {
     _id: { type: Schema.Types.ObjectId, ref: "Member" },

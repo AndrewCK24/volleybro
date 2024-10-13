@@ -73,9 +73,21 @@ export const POST = async (req) => {
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
+    // Convert string values to numbers
+    const info = {
+      ...recordData.info,
+      phase: Number(recordData.info.phase),
+      division: Number(recordData.info.division),
+      category: Number(recordData.info.category),
+      scoring: {
+        ...recordData.info.scoring,
+        setCount: Number(recordData.info.scoring.setCount),
+      },
+    };
+
     const newRecord = new Record({
       team_id: team._id,
-      info: recordData.info,
+      info: info,
       teams: { home: recordData.team },
       sets: [{ lineups: { home: recordData.lineup } }],
     });
