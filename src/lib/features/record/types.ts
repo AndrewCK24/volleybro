@@ -1,4 +1,4 @@
-import type { Record } from "@/entities/record";
+import type { Record, Position } from "@/entities/record";
 import type { MoveType } from "@/entities/record";
 
 // For Forms and Tables
@@ -55,13 +55,13 @@ export type ReduxLineup = {
   };
   starting: {
     _id: string;
-    position: string;
+    position: Position;
     in: number | null;
     out: number | null;
   }[];
   liberos: {
     _id: string;
-    position: string;
+    position: Position;
     in: number | null;
     out: number | null;
   }[];
@@ -133,7 +133,7 @@ export type ReduxRecordState = {
   isEditing?: boolean;
   lineups: {
     home: ReduxLineup;
-    away: ReduxLineup;
+    away?: ReduxLineup;
   };
   recording: {
     win: boolean | null;

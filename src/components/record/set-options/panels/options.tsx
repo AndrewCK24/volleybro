@@ -62,7 +62,7 @@ const LineupOptions = ({
   const defaultValues = useMemo<LineupOptionsValues>(
     () => ({
       serve:
-        setNum === 0 || record.sets[setNum - 1].options.serve === "home"
+        setNum === 0 || record?.sets[setNum - 1]?.options?.serve === "home"
           ? "away"
           : "home",
       time: {
