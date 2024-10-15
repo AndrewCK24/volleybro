@@ -195,12 +195,6 @@ const setSchema = new Schema({
       end: { type: String },
     },
   },
-  counts: {
-    rotation: { type: Number, default: 0 },
-    timeout: { type: Number, default: 2 },
-    substitution: { type: Number, default: 6 },
-    challenge: { type: Number, default: 2 },
-  },
   rallies: [{ type: rallySchema }],
 });
 

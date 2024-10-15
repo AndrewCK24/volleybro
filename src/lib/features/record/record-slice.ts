@@ -125,10 +125,11 @@ export const initialize: CaseReducer<
   PayloadAction<ReduxRecordInput>
 > = (state, action) => {
   const record = structuredClone(action.payload);
-  const setNum = record.sets.length - 1;
+  const setNum = record.sets.length ? record.sets.length - 1 : 0;
   const rallyNum = record.sets[setNum]?.rallies?.length || 0;
   const finalPoint = finalPointHelper(setNum, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
+    record,
     record?.sets[setNum]?.rallies[rallyNum - 1],
     finalPoint
   );
@@ -152,7 +153,7 @@ export const initialize: CaseReducer<
       lineups.home.starting[switchTargetIndex] = lineups.home.liberos[0];
       lineups.home.liberos[0] = switchTarget;
     }
-    const rotation = record.sets[setNum].counts.rotation % 6;
+    const rotation = record.teams.home.stats[setNum].rotation % 6;
     if (rotation) {
       const rotatedPlayers = lineups.home.starting.splice(0, rotation);
       lineups.home.starting.push(...rotatedPlayers);
@@ -244,7 +245,11 @@ export const resetRecording: CaseReducer<
   const record = structuredClone(action.payload);
   const { setNum, rallyNum } = state.status;
   const finalPoint = finalPointHelper(setNum, record.info);
-  const { inPlay, isSetPoint } = matchPhaseHelper(state.recording, finalPoint);
+  const { inPlay, isSetPoint } = matchPhaseHelper(
+    record,
+    state.recording,
+    finalPoint
+  );
   serveOrderHelper(state);
 
   state.status = {

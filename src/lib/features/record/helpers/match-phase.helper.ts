@@ -1,13 +1,22 @@
-import type { ReduxRecording } from "@/lib/features/record/types";
+import type {
+  ReduxRecording,
+  ReduxRecordInput,
+} from "@/lib/features/record/types";
 
 export const matchPhaseHelper = (
+  record: ReduxRecordInput,
   rally: ReduxRecording,
   point: number = 25
 ): {
   inPlay: boolean;
   isSetPoint: boolean;
 } => {
-  if (!rally) return { inPlay: false, isSetPoint: false };
+  // In the first set, though there is no rally recorded yet,
+  // the game is `in progress (inPlay)` if `rallies` of the first set has been created
+  if (!rally) {
+    if (record?.sets[0]?.rallies) return { inPlay: true, isSetPoint: false };
+    return { inPlay: false, isSetPoint: false };
+  }
 
   const { home, away } = rally;
   // Game is in progress if both scores are less than point - 1

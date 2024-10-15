@@ -94,6 +94,24 @@ export type PlayerStats = {
   };
 };
 
+export class PlayerStatsClass implements PlayerStats {
+  [MoveType.SERVING]: { success: number; error: number };
+  [MoveType.BLOCKING]: { success: number; error: number };
+  [MoveType.ATTACK]: { success: number; error: number };
+  [MoveType.RECEPTION]: { success: number; error: number };
+  [MoveType.DEFENSE]: { success: number; error: number };
+  [MoveType.SETTING]: { success: number; error: number };
+
+  constructor() {
+    this[MoveType.SERVING] = { success: 0, error: 0 };
+    this[MoveType.BLOCKING] = { success: 0, error: 0 };
+    this[MoveType.ATTACK] = { success: 0, error: 0 };
+    this[MoveType.RECEPTION] = { success: 0, error: 0 };
+    this[MoveType.DEFENSE] = { success: 0, error: 0 };
+    this[MoveType.SETTING] = { success: 0, error: 0 };
+  }
+}
+
 export type Player = {
   _id: string;
   name: string;
@@ -160,7 +178,7 @@ export type Set = {
   win: boolean;
   lineups: {
     home: Lineup;
-    away: Lineup;
+    away?: Lineup;
   };
   options: {
     serve: "home" | "away";

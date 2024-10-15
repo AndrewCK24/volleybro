@@ -101,7 +101,7 @@ export type ReduxRecordInput = {
     win: boolean;
     lineups: {
       home: ReduxLineup;
-      away: ReduxLineup;
+      away?: ReduxLineup;
     };
     options: {
       serve: "home" | "away";

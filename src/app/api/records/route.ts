@@ -47,7 +47,7 @@ export const POST = async (req: NextRequest) => {
   try {
     const request = await req.json();
     const searchParams = req.nextUrl.searchParams;
-    const teamId = searchParams.get("teamId");
+    const teamId = searchParams.get("ti");
 
     const input = {
       params: { teamId },
