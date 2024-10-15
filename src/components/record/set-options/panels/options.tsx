@@ -83,17 +83,16 @@ const LineupOptions = ({
   });
 
   const onSubmit = async (data: LineupOptionsValues) => {
-    const res = await fetch(`/api/records/${recordId}/sets/${setNum}`, {
-      method: "PUT",
+    const res = await fetch(`/api/records/${recordId}/sets?si=${setNum}`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         lineup: lineups[0],
         options: data,
       }),
     });
-    const set = await res.json();
-    record.sets[setNum] = set;
-    mutate({ ...record }, false);
+    const record = await res.json();
+    mutate(record, false);
     dispatch(recordActions.initialize(record));
   };
 

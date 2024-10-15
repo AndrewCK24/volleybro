@@ -51,7 +51,7 @@ export class CreateRecordUseCase {
     const record = await this.recordRepository.create({
       team_id: params.teamId,
       info: data.info,
-      teams: { home: { ...data.team, lineup: data.lineup } },
+      teams: { home: { ...data.team, lineup: data.lineup }, away: {} },
     });
 
     return record;

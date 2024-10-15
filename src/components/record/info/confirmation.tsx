@@ -94,7 +94,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
     };
 
     try {
-      const res = await fetch(`/api/records?teamId=${teamId}`, {
+      const res = await fetch(`/api/records?ti=${teamId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
