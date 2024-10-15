@@ -62,7 +62,7 @@ export class CreateSetUseCase {
     const activePlayerIds = new Set([...startingPlayers, ...liberoPlayers]);
 
     record.teams.home.players.forEach((player) => {
-      if (activePlayerIds.has(player._id)) {
+      if (activePlayerIds.has(player._id.toString())) {
         player.stats[params.setIndex] = new PlayerStatsClass();
       }
     });
