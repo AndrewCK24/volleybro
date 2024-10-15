@@ -1,4 +1,4 @@
-import { Record, Rally } from "@/entities/record";
+import { Rally } from "@/entities/record";
 import { IUserRepository } from "@/applications/repositories/user.repository.interface";
 import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
 import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
@@ -42,7 +42,7 @@ export class AddRallyUseCase {
   }
 
   async execute(
-    params: { id: Record["_id"]; setNum: number; rallyNum: number },
+    params: { id: string; setNum: number; rallyNum: number },
     rally: Rally
   ): Promise<Rally[] | undefined> {
     const authenticationService = new AuthenticationService(
@@ -50,7 +50,7 @@ export class AddRallyUseCase {
     );
     const user = await authenticationService.verifySession();
 
-    const record = await this.recordRepository.findById(params.id);
+    const record = await this.recordRepository.findOne({ _id: params.id });
     if (!record) throw new Error("Record not found");
 
     const authorizationService = new AuthorizationService(this.teamRepository);
@@ -69,7 +69,7 @@ export class AddRallyUseCase {
 
     record.sets[params.setNum].rallies[params.rallyNum] = rally;
 
-    await this.recordRepository.update(params.id, record);
+    await this.recordRepository.update({ _id: params.id }, record);
 
     return record.sets[params.setNum].rallies;
   }

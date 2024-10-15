@@ -9,7 +9,7 @@ export class AuthorizationService implements IAuthorizationService {
     userId: string,
     role: Role = Role.MEMBER
   ): Promise<void> {
-    const team = await this.teamRepository.findById(teamId);
+    const team = await this.teamRepository.findOne({ _id: teamId });
     if (!team) throw new Error("Team not found");
 
     const member = team.members.find(

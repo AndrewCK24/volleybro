@@ -1,14 +1,13 @@
-import { CreateRecordUseCase } from "@/applications/use-cases/record/create-record.use-case";
-
+import {
+  CreateRecordUseCase,
+  type ICreateRecordInput,
+  type ICreateRecordOutput,
+} from "@/applications/use-cases/record/create-record.use-case";
 import {
   UserRepositoryImpl,
   TeamRepositoryImpl,
   RecordRepositoryImpl,
 } from "@/infrastructure/repositories";
-import type {
-  ICreateRecordInput,
-  ICreateRecordOutput,
-} from "@/applications/use-cases/record/create-record.use-case";
 
 export const createRecordController = async (
   input: ICreateRecordInput
