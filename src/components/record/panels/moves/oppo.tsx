@@ -4,8 +4,8 @@ import { useRecord } from "@/hooks/use-data";
 import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
 import { Container, MoveButton } from "@/components/record/panels/moves";
-import { addRally } from "@/lib/features/record/actions/add-rally";
-import { addRallyOptimistic } from "@/lib/features/record/helpers/add-rally.helper";
+import { createRally } from "@/lib/features/record/actions/create-rally";
+import { createRallyOptimistic } from "@/lib/features/record/helpers/create-rally.helper";
 
 import type { ReduxRecordState } from "@/lib/features/record/types";
 import type { RecordActions } from "@/lib/features/record/record-slice";
@@ -23,7 +23,7 @@ const OppoMoves = ({
   const dispatch = useAppDispatch();
   const { record, mutate } = useRecord(recordId);
   const {
-    status: { setNum, rallyNum },
+    status: { setNum: setIndex, rallyNum: rallyIndex },
     recording,
   } = recordState;
 
@@ -36,16 +36,19 @@ const OppoMoves = ({
       dispatch(recordActions.setRecordingAwayMove(move));
     } else {
       try {
-        console.log("before addRally", record.teams.home.stats[setNum]);
-        mutate(addRally({ recordId, setNum, rallyNum }, recording, record), {
-          revalidate: false,
-          optimisticData: addRallyOptimistic(
-            { recordId, setNum, rallyNum },
-            recording,
-            record
-          ),
-        });
-        console.log("after addRally", record.teams.home.stats[setNum]);
+        console.log("before addRally", record.teams.home.stats[setIndex]);
+        mutate(
+          createRally({ recordId, setIndex, rallyIndex }, recording, record),
+          {
+            revalidate: false,
+            optimisticData: createRallyOptimistic(
+              { recordId, setIndex, rallyIndex },
+              recording,
+              record
+            ),
+          }
+        );
+        console.log("after addRally", record.teams.home.stats[setIndex]);
         dispatch(recordActions.resetRecording(record));
       } catch (error) {
         console.error("[POST /api/records]", error);

@@ -1,15 +1,15 @@
 import type { Record } from "@/entities/record";
 import type { ReduxRecording } from "@/lib/features/record/types";
 
-export const addRally = async (
-  params: { recordId: string; setNum: number; rallyNum: number },
+export const createRally = async (
+  params: { recordId: string; setIndex: number; rallyIndex: number },
   recording: ReduxRecording,
   record: Record
 ) => {
-  const { recordId, setNum, rallyNum } = params;
+  const { recordId, setIndex, rallyIndex } = params;
   try {
     const res = await fetch(
-      `/api/records/${recordId}/sets/rallies?setNum=${setNum}&rallyNum=${rallyNum}`,
+      `/api/records/${recordId}/sets/rallies?si=${setIndex}&ri=${rallyIndex}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -18,7 +18,7 @@ export const addRally = async (
     );
     if (!res.ok) throw new Error("Network response was not ok");
     const rallies = await res.json();
-    record.sets[setNum].rallies = rallies;
+    record.sets[setIndex].rallies = rallies;
     return record;
   } catch (error) {
     console.error("[POST /api/records]", error);
