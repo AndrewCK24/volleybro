@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RalliesEdit from "@/components/record/options/edit";
+import RecordOptionsOverview from "@/components/record/options/overview";
 import RecordOptionsRallies from "@/components/record/options/rallies";
 
 const RecordOptions = ({
@@ -42,7 +43,7 @@ const RecordOptions = ({
               <TabsTrigger value="settings">設定</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="flex-1">
-              <div>總覽</div>
+              <RecordOptionsOverview recordId={recordId} />
             </TabsContent>
             <TabsContent value="rallies" className="flex-1 h-full">
               <RecordOptionsRallies recordId={recordId} />
