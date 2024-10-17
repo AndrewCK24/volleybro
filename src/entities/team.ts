@@ -1,22 +1,32 @@
+import { Position, TeamStats } from "@/entities/record";
+
 export type Lineup = {
   options: {
     liberoSwitchMode: 0 | 1 | 2;
-    liberoSwitchPosition: "" | "OH" | "MB" | "OP";
+    liberoSwitchPosition:
+      | Position.NONE
+      | Position.OH
+      | Position.MB
+      | Position.OP;
   };
   starting: {
     _id: string;
-    position: "OH" | "MB" | "OP" | "S";
+    position: Position;
   }[];
   liberos: {
     _id: string;
-    position: "L";
+    position: Position;
   }[];
   substitutes: {
     _id: string;
   }[];
 };
 
-export enum Role { MEMBER, OWNER, ADMIN }
+export enum Role {
+  MEMBER,
+  OWNER,
+  ADMIN,
+}
 
 export type Member = {
   _id: string;
@@ -31,8 +41,7 @@ export type Team = {
   nickname?: string;
   members: Member[];
   lineups: Lineup[];
-  matches: string[];
-  stats?: Record<string, unknown>;
+  stats?: TeamStats[];
   createdAt?: Date;
   updatedAt?: Date;
 };

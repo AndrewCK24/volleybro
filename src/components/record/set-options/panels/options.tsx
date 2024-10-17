@@ -52,7 +52,7 @@ const LineupOptions = ({
   hasPairedSwitchPosition: boolean;
 }) => {
   const dispatch = useAppDispatch();
-  const { lineups } = useAppSelector((state) => state.lineups);
+  const { lineups } = useAppSelector((state) => state.lineup);
   const { setIndex } = useAppSelector((state) => state.record.status);
   const { record, mutate } = useRecord(recordId);
   const liberoCount = lineups[0]?.liberos.length;

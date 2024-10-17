@@ -1,8 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/app/store/lineups-slice";
-import { z } from "zod";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiChevronRight, FiAlertTriangle, FiHelpCircle } from "react-icons/fi";
@@ -33,50 +32,51 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
-const formSchema = z.object({
-  mode: z.coerce.number().int().min(0).max(2),
-  position: z.enum(["OH", "MB", "OP"]),
-});
+import {
+  LiberoSwitchFormSchema,
+  type LiberoSwitchFormValues,
+} from "@/lib/features/team/types";
 
 const LiberoSwitch = () => {
-  const dispatch = useDispatch();
-  const { lineups, status } = useSelector((state) => state.lineups);
+  const dispatch = useAppDispatch();
+  const { lineups, status } = useAppSelector((state) => state.lineup);
   const { liberoSwitchMode, liberoSwitchPosition } =
-    lineups[status.lineupNum]?.options;
+    lineups[status.lineupIndex]?.options;
   const hasPairedSwitchPosition =
     liberoSwitchPosition === "OP"
       ? true
-      : lineups[status.lineupNum]?.starting.some((player, index) => {
+      : lineups[status.lineupIndex]?.starting.some((player, index) => {
           const oppositeIndex = index >= 3 ? index - 3 : index + 3;
           return (
             player._id &&
             player.position === liberoSwitchPosition &&
-            lineups[status.lineupNum].starting[oppositeIndex]._id &&
-            lineups[status.lineupNum].starting[oppositeIndex].position ===
+            lineups[status.lineupIndex].starting[oppositeIndex]._id &&
+            lineups[status.lineupIndex].starting[oppositeIndex].position ===
               liberoSwitchPosition
           );
         });
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LiberoSwitchFormValues>({
+    resolver: zodResolver(LiberoSwitchFormSchema),
     defaultValues: {
-      mode: liberoSwitchMode.toString(),
+      mode: String(liberoSwitchMode) as LiberoSwitchFormValues["mode"],
       position: liberoSwitchPosition,
     },
   });
 
   useEffect(() => {
     form.reset({
-      mode: liberoSwitchMode.toString(),
+      mode: String(liberoSwitchMode) as LiberoSwitchFormValues["mode"],
       position: liberoSwitchPosition,
     });
   }, [form, liberoSwitchMode, liberoSwitchPosition]);
 
-  const onSubmit = (formData) => {
+  const onSubmit = (data: LiberoSwitchFormValues) => {
+    const modeNumber = parseInt(data.mode, 10) as 0 | 1 | 2;
     dispatch(
-      lineupsActions.setLiberoSwitch({
-        mode: formData.mode,
-        position: formData.position,
+      lineupActions.setLiberoSwitch({
+        liberoSwitchMode: modeNumber,
+        liberoSwitchPosition: data.position,
       })
     );
   };

@@ -1,15 +1,17 @@
-import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { FiUserCheck, FiUser, FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+import { LineupOptionMode } from "@/lib/features/team/types";
+
 const Substitutes = ({ members, others, className }) => {
-  const dispatch = useDispatch();
-  const { lineups, status } = useSelector((state) => state.lineups);
-  const liberoCount = lineups[status.lineupNum].liberos.length;
-  const substituteCount = lineups[status.lineupNum].substitutes.length;
+  const dispatch = useAppDispatch();
+  const { lineups, status } = useAppSelector((state) => state.lineup);
+  const liberoCount = lineups[status.lineupIndex].liberos.length;
+  const substituteCount = lineups[status.lineupIndex].substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
   const isSubstituteFull = substituteCount >= substituteLimit;
   const isEditingStarting = !!status.editingMember.zone;
@@ -17,28 +19,28 @@ const Substitutes = ({ members, others, className }) => {
   const handleSubstituteClick = (member, index) => {
     if (isEditingStarting) {
       dispatch(
-        lineupsActions.replaceEditingPlayer({
+        lineupActions.replaceEditingPlayer({
           _id: member._id,
           list: "substitutes",
           zone: index + 1,
         })
       );
     } else {
-      dispatch(lineupsActions.removeSubstitutePlayer(member._id));
+      dispatch(lineupActions.removeSubstitutePlayer(member._id));
     }
   };
 
   const handleOtherClick = (member, index) => {
     if (isEditingStarting) {
       dispatch(
-        lineupsActions.replaceEditingPlayer({
+        lineupActions.replaceEditingPlayer({
           _id: member._id,
           list: "",
           zone: index + 1,
         })
       );
     } else if (!isSubstituteFull) {
-      dispatch(lineupsActions.addSubstitutePlayer(member._id));
+      dispatch(lineupActions.addSubstitutePlayer(member._id));
     }
   };
 
@@ -48,13 +50,15 @@ const Substitutes = ({ members, others, className }) => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => dispatch(lineupsActions.setOptionMode(""))}
+          onClick={() =>
+            dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
+          }
         >
           <FiChevronLeft />
         </Button>
         <CardTitle>{`替補名單 (${substituteCount}/${substituteLimit})`}</CardTitle>
       </CardHeader>
-      {lineups[status.lineupNum].substitutes.map((player, index) => {
+      {lineups[status.lineupIndex].substitutes.map((player, index) => {
         const member = members.find((m) => m._id === player._id);
         return (
           <Button

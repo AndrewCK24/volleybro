@@ -3,7 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTeam, useTeamMembers } from "@/hooks/use-data";
 import Lineup from "@/components/team/lineup";
 
-const LineupPage = ({ params }) => {
+const LineupPage = ({ params }: { params: { teamId: string } }) => {
   const { toast } = useToast();
   const { teamId } = params;
   const { team, mutate } = useTeam(teamId);

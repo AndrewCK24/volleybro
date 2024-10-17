@@ -1,25 +1,26 @@
 import { Schema, model, models } from "mongoose";
 import { Role } from "@/entities/team";
+import { Position } from "@/entities/record";
 
 export const lineupSchema = new Schema({
   options: {
     liberoSwitchMode: { type: Number, enum: [0, 1, 2], default: 0 },
     liberoSwitchPosition: {
       type: String,
-      enum: ["", "OH", "MB", "OP"],
-      default: "",
+      enum: Position,
+      default: Position.NONE,
     },
   },
   starting: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
-      position: { type: String, enum: ["OH", "MB", "OP", "S"] },
+      position: { type: String, enum: Position },
     },
   ],
   liberos: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
-      position: { type: String, enum: ["L"] },
+      position: { type: String, enum: Position },
     },
   ],
   substitutes: [
@@ -31,13 +32,8 @@ export const lineupSchema = new Schema({
 
 const teamSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    nickname: {
-      type: String,
-    },
+    name: { type: String, required: true },
+    nickname: { type: String },
     members: [
       {
         _id: { type: Schema.Types.ObjectId, ref: "Member" },
@@ -47,15 +43,7 @@ const teamSchema = new Schema(
       },
     ],
     lineups: [lineupSchema],
-    matches: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Match",
-      },
-    ],
-    stats: {
-      type: Object,
-    },
+    stats: { type: Object },
   },
   {
     timestamps: true,

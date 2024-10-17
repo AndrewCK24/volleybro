@@ -4,6 +4,7 @@ import LineupOptions from "@/components/record/set-options/panels/options";
 import Positions from "@/components/team/lineup/panels/positions";
 import Substitutes from "@/components/record/set-options/panels/substitutes";
 
+import { LineupOptionMode } from "@/lib/features/team/types";
 import type { Player } from "@/entities/record";
 
 const LineupPanels = ({
@@ -17,15 +18,15 @@ const LineupPanels = ({
   hasPairedSwitchPosition: boolean;
   className?: string;
 }) => {
-  const { optionMode } = useAppSelector((state) => state.lineups.status);
+  const { optionMode } = useAppSelector((state) => state.lineup.status);
 
   return (
     <>
-      {optionMode === "playerInfo" ? (
+      {optionMode === LineupOptionMode.PLAYERINFO ? (
         <PlayerInfo members={members} className={className} />
-      ) : optionMode === "substitutes" ? (
+      ) : optionMode === LineupOptionMode.SUBSTITUTES ? (
         <Substitutes members={members} className={className} />
-      ) : optionMode === "positions" ? (
+      ) : optionMode === LineupOptionMode.POSITIONS ? (
         <Positions className={className} />
       ) : (
         <LineupOptions

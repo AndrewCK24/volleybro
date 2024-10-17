@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import lineupsReducer from "@/app/store/lineups-slice";
+import lineupReducer from "@/lib/features/team/lineup-slice";
 import recordReducer from "@/lib/features/record/record-slice";
 import editingReducer from "@/lib/features/record/editing-slice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      lineups: lineupsReducer,
+      lineup: lineupReducer,
       record: recordReducer,
       editing: editingReducer,
     },
