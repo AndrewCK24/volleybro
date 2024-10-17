@@ -112,11 +112,11 @@ export const useRecord = (
 };
 
 export const useTeamRecords = (
-  teamId,
+  teamId: string,
   fetcher = defaultFetcher,
   options = {}
 ) => {
-  const key = `/api/records?teamId=${teamId}`;
+  const key = `/api/records?ti=${teamId}`;
   const hasCache = useHasCache(key);
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     key,

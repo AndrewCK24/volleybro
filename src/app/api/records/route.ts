@@ -20,7 +20,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const teamId = searchParams.get("teamId");
+    const teamId = searchParams.get("ti");
     if (!teamId) {
       console.error("[GET /api/records] Team ID is required");
       return NextResponse.json(
@@ -36,6 +36,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     const records = await Record.find({ team_id: teamId });
+    // TODO: `find-team-records` use case 僅需回傳各場比賽結果，不需包含整筆 record 資料
     return NextResponse.json(records, { status: 200 });
   } catch (error) {
     console.log("[GET /api/records]", error);
