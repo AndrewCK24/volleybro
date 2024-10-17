@@ -22,7 +22,7 @@ const TeamMatches = ({
     <Card className={className}>
       <Table>
         <TableBody className="text-xl">
-          {records ? (
+          {records.length ? (
             records.map((record) => {
               return (
                 <TableRow
