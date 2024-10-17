@@ -10,7 +10,11 @@ export enum Position {
 export type Lineup = {
   options: {
     liberoSwitchMode: 0 | 1 | 2;
-    liberoSwitchPosition: "" | "OH" | "MB" | "OP";
+    liberoSwitchPosition:
+      | Position.NONE
+      | Position.OH
+      | Position.MB
+      | Position.OP;
   };
   starting: {
     _id: string;
