@@ -39,9 +39,7 @@ export const Nav = () => {
   const segments = useSelectedLayoutSegments();
   const { user } = useUser();
   const defaultTeamId = user?.teams?.joined[0] || null;
-  const defaultTeamUrl = defaultTeamId
-    ? `/team/${defaultTeamId}`
-    : "/user/invitations";
+  const defaultTeamUrl = defaultTeamId ? `/team/${defaultTeamId}` : "/team";
 
   const active = (path) => {
     const activeClass =
