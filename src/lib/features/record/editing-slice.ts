@@ -12,20 +12,19 @@ import {
   setRecordingMode,
   resetRecording,
 } from "@/lib/features/record/record-slice";
+import type { Record, Rally } from "@/entities/record";
 import type {
   ReduxRecordState,
   ReduxLineup,
   ReduxStatus,
-  ReduxRallyDetail,
-  ReduxRecordInput,
 } from "@/lib/features/record/types";
 
 const initialState: ReduxRecordState = { isEditing: false, ...recordInitial };
 
-const initialize: CaseReducer<
-  ReduxRecordState,
-  PayloadAction<ReduxRecordInput>
-> = (state, action) => {
+const initialize: CaseReducer<ReduxRecordState, PayloadAction<Record>> = (
+  state,
+  action
+) => {
   recordInitialize(state, action);
   state.isEditing = false;
 };
@@ -47,14 +46,10 @@ const setSetNum: CaseReducer<ReduxRecordState, PayloadAction<number>> = (
 interface SetEditingRallyStatusPayload {
   lineups: {
     home: ReduxLineup;
-    away: ReduxLineup;
+    away?: ReduxLineup;
   };
   status: ReduxStatus;
-  recording: {
-    win: boolean | null;
-    home: ReduxRallyDetail;
-    away: ReduxRallyDetail;
-  };
+  recording: Rally;
 }
 
 // FIXME: 修正編輯狀態 inPlay, isSetPoint 計算邏輯、減少引入參數
@@ -65,7 +60,7 @@ const setEditingRallyStatus: CaseReducer<
   const { lineups, recording, ...status } = action.payload;
   state.isEditing = true;
   state.lineups = lineups;
-  state.recording = recording;
+  state.recording = { ...recording };
   state.status = {
     ...state.status,
     ...status,

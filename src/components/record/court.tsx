@@ -61,17 +61,19 @@ const RecordCourt = ({
               key={index}
               player={player}
               list="liberos"
-              zone={index + 1}
+              zone={-(index + 1)}
               onCardClick={() =>
                 dispatch(
                   recordActions.setRecordingPlayer({
-                    _id: libero._id,
-                    list: "liberos",
-                    zone: index + 1,
+                    _id: player._id,
+                    zone: -(index + 1),
                   })
                 )
               }
-              editingMember={recording.home.player}
+              editingMember={{
+                ...recording.home.player,
+                list: recording.home.player.zone > 0 ? "starting" : "liberos",
+              }}
             />
           );
         })}
@@ -92,13 +94,15 @@ const RecordCourt = ({
               onCardClick={() =>
                 dispatch(
                   recordActions.setRecordingPlayer({
-                    _id: starting._id,
-                    list: "starting",
+                    _id: player._id,
                     zone: index + 1,
                   })
                 )
               }
-              editingMember={recording.home.player}
+              editingMember={{
+                ...recording.home.player,
+                list: recording.home.player.zone > 0 ? "starting" : "liberos",
+              }}
             />
           );
         })}

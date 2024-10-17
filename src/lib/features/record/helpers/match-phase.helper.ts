@@ -1,11 +1,9 @@
-import type {
-  ReduxRecording,
-  ReduxRecordInput,
-} from "@/lib/features/record/types";
+import type { Record, Rally } from "@/entities/record";
+import type { ReduxRecording } from "@/lib/features/record/types";
 
 export const matchPhaseHelper = (
-  record: ReduxRecordInput,
-  rally: ReduxRecording,
+  record: Record,
+  rally: ReduxRecording | Rally,
   point: number = 25
 ): {
   inPlay: boolean;

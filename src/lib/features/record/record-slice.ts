@@ -9,13 +9,11 @@ import {
   serveOrderHelper,
 } from "@/lib/features/record/helpers";
 
-import { Position } from "@/entities/record";
+import { type Record, RallyDetail, Position } from "@/entities/record";
 import type {
   ReduxRecordState,
   ReduxStatus,
   ReduxLineup,
-  ReduxRallyDetail,
-  ReduxRecordInput,
 } from "@/lib/features/record/types";
 import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
 
@@ -93,13 +91,12 @@ const lineupState: ReduxLineup = {
   substitutes: [],
 };
 
-const rallyDetailState: ReduxRallyDetail = {
+const rallyDetailState: RallyDetail = {
   score: 0,
   type: null,
   num: null,
   player: {
     _id: "",
-    list: "",
     zone: 0,
   },
 };
@@ -122,7 +119,7 @@ export const initialState: ReduxRecordState = {
 // Define the reducers
 export const initialize: CaseReducer<
   ReduxRecordState,
-  PayloadAction<ReduxRecordInput>
+  PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
   const setNum = record.sets.length ? record.sets.length - 1 : 0;
@@ -178,9 +175,9 @@ export const initialize: CaseReducer<
 
 export const setRecordingPlayer: CaseReducer<
   ReduxRecordState,
-  PayloadAction<{ _id: string; list: string; zone: number }>
+  PayloadAction<{ _id: string; zone: number }>
 > = (state, action) => {
-  const { _id, list, zone } = action.payload;
+  const { _id, zone } = action.payload;
   const isSamePlayer = _id === state.recording.home.player._id;
 
   state.status.recordingMode = "home";
@@ -188,9 +185,7 @@ export const setRecordingPlayer: CaseReducer<
     ...initialState.recording,
     home: {
       ...initialState.recording.home,
-      player: isSamePlayer
-        ? initialState.recording.home.player
-        : { _id, list, zone },
+      player: isSamePlayer ? initialState.recording.home.player : { _id, zone },
       score: state.status.scores.home,
     },
     away: {
@@ -240,7 +235,7 @@ export const setRecordingMode: CaseReducer<
 
 export const resetRecording: CaseReducer<
   ReduxRecordState,
-  PayloadAction<ReduxRecordInput>
+  PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
   const { setNum, rallyNum } = state.status;

@@ -195,7 +195,7 @@ export type Rally = {
   }[];
   substitutions?: {
     team_id: string;
-    players: {
+    players?: {
       in: string;
       out: string;
     };
