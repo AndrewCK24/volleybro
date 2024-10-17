@@ -1,37 +1,40 @@
-import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Position } from "@/entities/record";
+
+import { LineupOptionMode } from "@/lib/features/team/types";
 
 export const positions = [
   {
     text: "舉球 (二傳, Setter)",
-    value: "S",
+    value: Position.S,
   },
   {
     text: "主攻 (大砲, Outside Hitter)",
-    value: "OH",
+    value: Position.OH,
   },
   {
     text: "快攻 (攔中, Middle Blocker)",
-    value: "MB",
+    value: Position.MB,
   },
   {
     text: "副攻 (舉對, Opposite Hitter)",
-    value: "OP",
+    value: Position.OP,
   },
   {
     text: "自由 (Libero)",
-    value: "L",
+    value: Position.L,
   },
 ];
 
 const Positions = ({ className }) => {
-  const dispatch = useDispatch();
-  const { lineups, status } = useSelector((state) => state.lineups);
+  const dispatch = useAppDispatch();
+  const { lineups, status } = useAppSelector((state) => state.lineup);
   const { list, zone } = status.editingMember;
-  const toggledPosition = lineups[status.lineupNum][list][zone - 1].position;
+  const toggledPosition = lineups[status.lineupIndex][list][zone - 1].position;
   const isEditingLiberos = list === "liberos";
 
   return (
@@ -40,7 +43,9 @@ const Positions = ({ className }) => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => dispatch(lineupsActions.setOptionMode("playerInfo"))}
+          onClick={() =>
+            dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
+          }
         >
           <FiChevronLeft />
         </Button>
@@ -50,10 +55,10 @@ const Positions = ({ className }) => {
         {positions.map((position) => (
           <Button
             key={position.value}
-            variant={toggledPosition === position.value ? "" : "outline"}
+            variant={toggledPosition === position.value ? "default" : "outline"}
             size="wide"
             onClick={() =>
-              dispatch(lineupsActions.setPlayerPosition(position.value))
+              dispatch(lineupActions.setPlayerPosition(position.value))
             }
             disabled={
               position.value === "L" ? !isEditingLiberos : isEditingLiberos

@@ -36,7 +36,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
   const { team, isLoading: isTeamLoading } = useTeam(teamId);
   const { members, isLoading: isMembersLoading } = useTeamMembers(teamId);
 
-  const [lineupNum, setLineupNum] = useState(0);
+  const [lineupIndex, setLineupIndex] = useState(0);
   const [info, setInfo] = useState<FormMatch>({
     // _id: "",
     name: "",
@@ -64,7 +64,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
 
   const getPlayerData = (list: string) => {
     if (!team || !members) return [];
-    return team.lineups[lineupNum][list].map((player) => {
+    return team.lineups[lineupIndex][list].map((player) => {
       const member = members.find((member) => member._id === player._id);
       return {
         _id: member._id,
@@ -104,7 +104,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
             name: team.name,
             players,
           },
-          lineup: team.lineups[lineupNum],
+          lineup: team.lineups[lineupIndex],
         }),
       });
 
@@ -163,14 +163,14 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
           <MatchMiscForm info={info} setInfo={setInfo} />
         </Dialog>
         <CardHeader>
-          <CardTitle>陣容配置 {lineupNum + 1}</CardTitle>
+          <CardTitle>陣容配置 {lineupIndex + 1}</CardTitle>
           <CardBtnGroup>
             {team?.lineups.map((_, index) => (
               <Button
                 key={index}
-                variant={lineupNum === index ? "default" : "outline"}
+                variant={lineupIndex === index ? "default" : "outline"}
                 size="icon"
-                onClick={() => setLineupNum(index)}
+                onClick={() => setLineupIndex(index)}
                 className="text-[1.25rem] w-8 h-8"
               >
                 {index + 1}

@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { BsGrid3X2Gap } from "react-icons/bs";
 import {
   FiChevronLeft,
@@ -20,11 +20,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { LineupOptionMode } from "@/lib/features/team/types";
+
 const PlayerInfo = ({ members, className }) => {
-  const dispatch = useDispatch();
-  const { status, lineups } = useSelector((state) => state.lineups);
-  const { lineupNum, editingMember } = status;
-  const player = lineups[lineupNum][editingMember.list][editingMember.zone - 1];
+  const dispatch = useAppDispatch();
+  const { status, lineups } = useAppSelector((state) => state.lineup);
+  const { lineupIndex, editingMember } = status;
+  const player =
+    lineups[lineupIndex][editingMember.list][editingMember.zone - 1];
   const member = members.find((member) => member._id === editingMember._id);
 
   return (
@@ -33,7 +36,9 @@ const PlayerInfo = ({ members, className }) => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => dispatch(lineupsActions.setOptionMode(""))}
+          onClick={() =>
+            dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
+          }
         >
           <FiChevronLeft />
         </Button>
@@ -75,7 +80,9 @@ const PlayerInfo = ({ members, className }) => {
                 variant="ghost"
                 size="icon"
                 onClick={() =>
-                  dispatch(lineupsActions.setOptionMode("positions"))
+                  dispatch(
+                    lineupActions.setOptionMode(LineupOptionMode.POSITIONS)
+                  )
                 }
               >
                 <FiEdit2 />

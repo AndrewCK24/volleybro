@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { FiUser } from "react-icons/fi";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,24 +20,26 @@ import {
 import LineupError from "@/components/team/lineup/panels/options/lineup-error";
 import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
 
+import { LineupOptionMode } from "@/lib/features/team/types";
+
 const LineupOptions = ({
   members,
   others,
   hasPairedSwitchPosition,
   className,
 }) => {
-  const dispatch = useDispatch();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const { lineups, status } = useSelector((state) => state.lineups);
-  const liberoCount = lineups[status.lineupNum]?.liberos.length;
-  const substituteCount = lineups[status.lineupNum]?.substitutes.length;
+  const dispatch = useAppDispatch();
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { lineups, status } = useAppSelector((state) => state.lineup);
+  const liberoCount = lineups[status.lineupIndex]?.liberos.length;
+  const substituteCount = lineups[status.lineupIndex]?.substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
   const othersCount = others.length;
 
-  const handleLineupNumClick = (index) => {
-    if (index === status.lineupNum) return;
+  const handlelineupIndexClick = (index) => {
+    if (index === status.lineupIndex) return;
     if (hasPairedSwitchPosition) {
-      dispatch(lineupsActions.setLineupNum(index));
+      dispatch(lineupActions.setLineupIndex(index));
     } else {
       setDialogOpen(true);
     }
@@ -46,14 +48,14 @@ const LineupOptions = ({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>陣容配置 {status.lineupNum + 1}</CardTitle>
+        <CardTitle>陣容配置 {status.lineupIndex + 1}</CardTitle>
         <CardBtnGroup>
           {lineups.map((_, index) => (
             <Button
               key={index}
-              variant={status.lineupNum === index ? "" : "outline"}
+              variant={status.lineupIndex === index ? "default" : "outline"}
               size="icon"
-              onClick={() => handleLineupNumClick(index)}
+              onClick={() => handlelineupIndexClick(index)}
               className="text-[1.25rem] w-8 h-8"
             >
               {index + 1}
@@ -76,7 +78,9 @@ const LineupOptions = ({
                   size="lg"
                   className="px-0 w-fit"
                   onClick={() =>
-                    dispatch(lineupsActions.setOptionMode("substitutes"))
+                    dispatch(
+                      lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES)
+                    )
                   }
                 >
                   調整
@@ -86,8 +90,8 @@ const LineupOptions = ({
           </TableRow>
         </TableHeader>
         <TableBody className="text-xl">
-          {lineups[status.lineupNum]?.substitutes &&
-            lineups[status.lineupNum].substitutes.map((player) => {
+          {lineups[status.lineupIndex]?.substitutes &&
+            lineups[status.lineupIndex].substitutes.map((player) => {
               const member = members?.find((m) => m._id === player._id);
               return (
                 <TableRow key={member._id}>
@@ -114,7 +118,9 @@ const LineupOptions = ({
                   size="lg"
                   className="px-0 w-fit"
                   onClick={() =>
-                    dispatch(lineupsActions.setOptionMode("substitutes"))
+                    dispatch(
+                      lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES)
+                    )
                   }
                 >
                   調整

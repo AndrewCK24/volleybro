@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { FiSave } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import LineupCourt from "@/components/team/lineup/court";
@@ -10,30 +10,31 @@ import LoadingCourt from "@/components/custom/loading/court";
 import LoadingCard from "@/components/custom/loading/card";
 
 const Lineup = ({ team, members, handleSave }) => {
-  const dispatch = useDispatch();
-  const { lineups, status } = useSelector((state) => state.lineups);
-  const liberoSwitchMode = lineups[status.lineupNum]?.options.liberoSwitchMode;
+  const dispatch = useAppDispatch();
+  const { lineups, status } = useAppSelector((state) => state.lineup);
+  const liberoSwitchMode =
+    lineups[status.lineupIndex]?.options.liberoSwitchMode;
   const liberoSwitchPosition =
-    lineups[status.lineupNum]?.options.liberoSwitchPosition;
+    lineups[status.lineupIndex]?.options.liberoSwitchPosition;
   const hasPairedSwitchPosition =
     liberoSwitchMode === 0 ||
     (liberoSwitchPosition === "OP"
-      ? lineups[status.lineupNum]?.starting.some(
+      ? lineups[status.lineupIndex]?.starting.some(
           (player) => player._id && player.position === "OP"
         )
-      : lineups[status.lineupNum]?.starting.some((player, index) => {
+      : lineups[status.lineupIndex]?.starting.some((player, index) => {
           const oppositeIndex = index >= 3 ? index - 3 : index + 3;
           return (
             player._id &&
             player.position === liberoSwitchPosition &&
-            lineups[status.lineupNum].starting[oppositeIndex]._id &&
-            lineups[status.lineupNum].starting[oppositeIndex].position ===
+            lineups[status.lineupIndex].starting[oppositeIndex]._id &&
+            lineups[status.lineupIndex].starting[oppositeIndex].position ===
               liberoSwitchPosition
           );
         }));
 
   useEffect(() => {
-    if (team && team.lineups) dispatch(lineupsActions.initialize(team.lineups));
+    if (team && team.lineups) dispatch(lineupActions.initialize(team.lineups));
   }, [team, dispatch]);
 
   if (!team || !members || !lineups.length) {

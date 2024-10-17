@@ -1,10 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { FiUserCheck, FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 import type { Player } from "@/entities/record";
+import { LineupOptionMode } from "@/lib/features/team/types";
 
 const Substitutes = ({
   members,
@@ -14,7 +15,7 @@ const Substitutes = ({
   className?: string;
 }) => {
   const dispatch = useAppDispatch();
-  const { lineups, status } = useAppSelector((state) => state.lineups);
+  const { lineups, status } = useAppSelector((state) => state.lineup);
 
   return (
     <Card className={className}>
@@ -22,13 +23,15 @@ const Substitutes = ({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => dispatch(lineupsActions.setOptionMode(""))}
+          onClick={() =>
+            dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
+          }
         >
           <FiChevronLeft />
         </Button>
         <CardTitle>替補名單</CardTitle>
       </CardHeader>
-      {lineups[status.lineupNum].substitutes.map((player, index) => {
+      {lineups[status.lineupIndex].substitutes.map((player, index) => {
         const member = members.find((m) => m._id === player._id);
         return (
           <Button
@@ -37,7 +40,7 @@ const Substitutes = ({
             size="wide"
             onClick={() =>
               dispatch(
-                lineupsActions.replaceEditingPlayer({
+                lineupActions.replaceEditingPlayer({
                   _id: member._id,
                   list: "substitutes",
                   zone: index + 1,

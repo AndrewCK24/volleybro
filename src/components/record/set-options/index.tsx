@@ -1,7 +1,7 @@
 "use client";
 import { useRecord } from "@/hooks/use-data";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { lineupsActions } from "@/app/store/lineups-slice";
+import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +18,7 @@ const RecordSetOptions = ({ recordId }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
   const { setIndex } = useAppSelector((state) => state.record.status);
-  const { lineups } = useAppSelector((state) => state.lineups);
+  const { lineups } = useAppSelector((state) => state.lineup);
   const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
   const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;
   const hasPairedSwitchPosition =
@@ -46,7 +46,7 @@ const RecordSetOptions = ({ recordId }) => {
           onClick={() => {
             const lineup =
               record?.sets[setIndex]?.lineups?.home || record.teams.home.lineup;
-            dispatch(lineupsActions.initialize([lineup]));
+            dispatch(lineupActions.initialize([lineup]));
           }}
         >
           開始下一局
