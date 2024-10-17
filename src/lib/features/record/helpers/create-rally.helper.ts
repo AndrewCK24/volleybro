@@ -1,17 +1,17 @@
 import type { Record, Rally } from "@/entities/record";
 import type { ReduxRecording } from "@/lib/features/record/types";
 
-export const addRallyOptimistic = (
-  params: { recordId: string; setNum: number; rallyNum: number },
+export const createRallyOptimistic = (
+  params: { recordId: string; setIndex: number; rallyIndex: number },
   recording: ReduxRecording | Rally,
   record: Record
 ) => {
-  const { setNum, rallyNum } = params;
+  const { setIndex, rallyIndex } = params;
   const { win, home, away } = recording;
-  const isServing = rallyNum
-    ? record.sets[setNum].rallies[rallyNum - 1]?.win
-    : record.sets[setNum].options.serve === "home";
-  if (win && !isServing) record.teams.home.stats[setNum].rotation += 1;
+  const isServing = rallyIndex
+    ? record.sets[setIndex].rallies[rallyIndex - 1]?.win
+    : record.sets[setIndex].options.serve === "home";
+  if (win && !isServing) record.teams.home.stats[setIndex].rotation += 1;
 
   const homePlayerIndex = record.teams.home.players.findIndex(
     (player) => player._id === home.player._id
@@ -22,16 +22,16 @@ export const addRallyOptimistic = (
   const awayTeam = record.teams.away;
 
   if (win) {
-    homePlayer.stats[setNum][home.type].success += 1;
-    awayTeam.stats[setNum][away.type].error += 1;
+    homePlayer.stats[setIndex][home.type].success += 1;
+    awayTeam.stats[setIndex][away.type].error += 1;
   } else {
-    homePlayer.stats[setNum][home.type].error += 1;
-    awayTeam.stats[setNum][away.type].success += 1;
+    homePlayer.stats[setIndex][home.type].error += 1;
+    awayTeam.stats[setIndex][away.type].success += 1;
   }
 
   record.teams.home.players[homePlayerIndex] = homePlayer;
   record.teams.away = awayTeam;
-  record.sets[setNum].rallies[rallyNum] = recording;
+  record.sets[setIndex].rallies[rallyIndex] = recording;
 
   return record;
 };

@@ -1,4 +1,4 @@
-import type { Record, Position } from "@/entities/record";
+import type { Position } from "@/entities/record";
 import type { MoveType } from "@/entities/record";
 
 // For Forms and Tables
@@ -77,7 +77,6 @@ export type ReduxRallyDetail = {
   num: number | null;
   player: {
     _id: string;
-    list: string;
     zone: number;
   };
 };
@@ -86,44 +85,6 @@ export type ReduxRecording = {
   win: boolean;
   home: ReduxRallyDetail;
   away: ReduxRallyDetail;
-};
-
-export type ReduxRecordInput = {
-  _id: string;
-  win: boolean;
-  team_id: string;
-  info: Record["info"];
-  teams: {
-    home: Record["teams"]["home"];
-    away: Record["teams"]["away"];
-  };
-  sets: {
-    win: boolean;
-    lineups: {
-      home: ReduxLineup;
-      away: ReduxLineup;
-    };
-    options: {
-      serve: "home" | "away";
-      time: {
-        start: string;
-        end: string;
-      };
-    };
-    counts: {
-      rotation: number;
-      timeout: number;
-      substitution: number;
-      challenge: number;
-    };
-    rallies: {
-      win: boolean | null;
-      home: ReduxRallyDetail;
-      away: ReduxRallyDetail;
-    }[];
-  }[];
-  createdAt?: Date;
-  updatedAt?: Date;
 };
 
 export type ReduxRecordState = {

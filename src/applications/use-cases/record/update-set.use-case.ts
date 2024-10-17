@@ -1,23 +1,22 @@
-import { Record, Team, Lineup } from "@/entities/record";
 import { IUserRepository } from "@/applications/repositories/user.repository.interface";
 import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
 import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
 import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
 import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
+import type { Record, Set } from "@/entities/record";
 import { Role } from "@/entities/team";
 
-export interface ICreateRecordInput {
-  params: { teamId: string };
+export interface IUpdateSetInput {
+  params: { recordId: string; setIndex: number };
   data: {
-    info: Record["info"];
-    team: Team;
-    lineup: Lineup;
+    // lineup: Lineup;
+    options: Set["options"];
   };
 }
 
-export interface ICreateRecordOutput extends Record {}
+export interface IUpdateSetOutput extends Record {}
 
-export class CreateRecordUseCase {
+export class UpdateSetUseCase {
   private userRepository: IUserRepository;
   private teamRepository: ITeamRepository;
   private recordRepository: IRecordRepository;
@@ -32,28 +31,33 @@ export class CreateRecordUseCase {
     this.recordRepository = recordRepository;
   }
 
-  async execute(
-    input: ICreateRecordInput
-  ): Promise<ICreateRecordOutput | undefined> {
+  async execute(input: IUpdateSetInput): Promise<IUpdateSetOutput | undefined> {
     const { params, data } = input;
     const authenticationService = new AuthenticationService(
       this.userRepository
     );
     const user = await authenticationService.verifySession();
 
+    const record = await this.recordRepository.findOne({
+      _id: params.recordId,
+    });
+    if (!record) throw new Error("Record not found");
+
     const authorizationService = new AuthorizationService(this.teamRepository);
     await authorizationService.verifyTeamRole(
-      params.teamId.toString(),
+      record.team_id.toString(),
       user._id.toString(),
       Role.MEMBER
     );
 
-    const record = await this.recordRepository.create({
-      team_id: params.teamId,
-      info: data.info,
-      teams: { home: { ...data.team, lineup: data.lineup }, away: {} },
-    });
+    record.sets[params.setIndex].options = data.options;
+    // TODO: new feature: update lineup of the set (without increasing substitution count)
 
-    return record;
+    const updatedRecord = await this.recordRepository.update(
+      { _id: params.recordId },
+      record
+    );
+
+    return updatedRecord;
   }
 }

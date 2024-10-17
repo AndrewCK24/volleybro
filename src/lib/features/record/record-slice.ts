@@ -9,13 +9,11 @@ import {
   serveOrderHelper,
 } from "@/lib/features/record/helpers";
 
-import { Position } from "@/entities/record";
+import { type Record, RallyDetail, Position } from "@/entities/record";
 import type {
   ReduxRecordState,
   ReduxStatus,
   ReduxLineup,
-  ReduxRallyDetail,
-  ReduxRecordInput,
 } from "@/lib/features/record/types";
 import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
 
@@ -93,13 +91,12 @@ const lineupState: ReduxLineup = {
   substitutes: [],
 };
 
-const rallyDetailState: ReduxRallyDetail = {
+const rallyDetailState: RallyDetail = {
   score: 0,
   type: null,
   num: null,
   player: {
     _id: "",
-    list: "",
     zone: 0,
   },
 };
@@ -122,13 +119,14 @@ export const initialState: ReduxRecordState = {
 // Define the reducers
 export const initialize: CaseReducer<
   ReduxRecordState,
-  PayloadAction<ReduxRecordInput>
+  PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
-  const setNum = record.sets.length - 1;
+  const setNum = record.sets.length ? record.sets.length - 1 : 0;
   const rallyNum = record.sets[setNum]?.rallies?.length || 0;
   const finalPoint = finalPointHelper(setNum, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
+    record,
     record?.sets[setNum]?.rallies[rallyNum - 1],
     finalPoint
   );
@@ -152,7 +150,7 @@ export const initialize: CaseReducer<
       lineups.home.starting[switchTargetIndex] = lineups.home.liberos[0];
       lineups.home.liberos[0] = switchTarget;
     }
-    const rotation = record.sets[setNum].counts.rotation % 6;
+    const rotation = record.teams.home.stats[setNum].rotation % 6;
     if (rotation) {
       const rotatedPlayers = lineups.home.starting.splice(0, rotation);
       lineups.home.starting.push(...rotatedPlayers);
@@ -177,9 +175,9 @@ export const initialize: CaseReducer<
 
 export const setRecordingPlayer: CaseReducer<
   ReduxRecordState,
-  PayloadAction<{ _id: string; list: string; zone: number }>
+  PayloadAction<{ _id: string; zone: number }>
 > = (state, action) => {
-  const { _id, list, zone } = action.payload;
+  const { _id, zone } = action.payload;
   const isSamePlayer = _id === state.recording.home.player._id;
 
   state.status.recordingMode = "home";
@@ -187,9 +185,7 @@ export const setRecordingPlayer: CaseReducer<
     ...initialState.recording,
     home: {
       ...initialState.recording.home,
-      player: isSamePlayer
-        ? initialState.recording.home.player
-        : { _id, list, zone },
+      player: isSamePlayer ? initialState.recording.home.player : { _id, zone },
       score: state.status.scores.home,
     },
     away: {
@@ -239,12 +235,16 @@ export const setRecordingMode: CaseReducer<
 
 export const resetRecording: CaseReducer<
   ReduxRecordState,
-  PayloadAction<ReduxRecordInput>
+  PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
   const { setNum, rallyNum } = state.status;
   const finalPoint = finalPointHelper(setNum, record.info);
-  const { inPlay, isSetPoint } = matchPhaseHelper(state.recording, finalPoint);
+  const { inPlay, isSetPoint } = matchPhaseHelper(
+    record,
+    state.recording,
+    finalPoint
+  );
   serveOrderHelper(state);
 
   state.status = {

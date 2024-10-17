@@ -2,20 +2,24 @@ import { IUserRepository } from "@/applications/repositories/user.repository.int
 import { User } from "@/infrastructure/mongoose/schemas/user";
 
 export class UserRepositoryImpl implements IUserRepository {
-  async findById(id: string) {
-    return await User.findById(id);
+  async find(filter: { [key: string]: any }) {
+    return await User.find(filter);
+  }
+
+  async findOne(filter: { [key: string]: any }) {
+    return await User.findOne(filter);
   }
 
   async create(data: any) {
     return await User.create(data);
   }
 
-  async update(id: string, data: any) {
-    return await User.findByIdAndUpdate(id, data, { new: true });
+  async update(filter: { [key: string]: any }, data: any) {
+    return await User.findOneAndReplace(filter, data, { new: true });
   }
 
-  async delete(id: string) {
-    const result = await User.findByIdAndDelete(id);
+  async delete(filter: { [key: string]: any }) {
+    const result = await User.findByIdAndDelete(filter);
     return !!result;
   }
 }

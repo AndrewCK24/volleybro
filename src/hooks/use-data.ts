@@ -1,24 +1,38 @@
 import useSWR, { useSWRConfig } from "swr";
+import type { Record } from "@/entities/record";
 
-const defaultFetcher = async (url) => {
+class FetchError extends Error {
+  info: any;
+  status: number;
+
+  constructor(message: string, info: any, status: number) {
+    super(message);
+    this.info = info;
+    this.status = status;
+  }
+}
+
+const defaultFetcher = async (url: string) => {
   const res = await fetch(url);
 
   // If the status code is not in the range 200-299,
-  // we still try to parse and throw it.
+  // try to parse and throw it.
   if (!res.ok) {
-    const error = new Error("An error occurred while fetching the data.");
-    // Attach extra info to the error object.
-    error.info = await res.json();
-    error.status = res.status;
+    const info = await res.json();
+    const error = new FetchError(
+      "An error occurred while fetching the data.",
+      info,
+      res.status
+    );
     throw error;
   }
 
   return res.json();
 };
 
-const useHasCache = (key) => {
+const useHasCache = (key: string) => {
   const { cache } = useSWRConfig();
-  return cache.has(key);
+  return cache.get(key) !== undefined;
 };
 
 export const useUser = (fetcher = defaultFetcher, options = {}) => {
@@ -77,10 +91,14 @@ export const useTeamMembers = (
   return { members: data, error, isLoading, isValidating, mutate };
 };
 
-export const useRecord = (recordId, fetcher = defaultFetcher, options = {}) => {
+export const useRecord = (
+  recordId: string,
+  fetcher = defaultFetcher,
+  options = {}
+) => {
   const key = `/api/records/${recordId}`;
   const hasCache = useHasCache(key);
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
+  const { data, error, isLoading, isValidating, mutate } = useSWR<Record>(
     recordId ? key : null,
     fetcher,
     {
