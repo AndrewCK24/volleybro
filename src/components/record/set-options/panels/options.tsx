@@ -53,7 +53,7 @@ const LineupOptions = ({
 }) => {
   const dispatch = useAppDispatch();
   const { lineups } = useAppSelector((state) => state.lineups);
-  const { setNum } = useAppSelector((state) => state.record.status);
+  const { setIndex } = useAppSelector((state) => state.record.status);
   const { record, mutate } = useRecord(recordId);
   const liberoCount = lineups[0]?.liberos.length;
   const substituteCount = lineups[0]?.substitutes.length;
@@ -62,7 +62,7 @@ const LineupOptions = ({
   const defaultValues = useMemo<LineupOptionsValues>(
     () => ({
       serve:
-        setNum === 0 || record?.sets[setNum - 1]?.options?.serve === "home"
+        setIndex === 0 || record?.sets[setIndex - 1]?.options?.serve === "home"
           ? "away"
           : "home",
       time: {
@@ -74,7 +74,7 @@ const LineupOptions = ({
         end: "",
       },
     }),
-    [record, setNum]
+    [record, setIndex]
   );
 
   const form = useForm({
@@ -83,7 +83,7 @@ const LineupOptions = ({
   });
 
   const onSubmit = async (data: LineupOptionsValues) => {
-    const res = await fetch(`/api/records/${recordId}/sets?si=${setNum}`, {
+    const res = await fetch(`/api/records/${recordId}/sets?si=${setIndex}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -98,7 +98,7 @@ const LineupOptions = ({
 
   useEffect(() => {
     form.reset({ ...defaultValues });
-  }, [record, setNum, defaultValues, form]);
+  }, [record, setIndex, defaultValues, form]);
 
   return (
     <Form

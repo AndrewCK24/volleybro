@@ -10,26 +10,26 @@ import Rally from "@/components/record/rally";
 const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setNum } = useAppSelector((state) => state.editing.status);
-  const { rallies } = record.sets[setNum];
+  const { setIndex } = useAppSelector((state) => state.editing.status);
+  const { rallies } = record.sets[setIndex];
   const { players } = record.teams.home;
 
   // FIXME: 修正編輯狀態 inPlay, isSetPoint 計算邏輯
-  const handleRallyClick = (rallyNum: number) => {
+  const handleRallyClick = (rallyIndex: number) => {
     dispatch(
       editingActions.setEditingRallyStatus({
-        recording: rallies[rallyNum],
+        recording: rallies[rallyIndex],
         status: {
           isServing:
-            rallyNum === 0
-              ? record.sets[setNum].options.serve === "home"
-              : rallies[rallyNum - 1].win,
+            rallyIndex === 0
+              ? record.sets[setIndex].options.serve === "home"
+              : rallies[rallyIndex - 1].win,
           scores: {
-            home: rallies[rallyNum].home.score,
-            away: rallies[rallyNum].away.score,
+            home: rallies[rallyIndex].home.score,
+            away: rallies[rallyIndex].away.score,
           },
-          setNum,
-          rallyNum,
+          setIndex,
+          rallyIndex,
           inPlay: true,
           isSetPoint: false,
           recordingMode: "away",
@@ -44,20 +44,20 @@ const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => dispatch(editingActions.setSetNum(setNum - 1))}
-          disabled={setNum <= 0}
+          onClick={() => dispatch(editingActions.setSetIndex(setIndex - 1))}
+          disabled={setIndex <= 0}
         >
           <FiChevronLeft />
           <span className="sr-only">last set</span>
         </Button>
         <span className="flex-1 text-xl text-center">
-          第 {setNum + 1} 局逐球紀錄
+          第 {setIndex + 1} 局逐球紀錄
         </span>
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => dispatch(editingActions.setSetNum(setNum + 1))}
-          disabled={setNum >= record.sets.length - 1}
+          onClick={() => dispatch(editingActions.setSetIndex(setIndex + 1))}
+          disabled={setIndex >= record.sets.length - 1}
         >
           <FiChevronRight />
           <span className="sr-only">next set</span>
@@ -65,12 +65,12 @@ const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
       </div>
       <div className="flex flex-col-reverse gap-1">
         <Separator content="比賽開始" />
-        {rallies.map((rally, rallyNum: number) => (
+        {rallies.map((rally, rallyIndex: number) => (
           <Rally
-            key={rallyNum}
+            key={rallyIndex}
             rally={rally}
             players={players}
-            onClick={() => handleRallyClick(rallyNum)}
+            onClick={() => handleRallyClick(rallyIndex)}
           />
         ))}
       </div>

@@ -22,8 +22,8 @@ const statusState: ReduxStatus = {
     home: 0,
     away: 0,
   },
-  setNum: 0,
-  rallyNum: 0,
+  setIndex: 0,
+  rallyIndex: 0,
   inPlay: false,
   isSetPoint: false,
   recordingMode: "home",
@@ -56,28 +56,28 @@ export const initialize: CaseReducer<
   PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
-  const setNum = record.sets.length ? record.sets.length - 1 : 0;
-  const rallyNum = record.sets[setNum]?.rallies?.length || 0;
-  const finalPoint = finalPointHelper(setNum, record.info);
+  const setIndex = record.sets.length ? record.sets.length - 1 : 0;
+  const rallyIndex = record.sets[setIndex]?.rallies?.length || 0;
+  const finalPoint = finalPointHelper(setIndex, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
-    record?.sets[setNum]?.rallies[rallyNum - 1],
+    record?.sets[setIndex]?.rallies[rallyIndex - 1],
     finalPoint
   );
   const isServing =
-    inPlay || rallyNum === 0
-      ? record.sets[setNum]?.options?.serve === "home"
-      : record.sets[setNum].rallies[rallyNum - 1].win;
+    inPlay || rallyIndex === 0
+      ? record.sets[setIndex]?.options?.serve === "home"
+      : record.sets[setIndex].rallies[rallyIndex - 1].win;
   state._id = record._id;
   state.status = {
     ...state.status,
     isServing,
     scores: {
-      home: record?.sets[setNum]?.rallies[rallyNum - 1]?.home?.score || 0,
-      away: record?.sets[setNum]?.rallies[rallyNum - 1]?.away?.score || 0,
+      home: record?.sets[setIndex]?.rallies[rallyIndex - 1]?.home?.score || 0,
+      away: record?.sets[setIndex]?.rallies[rallyIndex - 1]?.away?.score || 0,
     },
-    setNum,
-    rallyNum,
+    setIndex,
+    rallyIndex,
     inPlay,
     isSetPoint,
     recordingMode: "home",
@@ -149,8 +149,8 @@ export const resetRecording: CaseReducer<
   PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
-  const { setNum, rallyNum } = state.status;
-  const finalPoint = finalPointHelper(setNum, record.info);
+  const { setIndex, rallyIndex } = state.status;
+  const finalPoint = finalPointHelper(setIndex, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
     state.recording,
@@ -164,7 +164,7 @@ export const resetRecording: CaseReducer<
       home: state.recording.home.score,
       away: state.recording.away.score,
     },
-    rallyNum: rallyNum + 1,
+    rallyIndex: rallyIndex + 1,
     inPlay,
     isSetPoint,
     recordingMode: "home",

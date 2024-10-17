@@ -23,7 +23,7 @@ const OppoMoves = ({
   const dispatch = useAppDispatch();
   const { record, mutate } = useRecord(recordId);
   const {
-    status: { setNum: setIndex, rallyNum: rallyIndex },
+    status: { setIndex, rallyIndex },
     recording,
   } = recordState;
 

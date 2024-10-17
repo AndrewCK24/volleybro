@@ -17,7 +17,7 @@ import RecordSetPanels from "@/components/record/set-options/panels";
 const RecordSetOptions = ({ recordId }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setNum } = useAppSelector((state) => state.record.status);
+  const { setIndex } = useAppSelector((state) => state.record.status);
   const { lineups } = useAppSelector((state) => state.lineups);
   const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
   const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;
@@ -45,7 +45,7 @@ const RecordSetOptions = ({ recordId }) => {
           className="w-full"
           onClick={() => {
             const lineup =
-              record?.sets[setNum]?.lineups?.home || record.teams.home.lineup;
+              record?.sets[setIndex]?.lineups?.home || record.teams.home.lineup;
             dispatch(lineupsActions.initialize([lineup]));
           }}
         >
@@ -54,11 +54,11 @@ const RecordSetOptions = ({ recordId }) => {
       </DialogTrigger>
       <DialogContent size="lg">
         <DialogDescription className="sr-only">
-          設定第 {setNum + 1} 局的陣容
+          設定第 {setIndex + 1} 局的陣容
         </DialogDescription>
         <DialogHeader>
           <DialogTitle className="pb-2 font-medium text-center">
-            第 {setNum + 1} 局設定
+            第 {setIndex + 1} 局設定
           </DialogTitle>
         </DialogHeader>
         <LineupCourt members={record.teams.home.players} />

@@ -40,8 +40,8 @@ export type ReduxStatus = {
     home: number;
     away: number;
   };
-  setNum: number;
-  rallyNum: number;
+  setIndex: number;
+  rallyIndex: number;
   inPlay: boolean;
   isSetPoint: boolean;
   recordingMode: "home" | "away";
