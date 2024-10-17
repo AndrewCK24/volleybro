@@ -6,14 +6,12 @@ import {
 import {
   finalPointHelper,
   matchPhaseHelper,
-  serveOrderHelper,
 } from "@/lib/features/record/helpers";
 
-import { type Record, RallyDetail, Position } from "@/entities/record";
+import type { Record, RallyDetail } from "@/entities/record";
 import type {
   ReduxRecordState,
   ReduxStatus,
-  ReduxLineup,
 } from "@/lib/features/record/types";
 import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
 
@@ -31,66 +29,6 @@ const statusState: ReduxStatus = {
   recordingMode: "home",
 };
 
-const lineupState: ReduxLineup = {
-  options: {
-    liberoSwitchMode: 0,
-    liberoSwitchPosition: "",
-  },
-  starting: [
-    {
-      _id: "",
-      position: Position.NONE,
-      in: null,
-      out: null,
-    },
-    {
-      _id: "",
-      position: Position.NONE,
-      in: null,
-      out: null,
-    },
-    {
-      _id: "",
-      position: Position.NONE,
-      in: null,
-      out: null,
-    },
-    {
-      _id: "",
-      position: Position.NONE,
-      in: null,
-      out: null,
-    },
-    {
-      _id: "",
-      position: Position.NONE,
-      in: null,
-      out: null,
-    },
-    {
-      _id: "",
-      position: Position.NONE,
-      in: null,
-      out: null,
-    },
-  ],
-  liberos: [
-    {
-      _id: "",
-      position: Position.L,
-      in: null,
-      out: null,
-    },
-    {
-      _id: "",
-      position: Position.L,
-      in: null,
-      out: null,
-    },
-  ],
-  substitutes: [],
-};
-
 const rallyDetailState: RallyDetail = {
   score: 0,
   type: null,
@@ -105,10 +43,6 @@ export const initialState: ReduxRecordState = {
   _id: "",
   win: null,
   status: statusState,
-  lineups: {
-    home: lineupState,
-    away: lineupState,
-  },
   recording: {
     win: null,
     home: rallyDetailState,
@@ -134,28 +68,6 @@ export const initialize: CaseReducer<
     inPlay || rallyNum === 0
       ? record.sets[setNum]?.options?.serve === "home"
       : record.sets[setNum].rallies[rallyNum - 1].win;
-  const lineups = record?.sets[setNum]?.lineups || {
-    home: record.teams.home.lineup,
-  };
-  if (inPlay) {
-    const switchTargetIndex = lineups.home.starting.findIndex(
-      (player, index) =>
-        player.position === lineups.home.options.liberoSwitchPosition &&
-        ((index === 0 && !isServing) || index >= 4)
-    );
-    if (switchTargetIndex !== -1) {
-      const switchTarget = {
-        ...lineups.home.starting[switchTargetIndex],
-      };
-      lineups.home.starting[switchTargetIndex] = lineups.home.liberos[0];
-      lineups.home.liberos[0] = switchTarget;
-    }
-    const rotation = record.teams.home.stats[setNum].rotation % 6;
-    if (rotation) {
-      const rotatedPlayers = lineups.home.starting.splice(0, rotation);
-      lineups.home.starting.push(...rotatedPlayers);
-    }
-  }
   state._id = record._id;
   state.status = {
     ...state.status,
@@ -170,7 +82,6 @@ export const initialize: CaseReducer<
     isSetPoint,
     recordingMode: "home",
   };
-  state.lineups = lineups;
 };
 
 export const setRecordingPlayer: CaseReducer<
@@ -245,7 +156,6 @@ export const resetRecording: CaseReducer<
     state.recording,
     finalPoint
   );
-  serveOrderHelper(state);
 
   state.status = {
     ...state.status,

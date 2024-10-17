@@ -18,7 +18,6 @@ const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
   const handleRallyClick = (rallyNum: number) => {
     dispatch(
       editingActions.setEditingRallyStatus({
-        lineups: record.sets[setNum].lineups,
         recording: rallies[rallyNum],
         status: {
           isServing:

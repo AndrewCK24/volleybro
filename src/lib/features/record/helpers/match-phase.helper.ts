@@ -1,9 +1,8 @@
 import type { Record, Rally } from "@/entities/record";
-import type { ReduxRecording } from "@/lib/features/record/types";
 
 export const matchPhaseHelper = (
   record: Record,
-  rally: ReduxRecording | Rally,
+  rally: Rally,
   point: number = 25
 ): {
   inPlay: boolean;

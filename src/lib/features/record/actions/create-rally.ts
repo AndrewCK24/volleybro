@@ -1,9 +1,8 @@
-import type { Record } from "@/entities/record";
-import type { ReduxRecording } from "@/lib/features/record/types";
+import type { Record, Rally } from "@/entities/record";
 
 export const createRally = async (
   params: { recordId: string; setIndex: number; rallyIndex: number },
-  recording: ReduxRecording,
+  recording: Rally,
   record: Record
 ) => {
   const { recordId, setIndex, rallyIndex } = params;
