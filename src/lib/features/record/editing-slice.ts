@@ -35,11 +35,11 @@ const setEditing: CaseReducer<ReduxRecordState, PayloadAction<boolean>> = (
   state.isEditing = action.payload;
 };
 
-const setSetNum: CaseReducer<ReduxRecordState, PayloadAction<number>> = (
+const setSetIndex: CaseReducer<ReduxRecordState, PayloadAction<number>> = (
   state,
   action
 ) => {
-  state.status.setNum = action.payload;
+  state.status.setIndex = action.payload;
 };
 
 interface SetEditingRallyStatusPayload {
@@ -68,7 +68,7 @@ const editingSlice = createSlice({
   reducers: {
     initialize,
     setEditing,
-    setSetNum,
+    setSetIndex,
     setEditingRallyStatus,
     setRecordingPlayer,
     setRecordingHomeMove,

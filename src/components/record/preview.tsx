@@ -21,14 +21,14 @@ const RecordPreview = ({
   const { players } = record.teams.home;
   const {
     recording,
-    status: { inPlay, setNum, rallyNum },
+    status: { inPlay, setIndex, rallyIndex },
   } = recordState;
 
   if (!inPlay) return null;
 
-  const lastRally = record.sets[setNum].rallies[rallyNum - 1];
+  const lastRally = record.sets[setIndex].rallies[rallyIndex - 1];
   const isEditing = recording.home.player._id || recording.home.type;
-  const rally = isEditing || rallyNum === 0 ? recording : lastRally;
+  const rally = isEditing || rallyIndex === 0 ? recording : lastRally;
 
   return (
     <Card className={cn("grid w-full p-2", className)}>

@@ -2,14 +2,14 @@ import { useRecord } from "@/hooks/use-data";
 import type { ReduxRecordState } from "@/lib/features/record/types";
 
 export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
-  const { setNum, isServing, inPlay } = recordState.status;
+  const { setIndex, isServing, inPlay } = recordState.status;
   const { record } = useRecord(recordId);
 
   if (!inPlay) return null;
 
   const { players, stats } = record.teams.home;
   const { starting, liberos, options } = structuredClone(
-    record.sets[setNum].lineups.home
+    record.sets[setIndex].lineups.home
   );
 
   const lineup = {
@@ -29,7 +29,7 @@ export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
     }),
   };
 
-  const rotation = stats[setNum].rotation % 6;
+  const rotation = stats[setIndex].rotation % 6;
   if (rotation) {
     const rotatedPlayers = lineup.starting.splice(0, rotation);
     lineup.starting.push(...rotatedPlayers);
