@@ -15,7 +15,6 @@ import {
 import type { Record, Rally } from "@/entities/record";
 import type {
   ReduxRecordState,
-  ReduxLineup,
   ReduxStatus,
 } from "@/lib/features/record/types";
 
@@ -44,10 +43,6 @@ const setSetNum: CaseReducer<ReduxRecordState, PayloadAction<number>> = (
 };
 
 interface SetEditingRallyStatusPayload {
-  lineups: {
-    home: ReduxLineup;
-    away?: ReduxLineup;
-  };
   status: ReduxStatus;
   recording: Rally;
 }
@@ -57,9 +52,9 @@ const setEditingRallyStatus: CaseReducer<
   ReduxRecordState,
   PayloadAction<SetEditingRallyStatusPayload>
 > = (state, action) => {
-  const { lineups, recording, ...status } = action.payload;
+  // TODO: 計算該 `rally` 當下的輪轉狀態
+  const { recording, ...status } = action.payload;
   state.isEditing = true;
-  state.lineups = lineups;
   state.recording = { ...recording };
   state.status = {
     ...state.status,

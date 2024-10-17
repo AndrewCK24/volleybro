@@ -1,5 +1,4 @@
-import type { Position } from "@/entities/record";
-import type { MoveType } from "@/entities/record";
+import type { Rally } from "@/entities/record";
 
 // For Forms and Tables
 export type FormMatch = {
@@ -48,57 +47,10 @@ export type ReduxStatus = {
   recordingMode: "home" | "away";
 };
 
-export type ReduxLineup = {
-  options: {
-    liberoSwitchMode: number;
-    liberoSwitchPosition: string;
-  };
-  starting: {
-    _id: string;
-    position: Position;
-    in: number | null;
-    out: number | null;
-  }[];
-  liberos: {
-    _id: string;
-    position: Position;
-    in: number | null;
-    out: number | null;
-  }[];
-  substitutes: {
-    _id: string;
-    sub_id: string;
-  }[];
-};
-
-export type ReduxRallyDetail = {
-  score: number;
-  type: MoveType | null;
-  num: number | null;
-  player: {
-    _id: string;
-    zone: number;
-  };
-};
-
-export type ReduxRecording = {
-  win: boolean;
-  home: ReduxRallyDetail;
-  away: ReduxRallyDetail;
-};
-
 export type ReduxRecordState = {
   _id: string;
   win: boolean | null;
   status: ReduxStatus;
   isEditing?: boolean;
-  lineups: {
-    home: ReduxLineup;
-    away?: ReduxLineup;
-  };
-  recording: {
-    win: boolean | null;
-    home: ReduxRallyDetail;
-    away: ReduxRallyDetail;
-  };
+  recording: Rally;
 };

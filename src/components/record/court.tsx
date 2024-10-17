@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/lib/redux/hooks";
-import { useRecord } from "@/hooks/use-data";
+import { useLineup } from "@/lib/features/record/hooks/use-lineup";
 import {
   Court,
   Outside,
@@ -22,9 +22,8 @@ const RecordCourt = ({
   recordActions: RecordActions | EditingActions;
 }) => {
   const dispatch = useAppDispatch();
-  const { record } = useRecord(recordId);
-  const { status, recording, lineups } = recordState;
-  const members = record.teams.home.players;
+  const { starting, liberos } = useLineup(recordId, recordState);
+  const { status, recording } = recordState;
 
   if (status.inPlay === false) {
     return (
@@ -50,12 +49,7 @@ const RecordCourt = ({
     <Court>
       <Outside className="inner">
         <AdjustButton />
-        {lineups.home.liberos.map((libero, index) => {
-          const member = members.find((m) => m._id === libero._id);
-          const player = {
-            ...member,
-            position: libero?.position || "",
-          };
+        {liberos.map((player, index) => {
           return (
             <PlayerCard
               key={index}
@@ -79,12 +73,7 @@ const RecordCourt = ({
         })}
       </Outside>
       <Inside>
-        {lineups.home.starting.map((starting, index) => {
-          const member = members.find((m) => m._id === starting._id);
-          const player = {
-            ...member,
-            position: starting?.position || "",
-          };
+        {starting.map((player, index) => {
           return (
             <PlayerCard
               key={index}
