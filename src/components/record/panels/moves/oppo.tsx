@@ -36,7 +36,6 @@ const OppoMoves = ({
       dispatch(recordActions.setRecordingAwayMove(move));
     } else {
       try {
-        console.log("before addRally", record.teams.home.stats[setIndex]);
         mutate(
           createRally({ recordId, setIndex, rallyIndex }, recording, record),
           {
@@ -48,7 +47,6 @@ const OppoMoves = ({
             ),
           }
         );
-        console.log("after addRally", record.teams.home.stats[setIndex]);
         dispatch(recordActions.resetRecording(record));
       } catch (error) {
         console.error("[POST /api/records]", error);

@@ -78,6 +78,38 @@ export class CreateRallyUseCase {
     const set = record.sets[params.setIndex];
     if (!set) throw new Error("Set not found");
 
+    // same logic as createRallyOptimistic (src/lib/features/record/helpers/create-rally.helper.ts)
+    const isServing = params.rallyIndex
+      ? record.sets[params.setIndex].rallies[params.rallyIndex - 1]?.win
+      : record.sets[params.setIndex].options.serve === "home";
+    if (rally.win && !isServing)
+      record.teams.home.stats[params.setIndex].rotation += 1;
+
+    const homePlayerIndex = record.teams.home.players.findIndex(
+      (player) => player._id.toString() === rally.home.player._id.toString()
+    );
+    const homePlayer = record.teams.home.players[homePlayerIndex];
+    const homeTeam = record.teams.home;
+    const awayTeam = record.teams.away;
+
+    if (rally.win) {
+      if (homePlayerIndex !== -1) {
+        homePlayer.stats[params.setIndex][rally.home.type].success += 1;
+        record.teams.home.players[homePlayerIndex] = homePlayer;
+      }
+      homeTeam.stats[params.setIndex][rally.home.type].success += 1;
+      awayTeam.stats[params.setIndex][rally.away.type].error += 1;
+    } else {
+      if (homePlayerIndex !== -1) {
+        homePlayer.stats[params.setIndex][rally.home.type].error += 1;
+        record.teams.home.players[homePlayerIndex] = homePlayer;
+      }
+      homeTeam.stats[params.setIndex][rally.home.type].error += 1;
+      awayTeam.stats[params.setIndex][rally.away.type].success += 1;
+    }
+
+    record.teams.home = homeTeam;
+    record.teams.away = awayTeam;
     record.sets[params.setIndex].rallies[params.rallyIndex] = rally;
 
     await this.recordRepository.update({ _id: params.recordId }, record);
