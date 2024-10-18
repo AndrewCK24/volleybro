@@ -28,7 +28,7 @@ import RosterTable from "@/components/record/info/roster-table";
 import LoadingCard from "@/components/custom/loading/card";
 import { phase, division, category } from "@/lib/text/match";
 
-import { type FormMatch } from "@/lib/features/record/types";
+import type { RecordMatchInfoForm } from "@/lib/features/record/types";
 
 const MatchConfirmation = ({ teamId }: { teamId: string }) => {
   const router = useRouter();
@@ -37,29 +37,17 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
   const { members, isLoading: isMembersLoading } = useTeamMembers(teamId);
 
   const [lineupIndex, setLineupIndex] = useState(0);
-  const [info, setInfo] = useState<FormMatch>({
+  const [info, setInfo] = useState<RecordMatchInfoForm>({
     // _id: "",
     name: "",
     number: null,
     phase: "0",
     division: "0",
     category: "0",
-    scoring: {
-      setCount: "3",
-      decidingSetPoints: 15,
-    },
-    location: {
-      city: "",
-      hall: "",
-    },
-    time: {
-      date: "",
-      start: "",
-      end: "",
-    },
-    weather: {
-      temperature: "",
-    },
+    scoring: { setCount: "3", decidingSetPoints: 15 },
+    location: { city: "", hall: "" },
+    time: { date: "", start: "", end: "" },
+    weather: { temperature: "" },
   });
 
   const getPlayerData = (list: string) => {

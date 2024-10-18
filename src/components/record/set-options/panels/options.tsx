@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -29,20 +28,12 @@ import {
 import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
 
 import type { Player } from "@/entities/record";
+import {
+  SetOptionsFormSchema,
+  type SetOptionsFormValues,
+} from "@/lib/features/record/types";
 
-const formSchema = z.object({
-  serve: z.enum(["home", "away"]),
-  time: z
-    .object({
-      start: z.string().optional(),
-      end: z.string().optional(),
-    })
-    .optional(),
-});
-
-type LineupOptionsValues = z.infer<typeof formSchema>;
-
-const LineupOptions = ({
+const Options = ({
   recordId,
   members,
   hasPairedSwitchPosition,
@@ -59,7 +50,7 @@ const LineupOptions = ({
   const substituteCount = lineups[0]?.substitutes.length;
   const substituteLimit = liberoCount < 2 ? 6 - liberoCount : 6;
 
-  const defaultValues = useMemo<LineupOptionsValues>(
+  const defaultValues = useMemo<SetOptionsFormValues>(
     () => ({
       serve:
         setIndex === 0 || record?.sets[setIndex - 1]?.options?.serve === "home"
@@ -78,11 +69,11 @@ const LineupOptions = ({
   );
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(SetOptionsFormSchema),
     defaultValues,
   });
 
-  const onSubmit = async (data: LineupOptionsValues) => {
+  const onSubmit = async (data: SetOptionsFormValues) => {
     const res = await fetch(`/api/records/${recordId}/sets?si=${setIndex}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -162,4 +153,4 @@ const LineupOptions = ({
   );
 };
 
-export default LineupOptions;
+export default Options;
