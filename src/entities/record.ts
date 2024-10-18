@@ -55,7 +55,7 @@ export enum MatchCategory {
 }
 
 export type Match = {
-  _id: string;
+  _id?: string;
   name: string;
   number: number;
   phase: MatchPhase;

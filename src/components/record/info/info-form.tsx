@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo } from "react";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiCheck } from "react-icons/fi";
@@ -25,32 +24,22 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { phase, division, category } from "@/lib/text/match";
 
-import type { FormMatch } from "@/lib/features/record/types";
-
-const infoFormSchema = z.object({
-  name: z.string().optional(),
-  number: z.coerce.number().int().positive().optional(),
-  phase: z.enum(["0", "1", "2", "3", "4"]).optional(),
-  division: z.enum(["0", "1", "2", "3"]).optional(),
-  category: z.enum(["0", "1", "2", "3"]).optional(),
-  scoring: z.object({
-    setCount: z.string(),
-    decidingSetPoints: z.coerce.number(),
-  }),
-});
-
-type InfoFormValues = z.infer<typeof infoFormSchema>;
+import {
+  RecordInfoFormSchema,
+  type RecordInfoFormValues,
+  type RecordMatchInfoForm,
+} from "@/lib/features/record/types";
 
 const MatchInfoForm = ({
   info,
   setInfo,
   className,
 }: {
-  info: FormMatch;
-  setInfo: (info: FormMatch) => void;
+  info: RecordMatchInfoForm;
+  setInfo: (info: RecordMatchInfoForm) => void;
   className?: string;
 }) => {
-  const defaultValues = useMemo<InfoFormValues>(
+  const defaultValues = useMemo<RecordInfoFormValues>(
     () => ({
       name: info?.name || "",
       number: info?.number || null,
@@ -65,12 +54,12 @@ const MatchInfoForm = ({
     [info]
   );
 
-  const form = useForm<InfoFormValues>({
-    resolver: zodResolver(infoFormSchema),
+  const form = useForm<RecordInfoFormValues>({
+    resolver: zodResolver(RecordInfoFormSchema),
     defaultValues,
   });
 
-  const onSubmit = (data: InfoFormValues) => {
+  const onSubmit = (data: RecordInfoFormValues) => {
     setInfo({
       ...info,
       name: data.name,

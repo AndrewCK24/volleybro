@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo } from "react";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiCheck } from "react-icons/fi";
@@ -22,36 +21,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
-import type { FormMatch } from "@/lib/features/record/types";
-
-const miscFormSchema = z.object({
-  location: z
-    .object({
-      city: z.string().optional(),
-      hall: z.string().optional(),
-    })
-    .optional(),
-  time: z
-    .object({
-      date: z.string().optional(),
-      start: z.string().optional(),
-      end: z.string().optional(),
-    })
-    .optional(),
-});
-
-type MiscFormValues = z.infer<typeof miscFormSchema>;
+import {
+  RecordMiscFormSchema,
+  type RecordMiscFormValues,
+  type RecordMatchInfoForm,
+} from "@/lib/features/record/types";
 
 const MatchMiscForm = ({
   info,
   setInfo,
   className,
 }: {
-  info: FormMatch;
-  setInfo: (info: FormMatch) => void;
+  info: RecordMatchInfoForm;
+  setInfo: (info: RecordMatchInfoForm) => void;
   className?: string;
 }) => {
-  const defaultValues = useMemo<MiscFormValues>(
+  const defaultValues = useMemo<RecordMiscFormValues>(
     () => ({
       location: {
         city: info?.location?.city || "",
@@ -72,12 +57,12 @@ const MatchMiscForm = ({
     [info]
   );
 
-  const form = useForm<MiscFormValues>({
-    resolver: zodResolver(miscFormSchema),
+  const form = useForm<RecordMiscFormValues>({
+    resolver: zodResolver(RecordMiscFormSchema),
     defaultValues,
   });
 
-  const onSubmit = (data: MiscFormValues) => {
+  const onSubmit = (data: RecordMiscFormValues) => {
     setInfo({
       ...info,
       location: {

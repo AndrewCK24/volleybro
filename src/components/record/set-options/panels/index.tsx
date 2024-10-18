@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/lib/redux/hooks";
 import PlayerInfo from "@/components/team/lineup/panels/player-info";
-import LineupOptions from "@/components/record/set-options/panels/options";
+import Options from "@/components/record/set-options/panels/options";
 import Positions from "@/components/team/lineup/panels/positions";
 import Substitutes from "@/components/record/set-options/panels/substitutes";
 
@@ -29,7 +29,7 @@ const LineupPanels = ({
       ) : optionMode === LineupOptionMode.POSITIONS ? (
         <Positions className={className} />
       ) : (
-        <LineupOptions
+        <Options
           recordId={recordId}
           members={members}
           hasPairedSwitchPosition={hasPairedSwitchPosition}

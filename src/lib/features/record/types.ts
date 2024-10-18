@@ -1,30 +1,62 @@
+import { z } from "zod";
 import type { Rally } from "@/entities/record";
 
 // For Forms and Tables
-export type FormMatch = {
-  _id?: string;
-  name: string;
-  number: number;
-  phase: "0" | "1" | "2" | "3" | "4";
-  division: "0" | "1" | "2" | "3";
-  category: "0" | "1" | "2" | "3";
-  scoring: {
-    setCount: string;
-    decidingSetPoints: number;
+export const RecordInfoFormSchema = z.object({
+  // For MatchInfoForm
+  name: z.string().optional(),
+  number: z.coerce.number().int().positive().optional(),
+  phase: z.enum(["0", "1", "2", "3", "4"]).optional(),
+  division: z.enum(["0", "1", "2", "3"]).optional(),
+  category: z.enum(["0", "1", "2", "3"]).optional(),
+  scoring: z.object({
+    setCount: z.string(),
+    decidingSetPoints: z.coerce.number(),
+  }),
+});
+
+export type RecordInfoFormValues = z.infer<typeof RecordInfoFormSchema>;
+
+export const RecordMiscFormSchema = z.object({
+  // For MatchMiscForm
+  location: z
+    .object({
+      city: z.string().optional(),
+      hall: z.string().optional(),
+    })
+    .optional(),
+  time: z
+    .object({
+      date: z.string().optional(),
+      start: z.string().optional(),
+      end: z.string().optional(),
+    })
+    .optional(),
+  weather: z
+    .object({
+      temperature: z.string().optional(),
+    })
+    .optional(),
+});
+
+export type RecordMiscFormValues = z.infer<typeof RecordMiscFormSchema>;
+
+export type RecordMatchInfoForm = RecordInfoFormValues &
+  RecordMiscFormValues & {
+    _id?: string;
   };
-  location: {
-    city: string;
-    hall: string;
-  };
-  time: {
-    date: string;
-    start: string;
-    end: string;
-  };
-  weather: {
-    temperature: string;
-  };
-};
+
+export const SetOptionsFormSchema = z.object({
+  serve: z.enum(["home", "away"]),
+  time: z
+    .object({
+      start: z.string().optional(),
+      end: z.string().optional(),
+    })
+    .optional(),
+});
+
+export type SetOptionsFormValues = z.infer<typeof SetOptionsFormSchema>;
 
 export type TableRosterPlayer = {
   _id: string;
