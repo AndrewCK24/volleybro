@@ -31,7 +31,7 @@ const Record = ({ recordId }: { recordId: string }) => {
     if (record) dispatch(recordActions.initialize(record));
   }, [recordId, record, dispatch]);
 
-  if (error) throw new Error(error);
+  if (error) throw error;
   if (isLoading || recordState._id !== recordId) {
     return (
       <>
