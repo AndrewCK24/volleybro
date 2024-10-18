@@ -5,7 +5,7 @@ export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
   const { setIndex, isServing, inPlay } = recordState.status;
   const { record } = useRecord(recordId);
 
-  if (!inPlay) return null;
+  if (!inPlay) return { starting: [], liberos: [] };
 
   const { players, stats } = record.teams.home;
   const { starting, liberos, options } = structuredClone(
