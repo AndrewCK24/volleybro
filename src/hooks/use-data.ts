@@ -1,4 +1,5 @@
 import useSWR, { useSWRConfig } from "swr";
+import type { Team } from "@/entities/team";
 import type { Record } from "@/entities/record";
 
 class FetchError extends Error {
@@ -55,18 +56,21 @@ export const useUserTeams = (fetcher = defaultFetcher, options = {}) => {
   return { teams: data, error, isLoading, isValidating, mutate };
 };
 
-export const useTeam = (teamId, fetcher = defaultFetcher, options = {}) => {
+export const useTeam = (
+  teamId: string,
+  fetcher = defaultFetcher,
+  options = {}
+) => {
   const key = `/api/teams/${teamId}`;
   const hasCache = useHasCache(key);
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
-    key,
-    fetcher,
-    {
-      dedupingInterval: 5 * 60 * 1000,
-      revalidateOnMount: !hasCache,
-      ...options,
-    }
-  );
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    Team,
+    FetchError
+  >(key, fetcher, {
+    dedupingInterval: 5 * 60 * 1000,
+    revalidateOnMount: !hasCache,
+    ...options,
+  });
 
   return { team: data, error, isLoading, isValidating, mutate };
 };
@@ -98,15 +102,14 @@ export const useRecord = (
 ) => {
   const key = `/api/records/${recordId}`;
   const hasCache = useHasCache(key);
-  const { data, error, isLoading, isValidating, mutate } = useSWR<Record>(
-    recordId ? key : null,
-    fetcher,
-    {
-      dedupingInterval: 5 * 60 * 1000,
-      revalidateOnMount: !hasCache,
-      ...options,
-    }
-  );
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    Record,
+    FetchError
+  >(recordId ? key : null, fetcher, {
+    dedupingInterval: 5 * 60 * 1000,
+    revalidateOnMount: !hasCache,
+    ...options,
+  });
 
   return { record: data, error, isLoading, isValidating, mutate };
 };
