@@ -3,10 +3,7 @@ import {
   type CaseReducer,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import {
-  finalPointHelper,
-  matchPhaseHelper,
-} from "@/lib/features/record/helpers";
+import { matchPhaseHelper } from "@/lib/features/record/helpers";
 
 import type { Record, RallyDetail } from "@/entities/record";
 import type {
@@ -58,11 +55,10 @@ export const initialize: CaseReducer<
   const record = structuredClone(action.payload);
   const setIndex = record.sets.length ? record.sets.length - 1 : 0;
   const rallyIndex = record.sets[setIndex]?.rallies?.length || 0;
-  const finalPoint = finalPointHelper(setIndex, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
-    record?.sets[setIndex]?.rallies[rallyIndex - 1],
-    finalPoint
+    setIndex,
+    record?.sets[setIndex]?.rallies[rallyIndex - 1]
   );
   const isServing =
     inPlay || rallyIndex === 0
@@ -139,7 +135,7 @@ export const setRecordingAwayMove: CaseReducer<
 
 export const setRecordingMode: CaseReducer<
   ReduxRecordState,
-  PayloadAction<"home" | "away">
+  PayloadAction<ReduxStatus["recordingMode"]>
 > = (state, action) => {
   state.status.recordingMode = action.payload;
 };
@@ -150,11 +146,10 @@ export const resetRecording: CaseReducer<
 > = (state, action) => {
   const record = structuredClone(action.payload);
   const { setIndex, rallyIndex } = state.status;
-  const finalPoint = finalPointHelper(setIndex, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
-    state.recording,
-    finalPoint
+    setIndex,
+    state.recording
   );
 
   state.status = {

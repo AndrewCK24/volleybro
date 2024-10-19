@@ -2,12 +2,16 @@ import type { Record, Rally } from "@/entities/record";
 
 export const matchPhaseHelper = (
   record: Record,
-  rally: Rally,
-  point: number = 25
+  setIndex: number,
+  rally: Rally
 ): {
   inPlay: boolean;
   isSetPoint: boolean;
 } => {
+  // To calculate the point to win the set
+  const isDecidingSet = setIndex === record.info.scoring.setCount - 1;
+  const point = isDecidingSet ? record.info.scoring.decidingSetPoints : 25;
+
   // In the first set, though there is no rally recorded yet,
   // the game is `in progress (inPlay)` if `rallies` of the first set has been created
   if (!rally) {
