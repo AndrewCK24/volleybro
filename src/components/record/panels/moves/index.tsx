@@ -18,6 +18,7 @@ export const Container = ({ children, className }) => {
     </div>
   );
 };
+
 export const MoveButton = ({ move, toggled, onClick, children }) => {
   const WIN_STYLE =
     "bg-[rgba(183,210,216,1)] text-foreground [&>svg]:text-primary shadow hover:bg-primary/80";

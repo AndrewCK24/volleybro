@@ -76,7 +76,7 @@ export type ReduxStatus = {
   rallyIndex: number;
   inPlay: boolean;
   isSetPoint: boolean;
-  recordingMode: "home" | "away";
+  recordingMode: "home" | "away" | "substitutes";
 };
 
 export type ReduxRecordState = {
