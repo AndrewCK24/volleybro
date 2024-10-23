@@ -5,7 +5,10 @@ import { useRecord } from "@/hooks/use-data";
 import { FiChevronLeft, FiCheck } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { createSubstitution } from "@/lib/features/record/actions/create-substitution";
+import { createSubstitutionOptimistic } from "@/lib/features/record/helpers";
 
+import { Side } from "@/entities/record";
 import type { ReduxRecordState } from "@/lib/features/record/types";
 import type { RecordActions } from "@/lib/features/record/record-slice";
 import type { EditingActions } from "@/lib/features/record/editing-slice";
@@ -20,17 +23,52 @@ const Substitutes = ({
   recordActions: RecordActions | EditingActions;
 }) => {
   const dispatch = useAppDispatch();
-  const { record } = useRecord(recordId);
+  const { record, mutate } = useRecord(recordId);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const { status, recording } = recordState;
+  const {
+    status: { setIndex, rallyIndex },
+    recording,
+  } = recordState;
   const players = record.teams.home.players;
-  const lineup = record.sets[status.setIndex].lineups.home;
+  const lineup = record.sets[setIndex].lineups.home;
   const recordingPlayer =
     lineup.starting.find((p) => p._id === recording.home.player._id) ||
     lineup.liberos.find((p) => p._id === recording.home.player._id);
   const substitutes = lineup.substitutes.map((sub) =>
     players.find((player) => player._id === sub._id)
   );
+
+  const onSubmit = async () => {
+    const substitution = {
+      team: Side.HOME,
+      rallyIndex: rallyIndex - 1,
+      players: {
+        in: selectedPlayer,
+        out: recordingPlayer._id,
+      },
+    };
+    try {
+      mutate(
+        createSubstitution(
+          { recordId, setIndex, rallyIndex: rallyIndex - 1 },
+          substitution,
+          record
+        ),
+        {
+          revalidate: false,
+          optimisticData: createSubstitutionOptimistic(
+            { recordId, setIndex, rallyIndex: rallyIndex - 1 },
+            substitution,
+            record
+          ),
+        }
+      );
+      dispatch(recordActions.resetRecording());
+      setSelectedPlayer(null);
+    } catch (error) {
+      console.error("[POST /api/records/sets/substitution]", error);
+    }
+  };
 
   return (
     <Card className="flex-1 w-full">
@@ -63,12 +101,7 @@ const Substitutes = ({
           );
         })}
       </CardContent>
-      <Button
-        size="lg"
-        className="text-xl"
-        // TODO: Implement substitute action
-        onClick={() => dispatch(recordActions.setRecordingMode("home"))}
-      >
+      <Button size="lg" className="text-xl" onClick={onSubmit}>
         <FiCheck />
         確認
       </Button>

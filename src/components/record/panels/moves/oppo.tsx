@@ -47,7 +47,7 @@ const OppoMoves = ({
             ),
           }
         );
-        dispatch(recordActions.resetRecording(record));
+        dispatch(recordActions.confirmRecording(record));
       } catch (error) {
         console.error("[POST /api/records]", error);
       }

@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/lib/redux/hooks";
 import { cn } from "@/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import OursMoves from "@/components/record/panels/moves/ours";
 import OppoMoves from "@/components/record/panels/moves/oppo";
 
@@ -11,11 +11,17 @@ import type { ReduxRecordState } from "@/lib/features/record/types";
 import type { RecordActions } from "@/lib/features/record/record-slice";
 import type { EditingActions } from "@/lib/features/record/editing-slice";
 
-export const Container = ({ children, className }) => {
+export const Container = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
   return (
-    <div className={cn("grid flex-1 w-full grid-cols-2 gap-2", className)}>
+    <CardContent className={cn("grid flex-1 w-full grid-cols-2", className)}>
       {children}
-    </div>
+    </CardContent>
   );
 };
 

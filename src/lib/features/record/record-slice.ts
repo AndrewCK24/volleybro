@@ -140,7 +140,7 @@ export const setRecordingMode: CaseReducer<
   state.status.recordingMode = action.payload;
 };
 
-export const resetRecording: CaseReducer<
+export const confirmRecording: CaseReducer<
   ReduxRecordState,
   PayloadAction<Record>
 > = (state, action) => {
@@ -172,6 +172,15 @@ export const resetRecording: CaseReducer<
   };
 };
 
+export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
+  state.status.recordingMode = "home";
+  state.recording = {
+    ...initialState.recording,
+    home: { ...initialState.recording.home, score: state.status.scores.home },
+    away: { ...initialState.recording.away, score: state.status.scores.away },
+  };
+};
+
 const recordSlice = createSlice({
   name: "record",
   initialState,
@@ -181,6 +190,7 @@ const recordSlice = createSlice({
     setRecordingHomeMove,
     setRecordingAwayMove,
     setRecordingMode,
+    confirmRecording,
     resetRecording,
   },
 });

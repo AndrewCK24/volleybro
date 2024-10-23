@@ -10,6 +10,7 @@ import {
   setRecordingHomeMove,
   setRecordingAwayMove,
   setRecordingMode,
+  confirmRecording,
   resetRecording,
 } from "@/lib/features/record/record-slice";
 import type { Record, Rally } from "@/entities/record";
@@ -74,6 +75,7 @@ const editingSlice = createSlice({
     setRecordingHomeMove,
     setRecordingAwayMove,
     setRecordingMode,
+    confirmRecording,
     resetRecording,
   },
 });

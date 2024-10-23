@@ -155,21 +155,32 @@ export type Rally = {
   win: boolean;
   home: RallyDetail;
   away: RallyDetail;
-  challenges?: {
-    team_id: string;
-    type: string;
-    success: boolean;
-  }[];
-  timeouts?: {
-    team_id: string;
-  }[];
-  substitutions?: {
-    team_id: string;
-    players?: {
-      in: string;
-      out: string;
-    };
-  }[];
+};
+
+export enum Side {
+  HOME = 1,
+  AWAY = 0,
+}
+
+export type Substitution = {
+  team: Side;
+  rallyIndex: number;
+  players: {
+    in: string;
+    out: string;
+  };
+};
+
+export type Timeout = {
+  team: Side;
+  rallyIndex: number;
+};
+
+export type Challenge = {
+  team: Side;
+  rallyIndex: number;
+  type: string;
+  success: boolean;
 };
 
 export type Set = {
@@ -186,6 +197,9 @@ export type Set = {
     };
   };
   rallies: Rally[];
+  substitutions: Substitution[];
+  timeouts: Timeout[];
+  challenges: Challenge[];
 };
 
 export type Record = {
