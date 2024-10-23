@@ -5,39 +5,7 @@ import {
   MatchPhase,
   MoveType,
 } from "@/entities/record";
-
-const lineupSchema = new Schema({
-  options: {
-    liberoSwitchMode: { type: Number, enum: [0, 1, 2], default: 0 },
-    liberoSwitchPosition: {
-      type: String,
-      enum: ["", "OH", "MB", "OP"],
-      default: "",
-    },
-  },
-  starting: [
-    {
-      _id: { type: Schema.Types.ObjectId, ref: "Member" },
-      position: { type: String, enum: ["OH", "MB", "OP", "S"] },
-      in: { type: Number },
-      out: { type: Number },
-    },
-  ],
-  liberos: [
-    {
-      _id: { type: Schema.Types.ObjectId, ref: "Member" },
-      position: { type: String, enum: ["L"] },
-      in: { type: Number },
-      out: { type: Number },
-    },
-  ],
-  substitutes: [
-    {
-      _id: { type: Schema.Types.ObjectId, ref: "Member" },
-      sub_id: { type: Schema.Types.ObjectId, ref: "Member" },
-    },
-  ],
-});
+import { lineupSchema } from "@/infrastructure/mongoose/schemas/team";
 
 const matchSchema = new Schema({
   _id: { type: Schema.Types.ObjectId },

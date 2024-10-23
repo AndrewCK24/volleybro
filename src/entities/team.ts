@@ -1,4 +1,13 @@
-import { Position, TeamStats } from "@/entities/record";
+import { TeamStats } from "@/entities/record";
+
+export enum Position {
+  NONE = "",
+  OH = "OH",
+  MB = "MB",
+  OP = "OP",
+  S = "S",
+  L = "L",
+}
 
 export type Lineup = {
   options: {
@@ -12,13 +21,16 @@ export type Lineup = {
   starting: {
     _id: string;
     position: Position;
+    sub?: { _id: string };
   }[];
   liberos: {
     _id: string;
     position: Position;
+    sub?: { _id: string };
   }[];
   substitutes: {
     _id: string;
+    sub?: { _id: string };
   }[];
 };
 

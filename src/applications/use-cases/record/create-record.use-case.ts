@@ -1,10 +1,10 @@
-import { Record, Team, Lineup } from "@/entities/record";
 import { IUserRepository } from "@/applications/repositories/user.repository.interface";
 import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
 import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
 import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
 import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
-import { Role } from "@/entities/team";
+import { type Lineup, Role } from "@/entities/team";
+import type { Record, Team } from "@/entities/record";
 
 export interface ICreateRecordInput {
   params: { teamId: string };

@@ -1,38 +1,4 @@
-export enum Position {
-  NONE = "",
-  OH = "OH",
-  MB = "MB",
-  OP = "OP",
-  S = "S",
-  L = "L",
-}
-
-export type Lineup = {
-  options: {
-    liberoSwitchMode: 0 | 1 | 2;
-    liberoSwitchPosition:
-      | Position.NONE
-      | Position.OH
-      | Position.MB
-      | Position.OP;
-  };
-  starting: {
-    _id: string;
-    position: Position;
-    in: number;
-    out: number;
-  }[];
-  liberos: {
-    _id: string;
-    position: Position;
-    in: number;
-    out: number;
-  }[];
-  substitutes: {
-    _id: string;
-    sub_id: string;
-  }[];
-};
+import { Lineup } from "@/entities/team";
 
 export enum MatchPhase {
   NONE,

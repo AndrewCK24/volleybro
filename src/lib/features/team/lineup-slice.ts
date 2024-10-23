@@ -3,8 +3,7 @@ import {
   type CaseReducer,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import type { Lineup } from "@/entities/team";
-import type { Position } from "@/entities/record";
+import type { Lineup, Position } from "@/entities/team";
 import {
   type ReduxLineupState,
   type ReduxLineupStatus,

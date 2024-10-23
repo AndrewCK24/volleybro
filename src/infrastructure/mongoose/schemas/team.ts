@@ -1,6 +1,5 @@
 import { Schema, model, models } from "mongoose";
-import { Role } from "@/entities/team";
-import { Position } from "@/entities/record";
+import { Position, Role } from "@/entities/team";
 
 export const lineupSchema = new Schema({
   options: {
@@ -15,17 +14,20 @@ export const lineupSchema = new Schema({
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
       position: { type: String, enum: Position },
+      sub: { _id: { type: Schema.Types.ObjectId, ref: "Member" } },
     },
   ],
   liberos: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
       position: { type: String, enum: Position },
+      sub: { _id: { type: Schema.Types.ObjectId, ref: "Member" } },
     },
   ],
   substitutes: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
+      sub: { _id: { type: Schema.Types.ObjectId, ref: "Member" } },
     },
   ],
 });

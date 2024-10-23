@@ -6,11 +6,10 @@ import { AuthorizationService } from "@/infrastructure/service/auth/authorizatio
 import {
   type Record,
   type Set,
-  Lineup,
   PlayerStatsClass,
   TeamStatsClass,
 } from "@/entities/record";
-import { Role } from "@/entities/team";
+import { type Lineup, Role } from "@/entities/team";
 
 export interface ICreateSetInput {
   params: { recordId: string; setIndex: number };
