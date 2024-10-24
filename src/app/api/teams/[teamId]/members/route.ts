@@ -1,13 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
 import User from "@/infrastructure/mongoose/schemas/user";
 import Team from "@/infrastructure/mongoose/schemas/team";
 import Member from "@/infrastructure/mongoose/schemas/member";
 
-export const GET = async (req, { params }) => {
+export const GET = async (
+  req: NextRequest,
+  props: { params: Promise<{ teamId: string }> }
+) => {
+  const params = await props.params;
+  const { teamId } = params;
   try {
-    const { teamId } = params;
     await connectToMongoDB();
     const members = await Member.find({ team_id: teamId });
     return NextResponse.json(members, { status: 200 });
@@ -17,7 +21,12 @@ export const GET = async (req, { params }) => {
   }
 };
 
-export const PATCH = async (req, { params }) => {
+export const PATCH = async (
+  req: NextRequest,
+  props: { params: Promise<{ teamId: string }> }
+) => {
+  const params = await props.params;
+  const { teamId } = params;
   try {
     const session = await auth();
     if (!session) {
@@ -25,12 +34,11 @@ export const PATCH = async (req, { params }) => {
     }
 
     await connectToMongoDB();
-    const user = await User.findById(session.user._id);
+    const user = await User.findById((session.user as { _id: string })._id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const { teamId } = params;
     const team = await Team.findById(teamId);
     if (!team) {
       return NextResponse.json({ error: "Team not found" }, { status: 404 });

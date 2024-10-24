@@ -1,6 +1,7 @@
 import MemberForm from "@/components/team/members/form";
 
-const MemberCreatePage = ({ params }) => {
+const MemberCreatePage = async (props) => {
+  const params = await props.params;
   const { teamId } = params;
 
   return <MemberForm teamId={teamId} className="w-full" />;

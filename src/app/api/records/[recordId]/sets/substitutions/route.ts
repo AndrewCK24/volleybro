@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSubstitutionController } from "@/interface/controllers/record/create-substitution.controller";
 
-export const POST = async (req: NextRequest, { params }) => {
+export const POST = async (
+  req: NextRequest,
+  props: { params: Promise<{ recordId: string }> }
+) => {
+  const params = await props.params;
+  const { recordId } = params;
   try {
     const substitution = await req.json();
-    const { recordId } = params;
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
     const rallyIndex = parseInt(searchParams.get("ri") || "0", 10);

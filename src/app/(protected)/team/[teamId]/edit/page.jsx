@@ -1,9 +1,11 @@
 "use client";
+import { use } from "react";
 import { useTeam } from "@/hooks/use-data";
 import { useRouter } from "next/navigation";
 import TeamForm from "@/components/team/form";
 
-const EditTeamPage = ({ params }) => {
+const EditTeamPage = (props) => {
+  const params = use(props.params);
   const router = useRouter();
   const { teamId } = params;
   const { team, mutate } = useTeam(teamId);
