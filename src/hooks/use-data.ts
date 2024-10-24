@@ -1,5 +1,6 @@
 import useSWR, { useSWRConfig } from "swr";
 import type { Team } from "@/entities/team";
+import type { Member } from "@/entities/member";
 import type { Record } from "@/entities/record";
 
 class FetchError extends Error {
@@ -76,21 +77,20 @@ export const useTeam = (
 };
 
 export const useTeamMembers = (
-  teamId,
+  teamId: string,
   fetcher = defaultFetcher,
   options = {}
 ) => {
   const key = `/api/teams/${teamId}/members`;
   const hasCache = useHasCache(key);
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
-    key,
-    fetcher,
-    {
-      dedupingInterval: 5 * 60 * 1000,
-      revalidateOnMount: !hasCache,
-      ...options,
-    }
-  );
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    Member[],
+    FetchError
+  >(key, fetcher, {
+    dedupingInterval: 5 * 60 * 1000,
+    revalidateOnMount: !hasCache,
+    ...options,
+  });
 
   return { members: data, error, isLoading, isValidating, mutate };
 };
