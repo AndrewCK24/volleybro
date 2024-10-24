@@ -1,6 +1,7 @@
 import Record from "@/components/record";
 
-const RecordPage = ({ params }: { params: { recordId: string } }) => {
+const RecordPage = async (props: { params: Promise<{ recordId: string }> }) => {
+  const params = await props.params;
   const { recordId } = params;
 
   return <Record recordId={recordId} />;

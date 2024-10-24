@@ -2,11 +2,10 @@ import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "@/components/ui/button";
 import MatchConfirmation from "@/components/record/info/confirmation";
 
-const NewRecordPage = ({
-  searchParams,
-}: {
-  searchParams: { team: string };
+const NewRecordPage = async (props: {
+  searchParams: Promise<{ team: string }>;
 }) => {
+  const searchParams = await props.searchParams;
   const { team: teamId } = searchParams;
 
   return (

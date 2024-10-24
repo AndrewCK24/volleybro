@@ -7,7 +7,7 @@ import {
   FiCheckCircle,
   FiXCircle,
 } from "react-icons/fi";
-import { HiArrowsUpDown } from "react-icons/hi2";
+import { HiChevronUpDown } from "react-icons/hi2";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +51,7 @@ const TeamMembersTable = ({ team, members, teamId }) => {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             No.
-            <HiArrowsUpDown className="w-4 h-4 ml-2" />
+            <HiChevronUpDown className="w-4 h-4 ml-2" />
           </Button>
         );
       },

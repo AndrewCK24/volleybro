@@ -4,11 +4,12 @@ import { updateSetController } from "@/interface/controllers/record/update-set.c
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { recordId: string } }
+  props: { params: Promise<{ recordId: string }> }
 ) => {
+  const params = await props.params;
+  const { recordId } = params;
   try {
     const request = await req.json();
-    const { recordId } = params;
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
 
@@ -31,11 +32,12 @@ export const POST = async (
 
 export const PUT = async (
   req: NextRequest,
-  { params }: { params: { recordId: string } }
+  props: { params: Promise<{ recordId: string }> }
 ) => {
+  const params = await props.params;
+  const { recordId } = params;
   try {
     const request = await req.json();
-    const { recordId } = params;
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
 

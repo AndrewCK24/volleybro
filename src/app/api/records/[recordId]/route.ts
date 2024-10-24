@@ -1,10 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
 import User from "@/infrastructure/mongoose/schemas/user";
 import Record from "@/infrastructure/mongoose/schemas/record";
 
-export const GET = async (req, { params }) => {
+export const GET = async (
+  req: NextRequest,
+  props: { params: Promise<{ recordId: string }> }
+) => {
+  const params = await props.params;
+  const { recordId } = params;
   try {
     const session = await auth();
     if (!session) {
@@ -12,13 +17,11 @@ export const GET = async (req, { params }) => {
     }
 
     await connectToMongoDB();
-    const user = await User.findById(session.user._id);
+    const user = await User.findById((session.user as { _id: string })._id);
     if (!user) {
       console.error("[PATCH /api/users/teams] User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    const { recordId } = params;
 
     const record = await Record.findById(recordId);
     if (!record) {

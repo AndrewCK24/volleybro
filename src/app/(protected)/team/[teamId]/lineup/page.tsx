@@ -1,9 +1,11 @@
 "use client";
+import { use } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useTeam, useTeamMembers } from "@/hooks/use-data";
 import Lineup from "@/components/team/lineup";
 
-const LineupPage = ({ params }: { params: { teamId: string } }) => {
+const LineupPage = (props: { params: Promise<{ teamId: string }> }) => {
+  const params = use(props.params);
   const { toast } = useToast();
   const { teamId } = params;
   const { team, mutate } = useTeam(teamId);

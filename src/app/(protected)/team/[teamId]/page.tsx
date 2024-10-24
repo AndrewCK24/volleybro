@@ -1,6 +1,11 @@
 import Team from "@/components/team";
 
-const TeamPage = ({ params, searchParams }) => {
+const TeamPage = async (props: {
+  params: Promise<{ teamId: string }>;
+  searchParams: Promise<{ tab: string }>;
+}) => {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
   const { teamId } = params;
   const defaultTab = searchParams?.tab || "feeds";
 
