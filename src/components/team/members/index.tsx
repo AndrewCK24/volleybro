@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import TeamMembersTable from "@/components/team/members/table";
 import LoadingCard from "@/components/custom/loading/card";
 
-const TeamMembers = ({ teamId }) => {
+const TeamMembers = ({ teamId }: { teamId: string }) => {
   const { team, isLoading: isTeamLoading } = useTeam(teamId);
   const { members, isLoading: isMemberLoading } = useTeamMembers(teamId);
 
