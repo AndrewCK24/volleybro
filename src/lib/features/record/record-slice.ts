@@ -3,10 +3,7 @@ import {
   type CaseReducer,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import {
-  finalPointHelper,
-  matchPhaseHelper,
-} from "@/lib/features/record/helpers";
+import { matchPhaseHelper } from "@/lib/features/record/helpers";
 
 import type { Record, RallyDetail } from "@/entities/record";
 import type {
@@ -58,11 +55,10 @@ export const initialize: CaseReducer<
   const record = structuredClone(action.payload);
   const setIndex = record.sets.length ? record.sets.length - 1 : 0;
   const rallyIndex = record.sets[setIndex]?.rallies?.length || 0;
-  const finalPoint = finalPointHelper(setIndex, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
-    record?.sets[setIndex]?.rallies[rallyIndex - 1],
-    finalPoint
+    setIndex,
+    record?.sets[setIndex]?.rallies[rallyIndex - 1]
   );
   const isServing =
     inPlay || rallyIndex === 0
@@ -139,22 +135,21 @@ export const setRecordingAwayMove: CaseReducer<
 
 export const setRecordingMode: CaseReducer<
   ReduxRecordState,
-  PayloadAction<"home" | "away">
+  PayloadAction<ReduxStatus["recordingMode"]>
 > = (state, action) => {
   state.status.recordingMode = action.payload;
 };
 
-export const resetRecording: CaseReducer<
+export const confirmRecording: CaseReducer<
   ReduxRecordState,
   PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
   const { setIndex, rallyIndex } = state.status;
-  const finalPoint = finalPointHelper(setIndex, record.info);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
-    state.recording,
-    finalPoint
+    setIndex,
+    state.recording
   );
 
   state.status = {
@@ -177,6 +172,15 @@ export const resetRecording: CaseReducer<
   };
 };
 
+export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
+  state.status.recordingMode = "home";
+  state.recording = {
+    ...initialState.recording,
+    home: { ...initialState.recording.home, score: state.status.scores.home },
+    away: { ...initialState.recording.away, score: state.status.scores.away },
+  };
+};
+
 const recordSlice = createSlice({
   name: "record",
   initialState,
@@ -186,6 +190,7 @@ const recordSlice = createSlice({
     setRecordingHomeMove,
     setRecordingAwayMove,
     setRecordingMode,
+    confirmRecording,
     resetRecording,
   },
 });

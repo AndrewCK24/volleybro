@@ -44,11 +44,14 @@ const OursMoves = ({
           {move.win ? <FiPlus /> : <FiMinus />}
         </MoveButton>
       ))}
-      {zone !== 0 && (
+      {!!zone && (
         <Button
           variant="secondary"
           size="lg"
           className="h-full text-[1.5rem] pr-1"
+          onClick={() =>
+            dispatch(recordActions.setRecordingMode("substitutes"))
+          }
         >
           替補
           <FiRepeat />

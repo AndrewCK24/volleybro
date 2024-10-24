@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { Lineup } from "@/entities/team";
-import { Position } from "@/entities/record";
+import { type Lineup, Position } from "@/entities/team";
 
 // For Forms
 export const LiberoSwitchFormSchema = z.object({

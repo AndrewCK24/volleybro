@@ -5,7 +5,7 @@ import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 import { createRally } from "@/lib/features/record/actions/create-rally";
-import { createRallyOptimistic } from "@/lib/features/record/helpers/create-rally.helper";
+import { createRallyOptimistic } from "@/lib/features/record/helpers";
 
 import type { ReduxRecordState } from "@/lib/features/record/types";
 import type { RecordActions } from "@/lib/features/record/record-slice";
@@ -47,7 +47,7 @@ const OppoMoves = ({
             ),
           }
         );
-        dispatch(recordActions.resetRecording(record));
+        dispatch(recordActions.confirmRecording(record));
       } catch (error) {
         console.error("[POST /api/records]", error);
       }

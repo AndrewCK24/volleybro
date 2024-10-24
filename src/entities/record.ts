@@ -1,38 +1,4 @@
-export enum Position {
-  NONE = "",
-  OH = "OH",
-  MB = "MB",
-  OP = "OP",
-  S = "S",
-  L = "L",
-}
-
-export type Lineup = {
-  options: {
-    liberoSwitchMode: 0 | 1 | 2;
-    liberoSwitchPosition:
-      | Position.NONE
-      | Position.OH
-      | Position.MB
-      | Position.OP;
-  };
-  starting: {
-    _id: string;
-    position: Position;
-    in: number;
-    out: number;
-  }[];
-  liberos: {
-    _id: string;
-    position: Position;
-    in: number;
-    out: number;
-  }[];
-  substitutes: {
-    _id: string;
-    sub_id: string;
-  }[];
-};
+import { Lineup } from "@/entities/team";
 
 export enum MatchPhase {
   NONE,
@@ -189,21 +155,32 @@ export type Rally = {
   win: boolean;
   home: RallyDetail;
   away: RallyDetail;
-  challenges?: {
-    team_id: string;
-    type: string;
-    success: boolean;
-  }[];
-  timeouts?: {
-    team_id: string;
-  }[];
-  substitutions?: {
-    team_id: string;
-    players?: {
-      in: string;
-      out: string;
-    };
-  }[];
+};
+
+export enum Side {
+  HOME = 1,
+  AWAY = 0,
+}
+
+export type Substitution = {
+  team: Side;
+  rallyIndex: number;
+  players: {
+    in: string;
+    out: string;
+  };
+};
+
+export type Timeout = {
+  team: Side;
+  rallyIndex: number;
+};
+
+export type Challenge = {
+  team: Side;
+  rallyIndex: number;
+  type: string;
+  success: boolean;
 };
 
 export type Set = {
@@ -220,6 +197,9 @@ export type Set = {
     };
   };
   rallies: Rally[];
+  substitutions: Substitution[];
+  timeouts: Timeout[];
+  challenges: Challenge[];
 };
 
 export type Record = {

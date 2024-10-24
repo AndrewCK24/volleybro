@@ -3,7 +3,7 @@ import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { FiChevronLeft } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Position } from "@/entities/record";
+import { Position } from "@/entities/team";
 
 import { LineupOptionMode } from "@/lib/features/team/types";
 
