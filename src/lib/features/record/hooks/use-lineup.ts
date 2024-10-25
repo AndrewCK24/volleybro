@@ -15,16 +15,20 @@ export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
   const lineup = {
     liberos: liberos.map((libero) => {
       const player = players.find((p) => p._id === libero._id);
+      const substitute = players.find((p) => p._id === libero?.sub?._id);
       return {
         ...player,
         position: libero.position,
+        sub: { _id: substitute?._id, number: substitute?.number },
       };
     }),
     starting: starting.map((starter) => {
       const player = players.find((p) => p._id === starter._id);
+      const substitute = players.find((p) => p._id === starter?.sub?._id);
       return {
         ...player,
         position: starter.position,
+        sub: { _id: substitute?._id, number: substitute?.number },
       };
     }),
   };
