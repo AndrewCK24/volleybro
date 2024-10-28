@@ -9,7 +9,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RalliesEdit from "@/components/record/options/edit";
 import RecordOptionsOverview from "@/components/record/options/overview";
-import RecordOptionsRallies from "@/components/record/options/rallies";
+import RecordOptionsSummary from "@/components/record/options/summary";
 
 const RecordOptions = ({
   recordId,
@@ -46,7 +46,7 @@ const RecordOptions = ({
               <RecordOptionsOverview recordId={recordId} />
             </TabsContent>
             <TabsContent value="rallies" className="flex-1 h-full">
-              <RecordOptionsRallies recordId={recordId} />
+              <RecordOptionsSummary recordId={recordId} />
             </TabsContent>
             <TabsContent value="settings" className="flex-1">
               <div>設定</div>

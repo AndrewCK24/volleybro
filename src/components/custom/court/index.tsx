@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { FiPlus, FiX, FiRepeat } from "react-icons/fi";
+import { FiPlus, FiRepeat } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
 
 import type { Player } from "@/entities/record";
 
@@ -112,32 +113,22 @@ const Position = ({ children }: { children?: React.ReactNode }) => {
   );
 };
 
-// TODO: 移除 onSwitchClick 後，重新檢視參數定義，刪除 right 參數
-const Button = ({
-  onClick,
-  right,
-  children,
-}: {
-  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
-  right?: boolean;
-  children: React.ReactNode;
-}) => {
+export const SubIndicator = ({ number }: { number: number }) => {
   return (
-    <div
+    <Badge
       className={cn(
         "absolute w-[1.5rem] h-[1.5rem] aspect-[1/1]",
         "flex items-center justify-center",
         "m-1 border-2 border-primary-foreground rounded-full",
         "transition-all duration-200",
         "text-primary-foreground svg-[1.25rem]",
-        right
-          ? "top-[-0.75rem] right-[-0.75rem] bg-destructive"
-          : "top-[-0.75rem] left-[-0.75rem] bg-primary"
+        "top-[-0.75rem] right-[-0.75rem] bg-primary"
       )}
-      onClick={onClick}
     >
-      {children}
-    </div>
+      <FiRepeat />
+      <span className="sr-only">替補</span>
+      <span className="flex justify-center w-6">{number}</span>
+    </Badge>
   );
 };
 
@@ -145,18 +136,16 @@ export const PlayerCard = ({
   player,
   list,
   zone,
-  onCardClick,
-  onSwitchClick,
-  onCrossClick,
+  onClick,
   editingMember,
+  children,
 }: {
   player: Player & { position: string };
   list: string;
   zone: number;
-  onCardClick: () => void;
-  onSwitchClick?: () => void;
-  onCrossClick?: () => void;
+  onClick: () => void;
   editingMember: { _id: string; list: string; zone: number };
+  children?: React.ReactNode;
 }) => {
   const toggled = editingMember.list === list && editingMember.zone === zone;
   return (
@@ -166,37 +155,14 @@ export const PlayerCard = ({
       empty={!player}
       onClick={(e) => {
         e.stopPropagation();
-        onCardClick();
+        onClick();
       }}
     >
       {player ? (
         <>
+          {children}
           <Number>{player.number}</Number>
           <Position>{player.position}</Position>
-          {toggled && (
-            <>
-              <Button
-                right={false}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSwitchClick();
-                }}
-              >
-                <FiRepeat />
-              </Button>
-              {onCrossClick && (
-                <Button
-                  right={true}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onCrossClick();
-                  }}
-                >
-                  <FiX />
-                </Button>
-              )}
-            </>
-          )}
         </>
       ) : (
         <>

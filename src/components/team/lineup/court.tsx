@@ -9,8 +9,6 @@ import {
   AdjustButton,
 } from "@/components/custom/court";
 
-import { LineupOptionMode } from "@/lib/features/team/types";
-
 const LineupCourt = ({ members }) => {
   const dispatch = useAppDispatch();
   const { lineups, status } = useAppSelector((state) => state.lineup);
@@ -41,7 +39,7 @@ const LineupCourt = ({ members }) => {
                 player={player}
                 list="liberos"
                 zone={index + 1}
-                onCardClick={() =>
+                onClick={() =>
                   dispatch(
                     lineupActions.setEditingPlayer({
                       _id: libero?._id || null,
@@ -49,14 +47,6 @@ const LineupCourt = ({ members }) => {
                       zone: index + 1,
                     })
                   )
-                }
-                onSwitchClick={() =>
-                  dispatch(
-                    lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES)
-                  )
-                }
-                onCrossClick={() =>
-                  dispatch(lineupActions.removeEditingPlayer())
                 }
                 editingMember={status.editingMember}
               />
@@ -67,7 +57,7 @@ const LineupCourt = ({ members }) => {
             player={null}
             list="liberos"
             zone={lineups[status.lineupIndex]?.liberos.length + 1}
-            onCardClick={() =>
+            onClick={() =>
               dispatch(
                 lineupActions.setEditingPlayer({
                   _id: null,
@@ -76,12 +66,6 @@ const LineupCourt = ({ members }) => {
                 })
               )
             }
-            onSwitchClick={() =>
-              dispatch(
-                lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES)
-              )
-            }
-            onCrossClick={() => dispatch(lineupActions.removeEditingPlayer())}
             editingMember={status.editingMember}
           />
         )}
@@ -102,7 +86,7 @@ const LineupCourt = ({ members }) => {
                 player={player}
                 list="starting"
                 zone={index + 1}
-                onCardClick={() =>
+                onClick={() =>
                   dispatch(
                     lineupActions.setEditingPlayer({
                       _id: starting?._id || null,
@@ -110,14 +94,6 @@ const LineupCourt = ({ members }) => {
                       zone: index + 1,
                     })
                   )
-                }
-                onSwitchClick={() =>
-                  dispatch(
-                    lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES)
-                  )
-                }
-                onCrossClick={() =>
-                  dispatch(lineupActions.removeEditingPlayer())
                 }
                 editingMember={status.editingMember}
               />

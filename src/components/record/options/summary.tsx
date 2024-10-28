@@ -5,9 +5,9 @@ import { editingActions } from "@/lib/features/record/editing-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import Rally from "@/components/record/rally";
+import Rally from "@/components/record/entry/rally";
 
-const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
+const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
   const { setIndex } = useAppSelector((state) => state.editing.status);
@@ -78,4 +78,4 @@ const RecordOptionsRallies = ({ recordId }: { recordId: string }) => {
   );
 };
 
-export default RecordOptionsRallies;
+export default RecordOptionsSummary;

@@ -51,7 +51,7 @@ const Substitutes = ({ members, others, className }) => {
           variant="ghost"
           size="icon"
           onClick={() =>
-            dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
+            dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
           }
         >
           <FiChevronLeft />

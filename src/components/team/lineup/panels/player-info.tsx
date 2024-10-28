@@ -8,6 +8,7 @@ import {
   FiUser,
   FiEdit2,
   FiTrendingUp,
+  FiRepeat,
 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +43,15 @@ const PlayerInfo = ({ members, className }) => {
         >
           <FiChevronLeft />
         </Button>
-        <CardTitle>球員資訊</CardTitle>
+        <CardTitle className="flex-1">球員資訊</CardTitle>
+        <Button
+          onClick={() =>
+            dispatch(lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES))
+          }
+        >
+          <FiRepeat />
+          更換球員
+        </Button>
       </CardHeader>
       <Table>
         <TableHeader className="text-lg">

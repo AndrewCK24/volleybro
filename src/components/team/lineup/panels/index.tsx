@@ -3,6 +3,7 @@ import PlayerInfo from "@/components/team/lineup/panels/player-info";
 import LineupOptions from "@/components/team/lineup/panels/options";
 import Substitutes from "@/components/team/lineup/panels/substitutes";
 import Positions from "@/components/team/lineup/panels/positions";
+import { LineupOptionMode } from "@/lib/features/team/types";
 
 const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
   const { lineups, status } = useAppSelector((state) => state.lineup);
@@ -19,11 +20,11 @@ const LineupPanels = ({ members, hasPairedSwitchPosition, className }) => {
 
   return (
     <>
-      {optionMode === "playerInfo" ? (
+      {optionMode === LineupOptionMode.PLAYERINFO ? (
         <PlayerInfo members={members} className={className} />
-      ) : optionMode === "substitutes" ? (
+      ) : optionMode === LineupOptionMode.SUBSTITUTES ? (
         <Substitutes members={members} others={others} className={className} />
-      ) : optionMode === "positions" ? (
+      ) : optionMode === LineupOptionMode.POSITIONS ? (
         <Positions className={className} />
       ) : (
         <LineupOptions

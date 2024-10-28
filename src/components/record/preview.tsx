@@ -2,7 +2,7 @@
 import { useRecord } from "@/hooks/use-data";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import Rally from "@/components/record/rally";
+import Rally from "@/components/record/entry/rally";
 
 import type { ReduxRecordState } from "@/lib/features/record/types";
 
