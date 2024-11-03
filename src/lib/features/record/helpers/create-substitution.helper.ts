@@ -23,8 +23,8 @@ export const createSubstitutionOptimistic = (
   subPlayer._id = outPlayer;
   subPlayer.sub = { _id: inPlayer };
 
-  if (startingPlayer.sub) {
-    startingPlayer.sub = { _id: "" };
+  if (!!startingPlayer.sub?._id) {
+    startingPlayer.sub._id = null;
   } else {
     startingPlayer.sub = { _id: outPlayer };
   }
