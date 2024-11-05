@@ -1,31 +1,21 @@
 "use client";
-import { useAppDispatch } from "@/lib/redux/hooks";
 import { useRecord } from "@/hooks/use-data";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
 import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 import { createRally } from "@/lib/features/record/actions/create-rally";
 import { createRallyOptimistic } from "@/lib/features/record/helpers";
 
-import type { ReduxRecordState } from "@/lib/features/record/types";
-import type { RecordActions } from "@/lib/features/record/record-slice";
-import type { EditingActions } from "@/lib/features/record/editing-slice";
-
-const OppoMoves = ({
-  recordId,
-  recordState,
-  recordActions,
-}: {
-  recordId: string;
-  recordState: ReduxRecordState;
-  recordActions: RecordActions | EditingActions;
-}) => {
+const OppoMoves = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
-  const { record, mutate } = useRecord(recordId);
+  const recordState = useAppSelector((state) => state.record);
   const {
     status: { setIndex, entryIndex },
     recording,
-  } = recordState;
+  } = recordState[recordState.mode];
+  const { record, mutate } = useRecord(recordId);
 
   const oppoMoves = scoringMoves.filter((option) =>
     scoringMoves[recording.home.num]?.outcome.includes(option.num)

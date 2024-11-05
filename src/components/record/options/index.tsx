@@ -1,5 +1,6 @@
 "use client";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
 import {
   DialogContent,
   DialogHeader,
@@ -20,11 +21,16 @@ const RecordOptions = ({
   tabValue: string;
   setTabValue: (value: string) => void;
 }) => {
-  const editingState = useAppSelector((state) => state.editing);
+  const dispatch = useAppDispatch();
+  const { mode } = useAppSelector((state) => state.record);
 
   return (
-    <DialogContent size="lg">
-      {editingState.isEditing ? (
+    <DialogContent
+      size="lg"
+      closeButton={mode === "general"}
+      onCloseAutoFocus={() => dispatch(recordActions.setRecordMode("general"))}
+    >
+      {mode === "editing" ? (
         <EntriesEdit recordId={recordId} />
       ) : (
         <>

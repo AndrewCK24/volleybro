@@ -1,31 +1,30 @@
 "use client";
 import { useRecord } from "@/hooks/use-data";
+import { useAppSelector } from "@/lib/redux/hooks";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import Entry from "@/components/record/entry";
 
 import { EntryType } from "@/entities/record";
-import type { ReduxRecordState } from "@/lib/features/record/types";
 
 const RecordPreview = ({
   recordId,
-  recordState,
   handleOptionOpen,
   className,
 }: {
   recordId: string;
-  recordState: ReduxRecordState;
   handleOptionOpen?: (value: string) => void;
   className?: string;
 }) => {
   const { record } = useRecord(recordId);
   const { players } = record.teams.home;
+  const recordState = useAppSelector((state) => state.record);
   const {
     recording,
-    status: { inPlay, setIndex, entryIndex },
-  } = recordState;
+    status: { inProgress, setIndex, entryIndex },
+  } = recordState[recordState.mode];
 
-  if (!inPlay) return null;
+  if (!inProgress) return null;
 
   const lastRally = record.sets[setIndex].entries[entryIndex - 1];
   const isEditing = recording.home.player._id || recording.home.type;

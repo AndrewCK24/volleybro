@@ -17,7 +17,7 @@ import RecordSetPanels from "@/components/record/set-options/panels";
 const RecordSetOptions = ({ recordId }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setIndex } = useAppSelector((state) => state.record.status);
+  const { setIndex } = useAppSelector((state) => state.record.editing.status);
   const { lineups } = useAppSelector((state) => state.lineup);
   const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
   const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;

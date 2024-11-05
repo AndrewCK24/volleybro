@@ -1,15 +1,12 @@
 "use client";
-import { useAppDispatch } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
 import { cn } from "@/lib/utils";
 import { FiEdit2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import OursMoves from "@/components/record/panels/moves/ours";
 import OppoMoves from "@/components/record/panels/moves/oppo";
-
-import type { ReduxRecordState } from "@/lib/features/record/types";
-import type { RecordActions } from "@/lib/features/record/record-slice";
-import type { EditingActions } from "@/lib/features/record/editing-slice";
 
 export const Container = ({
   children,
@@ -49,36 +46,33 @@ export const MoveButton = ({ move, toggled, onClick, children }) => {
 
 const RecordMoves = ({
   recordId,
-  recordState,
-  recordActions,
   className,
 }: {
   recordId: string;
-  recordState: ReduxRecordState;
-  recordActions: RecordActions | EditingActions;
   className?: string;
 }) => {
   const dispatch = useAppDispatch();
-  const { status, recording } = recordState;
+  const recordState = useAppSelector((state) => state.record);
+  const { status, recording } = recordState[recordState.mode];
 
   return (
     <Card className={cn("flex-1 w-full pb-4", className)}>
       <CardHeader>
         <CardTitle
-          onClick={() => dispatch(recordActions.setRecordingMode("home"))}
+          onClick={() => dispatch(recordActions.setPanel("home"))}
           className={cn(
             "p-1 border-l-2 border-b-2 border-primary transition-all overflow-hidden text-nowrap",
-            status.recordingMode === "home" ? "w-full" : "w-[2rem]"
+            status.panel === "home" ? "w-full" : "w-[2rem]"
           )}
         >
           <FiEdit2 className="w-6 min-w-6" />
           我方得失分紀錄
         </CardTitle>
         <CardTitle
-          onClick={() => dispatch(recordActions.setRecordingMode("away"))}
+          onClick={() => dispatch(recordActions.setPanel("away"))}
           className={cn(
             "p-1 border-l-2 border-b-2 border-destructive transition-all overflow-hidden text-nowrap",
-            status.recordingMode !== "home"
+            status.panel !== "home"
               ? "w-full"
               : recording.home.num === null
               ? "w-0 sr-only"
@@ -89,14 +83,10 @@ const RecordMoves = ({
           對方得失分紀錄
         </CardTitle>
       </CardHeader>
-      {status.recordingMode === "home" ? (
-        <OursMoves recordState={recordState} recordActions={recordActions} />
+      {status.panel === "home" ? (
+        <OursMoves />
       ) : (
-        <OppoMoves
-          recordId={recordId}
-          recordState={recordState}
-          recordActions={recordActions}
-        />
+        <OppoMoves recordId={recordId} />
       )}
     </Card>
   );

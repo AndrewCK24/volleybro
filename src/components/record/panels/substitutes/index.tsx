@@ -1,6 +1,7 @@
 "use client";
-import { useAppDispatch } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { useRecord } from "@/hooks/use-data";
+import { recordActions } from "@/lib/features/record/record-slice";
 import { FiChevronLeft, FiCheck } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -8,27 +9,20 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { createSubstitution } from "@/lib/features/record/actions/create-substitution";
 import { createSubstitutionOptimistic } from "@/lib/features/record/helpers";
 
-import type { ReduxRecordState } from "@/lib/features/record/types";
-import type { RecordActions } from "@/lib/features/record/record-slice";
-import type { EditingActions } from "@/lib/features/record/editing-slice";
-
 const Substitutes = ({
   recordId,
-  recordState,
-  recordActions,
   className,
 }: {
   recordId: string;
-  recordState: ReduxRecordState;
-  recordActions: RecordActions | EditingActions;
   className?: string;
 }) => {
   const dispatch = useAppDispatch();
   const { record, mutate } = useRecord(recordId);
+  const recordState = useAppSelector((state) => state.record);
   const {
     status: { setIndex, entryIndex },
     recording,
-  } = recordState;
+  } = recordState[recordState.mode];
   const players = record.teams.home.players;
   const lineup = record.sets[setIndex].lineups.home;
   const substitutes = lineup.substitutes.map((sub) =>

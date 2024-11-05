@@ -16,7 +16,7 @@ export const StatsCell = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const RecordOptionsOverview = ({ recordId }: { recordId: string }) => {
-  const { setIndex } = useAppSelector((state) => state.editing.status);
+  const { setIndex } = useAppSelector((state) => state.record.editing.status);
   const { record } = useRecord(recordId) as { record: Record };
   const { home, away } = record.teams;
 

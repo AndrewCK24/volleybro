@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
-import { editingActions } from "@/lib/features/record/editing-slice";
 import { useRecord } from "@/hooks/use-data";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
@@ -22,7 +21,7 @@ const Record = ({ recordId }: { recordId: string }) => {
   const recordState = useAppSelector((state) => state.record);
 
   const handleOptionOpen = (tabValue: string) => {
-    dispatch(editingActions.initialize(record));
+    dispatch(recordActions.initialize(record));
     setTabValue(tabValue);
     setDialogOpen(true);
   };
@@ -48,21 +47,12 @@ const Record = ({ recordId }: { recordId: string }) => {
   return (
     <>
       <Header recordId={record._id} handleOptionOpen={handleOptionOpen} />
-      <RecordCourt
-        recordId={record._id}
-        recordState={recordState}
-        recordActions={recordActions}
-      />
+      <RecordCourt recordId={record._id} />
       <RecordPreview
         recordId={record._id}
-        recordState={recordState}
         handleOptionOpen={handleOptionOpen}
       />
-      <RecordPanels
-        recordId={record._id}
-        recordState={recordState}
-        recordActions={recordActions}
-      />
+      <RecordPanels recordId={record._id} />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <RecordOptions
           recordId={record._id}

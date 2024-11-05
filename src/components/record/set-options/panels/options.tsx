@@ -44,7 +44,8 @@ const Options = ({
 }) => {
   const dispatch = useAppDispatch();
   const { lineups } = useAppSelector((state) => state.lineup);
-  const { setIndex } = useAppSelector((state) => state.record.status);
+  const { mode } = useAppSelector((state) => state.record);
+  const { setIndex } = useAppSelector((state) => state.record[mode].status);
   const { record, mutate } = useRecord(recordId);
   const liberoCount = lineups[0]?.liberos.length;
   const substituteCount = lineups[0]?.substitutes.length;

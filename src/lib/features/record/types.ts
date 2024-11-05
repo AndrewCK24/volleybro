@@ -72,26 +72,35 @@ export type TableRosterPlayer = {
 
 // For Redux
 export type ReduxStatus = {
-  isServing: boolean;
   scores: {
     home: number;
     away: number;
   };
   setIndex: number;
   entryIndex: number;
-  inPlay: boolean;
+  isServing: boolean;
+  inProgress: boolean;
   isSetPoint: boolean;
-  recordingMode: "home" | "away" | "substitutes";
+  panel: "home" | "away" | "substitutes";
 };
 
 export type ReduxRecordState = {
   _id: string;
-  win: boolean | null;
-  status: ReduxStatus;
-  isEditing?: boolean;
-  recording: Rally & {
-    substitution?: Substitution;
-    timeout?: Timeout;
-    challenge?: Challenge;
+  mode: "general" | "editing";
+  general: {
+    status: ReduxStatus;
+    recording: Rally & {
+      substitution?: Substitution;
+      timeout?: Timeout;
+      challenge?: Challenge;
+    };
+  };
+  editing: {
+    status: ReduxStatus;
+    recording: Rally & {
+      substitution?: Substitution;
+      timeout?: Timeout;
+      challenge?: Challenge;
+    };
   };
 };
