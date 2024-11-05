@@ -9,10 +9,12 @@ const RecordPanels = ({
   recordId,
   recordState,
   recordActions,
+  className,
 }: {
   recordId: string;
   recordState: ReduxRecordState;
   recordActions: RecordActions | EditingActions;
+  className?: string;
 }) => {
   const { status } = recordState;
 
@@ -24,12 +26,14 @@ const RecordPanels = ({
             recordId={recordId}
             recordState={recordState}
             recordActions={recordActions}
+            className={className}
           />
         ) : (
           <RecordMoves
             recordId={recordId}
             recordState={recordState}
             recordActions={recordActions}
+            className={className}
           />
         )
       ) : (

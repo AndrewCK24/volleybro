@@ -1,6 +1,5 @@
 import { FiPlus, FiMinus, FiUser } from "react-icons/fi";
 import {
-  EntryContainer,
   EntryScore,
   EntryText,
   EntryPlayerNumber,
@@ -13,22 +12,12 @@ const IconWin = () => <FiPlus className="text-primary" />;
 
 const IconLose = () => <FiMinus className="text-destructive" />;
 
-const Rally = ({
-  rally,
-  players,
-  onClick,
-  className,
-}: {
-  rally: Rally;
-  players: Player[];
-  onClick: () => void;
-  className?: string;
-}) => {
+const Rally = ({ rally, players }: { rally: Rally; players: Player[] }) => {
   const { win, home, away } = rally;
   const playerNumber = players.find((p) => p._id === home.player._id)?.number;
 
   return (
-    <EntryContainer className={className} onClick={onClick}>
+    <>
       {home.type ? (
         <>
           <EntryScore win={win}>{home.score}</EntryScore>
@@ -69,7 +58,7 @@ const Rally = ({
             <>--</>
           ))}
       </EntryText>
-    </EntryContainer>
+    </>
   );
 };
 

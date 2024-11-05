@@ -11,15 +11,15 @@ export const POST = async (
     const rally = await req.json();
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
-    const rallyIndex = parseInt(searchParams.get("ri") || "0", 10);
+    const entryIndex = parseInt(searchParams.get("ei") || "0", 10);
 
-    const rallies = await createRallyController({
-      params: { recordId, setIndex, rallyIndex },
+    const entries = await createRallyController({
+      params: { recordId, setIndex, entryIndex },
       data: rally,
     });
-    return NextResponse.json(rallies, { status: 200 });
+    return NextResponse.json(entries, { status: 200 });
   } catch (error) {
-    console.log("[POST /api/records]", error);
+    console.log("[POST /api/records/sets/rallies]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };

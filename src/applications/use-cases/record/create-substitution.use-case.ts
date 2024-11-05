@@ -3,15 +3,20 @@ import { ITeamRepository } from "@/applications/repositories/team.repository.int
 import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
 import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
 import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
-import { type Substitution, Side } from "@/entities/record";
+import {
+  type Substitution,
+  Side,
+  EntryType,
+  type Entry,
+} from "@/entities/record";
 import { Role } from "@/entities/team";
 
 export interface ICreateSubstitutionInput {
-  params: { recordId: string; setIndex: number; rallyIndex: number };
+  params: { recordId: string; setIndex: number; entryIndex: number };
   data: Substitution;
 }
 
-export type ICreateSubstitutionOutput = Substitution[];
+export type ICreateSubstitutionOutput = Entry[];
 
 export class CreateSubstitutionUseCase {
   private userRepository: IUserRepository;
@@ -49,7 +54,7 @@ export class CreateSubstitutionUseCase {
       Role.MEMBER
     );
 
-    const { setIndex } = params;
+    const { setIndex, entryIndex } = params;
     const {
       team,
       players: { in: inPlayer, out: outPlayer },
@@ -80,11 +85,14 @@ export class CreateSubstitutionUseCase {
     lineup.starting[startingIndex] = startingPlayer;
     lineup.substitutes[subIndex] = subPlayer;
     record.sets[setIndex].lineups[side] = lineup;
-    record.sets[setIndex].substitutions.push(substitution);
+    record.sets[setIndex].entries[entryIndex] = {
+      type: EntryType.SUBSTITUTION,
+      data: substitution,
+    };
     record.teams[side].stats[setIndex].substitution += 1;
 
     await this.recordRepository.update({ _id: params.recordId }, record);
 
-    return record.sets[setIndex].substitutions;
+    return record.sets[setIndex].entries;
   }
 }

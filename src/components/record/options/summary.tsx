@@ -5,37 +5,17 @@ import { editingActions } from "@/lib/features/record/editing-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import Rally from "@/components/record/entry/rally";
+import Entry from "@/components/record/entry";
 
 const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
   const { setIndex } = useAppSelector((state) => state.editing.status);
-  const { rallies } = record.sets[setIndex];
+  const { entries } = record.sets[setIndex];
   const { players } = record.teams.home;
 
-  // FIXME: 修正編輯狀態 inPlay, isSetPoint 計算邏輯
-  const handleRallyClick = (rallyIndex: number) => {
-    dispatch(
-      editingActions.setEditingRallyStatus({
-        recording: rallies[rallyIndex],
-        status: {
-          isServing:
-            rallyIndex === 0
-              ? record.sets[setIndex].options.serve === "home"
-              : rallies[rallyIndex - 1].win,
-          scores: {
-            home: rallies[rallyIndex].home.score,
-            away: rallies[rallyIndex].away.score,
-          },
-          setIndex,
-          rallyIndex,
-          inPlay: true,
-          isSetPoint: false,
-          recordingMode: "away",
-        },
-      })
-    );
+  const handleEntryClick = (entryIndex: number) => {
+    dispatch(editingActions.setEditingEntryStatus({ record, entryIndex }));
   };
 
   return (
@@ -65,12 +45,12 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
       </div>
       <div className="flex flex-col-reverse gap-1">
         <Separator content="比賽開始" />
-        {rallies.map((rally, rallyIndex: number) => (
-          <Rally
-            key={rallyIndex}
-            rally={rally}
+        {entries.map((entry, entryIndex: number) => (
+          <Entry
+            key={entryIndex}
+            entry={entry}
             players={players}
-            onClick={() => handleRallyClick(rallyIndex)}
+            onClick={() => handleEntryClick(entryIndex)}
           />
         ))}
       </div>
