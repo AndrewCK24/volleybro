@@ -32,8 +32,8 @@ const Team = ({ children }: { children: React.ReactNode }) => {
 
 export const Scores = ({ recordId, ...props }) => {
   const { record } = useRecord(recordId);
-  const { scores, isSetPoint } = useAppSelector((state) => state.record.status);
-  // TODO: Add set point styles
+  const { scores } = useAppSelector((state) => state.record.general.status);
+  // TODO: Add set-point styles
 
   return (
     <div

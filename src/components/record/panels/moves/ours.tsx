@@ -1,5 +1,6 @@
 "use client";
-import { useAppDispatch } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
 import {
   frontMoves,
   backMoves,
@@ -10,19 +11,10 @@ import { FiPlus, FiMinus, FiRepeat } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 
-import type { ReduxRecordState } from "@/lib/features/record/types";
-import type { RecordActions } from "@/lib/features/record/record-slice";
-import type { EditingActions } from "@/lib/features/record/editing-slice";
-
-const OursMoves = ({
-  recordState,
-  recordActions,
-}: {
-  recordState: ReduxRecordState;
-  recordActions: RecordActions | EditingActions;
-}) => {
+const OursMoves = () => {
   const dispatch = useAppDispatch();
-  const { recording } = recordState;
+  const recordState = useAppSelector((state) => state.record);
+  const { recording } = recordState[recordState.mode];
   const { zone } = recording.home.player;
   const oursMoves =
     zone === 0 ? errorMoves : zone === 1 || zone >= 5 ? backMoves : frontMoves;
@@ -49,9 +41,7 @@ const OursMoves = ({
           variant="secondary"
           size="lg"
           className="h-full text-[1.5rem] pr-1"
-          onClick={() =>
-            dispatch(recordActions.setRecordingMode("substitutes"))
-          }
+          onClick={() => dispatch(recordActions.setPanel("substitutes"))}
         >
           替補
           <FiRepeat />

@@ -2,10 +2,11 @@ import { useRecord } from "@/hooks/use-data";
 import type { ReduxRecordState } from "@/lib/features/record/types";
 
 export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
-  const { setIndex, isServing, inPlay } = recordState.status;
+  const { setIndex, isServing, inProgress } =
+    recordState[recordState.mode].status;
   const { record } = useRecord(recordId);
 
-  if (!inPlay) return { starting: [], liberos: [] };
+  if (!inProgress) return { starting: [], liberos: [] };
 
   const { players, stats } = record.teams.home;
   const { starting, liberos, options } = structuredClone(

@@ -1,4 +1,5 @@
-import { useAppDispatch } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { recordActions } from "@/lib/features/record/record-slice";
 import { useLineup } from "@/lib/features/record/hooks/use-lineup";
 import {
   Court,
@@ -9,24 +10,14 @@ import {
   AdjustButton,
   PlaceholderCard,
 } from "@/components/custom/court";
-import type { ReduxRecordState } from "@/lib/features/record/types";
-import type { RecordActions } from "@/lib/features/record/record-slice";
-import type { EditingActions } from "@/lib/features/record/editing-slice";
 
-const RecordCourt = ({
-  recordId,
-  recordState,
-  recordActions,
-}: {
-  recordId: string;
-  recordState: ReduxRecordState;
-  recordActions: RecordActions | EditingActions;
-}) => {
+const RecordCourt = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
+  const recordState = useAppSelector((state) => state.record);
+  const { status, recording } = recordState[recordState.mode];
   const { starting, liberos } = useLineup(recordId, recordState);
-  const { status, recording } = recordState;
 
-  if (status.inPlay === false) {
+  if (status.inProgress === false) {
     return (
       <Court>
         <Outside className="inner">

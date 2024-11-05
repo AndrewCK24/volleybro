@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { useRecord } from "@/hooks/use-data";
-import { editingActions } from "@/lib/features/record/editing-slice";
+import { recordActions } from "@/lib/features/record/record-slice";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,12 +10,12 @@ import Entry from "@/components/record/entry";
 const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setIndex } = useAppSelector((state) => state.editing.status);
+  const { setIndex } = useAppSelector((state) => state.record.editing.status);
   const { entries } = record.sets[setIndex];
   const { players } = record.teams.home;
 
   const handleEntryClick = (entryIndex: number) => {
-    dispatch(editingActions.setEditingEntryStatus({ record, entryIndex }));
+    dispatch(recordActions.setEditingEntryStatus({ record, entryIndex }));
   };
 
   return (
@@ -24,7 +24,7 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => dispatch(editingActions.setSetIndex(setIndex - 1))}
+          onClick={() => dispatch(recordActions.setSetIndex(setIndex - 1))}
           disabled={setIndex <= 0}
         >
           <FiChevronLeft />
@@ -36,7 +36,7 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => dispatch(editingActions.setSetIndex(setIndex + 1))}
+          onClick={() => dispatch(recordActions.setSetIndex(setIndex + 1))}
           disabled={setIndex >= record.sets.length - 1}
         >
           <FiChevronRight />
