@@ -3,9 +3,12 @@ import {
   type CaseReducer,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { matchPhaseHelper } from "@/lib/features/record/helpers";
+import {
+  matchPhaseHelper,
+  getPreviousRally,
+} from "@/lib/features/record/helpers";
 
-import type { Record, RallyDetail } from "@/entities/record";
+import { type Record, type RallyDetail, Side } from "@/entities/record";
 import type {
   ReduxRecordState,
   ReduxStatus,
@@ -15,12 +18,9 @@ import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
 // Define the initial states
 const statusState: ReduxStatus = {
   isServing: false,
-  scores: {
-    home: 0,
-    away: 0,
-  },
+  scores: { home: 0, away: 0 },
   setIndex: 0,
-  rallyIndex: 0,
+  entryIndex: 0,
   inPlay: false,
   isSetPoint: false,
   recordingMode: "home",
@@ -30,10 +30,7 @@ const rallyDetailState: RallyDetail = {
   score: 0,
   type: null,
   num: null,
-  player: {
-    _id: "",
-    zone: 0,
-  },
+  player: { _id: "", zone: 0 },
 };
 
 export const initialState: ReduxRecordState = {
@@ -54,26 +51,26 @@ export const initialize: CaseReducer<
 > = (state, action) => {
   const record = structuredClone(action.payload);
   const setIndex = record.sets.length ? record.sets.length - 1 : 0;
-  const rallyIndex = record.sets[setIndex]?.rallies?.length || 0;
+  const entryIndex = record.sets[setIndex]?.entries?.length || 0;
+  const previousRally = getPreviousRally(record, setIndex, entryIndex);
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
     setIndex,
-    record?.sets[setIndex]?.rallies[rallyIndex - 1]
+    previousRally
   );
-  const isServing =
-    inPlay || rallyIndex === 0
-      ? record.sets[setIndex]?.options?.serve === "home"
-      : record.sets[setIndex].rallies[rallyIndex - 1].win;
+  const isServing = previousRally
+    ? previousRally.win
+    : record.sets[setIndex]?.options?.serve === "home";
   state._id = record._id;
   state.status = {
     ...state.status,
     isServing,
     scores: {
-      home: record?.sets[setIndex]?.rallies[rallyIndex - 1]?.home?.score || 0,
-      away: record?.sets[setIndex]?.rallies[rallyIndex - 1]?.away?.score || 0,
+      home: previousRally?.home?.score || 0,
+      away: previousRally?.away?.score || 0,
     },
     setIndex,
-    rallyIndex,
+    entryIndex,
     inPlay,
     isSetPoint,
     recordingMode: "home",
@@ -133,19 +130,12 @@ export const setRecordingAwayMove: CaseReducer<
   state.recording.away = { ...state.recording.away, type, num };
 };
 
-export const setRecordingMode: CaseReducer<
-  ReduxRecordState,
-  PayloadAction<ReduxStatus["recordingMode"]>
-> = (state, action) => {
-  state.status.recordingMode = action.payload;
-};
-
-export const confirmRecording: CaseReducer<
+export const confirmRecordingRally: CaseReducer<
   ReduxRecordState,
   PayloadAction<Record>
 > = (state, action) => {
   const record = structuredClone(action.payload);
-  const { setIndex, rallyIndex } = state.status;
+  const { setIndex, entryIndex } = state.status;
   const { inPlay, isSetPoint } = matchPhaseHelper(
     record,
     setIndex,
@@ -159,7 +149,7 @@ export const confirmRecording: CaseReducer<
       home: state.recording.home.score,
       away: state.recording.away.score,
     },
-    rallyIndex: rallyIndex + 1,
+    entryIndex: entryIndex + 1,
     inPlay,
     isSetPoint,
     recordingMode: "home",
@@ -170,6 +160,48 @@ export const confirmRecording: CaseReducer<
     home: { ...initialState.recording.home, score: state.status.scores.home },
     away: { ...initialState.recording.away, score: state.status.scores.away },
   };
+};
+
+export const setRecordingSubstitution: CaseReducer<
+  ReduxRecordState,
+  PayloadAction<string>
+> = (state, action) => {
+  const inPlayer = action.payload;
+  const { _id: outPlayer } = state.recording.home.player;
+  state.recording = {
+    ...state.recording,
+    substitution: {
+      team: Side.HOME,
+      players: { in: inPlayer, out: outPlayer },
+    },
+  };
+};
+
+export const resetRecordingSubstitution: CaseReducer<ReduxRecordState> = (
+  state
+) => {
+  const { substitution, ...rest } = state.recording;
+  state.recording = { ...rest };
+  state.status.recordingMode = "home";
+};
+
+export const confirmRecordingSubstitution: CaseReducer<ReduxRecordState> = (
+  state
+) => {
+  state.status.recordingMode = "home";
+  state.status.entryIndex += 1;
+  state.recording = {
+    ...initialState.recording,
+    home: { ...initialState.recording.home, score: state.status.scores.home },
+    away: { ...initialState.recording.away, score: state.status.scores.away },
+  };
+};
+
+export const setRecordingMode: CaseReducer<
+  ReduxRecordState,
+  PayloadAction<ReduxStatus["recordingMode"]>
+> = (state, action) => {
+  state.status.recordingMode = action.payload;
 };
 
 export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
@@ -189,8 +221,11 @@ const recordSlice = createSlice({
     setRecordingPlayer,
     setRecordingHomeMove,
     setRecordingAwayMove,
+    confirmRecordingRally,
+    setRecordingSubstitution,
+    resetRecordingSubstitution,
+    confirmRecordingSubstitution,
     setRecordingMode,
-    confirmRecording,
     resetRecording,
   },
 });

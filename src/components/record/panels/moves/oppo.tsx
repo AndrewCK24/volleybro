@@ -23,7 +23,7 @@ const OppoMoves = ({
   const dispatch = useAppDispatch();
   const { record, mutate } = useRecord(recordId);
   const {
-    status: { setIndex, rallyIndex },
+    status: { setIndex, entryIndex },
     recording,
   } = recordState;
 
@@ -37,17 +37,17 @@ const OppoMoves = ({
     } else {
       try {
         mutate(
-          createRally({ recordId, setIndex, rallyIndex }, recording, record),
+          createRally({ recordId, setIndex, entryIndex }, recording, record),
           {
             revalidate: false,
             optimisticData: createRallyOptimistic(
-              { recordId, setIndex, rallyIndex },
+              { recordId, setIndex, entryIndex },
               recording,
               record
             ),
           }
         );
-        dispatch(recordActions.confirmRecording(record));
+        dispatch(recordActions.confirmRecordingRally(record));
       } catch (error) {
         console.error("[POST /api/records]", error);
       }

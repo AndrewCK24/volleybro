@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import RecordCourt from "@/components/record/court";
 import RecordPreview from "@/components/record/preview";
-import RecordMoves from "@/components/record/panels/moves";
+import RecordPanels from "@/components/record/panels";
 
-const RalliesEdit = ({ recordId }: { recordId: string }) => {
+const EntriesEdit = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
   const editingState = useAppSelector((state) => state.editing);
 
@@ -35,7 +35,7 @@ const RalliesEdit = ({ recordId }: { recordId: string }) => {
         recordState={editingState}
         className="px-0 py-1 shadow-none"
       />
-      <RecordMoves
+      <RecordPanels
         recordId={recordId}
         recordState={editingState}
         recordActions={editingActions}
@@ -45,4 +45,4 @@ const RalliesEdit = ({ recordId }: { recordId: string }) => {
   );
 };
 
-export default RalliesEdit;
+export default EntriesEdit;

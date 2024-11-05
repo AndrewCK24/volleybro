@@ -1,5 +1,5 @@
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import {
-  EntryContainer,
   EntryScore,
   EntryText,
   EntryPlayerNumber,
@@ -10,27 +10,29 @@ import { type Substitution, type Player } from "@/entities/record";
 const Substitution = ({
   substitution,
   players,
-  className,
 }: {
   substitution: Substitution;
   players: Player[];
-  className?: string;
 }) => {
   const inPlayer = players.find((p) => p._id === substitution.players.in);
   const outPlayer = players.find((p) => p._id === substitution.players.out);
 
   return (
-    <EntryContainer className={className}>
+    <>
       <EntryScore />
       <EntryScore />
-      <EntryText className="border-primary">
-        <EntryPlayerNumber>{inPlayer.number}</EntryPlayerNumber>
-        IN
-      </EntryText>
-      <EntryText className="border-destructive">
-        <EntryPlayerNumber>{outPlayer.number}</EntryPlayerNumber>
+      <EntryText>
+        <EntryPlayerNumber>{outPlayer?.number}</EntryPlayerNumber>
         OUT
+        <FiChevronDown className="text-destructive" />
       </EntryText>
-    </EntryContainer>
+      <EntryText>
+        <EntryPlayerNumber>{inPlayer?.number}</EntryPlayerNumber>
+        IN
+        <FiChevronUp className="text-primary" />
+      </EntryText>
+    </>
   );
 };
+
+export default Substitution;

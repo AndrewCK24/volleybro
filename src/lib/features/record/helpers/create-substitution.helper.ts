@@ -1,11 +1,16 @@
-import { type Record, Side, type Substitution } from "@/entities/record";
+import {
+  type Record,
+  Side,
+  type Substitution,
+  EntryType,
+} from "@/entities/record";
 
 export const createSubstitutionOptimistic = (
-  params: { recordId: string; setIndex: number; rallyIndex: number },
+  params: { recordId: string; setIndex: number; entryIndex: number },
   substitution: Substitution,
   record: Record
 ) => {
-  const { setIndex } = params;
+  const { setIndex, entryIndex } = params;
   const {
     team,
     players: { in: inPlayer, out: outPlayer },
@@ -32,7 +37,10 @@ export const createSubstitutionOptimistic = (
   lineup.starting[startingIndex] = startingPlayer;
   lineup.substitutes[subIndex] = subPlayer;
   record.sets[setIndex].lineups[side] = lineup;
-  record.sets[setIndex].substitutions.push(substitution);
+  record.sets[setIndex].entries[entryIndex] = {
+    type: EntryType.SUBSTITUTION,
+    data: substitution,
+  };
   record.teams[side].stats[setIndex].substitution += 1;
 
   return record;

@@ -1,5 +1,10 @@
 import { z } from "zod";
-import type { Rally } from "@/entities/record";
+import type {
+  Rally,
+  Substitution,
+  Timeout,
+  Challenge,
+} from "@/entities/record";
 
 // For Forms and Tables
 export const RecordInfoFormSchema = z.object({
@@ -73,7 +78,7 @@ export type ReduxStatus = {
     away: number;
   };
   setIndex: number;
-  rallyIndex: number;
+  entryIndex: number;
   inPlay: boolean;
   isSetPoint: boolean;
   recordingMode: "home" | "away" | "substitutes";
@@ -84,5 +89,9 @@ export type ReduxRecordState = {
   win: boolean | null;
   status: ReduxStatus;
   isEditing?: boolean;
-  recording: Rally;
+  recording: Rally & {
+    substitution?: Substitution;
+    timeout?: Timeout;
+    challenge?: Challenge;
+  };
 };

@@ -1,14 +1,14 @@
 import type { Record, Rally } from "@/entities/record";
 
 export const createRally = async (
-  params: { recordId: string; setIndex: number; rallyIndex: number },
+  params: { recordId: string; setIndex: number; entryIndex: number },
   recording: Rally,
   record: Record
 ) => {
-  const { recordId, setIndex, rallyIndex } = params;
+  const { recordId, setIndex, entryIndex } = params;
   try {
     const res = await fetch(
-      `/api/records/${recordId}/sets/rallies?si=${setIndex}&ri=${rallyIndex}`,
+      `/api/records/${recordId}/sets/rallies?si=${setIndex}&ei=${entryIndex}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -16,10 +16,10 @@ export const createRally = async (
       }
     );
     if (!res.ok) throw new Error("Network response was not ok");
-    const rallies = await res.json();
-    record.sets[setIndex].rallies = rallies;
+    const entries = await res.json();
+    record.sets[setIndex].entries = entries;
     return record;
   } catch (error) {
-    console.error("[POST /api/records]", error);
+    console.error("[CREAT Rally]", error);
   }
 };

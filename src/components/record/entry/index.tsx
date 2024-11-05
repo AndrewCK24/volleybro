@@ -1,4 +1,13 @@
 import { cn } from "@/lib/utils";
+import Rally from "@/components/record/entry/rally";
+import Substitution from "@/components/record/entry/substitution";
+import {
+  type Player,
+  type Entry as IEntry,
+  EntryType,
+  Rally as RallyType,
+  Substitution as SubstitutionType,
+} from "@/entities/record";
 
 export const EntryContainer = ({
   onClick,
@@ -21,7 +30,7 @@ export const EntryContainer = ({
 );
 
 export const EntryScore = ({
-  win = false,
+  win = null,
   children,
 }: {
   win?: boolean;
@@ -31,8 +40,9 @@ export const EntryScore = ({
     <div
       className={cn(
         "flex items-center justify-center flex-none",
-        "basis-8 w-8 h-8 bg-accent text-[1.5rem] rounded-[0.5rem] font-semibold",
-        win && "bg-primary text-primary-foreground"
+        "basis-8 w-8 h-8 text-[1.5rem] rounded-[0.5rem] font-semibold",
+        win !== null &&
+          (win ? "bg-primary text-primary-foreground" : "bg-accent")
       )}
     >
       {children}
@@ -64,3 +74,30 @@ export const EntryPlayerNumber = ({
 }: {
   children: React.ReactNode;
 }) => <span className="text-[1.375rem] font-semibold">{children}</span>;
+
+const Entry = ({
+  entry,
+  players,
+  onClick,
+  className,
+}: {
+  entry: IEntry;
+  players: Player[];
+  onClick?: () => void;
+  className?: string;
+}) => {
+  return (
+    <EntryContainer onClick={onClick} className={className}>
+      {entry.type === EntryType.RALLY ? (
+        <Rally rally={entry.data as RallyType} players={players} />
+      ) : (
+        <Substitution
+          substitution={entry.data as SubstitutionType}
+          players={players}
+        />
+      )}
+    </EntryContainer>
+  );
+};
+
+export default Entry;

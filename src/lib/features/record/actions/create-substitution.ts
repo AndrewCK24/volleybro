@@ -1,14 +1,14 @@
 import type { Record, Substitution } from "@/entities/record";
 
 export const createSubstitution = async (
-  params: { recordId: string; setIndex: number; rallyIndex: number },
+  params: { recordId: string; setIndex: number; entryIndex: number },
   substitution: Substitution,
   record: Record
 ) => {
-  const { recordId, setIndex, rallyIndex } = params;
+  const { recordId, setIndex, entryIndex } = params;
   try {
     const res = await fetch(
-      `/api/records/${recordId}/sets/substitutions?si=${setIndex}&ri=${rallyIndex}`,
+      `/api/records/${recordId}/sets/substitutions?si=${setIndex}&ei=${entryIndex}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -16,10 +16,10 @@ export const createSubstitution = async (
       }
     );
     if (!res.ok) throw new Error("Network response was not ok");
-    const substitutions = await res.json();
-    record.sets[setIndex].substitutions = substitutions;
+    const entries = await res.json();
+    record.sets[setIndex].entries = entries;
     return record;
   } catch (error) {
-    console.error("[POST /api/records]", error);
+    console.error("[CREATE Substitution]", error);
   }
 };

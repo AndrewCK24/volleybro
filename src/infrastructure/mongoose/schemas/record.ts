@@ -5,6 +5,7 @@ import {
   MatchPhase,
   MoveType,
   Side,
+  EntryType,
 } from "@/entities/record";
 import { lineupSchema } from "@/infrastructure/mongoose/schemas/team";
 
@@ -136,7 +137,6 @@ const rallySchema = new Schema({
 
 const substitutionSchema = new Schema({
   team: { type: Number, enum: Side },
-  rallyIndex: { type: Number },
   players: {
     in: { type: Schema.Types.ObjectId, ref: "Member" },
     out: { type: Schema.Types.ObjectId, ref: "Member" },
@@ -145,14 +145,17 @@ const substitutionSchema = new Schema({
 
 const timeoutSchema = new Schema({
   team: { type: Number, enum: Side },
-  rallyIndex: { type: Number },
 });
 
 const challengeSchema = new Schema({
   team: { type: Number, enum: Side },
-  rallyIndex: { type: Number },
   type: { type: String },
   success: { type: Boolean },
+});
+
+const entrySchema = new Schema({
+  type: { type: Number, enum: EntryType },
+  data: { type: Schema.Types.Mixed },
 });
 
 const setSchema = new Schema({
@@ -168,10 +171,7 @@ const setSchema = new Schema({
       end: { type: String },
     },
   },
-  rallies: [{ type: rallySchema }],
-  substitutions: [{ type: substitutionSchema }],
-  timeouts: [{ type: timeoutSchema }],
-  challenges: [{ type: challengeSchema }],
+  entries: [{ type: entrySchema }],
 });
 
 const recordSchema = new Schema(

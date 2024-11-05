@@ -3,15 +3,16 @@ import { ITeamRepository } from "@/applications/repositories/team.repository.int
 import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
 import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
 import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
-import type { Rally } from "@/entities/record";
+import { getPreviousRally } from "@/lib/features/record/helpers";
+import { type Entry, type Rally, EntryType } from "@/entities/record";
 import { Role } from "@/entities/team";
 
 export interface ICreateRallyInput {
-  params: { recordId: string; setIndex: number; rallyIndex: number };
+  params: { recordId: string; setIndex: number; entryIndex: number };
   data: Rally;
 }
 
-export type ICreateRallyOutput = Rally[];
+export type ICreateRallyOutput = Entry[];
 
 /**
  * Use case for creating a rally in a volleyball match record.
@@ -25,7 +26,7 @@ export type ICreateRallyOutput = Rally[];
  * @method execute
  * @async
  * @param {ICreateRallyInput} input - Input data for creating a rally.
- * @returns {Promise<ICreateRallyOutput | undefined>} - The updated list of rallies for the specified set.
+ * @returns {Promise<ICreateRallyOutput | undefined>} - The updated list of entries for the specified set.
  *
  * @throws {Error} If the record or set is not found.
  *
@@ -72,15 +73,20 @@ export class CreateRallyUseCase {
     );
 
     // TODO: handle race condition
-    // 若傳入的 setIndex, (rallyIndex), scores, type, num 一致時，則視為同筆資料不新增
+    // 若傳入的 setIndex, (entryIndex), scores, type, num 一致時，則視為同筆資料不新增
     // 若 setIndex, score 等資料不同時，通知後傳入之使用者，令其選擇合適之紀錄，或新增於前者紀錄之後（如何更新前者之資料？）
 
     const set = record.sets[params.setIndex];
     if (!set) throw new Error("Set not found");
 
     // same logic as createRallyOptimistic (src/lib/features/record/helpers/create-rally.helper.ts)
-    const isServing = params.rallyIndex
-      ? record.sets[params.setIndex].rallies[params.rallyIndex - 1]?.win
+    const previousRally = getPreviousRally(
+      record,
+      params.setIndex,
+      params.entryIndex
+    );
+    const isServing = previousRally
+      ? previousRally.win
       : record.sets[params.setIndex].options.serve === "home";
     if (rally.win && !isServing)
       record.teams.home.stats[params.setIndex].rotation += 1;
@@ -110,10 +116,13 @@ export class CreateRallyUseCase {
 
     record.teams.home = homeTeam;
     record.teams.away = awayTeam;
-    record.sets[params.setIndex].rallies[params.rallyIndex] = rally;
+    record.sets[params.setIndex].entries[params.entryIndex] = {
+      type: EntryType.RALLY,
+      data: rally,
+    };
 
     await this.recordRepository.update({ _id: params.recordId }, record);
 
-    return record.sets[params.setIndex].rallies;
+    return record.sets[params.setIndex].entries;
   }
 }

@@ -145,7 +145,7 @@ export type RallyDetail = {
   score: number;
   type: MoveType;
   num: number;
-  player: {
+  player?: {
     _id: string;
     zone: number;
   };
@@ -164,7 +164,6 @@ export enum Side {
 
 export type Substitution = {
   team: Side;
-  rallyIndex: number;
   players: {
     in: string;
     out: string;
@@ -173,14 +172,24 @@ export type Substitution = {
 
 export type Timeout = {
   team: Side;
-  rallyIndex: number;
 };
 
 export type Challenge = {
   team: Side;
-  rallyIndex: number;
   type: string;
   success: boolean;
+};
+
+export enum EntryType {
+  RALLY,
+  SUBSTITUTION,
+  TIMEOUT,
+  CHALLENGE,
+}
+
+export type Entry = {
+  type: EntryType;
+  data: Rally | Substitution | Timeout | Challenge;
 };
 
 export type Set = {
@@ -196,10 +205,7 @@ export type Set = {
       end: string;
     };
   };
-  rallies: Rally[];
-  substitutions: Substitution[];
-  timeouts: Timeout[];
-  challenges: Challenge[];
+  entries: Entry[];
 };
 
 export type Record = {
