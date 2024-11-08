@@ -4,12 +4,14 @@ import { IRecordRepository } from "@/applications/repositories/record.repository
 import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
 import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
 import {
+  type Record,
+  type Entry,
   type Substitution,
   Side,
   EntryType,
-  type Entry,
+  PlayerStatsClass,
 } from "@/entities/record";
-import { Role } from "@/entities/team";
+import { Role, type Lineup } from "@/entities/team";
 
 export interface ICreateSubstitutionInput {
   params: { recordId: string; setIndex: number; entryIndex: number };
@@ -19,80 +21,100 @@ export interface ICreateSubstitutionInput {
 export type ICreateSubstitutionOutput = Entry[];
 
 export class CreateSubstitutionUseCase {
-  private userRepository: IUserRepository;
-  private teamRepository: ITeamRepository;
-  private recordRepository: IRecordRepository;
-
   constructor(
-    userRepository: IUserRepository,
-    teamRepository: ITeamRepository,
-    recordRepository: IRecordRepository
-  ) {
-    this.userRepository = userRepository;
-    this.teamRepository = teamRepository;
-    this.recordRepository = recordRepository;
-  }
+    private userRepository: IUserRepository,
+    private teamRepository: ITeamRepository,
+    private recordRepository: IRecordRepository
+  ) {}
 
   async execute(
     input: ICreateSubstitutionInput
-  ): Promise<ICreateSubstitutionOutput | undefined> {
+  ): Promise<ICreateSubstitutionOutput> {
     const { params, data: substitution } = input;
-    const authenticationService = new AuthenticationService(
+    const user = await new AuthenticationService(
       this.userRepository
-    );
-    const user = await authenticationService.verifySession();
+    ).verifySession();
 
     const record = await this.recordRepository.findOne({
       _id: params.recordId,
     });
     if (!record) throw new Error("Record not found");
 
-    const authorizationService = new AuthorizationService(this.teamRepository);
-    await authorizationService.verifyTeamRole(
+    await new AuthorizationService(this.teamRepository).verifyTeamRole(
       record.team_id.toString(),
       user._id.toString(),
       Role.MEMBER
     );
 
-    const { setIndex, entryIndex } = params;
-    const {
-      team,
-      players: { in: inPlayer, out: outPlayer },
-    } = substitution;
+    const side = substitution.team === Side.HOME ? "home" : "away";
+    const lineup = record.sets[params.setIndex].lineups[side];
 
-    const side = team === Side.HOME ? "home" : "away";
+    this.updateLineup(lineup, substitution, params.entryIndex);
+    this.updateRecordStats(record, side, input);
+
+    await this.recordRepository.update({ _id: params.recordId }, record);
+    return record.sets[params.setIndex].entries;
+  }
+
+  private updateLineup(
+    lineup: Lineup,
+    substitution: Substitution,
+    entryIndex: number
+  ) {
+    const startingIndex = lineup.starting.findIndex(
+      (p) => p._id.toString() === substitution.players.out
+    );
+    const subIndex = lineup.substitutes.findIndex(
+      (p) => p._id.toString() === substitution.players.in
+    );
+
+    lineup.starting[startingIndex] = {
+      _id: substitution.players.in,
+      position: lineup.starting[startingIndex].position,
+      sub: {
+        _id: substitution.players.out,
+        entryIndex:
+          lineup.starting[startingIndex].sub?.entryIndex?.in !== undefined
+            ? {
+                ...lineup.starting[startingIndex].sub.entryIndex,
+                out: entryIndex,
+              }
+            : { in: entryIndex, out: null },
+      },
+    };
+
+    lineup.substitutes[subIndex] = {
+      ...lineup.substitutes[subIndex],
+      _id: substitution.players.out,
+      sub: { _id: substitution.players.in },
+    };
+  }
+
+  private updateRecordStats(
+    record: Record,
+    side: string,
+    input: ICreateSubstitutionInput
+  ) {
+    const {
+      params: { setIndex, entryIndex },
+      data: substitution,
+    } = input;
     const lineup = record.sets[setIndex].lineups[side];
 
-    const startingIndex = lineup.starting.findIndex(
-      (p) => p._id.toString() === outPlayer
+    const startingPlayer = lineup.starting.find(
+      (p) => p._id.toString() === substitution.players.in
     );
-    const startingPlayer = lineup.starting[startingIndex];
-    const subIndex = lineup.substitutes.findIndex(
-      (p) => p._id.toString() === inPlayer
-    );
-    const subPlayer = lineup.substitutes[subIndex];
-
-    startingPlayer._id = inPlayer;
-    subPlayer._id = outPlayer;
-    subPlayer.sub = { _id: inPlayer };
-
-    if (!!startingPlayer.sub?._id) {
-      startingPlayer.sub._id = null;
-    } else {
-      startingPlayer.sub = { _id: outPlayer };
+    if (!!startingPlayer.sub?.entryIndex?.in !== undefined) {
+      const player = record.teams[side].players.find(
+        (p) => p._id.toString() === substitution.players.in
+      );
+      if (player) player.stats[setIndex] = new PlayerStatsClass();
     }
 
-    lineup.starting[startingIndex] = startingPlayer;
-    lineup.substitutes[subIndex] = subPlayer;
-    record.sets[setIndex].lineups[side] = lineup;
+    record.teams[side].stats[setIndex].substitution++;
     record.sets[setIndex].entries[entryIndex] = {
       type: EntryType.SUBSTITUTION,
       data: substitution,
     };
-    record.teams[side].stats[setIndex].substitution += 1;
-
-    await this.recordRepository.update({ _id: params.recordId }, record);
-
-    return record.sets[setIndex].entries;
   }
 }

@@ -47,7 +47,7 @@ const Record = ({ recordId }: { recordId: string }) => {
   return (
     <>
       <Header recordId={record._id} handleOptionOpen={handleOptionOpen} />
-      <RecordCourt recordId={record._id} />
+      <RecordCourt recordId={record._id} mode="general" />
       <RecordPreview
         recordId={record._id}
         handleOptionOpen={handleOptionOpen}

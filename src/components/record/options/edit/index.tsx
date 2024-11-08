@@ -24,7 +24,7 @@ const EntriesEdit = ({ recordId }: { recordId: string }) => {
         </Button>
         <DialogTitle>編輯逐球紀錄</DialogTitle>
       </DialogHeader>
-      <RecordCourt recordId={recordId} />
+      <RecordCourt recordId={recordId} mode="editing" />
       <RecordPreview recordId={recordId} className="px-0 py-1 shadow-none" />
       <RecordPanels recordId={recordId} className="p-0 shadow-none" />
     </>

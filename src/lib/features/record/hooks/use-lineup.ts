@@ -1,18 +1,14 @@
 import { useRecord } from "@/hooks/use-data";
-import type { ReduxRecordState } from "@/lib/features/record/types";
+import { type LineupPlayer } from "@/entities/team";
+import { type Record, EntryType, Rally } from "@/entities/record";
+import type { ReduxStatus } from "@/lib/features/record/types";
 
-export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
-  const { setIndex, isServing, inProgress } =
-    recordState[recordState.mode].status;
-  const { record } = useRecord(recordId);
-
-  if (!inProgress) return { starting: [], liberos: [] };
-
-  const { players, stats } = record.teams.home;
-  const { starting, liberos, options } = structuredClone(
+const getGeneralModeLineup = (record: Record, status: ReduxStatus) => {
+  const { setIndex } = status;
+  const { starting, liberos } = structuredClone(
     record.sets[setIndex].lineups.home
   );
-
+  const { players, stats } = record.teams.home;
   const lineup = {
     liberos: liberos.map((libero) => {
       const player = players.find((p) => p._id === libero._id);
@@ -20,7 +16,11 @@ export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
       return {
         ...player,
         position: libero.position,
-        sub: { _id: substitute?._id, number: substitute?.number },
+        sub: {
+          _id: substitute?._id,
+          number: substitute?.number,
+          entryIndex: libero?.sub?.entryIndex,
+        },
       };
     }),
     starting: starting.map((starter) => {
@@ -29,7 +29,11 @@ export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
       return {
         ...player,
         position: starter.position,
-        sub: { _id: substitute?._id, number: substitute?.number },
+        sub: {
+          _id: substitute?._id,
+          number: substitute?.number,
+          entryIndex: starter?.sub?.entryIndex,
+        },
       };
     }),
   };
@@ -39,9 +43,97 @@ export const useLineup = (recordId: string, recordState: ReduxRecordState) => {
     const rotatedPlayers = lineup.starting.splice(0, rotation);
     lineup.starting.push(...rotatedPlayers);
   }
+
+  return lineup;
+};
+
+const getEditingModeLineup = (record: Record, status: ReduxStatus) => {
+  const { setIndex, entryIndex } = status;
+  const { players } = record.teams.home;
+  const set = record.sets[setIndex];
+
+  // Calculate serving and rotation
+  const { rotation } = set.entries.slice(0, entryIndex).reduce(
+    (acc, entry) => {
+      if (
+        entry.type === EntryType.RALLY &&
+        (entry.data as Rally)?.win !== acc.isServing
+      ) {
+        return {
+          isServing: !acc.isServing,
+          rotation: (acc.rotation + 1) % 6,
+        };
+      }
+      return acc;
+    },
+    { isServing: set.options.serve === "home", rotation: 0 }
+  );
+
+  const { starting, liberos } = structuredClone(set.lineups.home);
+
+  const mapPlayer = (player: LineupPlayer) => {
+    // Whether this player has been substituted in the game
+    const haveSub = player?.sub?.entryIndex?.in < entryIndex;
+    // Current game state shows this player is a substitute
+    const isSub =
+      player?.sub?.entryIndex?.in !== undefined &&
+      !player?.sub?.entryIndex?.out;
+    // At the editing point, this player was a substitute
+    const wasSub =
+      player?.sub?.entryIndex?.in < entryIndex &&
+      (!player?.sub?.entryIndex?.out ||
+        player?.sub?.entryIndex?.out >= entryIndex);
+    // When a player (LineupPlayer) is substituted, their _id and sub._id are swapped
+    // So when isSub and wasSub are the same, it means no need to swap _id and sub._id
+    const toSwap = isSub === wasSub;
+
+    const mainPlayer = players.find(
+      (p) => p._id === (toSwap ? player._id : player?.sub?._id)
+    );
+    const subPlayer = players.find(
+      (p) => p._id === (haveSub && (toSwap ? player?.sub?._id : player._id))
+    );
+
+    return {
+      ...mainPlayer,
+      position: player.position,
+      sub: {
+        _id: subPlayer?._id,
+        number: subPlayer?.number,
+        entryIndex: player?.sub?.entryIndex,
+      },
+    };
+  };
+
+  const lineup = {
+    liberos: liberos.map(mapPlayer),
+    starting: starting.map(mapPlayer),
+  };
+
+  if (rotation) {
+    const rotatedPlayers = lineup.starting.splice(0, rotation);
+    lineup.starting.push(...rotatedPlayers);
+  }
+
+  return lineup;
+};
+
+export const useLineup = (recordId: string, status: ReduxStatus) => {
+  const { setIndex, entryIndex, isServing, inProgress } = status;
+  const { record } = useRecord(recordId);
+
+  if (!inProgress) return { starting: [], liberos: [] };
+
+  const { entries, lineups } = record.sets[setIndex];
+
+  const lineup =
+    entryIndex === entries.length
+      ? getGeneralModeLineup(record, status)
+      : getEditingModeLineup(record, status);
+
   const switchTargetIndex = lineup.starting.findIndex(
     (player, index) =>
-      player.position === options.liberoSwitchPosition &&
+      player.position === lineups.home.options.liberoSwitchPosition &&
       ((index === 0 && !isServing) || index >= 4)
   );
   if (switchTargetIndex !== -1) {

@@ -134,20 +134,19 @@ export const SubIndicator = ({ number }: { number: number }) => {
 
 export const PlayerCard = ({
   player,
+  toggled,
   list,
   zone,
   onClick,
-  editingMember,
   children,
 }: {
   player: Player & { position: string };
+  toggled: boolean;
   list: string;
   zone: number;
   onClick: () => void;
-  editingMember: { _id: string; list: string; zone: number };
   children?: React.ReactNode;
 }) => {
-  const toggled = editingMember.list === list && editingMember.zone === zone;
   return (
     <Card
       style={list === "starting" ? { gridArea: `z${zone}` } : {}}
