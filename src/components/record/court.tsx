@@ -10,12 +10,18 @@ import {
   AdjustButton,
   PlaceholderCard,
 } from "@/components/custom/court";
+import type { ReduxRecordState } from "@/lib/features/record/types";
 
-const RecordCourt = ({ recordId }: { recordId: string }) => {
+const RecordCourt = ({
+  recordId,
+  mode,
+}: {
+  recordId: string;
+  mode: ReduxRecordState["mode"];
+}) => {
   const dispatch = useAppDispatch();
-  const recordState = useAppSelector((state) => state.record);
-  const { status, recording } = recordState[recordState.mode];
-  const { starting, liberos } = useLineup(recordId, recordState);
+  const { status, recording } = useAppSelector((state) => state.record[mode]);
+  const { starting, liberos } = useLineup(recordId, status);
 
   if (status.inProgress === false) {
     return (
@@ -42,22 +48,14 @@ const RecordCourt = ({ recordId }: { recordId: string }) => {
           <PlayerCard
             key={index}
             player={player}
+            toggled={recording.home.player._id === player._id}
             list="liberos"
             zone={-(index + 1)}
-            onClick={() =>
-              dispatch(
-                recordActions.setRecordingPlayer({
-                  _id: player._id,
-                  zone: -(index + 1),
-                })
-              )
-            }
-            editingMember={{
-              ...recording.home.player,
-              list: recording.home.player.zone > 0 ? "starting" : "liberos",
-            }}
+            onClick={() => {}}
           >
-            {player.sub?._id && <SubIndicator number={player.sub.number} />}
+            {player.sub?._id && !player.sub?.entryIndex?.out && (
+              <SubIndicator number={player.sub.number} />
+            )}
           </PlayerCard>
         ))}
       </Outside>
@@ -66,6 +64,7 @@ const RecordCourt = ({ recordId }: { recordId: string }) => {
           <PlayerCard
             key={index}
             player={player}
+            toggled={recording.home.player._id === player._id}
             list="starting"
             zone={index + 1}
             onClick={() =>
@@ -76,12 +75,10 @@ const RecordCourt = ({ recordId }: { recordId: string }) => {
                 })
               )
             }
-            editingMember={{
-              ...recording.home.player,
-              list: recording.home.player.zone > 0 ? "starting" : "liberos",
-            }}
           >
-            {player.sub?._id && <SubIndicator number={player.sub.number} />}
+            {player.sub?._id && !player.sub?.entryIndex?.out && (
+              <SubIndicator number={player.sub.number} />
+            )}
           </PlayerCard>
         ))}
       </Inside>

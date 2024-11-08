@@ -37,6 +37,10 @@ const LineupCourt = ({ members }) => {
               <PlayerCard
                 key={index}
                 player={player}
+                toggled={
+                  status.editingMember.list === "liberos" &&
+                  status.editingMember.zone === index + 1
+                }
                 list="liberos"
                 zone={index + 1}
                 onClick={() =>
@@ -48,13 +52,17 @@ const LineupCourt = ({ members }) => {
                     })
                   )
                 }
-                editingMember={status.editingMember}
               />
             );
           })}
         {lineups[status.lineupIndex]?.liberos.length < 2 && (
           <PlayerCard
             player={null}
+            toggled={
+              status.editingMember.list === "liberos" &&
+              status.editingMember.zone ===
+                lineups[status.lineupIndex]?.liberos.length + 1
+            }
             list="liberos"
             zone={lineups[status.lineupIndex]?.liberos.length + 1}
             onClick={() =>
@@ -66,7 +74,6 @@ const LineupCourt = ({ members }) => {
                 })
               )
             }
-            editingMember={status.editingMember}
           />
         )}
       </Outside>
@@ -84,6 +91,10 @@ const LineupCourt = ({ members }) => {
               <PlayerCard
                 key={index}
                 player={player}
+                toggled={
+                  status.editingMember.list === "starting" &&
+                  status.editingMember.zone === index + 1
+                }
                 list="starting"
                 zone={index + 1}
                 onClick={() =>
@@ -95,7 +106,6 @@ const LineupCourt = ({ members }) => {
                     })
                   )
                 }
-                editingMember={status.editingMember}
               />
             );
           })}

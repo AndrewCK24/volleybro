@@ -1,8 +1,9 @@
 import {
   type Record,
-  Side,
   type Substitution,
+  Side,
   EntryType,
+  PlayerStatsClass,
 } from "@/entities/record";
 
 export const createSubstitutionOptimistic = (
@@ -11,37 +12,54 @@ export const createSubstitutionOptimistic = (
   record: Record
 ) => {
   const { setIndex, entryIndex } = params;
-  const {
-    team,
-    players: { in: inPlayer, out: outPlayer },
-  } = substitution;
-
-  const side = team === Side.HOME ? "home" : "away";
+  const side = substitution.team === Side.HOME ? "home" : "away";
   const lineup = record.sets[setIndex].lineups[side];
 
-  const startingIndex = lineup.starting.findIndex((p) => p._id === outPlayer);
-  const startingPlayer = lineup.starting[startingIndex];
-  const subIndex = lineup.substitutes.findIndex((p) => p._id === inPlayer);
-  const subPlayer = lineup.substitutes[subIndex];
+  // Update lineup
+  const startingIndex = lineup.starting.findIndex(
+    (p) => p._id.toString() === substitution.players.out
+  );
+  const subIndex = lineup.substitutes.findIndex(
+    (p) => p._id.toString() === substitution.players.in
+  );
 
-  startingPlayer._id = inPlayer;
-  subPlayer._id = outPlayer;
-  subPlayer.sub = { _id: inPlayer };
+  lineup.starting[startingIndex] = {
+    _id: substitution.players.in,
+    position: lineup.starting[startingIndex].position,
+    sub: {
+      _id: substitution.players.out,
+      entryIndex:
+        lineup.starting[startingIndex].sub?.entryIndex?.in !== undefined
+          ? {
+              ...lineup.starting[startingIndex].sub.entryIndex,
+              out: entryIndex,
+            }
+          : { in: entryIndex, out: null },
+    },
+  };
 
-  if (!!startingPlayer.sub?._id) {
-    startingPlayer.sub._id = null;
-  } else {
-    startingPlayer.sub = { _id: outPlayer };
+  lineup.substitutes[subIndex] = {
+    ...lineup.substitutes[subIndex],
+    _id: substitution.players.out,
+    sub: { _id: substitution.players.in },
+  };
+
+  // Update record stats
+  const startingPlayer = lineup.starting.find(
+    (p) => p._id.toString() === substitution.players.in
+  );
+  if (!!startingPlayer.sub?.entryIndex?.in !== undefined) {
+    const player = record.teams[side].players.find(
+      (p) => p._id.toString() === substitution.players.in
+    );
+    if (player) player.stats[setIndex] = new PlayerStatsClass();
   }
 
-  lineup.starting[startingIndex] = startingPlayer;
-  lineup.substitutes[subIndex] = subPlayer;
-  record.sets[setIndex].lineups[side] = lineup;
+  record.teams[side].stats[setIndex].substitution++;
   record.sets[setIndex].entries[entryIndex] = {
     type: EntryType.SUBSTITUTION,
     data: substitution,
   };
-  record.teams[side].stats[setIndex].substitution += 1;
 
   return record;
 };

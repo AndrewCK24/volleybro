@@ -290,18 +290,20 @@ const setEditingEntryStatus: CaseReducer<
 
   state.mode = "editing";
   state.editing.recording = {
-    win:
-      entry.type === EntryType.RALLY
-        ? (entry.data as Rally).win
-        : state.editing.recording.win,
+    win: entry.type === EntryType.RALLY ? (entry.data as Rally).win : null,
     home:
       entry.type === EntryType.RALLY
         ? (entry.data as Rally).home
-        : state.editing.recording.home,
+        : entry.type === EntryType.SUBSTITUTION
+        ? {
+            ...rallyDetailState,
+            player: { _id: (entry.data as Substitution).players.out, zone: 0 },
+          }
+        : rallyDetailState,
     away:
       entry.type === EntryType.RALLY
         ? (entry.data as Rally).away
-        : state.editing.recording.away,
+        : rallyDetailState,
     ...(entry.type === EntryType.SUBSTITUTION
       ? { substitution: entry.data as Substitution }
       : entry.type === EntryType.TIMEOUT

@@ -9,6 +9,12 @@ export enum Position {
   L = "L",
 }
 
+export type LineupPlayer = {
+  _id: string;
+  position: Position;
+  sub?: { _id: string; entryIndex: { in?: number; out?: number } };
+};
+
 export type Lineup = {
   options: {
     liberoSwitchMode: 0 | 1 | 2;
@@ -18,16 +24,8 @@ export type Lineup = {
       | Position.MB
       | Position.OP;
   };
-  starting: {
-    _id: string;
-    position: Position;
-    sub?: { _id: string };
-  }[];
-  liberos: {
-    _id: string;
-    position: Position;
-    sub?: { _id: string };
-  }[];
+  starting: LineupPlayer[];
+  liberos: LineupPlayer[];
   substitutes: {
     _id: string;
     sub?: { _id: string };

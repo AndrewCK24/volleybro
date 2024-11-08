@@ -14,14 +14,20 @@ export const lineupSchema = new Schema({
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
       position: { type: String, enum: Position },
-      sub: { _id: { type: Schema.Types.ObjectId, ref: "Member" } },
+      sub: {
+        _id: { type: Schema.Types.ObjectId, ref: "Member" },
+        entryIndex: { in: { type: Number }, out: { type: Number } },
+      },
     },
   ],
   liberos: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
       position: { type: String, enum: Position },
-      sub: { _id: { type: Schema.Types.ObjectId, ref: "Member" } },
+      sub: {
+        _id: { type: Schema.Types.ObjectId, ref: "Member" },
+        entryIndex: { in: { type: Number }, out: { type: Number } },
+      },
     },
   ],
   substitutes: [
