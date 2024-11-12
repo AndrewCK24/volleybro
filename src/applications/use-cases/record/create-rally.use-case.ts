@@ -37,19 +37,11 @@ export type ICreateRallyOutput = Entry[];
  * conditions when multiple users attempt to update the same rally simultaneously.
  */
 export class CreateRallyUseCase {
-  private userRepository: IUserRepository;
-  private teamRepository: ITeamRepository;
-  private recordRepository: IRecordRepository;
-
   constructor(
-    userRepository: IUserRepository,
-    teamRepository: ITeamRepository,
-    recordRepository: IRecordRepository
-  ) {
-    this.userRepository = userRepository;
-    this.teamRepository = teamRepository;
-    this.recordRepository = recordRepository;
-  }
+    private userRepository: IUserRepository,
+    private teamRepository: ITeamRepository,
+    private recordRepository: IRecordRepository
+  ) {}
 
   async execute(
     input: ICreateRallyInput

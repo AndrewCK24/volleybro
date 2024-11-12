@@ -6,7 +6,11 @@ import { scoringMoves } from "@/lib/scoring-moves";
 import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 import { createRally } from "@/lib/features/record/actions/create-rally";
-import { createRallyOptimistic } from "@/lib/features/record/helpers";
+import { updateRally } from "@/lib/features/record/actions/update-rally";
+import {
+  createRallyOptimistic,
+  updateRallyOptimistic,
+} from "@/lib/features/record/helpers";
 
 const OppoMoves = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
@@ -21,23 +25,37 @@ const OppoMoves = ({ recordId }: { recordId: string }) => {
     scoringMoves[recording.home.num]?.outcome.includes(option.num)
   );
 
+  const create = () => {
+    mutate(createRally({ recordId, setIndex, entryIndex }, recording, record), {
+      revalidate: false,
+      optimisticData: createRallyOptimistic(
+        { recordId, setIndex, entryIndex },
+        recording,
+        record
+      ),
+    });
+    dispatch(recordActions.confirmRecordingRally(record));
+  };
+
+  const update = () => {
+    mutate(updateRally({ recordId, setIndex, entryIndex }, recording, record), {
+      revalidate: false,
+      optimisticData: updateRallyOptimistic(
+        { recordId, setIndex, entryIndex },
+        recording,
+        record
+      ),
+    });
+    dispatch(recordActions.confirmRecordingRally(record));
+    dispatch(recordActions.setRecordMode("general"));
+  };
+
   const onOppoClick = async (move) => {
     if (recording.away.num !== move.num) {
       dispatch(recordActions.setRecordingAwayMove(move));
     } else {
       try {
-        mutate(
-          createRally({ recordId, setIndex, entryIndex }, recording, record),
-          {
-            revalidate: false,
-            optimisticData: createRallyOptimistic(
-              { recordId, setIndex, entryIndex },
-              recording,
-              record
-            ),
-          }
-        );
-        dispatch(recordActions.confirmRecordingRally(record));
+        recordState.mode === "general" ? create() : update();
       } catch (error) {
         console.error("[POST /api/records]", error);
       }
