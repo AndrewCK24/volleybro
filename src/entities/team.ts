@@ -11,7 +11,7 @@ export enum Position {
 
 export type LineupPlayer = {
   _id: string;
-  position: Position;
+  position?: Position;
   sub?: { _id: string; entryIndex: { in?: number; out?: number } };
 };
 
@@ -26,10 +26,7 @@ export type Lineup = {
   };
   starting: LineupPlayer[];
   liberos: LineupPlayer[];
-  substitutes: {
-    _id: string;
-    sub?: { _id: string };
-  }[];
+  substitutes: LineupPlayer[];
 };
 
 export enum Role {

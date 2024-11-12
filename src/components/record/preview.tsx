@@ -4,25 +4,26 @@ import { useAppSelector } from "@/lib/redux/hooks";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import Entry from "@/components/record/entry";
-
 import { EntryType } from "@/entities/record";
+import type { ReduxRecordState } from "@/lib/features/record/types";
 
 const RecordPreview = ({
   recordId,
+  mode,
   handleOptionOpen,
   className,
 }: {
   recordId: string;
+  mode: ReduxRecordState["mode"];
   handleOptionOpen?: (value: string) => void;
   className?: string;
 }) => {
   const { record } = useRecord(recordId);
   const { players } = record.teams.home;
-  const recordState = useAppSelector((state) => state.record);
   const {
     recording,
     status: { inProgress, setIndex, entryIndex },
-  } = recordState[recordState.mode];
+  } = useAppSelector((state) => state.record[mode]);
 
   if (!inProgress) return null;
 

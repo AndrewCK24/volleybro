@@ -84,23 +84,21 @@ export type ReduxStatus = {
   panel: "home" | "away" | "substitutes";
 };
 
+export type ReduxRecording = Rally & {
+  substitution?: Substitution;
+  timeout?: Timeout;
+  challenge?: Challenge;
+};
+
 export type ReduxRecordState = {
   _id: string;
   mode: "general" | "editing";
   general: {
     status: ReduxStatus;
-    recording: Rally & {
-      substitution?: Substitution;
-      timeout?: Timeout;
-      challenge?: Challenge;
-    };
+    recording: ReduxRecording;
   };
   editing: {
     status: ReduxStatus;
-    recording: Rally & {
-      substitution?: Substitution;
-      timeout?: Timeout;
-      challenge?: Challenge;
-    };
+    recording: ReduxRecording;
   };
 };

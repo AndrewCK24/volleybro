@@ -86,7 +86,16 @@ export class CreateSubstitutionUseCase {
     lineup.substitutes[subIndex] = {
       ...lineup.substitutes[subIndex],
       _id: substitution.players.out,
-      sub: { _id: substitution.players.in },
+      sub: {
+        _id: substitution.players.in,
+        entryIndex:
+          lineup.substitutes[subIndex].sub?.entryIndex?.in !== undefined
+            ? {
+                ...lineup.substitutes[subIndex].sub.entryIndex,
+                out: entryIndex,
+              }
+            : { in: entryIndex, out: null },
+      },
     };
   }
 
