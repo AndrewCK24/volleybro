@@ -33,7 +33,10 @@ export const lineupSchema = new Schema({
   substitutes: [
     {
       _id: { type: Schema.Types.ObjectId, ref: "Member" },
-      sub: { _id: { type: Schema.Types.ObjectId, ref: "Member" } },
+      sub: {
+        _id: { type: Schema.Types.ObjectId, ref: "Member" },
+        entryIndex: { in: { type: Number }, out: { type: Number } },
+      },
     },
   ],
 });

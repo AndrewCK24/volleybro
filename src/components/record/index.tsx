@@ -50,9 +50,10 @@ const Record = ({ recordId }: { recordId: string }) => {
       <RecordCourt recordId={record._id} mode="general" />
       <RecordPreview
         recordId={record._id}
+        mode="general"
         handleOptionOpen={handleOptionOpen}
       />
-      <RecordPanels recordId={record._id} />
+      <RecordPanels recordId={record._id} mode="general" />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <RecordOptions
           recordId={record._id}

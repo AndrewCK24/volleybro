@@ -73,7 +73,7 @@ const getEditingModeLineup = (record: Record, status: ReduxStatus) => {
 
   const mapPlayer = (player: LineupPlayer) => {
     // Whether this player has been substituted in the game
-    const haveSub = player?.sub?.entryIndex?.in < entryIndex;
+    const hasSub = player?.sub?.entryIndex?.in < entryIndex;
     // Current game state shows this player is a substitute
     const isSub =
       player?.sub?.entryIndex?.in !== undefined &&
@@ -91,7 +91,7 @@ const getEditingModeLineup = (record: Record, status: ReduxStatus) => {
       (p) => p._id === (toSwap ? player._id : player?.sub?._id)
     );
     const subPlayer = players.find(
-      (p) => p._id === (haveSub && (toSwap ? player?.sub?._id : player._id))
+      (p) => p._id === (hasSub && (toSwap ? player?.sub?._id : player._id))
     );
 
     return {

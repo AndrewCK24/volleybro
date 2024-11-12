@@ -1,33 +1,30 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { useRecord } from "@/hooks/use-data";
 import { recordActions } from "@/lib/features/record/record-slice";
+import { useRecord } from "@/hooks/use-data";
+import { useSubstitutes } from "@/lib/features/record/hooks/use-substitutes";
 import { FiChevronLeft, FiCheck } from "react-icons/fi";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { createSubstitution } from "@/lib/features/record/actions/create-substitution";
 import { createSubstitutionOptimistic } from "@/lib/features/record/helpers";
+import type { ReduxRecordState } from "@/lib/features/record/types";
 
 const Substitutes = ({
   recordId,
+  mode,
   className,
 }: {
   recordId: string;
+  mode: ReduxRecordState["mode"];
   className?: string;
 }) => {
   const dispatch = useAppDispatch();
   const { record, mutate } = useRecord(recordId);
-  const recordState = useAppSelector((state) => state.record);
-  const {
-    status: { setIndex, entryIndex },
-    recording,
-  } = recordState[recordState.mode];
-  const players = record.teams.home.players;
-  const lineup = record.sets[setIndex].lineups.home;
-  const substitutes = lineup.substitutes.map((sub) =>
-    players.find((player) => player._id === sub._id)
-  );
+  const { status, recording } = useAppSelector((state) => state.record[mode]);
+  const { setIndex, entryIndex } = status;
+  const substitutes = useSubstitutes(recordId, { status, recording });
 
   const onSubmit = async () => {
     try {
@@ -53,7 +50,7 @@ const Substitutes = ({
   };
 
   return (
-    <Card className={cn("flex-1 w-full", className)}>
+    <Card className={cn("flex-1 w-full pb-4", className)}>
       <CardHeader>
         <Button
           variant="ghost"
