@@ -25,7 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
+import LiberoReplace from "@/components/team/lineup/panels/options/libero-replace";
 
 import type { Player } from "@/entities/record";
 import {
@@ -114,7 +114,7 @@ const Options = ({
             </FormItem>
           )}
         />
-        <LiberoSwitch />
+        <LiberoReplace />
         <Table>
           <TableHeader className="text-lg">
             <TableRow>
