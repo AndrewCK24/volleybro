@@ -6,7 +6,8 @@ import { FcGoogle } from "react-icons/fc";
 import { FiAlertTriangle } from "react-icons/fi";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Logo } from "@/components/custom/logo";
 
 const SignInError = () => {
   const searchParams = useSearchParams();
@@ -26,24 +27,32 @@ const SignInError = () => {
     );
 };
 
-const SignInForm = ({ className }: { className: string }) => {
+const SignInForm = () => {
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>歡迎使用 VolleyBro</CardTitle>
-      </CardHeader>
-      <Suspense>
-        <SignInError />
-      </Suspense>
-      <Button
-        variant="outline"
-        size="lg"
-        onClick={async () => await signIn("google")}
-      >
-        <FcGoogle />
-        使用 Google 帳戶繼續
-      </Button>
-      <CardFooter />
+    <Card className="w-full h-[60%] rounded-lg max-w-[600px] bg-transparent text-primary-foreground">
+      <Logo className="justify-start" />
+      <p className="text-2xl">
+        彈指之間
+        <br />
+        快速紀錄比賽、查看數據
+      </p>
+      <CardContent className="justify-end w-full h-full">
+        <Suspense>
+          <SignInError />
+        </Suspense>
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-full text-foreground"
+          onClick={async () => await signIn("google")}
+        >
+          <FcGoogle />
+          使用 Google 帳戶繼續
+        </Button>
+      </CardContent>
+      <CardFooter className="pb-8">
+        <p>如果註冊，即表示您同意服務條款和隱私政策。</p>
+      </CardFooter>
     </Card>
   );
 };
