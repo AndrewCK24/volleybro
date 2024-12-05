@@ -6,7 +6,13 @@ import { FcGoogle } from "react-icons/fc";
 import { FiAlertTriangle } from "react-icons/fi";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Logo } from "@/components/custom/logo";
 
 const SignInError = () => {
@@ -29,14 +35,13 @@ const SignInError = () => {
 
 const SignInForm = () => {
   return (
-    <Card className="w-full h-[60%] rounded-lg max-w-[600px] bg-transparent text-primary-foreground">
-      <Logo className="justify-start" />
-      <p className="text-2xl">
-        彈指之間
-        <br />
-        快速紀錄比賽、查看數據
-      </p>
-      <CardContent className="justify-end w-full h-full">
+    <Card className="w-full h-[50%] rounded-lg max-w-[600px] bg-transparent text-primary-foreground shadow-none">
+      <CardHeader className="flex-col items-start flex-1">
+        <Logo className="justify-start max-h-fit" />
+        <p className="text-2xl">快速記錄每一場精彩的比賽。</p>
+      </CardHeader>
+      <Separator className="bg-primary-foreground" />
+      <CardContent>
         <Suspense>
           <SignInError />
         </Suspense>
@@ -50,8 +55,10 @@ const SignInForm = () => {
           使用 Google 帳戶繼續
         </Button>
       </CardContent>
-      <CardFooter className="pb-8">
-        <p>如果註冊，即表示您同意服務條款和隱私政策。</p>
+      <CardFooter className="pb-[15vh] items-center">
+        <p className="font-thin text-accent">
+          如果註冊，即表示您同意服務條款和隱私政策。
+        </p>
       </CardFooter>
     </Card>
   );
