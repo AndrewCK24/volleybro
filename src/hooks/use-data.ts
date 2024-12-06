@@ -1,4 +1,5 @@
 import useSWR, { useSWRConfig } from "swr";
+import type { User } from "@/entities/user";
 import type { Team } from "@/entities/team";
 import type { Member } from "@/entities/member";
 import type { Record } from "@/entities/record";
@@ -38,11 +39,10 @@ const useHasCache = (key: string) => {
 };
 
 export const useUser = (fetcher = defaultFetcher, options = {}) => {
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
-    "/api/users",
-    fetcher,
-    { dedupingInterval: 5 * 60 * 1000, ...options }
-  );
+  const { data, error, isLoading, isValidating, mutate } = useSWR<
+    User,
+    FetchError
+  >("/api/users", fetcher, { dedupingInterval: 5 * 60 * 1000, ...options });
 
   return { user: data, error, isLoading, isValidating, mutate };
 };
