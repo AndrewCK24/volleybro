@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  FiUser,
-  FiShield,
-  FiClock,
-  FiCheckCircle,
-  FiXCircle,
-} from "react-icons/fi";
+  RiUserLine,
+  RiAdminLine,
+  RiTimeLine,
+  RiCheckboxCircleLine,
+  RiCloseCircleLine,
+} from "react-icons/ri";
 import { HiChevronUpDown } from "react-icons/hi2";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,8 +107,8 @@ const TeamMembersTable = ({ team, members, teamId }) => {
   const columns: ColumnDef<Member, any>[] = [
     {
       id: "image",
-      header: () => <FiUser />,
-      cell: () => <FiUser />,
+      header: () => <RiUserLine />,
+      cell: () => <RiUserLine />,
       size: 32,
       enableSorting: false,
       enableHiding: false,
@@ -146,12 +146,12 @@ const TeamMembersTable = ({ team, members, teamId }) => {
           type: "default" | "secondary" | "destructive" | "outline";
           icon: React.ReactNode;
         } = !member.email
-          ? { text: "未邀請", type: "secondary", icon: <FiXCircle /> }
+          ? { text: "未邀請", type: "secondary", icon: <RiCloseCircleLine /> }
           : !member.user_id
-          ? { text: "邀請中", type: "outline", icon: <FiClock /> }
+          ? { text: "邀請中", type: "outline", icon: <RiTimeLine /> }
           : isAdmin
-          ? { text: "管理者", type: "destructive", icon: <FiShield /> }
-          : { text: "已加入", type: "default", icon: <FiCheckCircle /> };
+          ? { text: "管理者", type: "destructive", icon: <RiAdminLine /> }
+          : { text: "已加入", type: "default", icon: <RiCheckboxCircleLine /> };
 
         return (
           <Badge variant={identity.type} className="[&>svg]:w-4 [&>svg]:h-4">

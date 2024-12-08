@@ -1,5 +1,5 @@
 import { signOut } from "@/auth";
-import { FiLogOut } from "react-icons/fi";
+import { RiLogoutBoxRLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import Menu from "@/components/user/menu";
 
@@ -15,7 +15,7 @@ const UserPage = () => {
         }}
       >
         <Button variant="destructive" size="lg">
-          <FiLogOut />
+          <RiLogoutBoxRLine />
           登出
         </Button>
       </form>

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useTeam } from "@/hooks/use-data";
-import { FiSend } from "react-icons/fi";
+import { RiSendPlaneLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -98,7 +98,7 @@ const EmailForm = ({ teamId, memberId }) => {
         )}
       />
       <Button type="submit" variant="destructive" size="lg">
-        <FiSend />
+        <RiSendPlaneLine />
         發送隊伍邀請
       </Button>
     </Form>

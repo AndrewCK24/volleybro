@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { FiPlus, FiRepeat } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
+import { RiRepeat2Line } from "react-icons/ri";
 import { Badge } from "@/components/ui/badge";
 
 import type { Player } from "@/entities/record";
@@ -125,7 +126,7 @@ export const SubIndicator = ({ number }: { number: number }) => {
         "top-[-0.75rem] right-[-0.75rem] bg-primary"
       )}
     >
-      <FiRepeat />
+      <RiRepeat2Line />
       <span className="sr-only">替補</span>
       <span className="flex justify-center w-6">{number}</span>
     </Badge>

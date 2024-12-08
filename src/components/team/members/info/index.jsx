@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useTeam, useTeamMembers } from "@/hooks/use-data";
-import { FiUser } from "react-icons/fi";
+import { RiUserLine } from "react-icons/ri";
 import { Link } from "@/components/ui/button";
 import {
   Card,
@@ -34,7 +34,7 @@ const MembersInfo = ({ teamId, memberId, className }) => {
             className="rounded-full"
           />
         ) : (
-          <FiUser className="w-16 h-16 rounded-full text-muted-foreground" />
+          <RiUserLine className="w-16 h-16 rounded-full text-muted-foreground" />
         )}
         <CardTitle>{member.name}</CardTitle>
         {isAdmin && (

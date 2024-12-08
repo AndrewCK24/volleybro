@@ -4,7 +4,11 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FiChevronRight, FiAlertTriangle, FiHelpCircle } from "react-icons/fi";
+import {
+  RiArrowRightWideLine,
+  RiAlertLine,
+  RiQuestionLine,
+} from "react-icons/ri";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,7 +93,7 @@ const LiberoSwitch = () => {
       <Separator />
       {!!liberoSwitchMode && !hasPairedSwitchPosition && (
         <Alert variant="destructive">
-          <FiAlertTriangle />
+          <RiAlertLine />
           <AlertTitle>無對位 {liberoSwitchPosition}</AlertTitle>
           <AlertDescription>
             陣容中未設定對位 {liberoSwitchPosition}
@@ -106,7 +110,7 @@ const LiberoSwitch = () => {
               {liberoSwitchMode === 0 ? "手動替換" : "自動替換"}{" "}
               {liberoSwitchMode ? liberoSwitchPosition : ""}
             </span>
-            <FiChevronRight />
+            <RiArrowRightWideLine />
           </Button>
         </DialogTrigger>
         <DialogContent>
@@ -172,7 +176,7 @@ const LiberoSwitch = () => {
       </Dialog>
       {liberoSwitchMode === 0 ? (
         <Alert>
-          <FiHelpCircle />
+          <RiQuestionLine />
           <AlertTitle>手動替換自由球員</AlertTitle>
           <AlertDescription>
             記錄比賽過程中不會隨著輪轉自動替換自由球員，仍可以手動替換。
@@ -180,7 +184,7 @@ const LiberoSwitch = () => {
         </Alert>
       ) : (
         <Alert>
-          <FiHelpCircle />
+          <RiQuestionLine />
           <AlertTitle>自動替換自由球員</AlertTitle>
           <AlertDescription>
             當我方 {liberoSwitchPosition} 發球輪次失分時，自動將該名{" "}

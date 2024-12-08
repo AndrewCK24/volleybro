@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { FiArrowLeft, FiBell } from "react-icons/fi";
+import { RiArrowLeftLine, RiNotification2Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 
 export const Header = ({ className }: { className?: string }) => {
@@ -24,7 +24,7 @@ export const Header = ({ className }: { className?: string }) => {
           size="icon"
           className="svg-[2rem]"
         >
-          <FiArrowLeft />
+          <RiArrowLeftLine />
         </Button>
       )}
       <h1
@@ -36,7 +36,7 @@ export const Header = ({ className }: { className?: string }) => {
         VolleyBro
       </h1>
       <Button variant="ghost" size="icon" className="svg-[2rem]">
-        <FiBell />
+        <RiNotification2Line />
         <span className="sr-only">notifications</span>
       </Button>
     </header>

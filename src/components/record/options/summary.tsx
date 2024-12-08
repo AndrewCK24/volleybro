@@ -2,7 +2,7 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { useRecord } from "@/hooks/use-data";
 import { recordActions } from "@/lib/features/record/record-slice";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { RiArrowLeftWideLine, RiArrowRightWideLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Entry from "@/components/record/entry";
@@ -27,7 +27,7 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
           onClick={() => dispatch(recordActions.setSetIndex(setIndex - 1))}
           disabled={setIndex <= 0}
         >
-          <FiChevronLeft />
+          <RiArrowLeftWideLine />
           <span className="sr-only">last set</span>
         </Button>
         <span className="flex-1 text-xl text-center">
@@ -39,7 +39,7 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
           onClick={() => dispatch(recordActions.setSetIndex(setIndex + 1))}
           disabled={setIndex >= record.sets.length - 1}
         >
-          <FiChevronRight />
+          <RiArrowRightWideLine />
           <span className="sr-only">next set</span>
         </Button>
       </div>

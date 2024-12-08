@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { FiArrowLeft, FiSliders } from "react-icons/fi";
+import { RiArrowLeftLine, RiSettings4Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Scores } from "@/components/record/header/scores";
 
@@ -16,7 +16,7 @@ export const Header = ({
   return (
     <header className="flex flex-row items-center justify-center w-full bg-background rounded-b-[0.5rem] px-2 gap-2 shadow">
       <Button variant="ghost" size="icon" onClick={() => router.back()}>
-        <FiArrowLeft />
+        <RiArrowLeftLine />
         <span className="sr-only">Back</span>
       </Button>
       <Scores
@@ -28,7 +28,7 @@ export const Header = ({
         size="icon"
         onClick={() => handleOptionOpen("settings")}
       >
-        <FiSliders />
+        <RiSettings4Line />
         <span className="sr-only">Options</span>
       </Button>
     </header>

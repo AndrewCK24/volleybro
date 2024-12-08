@@ -2,7 +2,7 @@
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FiCheck } from "react-icons/fi";
+import { RiCheckLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -207,7 +207,7 @@ const MatchInfoForm = ({
         />
         <DialogClose asChild>
           <Button type="submit" size="lg">
-            <FiCheck />
+            <RiCheckLine />
             確認
           </Button>
         </DialogClose>

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useTeam } from "@/hooks/use-data";
-import { FiSave, FiUser, FiShield } from "react-icons/fi";
+import { RiSaveLine, RiUserLine, RiAdminLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -81,11 +81,11 @@ const RoleForm = ({ teamId, memberId }) => {
               </FormControl>
               <SelectContent>
                 <SelectItem value="0">
-                  <FiUser />
+                  <RiUserLine />
                   一般成員
                 </SelectItem>
                 <SelectItem value="2">
-                  <FiShield />
+                  <RiAdminLine />
                   管理者
                 </SelectItem>
               </SelectContent>
@@ -97,7 +97,7 @@ const RoleForm = ({ teamId, memberId }) => {
         )}
       />
       <Button type="submit" variant="destructive" size="lg">
-        <FiSave />
+        <RiSaveLine />
         儲存權限設定
       </Button>
     </Form>

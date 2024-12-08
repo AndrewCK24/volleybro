@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/features/auth/actions";
 import { FcGoogle } from "react-icons/fc";
-import { FiAlertTriangle } from "react-icons/fi";
+import { RiAlertLine } from "react-icons/ri";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,7 @@ const SignInError = () => {
   if (urlError)
     return (
       <Alert variant="destructive" hidden={!urlError}>
-        <FiAlertTriangle />
+        <RiAlertLine />
         <AlertTitle>登入失敗</AlertTitle>
         <AlertDescription>{errorMessage}</AlertDescription>
       </Alert>

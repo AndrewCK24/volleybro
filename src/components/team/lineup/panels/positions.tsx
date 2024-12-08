@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
-import { FiChevronLeft } from "react-icons/fi";
+import { RiArrowLeftWideLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Position } from "@/entities/team";
@@ -47,7 +47,7 @@ const Positions = ({ className }) => {
             dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
           }
         >
-          <FiChevronLeft />
+          <RiArrowLeftWideLine />
         </Button>
         <CardTitle>選擇位置</CardTitle>
       </CardHeader>

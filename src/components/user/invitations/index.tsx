@@ -1,7 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useUser, useUserTeams } from "@/hooks/use-data";
-import { FiUsers, FiPlus, FiCheck, FiX } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
+import { RiGroupLine, RiCheckLine, RiCloseLine } from "react-icons/ri";
 import { Link } from "@/components/ui/button";
 import {
   Card,
@@ -53,7 +54,7 @@ const Invitations = ({ className }: { className?: string }) => {
             teams.inviting.map((team) => (
               <TableRow key={team._id}>
                 <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
-                  <FiUsers />
+                  <RiGroupLine />
                 </TableCell>
                 <TableCell onClick={() => router.push(`/team/${team._id}`)}>
                   {team.name}
@@ -62,13 +63,13 @@ const Invitations = ({ className }: { className?: string }) => {
                   className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-primary"
                   onClick={() => handleAccept(team._id, true)}
                 >
-                  <FiCheck />
+                  <RiCheckLine />
                 </TableCell>
                 <TableCell
                   className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-destructive"
                   onClick={() => handleAccept(team._id, false)}
                 >
-                  <FiX />
+                  <RiCloseLine />
                 </TableCell>
               </TableRow>
             ))

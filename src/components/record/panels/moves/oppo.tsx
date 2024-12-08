@@ -3,7 +3,8 @@ import { useRecord } from "@/hooks/use-data";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
 import { scoringMoves } from "@/lib/scoring-moves";
-import { FiPlus, FiMinus, FiSend } from "react-icons/fi";
+import { FiPlus, FiMinus } from "react-icons/fi";
+import { RiSendPlaneLine } from "react-icons/ri";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 import { createRally } from "@/lib/features/record/actions/create-rally";
 import { updateRally } from "@/lib/features/record/actions/update-rally";
@@ -73,7 +74,7 @@ const OppoMoves = ({ recordId }: { recordId: string }) => {
         >
           {move.type === 7 ? `我方${move.text}失誤` : `對方${move.text}`}
           {move.win ? <FiPlus /> : <FiMinus />}
-          {recording.away.num === move.num && <FiSend />}
+          {recording.away.num === move.num && <RiSendPlaneLine />}
         </MoveButton>
       ))}
     </Container>

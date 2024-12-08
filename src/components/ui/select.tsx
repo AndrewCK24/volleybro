@@ -1,7 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { FiCheck, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import {
+  RiCheckLine,
+  RiArrowDownWideLine,
+  RiArrowUpWideLine,
+} from "react-icons/ri";
 import { HiChevronUpDown } from "react-icons/hi2";
 import * as SelectPrimitive from "@radix-ui/react-select";
 
@@ -45,7 +49,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <FiChevronUp />
+    <RiArrowUpWideLine />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -62,7 +66,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <FiChevronDown />
+    <RiArrowDownWideLine />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -126,7 +130,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <FiCheck className="w-4 h-4" />
+        <RiCheckLine className="w-4 h-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>

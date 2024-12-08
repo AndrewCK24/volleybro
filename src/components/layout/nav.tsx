@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/use-data";
 import { usePathname } from "next/navigation";
 import {
-  FiHome as HomeIcon,
-  FiUsers as TeamIcon,
-  FiPlusSquare as RecordIcon,
-  FiBell as NotificationsIcon,
-  FiMenu as MenuIcon,
-} from "react-icons/fi";
+  RiHome5Line as HomeIcon,
+  RiGroupLine as TeamIcon,
+  RiAddBoxLine as RecordIcon,
+  RiNotification2Line as NotificationsIcon,
+  RiMenuLine as MenuIcon,
+} from "react-icons/ri";
 
 const NavLink = ({
   href,

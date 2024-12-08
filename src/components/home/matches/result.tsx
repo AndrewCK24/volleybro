@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { FiUsers, FiChevronRight } from "react-icons/fi";
+import { RiGroupLine, RiArrowRightWideLine } from "react-icons/ri";
 import { Rally, type Record } from "@/entities/record";
 
 const Result = ({ record }: { record: Record }) => {
@@ -7,7 +7,7 @@ const Result = ({ record }: { record: Record }) => {
   const renderTeamInfo = (record: Record, isHome: boolean) => (
     <div className="flex flex-row items-center justify-start">
       <p className="flex flex-row items-center flex-1 gap-2">
-        <FiUsers />
+        <RiGroupLine />
         {isHome
           ? record.teams.home.name || "我方"
           : record.teams.away.name || "對手"}
@@ -47,7 +47,7 @@ const Result = ({ record }: { record: Record }) => {
       </div>
       <div className="flex flex-row items-center justify-end text-muted-foreground">
         查看比賽
-        <FiChevronRight />
+        <RiArrowRightWideLine />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
-import { FiSave } from "react-icons/fi";
+import { RiSaveLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import LineupCourt from "@/components/team/lineup/court";
 import LineupPanels from "@/components/team/lineup/panels";
@@ -64,7 +64,7 @@ const Lineup = ({ team, members, handleSave }) => {
             onClick={() => handleSave(lineups)}
             disabled={!status.edited || !hasPairedSwitchPosition}
           >
-            <FiSave />
+            <RiSaveLine />
             儲存陣容
           </Button>
         </div>

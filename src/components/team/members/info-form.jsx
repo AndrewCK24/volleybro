@@ -4,7 +4,7 @@ import { useTeamMembers } from "@/hooks/use-data";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FiSave } from "react-icons/fi";
+import { RiSaveLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -66,7 +66,7 @@ const MemberInfoForm = ({ member, onSubmit }) => {
         )}
       />
       <Button size="lg">
-        <FiSave />
+        <RiSaveLine />
         儲存成員資訊
       </Button>
     </Form>

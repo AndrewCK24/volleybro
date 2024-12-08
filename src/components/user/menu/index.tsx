@@ -4,14 +4,14 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, useUserTeams } from "@/hooks/use-data";
+import { FiPlus } from "react-icons/fi";
 import {
-  FiChevronDown,
-  FiSettings,
-  FiUser,
-  FiUsers,
-  FiUserPlus,
-  FiPlus,
-} from "react-icons/fi";
+  RiArrowDownWideLine,
+  RiSettings4Line,
+  RiUserLine,
+  RiGroupLine,
+  RiUserAddLine,
+} from "react-icons/ri";
 import { GoArrowSwitch } from "react-icons/go";
 import { Button, Link } from "@/components/ui/button";
 import { Card, CardDescription } from "@/components/ui/card";
@@ -60,7 +60,7 @@ const Menu = ({ className }: { className?: string }) => {
             className="rounded-full"
           />
         ) : (
-          <FiUser />
+          <RiUserLine />
         )}
         {!user ? (
           <span className="h-6 rounded-md animate-pulse bg-muted w-[16rem]" />
@@ -73,10 +73,10 @@ const Menu = ({ className }: { className?: string }) => {
         size="wide"
         onClick={() => setExtendTeams(!extendTeams)}
       >
-        <FiUserPlus />
+        <RiUserAddLine />
         <span className="flex justify-start flex-1">隊伍與邀請</span>
         {teams && teams.inviting.length}
-        <FiChevronDown
+        <RiArrowDownWideLine
           className={cn(
             "transition-transform duration-200",
             extendTeams && "rotate-180"
@@ -98,7 +98,7 @@ const Menu = ({ className }: { className?: string }) => {
                 size="wide"
                 onClick={() => handleTeamSwitch(index, team)}
               >
-                <FiUsers />
+                <RiGroupLine />
                 <span className="flex justify-start flex-1">
                   {team.name || ""}
                 </span>
@@ -118,7 +118,7 @@ const Menu = ({ className }: { className?: string }) => {
                 size="wide"
                 onClick={() => router.push(`/team/${team._id}`)}
               >
-                <FiUsers />
+                <RiGroupLine />
                 {team.name || ""}
               </Button>
             ))}
@@ -132,7 +132,7 @@ const Menu = ({ className }: { className?: string }) => {
           </>
         ))}
       <Button variant="outline" size="wide">
-        <FiSettings />
+        <RiSettings4Line />
         設定
       </Button>
     </Card>

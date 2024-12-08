@@ -1,10 +1,10 @@
-import { FiHash, FiUsers } from "react-icons/fi";
+import { RiHashtag, RiGroupLine } from "react-icons/ri";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 const MembersInfoTable = ({ team, member, className }) => {
   const contents = [
-    { key: "隊伍", value: team?.name, icon: <FiUsers /> },
-    { key: "背號", value: member?.number, icon: <FiHash /> },
+    { key: "隊伍", value: team?.name, icon: <RiGroupLine /> },
+    { key: "背號", value: member?.number, icon: <RiHashtag /> },
   ];
 
   return (

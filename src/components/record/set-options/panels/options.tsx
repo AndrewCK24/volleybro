@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
 import { useRecord } from "@/hooks/use-data";
-import { FiUser, FiCheck } from "react-icons/fi";
+import { RiUserLine, RiCheckLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DialogFooter, DialogClose } from "@/components/ui/dialog";
@@ -130,7 +130,7 @@ const Options = ({
                 return (
                   <TableRow key={member._id}>
                     <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
-                      <FiUser />
+                      <RiUserLine />
                     </TableCell>
                     <TableCell className="text-right w-[2.5rem]">
                       {member?.number}
@@ -145,7 +145,7 @@ const Options = ({
       <DialogFooter>
         <DialogClose asChild>
           <Button type="submit" size="lg" disabled={!hasPairedSwitchPosition}>
-            <FiCheck />
+            <RiCheckLine />
             確認
           </Button>
         </DialogClose>

@@ -1,4 +1,4 @@
-import { FiInfo, FiUsers, FiEdit2 } from "react-icons/fi";
+import { RiInformationLine, RiGroupLine, RiEditBoxLine } from "react-icons/ri";
 import { Link } from "@/components/ui/button";
 import {
   Table,
@@ -17,8 +17,8 @@ const TeamInfoTable = ({
   className?: string;
 }) => {
   const contents = [
-    { key: "簡稱", value: team.nickname, icon: <FiInfo /> },
-    { key: "人數", value: team.members.length, icon: <FiUsers /> },
+    { key: "簡稱", value: team.nickname, icon: <RiInformationLine /> },
+    { key: "人數", value: team.members.length, icon: <RiGroupLine /> },
   ];
   const isAdmin = true;
   // TODO: 更新 admin 資料結構
@@ -31,7 +31,7 @@ const TeamInfoTable = ({
           <TableHead className="flex justify-end">
             {isAdmin && (
               <Link variant="ghost" href={`/team/${team._id}/edit`}>
-                <FiEdit2 />
+                <RiEditBoxLine />
               </Link>
             )}
           </TableHead>

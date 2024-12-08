@@ -1,4 +1,4 @@
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { RiArrowUpWideLine, RiArrowDownWideLine } from "react-icons/ri";
 import {
   EntryScore,
   EntryText,
@@ -24,12 +24,12 @@ const Substitution = ({
       <EntryText>
         <EntryPlayerNumber>{outPlayer?.number}</EntryPlayerNumber>
         OUT
-        <FiChevronDown className="text-destructive" />
+        <RiArrowDownWideLine className="text-destructive" />
       </EntryText>
       <EntryText>
         <EntryPlayerNumber>{inPlayer?.number}</EntryPlayerNumber>
         IN
-        <FiChevronUp className="text-primary" />
+        <RiArrowUpWideLine className="text-primary" />
       </EntryText>
     </>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { FiUser } from "react-icons/fi";
+import { RiUserLine } from "react-icons/ri";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { Button } from "@/components/ui/button";
 import {
@@ -96,7 +96,7 @@ const LineupOptions = ({
               return (
                 <TableRow key={member._id}>
                   <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
-                    <FiUser />
+                    <RiUserLine />
                   </TableCell>
                   <TableCell className="text-right w-[2.5rem]">
                     {member?.number}
@@ -135,7 +135,7 @@ const LineupOptions = ({
               return (
                 <TableRow key={member._id}>
                   <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
-                    <FiUser />
+                    <RiUserLine />
                   </TableCell>
                   <TableCell className="text-right w-[2.5rem]">
                     {member?.number}

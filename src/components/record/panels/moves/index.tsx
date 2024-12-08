@@ -2,7 +2,7 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
 import { cn } from "@/lib/utils";
-import { FiEdit2 } from "react-icons/fi";
+import { RiEditBoxLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import OursMoves from "@/components/record/panels/moves/ours";
@@ -65,7 +65,7 @@ const RecordMoves = ({
             status.panel === "home" ? "w-full" : "w-[2rem]"
           )}
         >
-          <FiEdit2 className="w-6 min-w-6" />
+          <RiEditBoxLine className="w-6 min-w-6" />
           我方得失分紀錄
         </CardTitle>
         <CardTitle
@@ -79,7 +79,7 @@ const RecordMoves = ({
               : "w-[2rem]"
           )}
         >
-          <FiEdit2 className="w-6 min-w-6" />
+          <RiEditBoxLine className="w-6 min-w-6" />
           對方得失分紀錄
         </CardTitle>
       </CardHeader>

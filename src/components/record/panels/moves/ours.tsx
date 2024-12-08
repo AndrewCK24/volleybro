@@ -7,7 +7,8 @@ import {
   errorMoves,
   type ScoringMove,
 } from "@/lib/scoring-moves";
-import { FiPlus, FiMinus, FiRepeat } from "react-icons/fi";
+import { FiPlus, FiMinus } from "react-icons/fi";
+import { RiRepeat2Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Container, MoveButton } from "@/components/record/panels/moves";
 
@@ -44,7 +45,7 @@ const OursMoves = () => {
           onClick={() => dispatch(recordActions.setPanel("substitutes"))}
         >
           替補
-          <FiRepeat />
+          <RiRepeat2Line />
         </Button>
       )}
     </Container>

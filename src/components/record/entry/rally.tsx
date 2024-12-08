@@ -1,4 +1,5 @@
-import { FiPlus, FiMinus, FiUser } from "react-icons/fi";
+import { FiPlus, FiMinus } from "react-icons/fi";
+import { RiUserLine } from "react-icons/ri";
 import {
   EntryScore,
   EntryText,
@@ -49,7 +50,7 @@ const Rally = ({ rally, players }: { rally: Rally; players: Player[] }) => {
           (away.type !== MoveType.UNFORCED ? (
             <>
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
-                <FiUser />
+                <RiUserLine />
               </span>
               {scoringMoves[away.num]?.text}
               {win ? <IconLose /> : <IconWin />}

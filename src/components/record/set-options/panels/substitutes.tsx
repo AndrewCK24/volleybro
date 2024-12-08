@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
-import { FiUserCheck, FiChevronLeft } from "react-icons/fi";
+import { RiUserFollowLine, RiArrowLeftWideLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -27,7 +27,7 @@ const Substitutes = ({
             dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
           }
         >
-          <FiChevronLeft />
+          <RiArrowLeftWideLine />
         </Button>
         <CardTitle>替補名單</CardTitle>
       </CardHeader>
@@ -49,7 +49,7 @@ const Substitutes = ({
             }
             className="text-xl"
           >
-            <FiUserCheck />
+            <RiUserFollowLine />
             <span className="flex justify-end font-semibold basis-8">
               {member.number || " "}
             </span>

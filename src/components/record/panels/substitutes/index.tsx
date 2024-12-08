@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
 import { useRecord } from "@/hooks/use-data";
 import { useSubstitutes } from "@/lib/features/record/hooks/use-substitutes";
-import { FiChevronLeft, FiCheck } from "react-icons/fi";
+import { RiArrowLeftWideLine, RiCheckLine } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -57,7 +57,7 @@ const Substitutes = ({
           size="icon"
           onClick={() => dispatch(recordActions.resetRecordingSubstitution())}
         >
-          <FiChevronLeft />
+          <RiArrowLeftWideLine />
         </Button>
         <CardTitle>選擇替補球員</CardTitle>
       </CardHeader>
@@ -88,7 +88,7 @@ const Substitutes = ({
         })}
       </CardContent>
       <Button size="lg" className="text-xl" onClick={onSubmit}>
-        <FiCheck />
+        <RiCheckLine />
         確認
       </Button>
     </Card>

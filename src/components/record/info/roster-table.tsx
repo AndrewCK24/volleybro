@@ -1,4 +1,4 @@
-import { FiHash } from "react-icons/fi";
+import { RiHashtag } from "react-icons/ri";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -27,7 +27,7 @@ const RosterTable = ({ roster }: { roster: TableRosterPlayer[] }) => {
       <TableHeader className="text-lg">
         <TableRow>
           <TableHead className="w-10">
-            <FiHash />
+            <RiHashtag />
           </TableHead>
           <TableHead>姓名</TableHead>
           <TableHead className="w-16"></TableHead>

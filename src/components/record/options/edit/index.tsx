@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
-import { FiChevronLeft } from "react-icons/fi";
+import { RiArrowLeftWideLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import RecordCourt from "@/components/record/court";
@@ -19,7 +19,7 @@ const EntriesEdit = ({ recordId }: { recordId: string }) => {
           size="icon"
           onClick={() => dispatch(recordActions.setRecordMode("general"))}
         >
-          <FiChevronLeft />
+          <RiArrowLeftWideLine />
           <span className="sr-only">back</span>
         </Button>
         <DialogTitle>編輯逐球紀錄</DialogTitle>

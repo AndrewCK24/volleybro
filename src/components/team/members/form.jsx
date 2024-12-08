@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useUser, useTeam, useTeamMembers } from "@/hooks/use-data";
-import { FiUser, FiUserPlus, FiShield } from "react-icons/fi";
+import { RiUserLine, RiUserAddLine, RiAdminLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -144,11 +144,11 @@ const MemberForm = ({ teamId, className }) => {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="0">
-                    <FiUser />
+                    <RiUserLine />
                     一般成員
                   </SelectItem>
                   <SelectItem value="2">
-                    <FiShield />
+                    <RiAdminLine />
                     管理者
                   </SelectItem>
                 </SelectContent>
@@ -160,7 +160,7 @@ const MemberForm = ({ teamId, className }) => {
           )}
         />
         <Button size="lg">
-          <FiUserPlus />
+          <RiUserAddLine />
           新增隊員
         </Button>
       </Form>

@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
 import { useTeam, useTeamMembers } from "@/hooks/use-data";
 import {
-  FiInfo,
-  FiChevronRight,
-  FiFileText,
-  FiArrowRight,
-} from "react-icons/fi";
+  RiInformationLine,
+  RiArrowRightWideLine,
+  RiFileListLine,
+  RiArrowRightLine,
+} from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -116,7 +116,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
         </CardHeader>
         <Dialog>
           <DialogTrigger asChild>
-            <Description startIcon={<FiInfo />} endIcon={<FiChevronRight />}>
+            <Description startIcon={<RiInformationLine />} endIcon={<RiArrowRightWideLine />}>
               <DescriptionTitle>{info.name || "賽事資訊"}</DescriptionTitle>
               <DescriptionContent>
                 場次{info.number || "未設定"}
@@ -131,8 +131,8 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
         <Dialog>
           <DialogTrigger asChild>
             <Description
-              startIcon={<FiFileText />}
-              endIcon={<FiChevronRight />}
+              startIcon={<RiFileListLine />}
+              endIcon={<RiArrowRightWideLine />}
             >
               <DescriptionTitle>時間與地點</DescriptionTitle>
               <DescriptionContent>
@@ -171,7 +171,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
       <div className="flex flex-col w-full px-4 pb-4">
         <Button size="lg" onClick={createRecord}>
           開始比賽
-          <FiArrowRight />
+          <RiArrowRightLine />
         </Button>
       </div>
     </>

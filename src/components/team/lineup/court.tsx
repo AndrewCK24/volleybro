@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
-import { FiRefreshCw } from "react-icons/fi";
+import { RiLoopRightLine } from "react-icons/ri";
 import {
   Court,
   Outside,
@@ -18,7 +18,7 @@ const LineupCourt = ({ members }) => {
       <Outside className="inner">
         {status.optionMode === "" ? (
           <AdjustButton onClick={() => dispatch(lineupActions.rotateLineup())}>
-            <FiRefreshCw />
+            <RiLoopRightLine />
             輪轉
           </AdjustButton>
         ) : (

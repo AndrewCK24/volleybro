@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useUser, useUserTeams } from "@/hooks/use-data";
-import { FiCheck, FiX, FiCheckCircle } from "react-icons/fi";
+import { RiCheckLine, RiCloseLine } from "react-icons/ri";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
@@ -45,19 +45,19 @@ const ConfirmInvitation = ({
 
   return (
     <Alert className={className}>
-      <FiCheckCircle />
+      <RiCheckLine />
       <AlertTitle>是否接受此隊伍邀請？</AlertTitle>
       <AlertDescription>這個隊伍想邀請您加入成為他們的成員。</AlertDescription>
       <div className="grid grid-cols-2 gap-2">
         <Button onClick={() => handleAccept(teamId, true)}>
-          <FiCheck />
+          <RiCheckLine />
           同意邀請
         </Button>
         <Button
           variant="destructive"
           onClick={() => handleAccept(teamId, false)}
         >
-          <FiX />
+          <RiCloseLine />
           拒絕邀請
         </Button>
       </div>

@@ -2,14 +2,14 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { BsGrid3X2Gap } from "react-icons/bs";
 import {
-  FiChevronLeft,
-  FiHash,
-  FiList,
-  FiUser,
-  FiEdit2,
-  FiTrendingUp,
-  FiRepeat,
-} from "react-icons/fi";
+  RiArrowLeftWideLine,
+  RiHashtag,
+  RiListUnordered,
+  RiUserLine,
+  RiEditBoxLine,
+  RiNumbersLine,
+  RiRepeat2Line,
+} from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -41,7 +41,7 @@ const PlayerInfo = ({ members, className }) => {
             dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
           }
         >
-          <FiChevronLeft />
+          <RiArrowLeftWideLine />
         </Button>
         <CardTitle className="flex-1">球員資訊</CardTitle>
         <Button
@@ -49,7 +49,7 @@ const PlayerInfo = ({ members, className }) => {
             dispatch(lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES))
           }
         >
-          <FiRepeat />
+          <RiRepeat2Line />
           更換球員
         </Button>
       </CardHeader>
@@ -57,7 +57,7 @@ const PlayerInfo = ({ members, className }) => {
         <TableHeader className="text-lg">
           <TableRow>
             <TableHead className="w-6">
-              <FiList />
+              <RiListUnordered />
             </TableHead>
             <TableHead colSpan={2}>基本資訊</TableHead>
             <TableHead className="w-6" />
@@ -66,14 +66,14 @@ const PlayerInfo = ({ members, className }) => {
         <TableBody className="text-xl">
           <TableRow>
             <TableCell>
-              <FiHash />
+              <RiHashtag />
             </TableCell>
             <TableCell className="w-16">背號</TableCell>
             <TableCell>{member?.number}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <FiUser />
+              <RiUserLine />
             </TableCell>
             <TableCell>姓名</TableCell>
             <TableCell>{member?.name}</TableCell>
@@ -94,7 +94,7 @@ const PlayerInfo = ({ members, className }) => {
                   )
                 }
               >
-                <FiEdit2 />
+                <RiEditBoxLine />
               </Button>
             </TableCell>
           </TableRow>
@@ -104,7 +104,7 @@ const PlayerInfo = ({ members, className }) => {
         <TableHeader className="text-lg">
           <TableRow>
             <TableHead className="w-6">
-              <FiTrendingUp />
+              <RiNumbersLine />
             </TableHead>
             <TableHead>數據統計</TableHead>
           </TableRow>

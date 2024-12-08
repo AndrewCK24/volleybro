@@ -1,4 +1,4 @@
-import { FiArrowLeft } from "react-icons/fi";
+import { RiArrowLeftLine } from "react-icons/ri";
 import { Link } from "@/components/ui/button";
 import MatchConfirmation from "@/components/record/info/confirmation";
 
@@ -17,7 +17,7 @@ const NewRecordPage = async (props: {
           size="icon"
           className="[&>svg]:w-8 [&>svg]:h-8"
         >
-          <FiArrowLeft />
+          <RiArrowLeftLine />
         </Link>
         <h1 className="flex-1 text-[1.625rem] font-medium text-center m-0 pr-10">
           新增比賽紀錄
