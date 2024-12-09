@@ -5,34 +5,52 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@/hooks/use-data";
 import { usePathname } from "next/navigation";
 import {
-  RiHome5Line as HomeIcon,
-  RiGroupLine as TeamIcon,
-  RiAddBoxLine as RecordIcon,
-  RiNotification2Line as NotificationsIcon,
-  RiMenuLine as MenuIcon,
+  RiHome5Line,
+  RiHome5Fill,
+  RiGroupLine,
+  RiGroupFill,
+  RiAddBoxLine,
+  RiNotification2Line,
+  RiNotification2Fill,
+  RiMenuLine,
+  RiMenuFill,
 } from "react-icons/ri";
 
 const NavLink = ({
   href,
+  pathname,
+  activeIcon,
+  inactiveIcon,
   className,
   children,
 }: {
   href: string;
-  className: string;
+  pathname?: string;
+  activeIcon?: React.ReactNode;
+  inactiveIcon?: React.ReactNode;
+  className?: string;
   children: React.ReactNode;
-}) => (
-  <Link
-    href={href}
-    className={cn(
-      "flex flex-col items-center justify-center flex-1 h-full pt-1",
-      "no-underline text-primary-foreground [&>svg]:w-7 [&>svg]:h-7 text-xs",
-      "transition-all duration-200 ease-in-out",
-      className
-    )}
-  >
-    {children}
-  </Link>
-);
+}) => {
+  const active = ((href, pathname) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  })(href, pathname);
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex flex-col items-center justify-center flex-1 h-full pt-2",
+        "no-underline text-foreground [&>svg]:w-7 [&>svg]:h-7 text-xs",
+        "transition-all duration-200 ease-in-out",
+        active && "pt-1 font-semibold border-t-4 border-primary text-primary",
+        className
+      )}
+    >
+      {active ? activeIcon : inactiveIcon}
+      {children}
+    </Link>
+  );
+};
 
 export const Nav = () => {
   const pathname = usePathname();
@@ -41,38 +59,48 @@ export const Nav = () => {
   const defaultTeamId = user?.teams?.joined[0] || null;
   const defaultTeamUrl = defaultTeamId ? `/team/${defaultTeamId}` : "/team";
 
-  const active = (path) => {
-    const activeClass =
-      "p-0 font-semibold border-t-4 border-primary-foreground";
-    if (path === "/") return pathname === "/" ? activeClass : "";
-    return pathname.startsWith(path) ? activeClass : "";
-  };
-
   if (segments.length > 2) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full h-16 px-[5%] pt-0 pb-4 flex flex-row items-center justify-center bg-primary">
-      <NavLink href="/" className={active("/")}>
-        <HomeIcon />
+    <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full h-16 pt-0 pb-4 bg-background">
+      <NavLink
+        href="/"
+        pathname={pathname}
+        activeIcon={<RiHome5Fill />}
+        inactiveIcon={<RiHome5Line />}
+      >
         首頁
       </NavLink>
-      <NavLink href={defaultTeamUrl} className={active("/team")}>
-        <TeamIcon />
+      <NavLink
+        href={defaultTeamUrl}
+        pathname={pathname}
+        activeIcon={<RiGroupFill />}
+        inactiveIcon={<RiGroupLine />}
+      >
         隊伍
       </NavLink>
       <NavLink
         href={`/record/new?team=${defaultTeamId}`}
+        pathname={pathname}
         className="[&>svg]:w-12 [&>svg]:h-12"
         aria-label="Start recording match"
       >
-        <RecordIcon />
+        <RiAddBoxLine />
       </NavLink>
-      <NavLink href="/notifications" className={active("/notifications")}>
-        <NotificationsIcon />
+      <NavLink
+        href="/notifications"
+        pathname={pathname}
+        activeIcon={<RiNotification2Fill />}
+        inactiveIcon={<RiNotification2Line />}
+      >
         通知
       </NavLink>
-      <NavLink href="/user" className={active("/user")}>
-        <MenuIcon />
+      <NavLink
+        href="/user"
+        pathname={pathname}
+        activeIcon={<RiMenuFill />}
+        inactiveIcon={<RiMenuLine />}
+      >
         選項
       </NavLink>
     </nav>
