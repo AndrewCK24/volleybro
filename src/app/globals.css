@@ -69,7 +69,7 @@
     @apply box-border overscroll-x-none select-none;
   }
   body {
-    @apply bg-accent text-foreground w-screen h-dvh max-w-full transition-colors;
+    @apply text-foreground w-screen h-dvh max-w-full transition-colors;
   }
 }
 
