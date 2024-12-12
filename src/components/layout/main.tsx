@@ -6,15 +6,17 @@ export const Main = ({ children }: { children: React.ReactNode }) => {
   const segments = useSelectedLayoutSegments();
 
   return (
-    <main className="w-full h-full flex flex-col flex-1 pt-[3rem] justify-start items-center md:px-[5%] overflow-y-scroll overscroll-y-contain bg-accent">
+    <main className="w-full h-full flex-1 pt-[3rem] md:px-[5%] overflow-y-scroll overscroll-y-contain bg-accent">
+      <div className="h-16 -mt-16 pointer-events-none" />
       <div
         className={cn(
-          "w-full max-w-[640px] min-h-[100%+4rem] gap-2 flex flex-col mb-[4rem] h-fit",
+          "w-full max-w-[640px] gap-2 flex flex-col h-fit min-h-[calc(100%-4rem)] mb-16",
           segments.length > 2 && "mb-4"
         )}
       >
         {children}
       </div>
+      <div className="h-16 pointer-events-none" />
     </main>
   );
 };
