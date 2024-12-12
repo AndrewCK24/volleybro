@@ -2,27 +2,19 @@
 import { useSelectedLayoutSegments } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export const Main = ({
-  className,
-  children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) => {
+export const Main = ({ children }: { children: React.ReactNode }) => {
   const segments = useSelectedLayoutSegments();
 
   return (
-    <main
-      className={cn(
-        "flex-1 pt-[3rem] px-0 pb-[4.5rem]",
-        "flex flex-col justify-start items-center gap-2 flex-nowrap",
-        "overflow-scroll overscroll-y-contain z-0 bg-accent",
-        "md:px-[5%] transition-colors",
-        segments.length > 2 && "pb-4",
-        className
-      )}
-    >
-      {children}
+    <main className="w-full h-full flex flex-col flex-1 pt-[3rem] justify-start items-center md:px-[5%] overflow-y-scroll overscroll-y-contain bg-accent">
+      <div
+        className={cn(
+          "w-full max-w-[640px] min-h-[100%+4rem] gap-2 flex flex-col mb-[4rem] h-fit",
+          segments.length > 2 && "mb-4"
+        )}
+      >
+        {children}
+      </div>
     </main>
   );
 };

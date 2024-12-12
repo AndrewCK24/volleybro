@@ -4,19 +4,14 @@ import { cn } from "@/lib/utils";
 import { RiArrowLeftLine, RiNotification2Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 
-export const Header = ({ className }: { className?: string }) => {
+export const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const pathArr = pathname.split("/").filter(Boolean);
   const isIndex = pathArr.length <= 1;
 
   return (
-    <header
-      className={cn(
-        "fixed w-full h-12 px-[5%] flex flex-row items-center justify-center gap-4 overscroll-none bg-primary-foreground shadow-md",
-        className
-      )}
-    >
+    <header className="fixed w-full h-12 px-[5%] flex flex-row items-center justify-center gap-4 overscroll-none bg-primary-foreground border-accent border-b-2 z-10 top-0 left-0">
       {isIndex || (
         <Button
           onClick={() => router.back()}
@@ -29,7 +24,7 @@ export const Header = ({ className }: { className?: string }) => {
       )}
       <h1
         className={cn(
-          "flex-1 text-[1.625rem] font-medium text-left m-0",
+          "flex-1 text-[1.625rem] text-primary font-medium text-left m-0",
           isIndex || "text-center"
         )}
       >

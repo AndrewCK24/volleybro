@@ -110,7 +110,7 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
 
   return (
     <>
-      <Card className="w-full overflow-scroll">
+      <Card className="flex-1 w-full overflow-y-scroll overscroll-y-contain">
         <CardHeader>
           <CardTitle>確認資訊</CardTitle>
         </CardHeader>

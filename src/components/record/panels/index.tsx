@@ -24,7 +24,7 @@ const RecordPanels = ({
           <RecordMoves recordId={recordId} className={className} />
         )
       ) : (
-        <RecordInterval recordId={recordId} />
+        <RecordInterval recordId={recordId} className={className} />
       )}
     </>
   );

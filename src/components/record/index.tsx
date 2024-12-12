@@ -53,7 +53,7 @@ const Record = ({ recordId }: { recordId: string }) => {
         mode="general"
         handleOptionOpen={handleOptionOpen}
       />
-      <RecordPanels recordId={record._id} mode="general" />
+      <RecordPanels recordId={record._id} className="pb-6" mode="general" />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <RecordOptions
           recordId={record._id}
