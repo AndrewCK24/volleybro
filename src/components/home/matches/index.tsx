@@ -9,7 +9,7 @@ const TeamMatches = ({ teamId }: { teamId: string }) => {
   if (isLoading) return <LoadingCard className="w-full" />;
 
   return (
-    <div className="flex flex-col w-full gap-2 py-2">
+    <>
       {records.length ? (
         records.map((record) => {
           return <Result key={record._id} record={record} />;
@@ -17,7 +17,7 @@ const TeamMatches = ({ teamId }: { teamId: string }) => {
       ) : (
         <p>沒有比賽</p>
       )}
-    </div>
+    </>
   );
 };
 

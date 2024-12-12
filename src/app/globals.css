@@ -66,9 +66,31 @@
   }
 
   * {
-    @apply border-border box-border overscroll-x-none overscroll-y-none select-none;
+    @apply box-border overscroll-x-none select-none;
   }
   body {
-    @apply bg-background text-foreground w-screen h-dvh flex flex-col flex-nowrap transition-colors overscroll-y-contain;
+    @apply bg-accent text-foreground w-screen h-dvh max-w-full transition-colors;
   }
 }
+
+@layer utilities {
+  /* 在行動裝置上隱藏捲軸 */
+  @media (max-width: 640px) {
+    /* Webkit 瀏覽器 (iOS Safari, Chrome) */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    * {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE, Edge */
+    }
+  }
+}
+
+/* *,
+*:before,
+*:after {
+  outline: solid 0.5px #db6a7d;
+  border: 0;
+} */

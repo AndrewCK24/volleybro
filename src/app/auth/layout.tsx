@@ -1,10 +1,8 @@
-import { Main } from "@/components/layout/main";
-
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Main className="justify-end gap-0 p-0 overflow-hidden overscroll-y-none bg-primary px-[5%]">
+    <main className="w-full h-full flex flex-col justify-end items-center gap-0 p-0 overflow-hidden overscroll-y-none bg-primary px-[5%]">
       {children}
-    </Main>
+    </main>
   );
 };
 
