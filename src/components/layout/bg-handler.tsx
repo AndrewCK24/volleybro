@@ -9,7 +9,7 @@ export const BackgroundColorHandler = () => {
     if (pathname.startsWith("/auth")) {
       document.body.style.backgroundColor = "rgba(var(--primary))";
     } else {
-      document.body.style.backgroundColor = "rgba(var(--background))";
+      document.body.style.backgroundColor = "rgba(var(--accent))";
     }
   }, [pathname]);
 

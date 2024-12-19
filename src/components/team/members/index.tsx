@@ -8,10 +8,24 @@ import TeamMembersTable from "@/components/team/members/table";
 import LoadingCard from "@/components/custom/loading/card";
 
 const TeamMembers = ({ teamId }: { teamId: string }) => {
-  const { team, isLoading: isTeamLoading } = useTeam(teamId);
-  const { members, isLoading: isMemberLoading } = useTeamMembers(teamId);
+  const {
+    team,
+    isLoading: isTeamLoading,
+    isValidating: isTeamValidating,
+  } = useTeam(teamId);
+  const {
+    members,
+    isLoading: isMembersLoading,
+    isValidating: isMembersValidating,
+  } = useTeamMembers(teamId);
 
-  if (isTeamLoading || isMemberLoading) return <LoadingCard />;
+  if (
+    isTeamLoading ||
+    isMembersLoading ||
+    isTeamValidating ||
+    isMembersValidating
+  )
+    return <LoadingCard />;
 
   return (
     <Card>

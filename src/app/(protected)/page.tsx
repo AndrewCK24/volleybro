@@ -1,5 +1,7 @@
-import Feeds from "@/components/home/feeds";
+import Home from "@/components/home";
 
-export default function Home() {
-  return <Feeds />;
-}
+const HomePage = () => {
+  return <Home />;
+};
+
+export default HomePage;
