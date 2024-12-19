@@ -62,7 +62,7 @@ export const Nav = () => {
   if (segments.length > 2) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full h-16 pt-0 pb-4 bg-background">
+    <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full pb-[calc(env(safe-area-inset-bottom)-1rem)] bg-background">
       <NavLink
         href="/"
         pathname={pathname}
@@ -82,7 +82,7 @@ export const Nav = () => {
       <NavLink
         href={`/record/new?team=${defaultTeamId}`}
         pathname={pathname}
-        className="[&>svg]:w-12 [&>svg]:h-12"
+        className="[&>svg]:w-10 [&>svg]:h-10"
         aria-label="Start recording match"
       >
         <RiAddBoxLine />
