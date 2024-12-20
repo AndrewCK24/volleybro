@@ -5,7 +5,13 @@ export const Main = ({ children }: { children: React.ReactNode }) => {
   const { isRefreshing, isPulling } = useRefreshState();
 
   return (
-    <main className="pt-12">
+    <main
+      style={{
+        paddingTop: `calc(env(safe-area-inset-top) + 3rem)`,
+        paddingRight: `env(safe-area-inset-right)`,
+        paddingLeft: `env(safe-area-inset-left)`,
+      }}
+    >
       <div
         className={`flex items-center justify-center transition-all duration-300 -pb-2 ${
           isPulling || isRefreshing ? "h-12 opacity-100" : "h-0 opacity-0"
@@ -17,7 +23,7 @@ export const Main = ({ children }: { children: React.ReactNode }) => {
           }`}
         />
       </div>
-      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 md:px-[5%] gap-2">
+      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 gap-2">
         {children}
       </div>
     </main>

@@ -14,23 +14,29 @@ export const Header = ({
   const router = useRouter();
 
   return (
-    <header className="flex flex-row items-center justify-center w-full bg-background rounded-b-[0.5rem] px-2 gap-2 shadow">
-      <Button variant="ghost" size="icon" onClick={() => router.back()}>
-        <RiArrowLeftLine />
-        <span className="sr-only">Back</span>
-      </Button>
-      <Scores
-        recordId={recordId}
-        onClick={() => handleOptionOpen("overview")}
-      />
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleOptionOpen("settings")}
-      >
-        <RiSettings4Line />
-        <span className="sr-only">Options</span>
-      </Button>
+    <header className="fixed top-0 z-10 flex items-center justify-between w-full max-w-[640px]">
+      <div className="flex items-center justify-between w-full gap-2 px-2 rounded-b-lg shadow bg-background pt-[env(safe-area-inset-top)]">
+        <Button
+          variant="ghost"
+          className="[&>svg]:w-8 [&>svg]:h-8"
+          onClick={() => router.back()}
+        >
+          <RiArrowLeftLine />
+          <span className="sr-only">Back</span>
+        </Button>
+        <Scores
+          recordId={recordId}
+          onClick={() => handleOptionOpen("overview")}
+        />
+        <Button
+          variant="ghost"
+          className="[&>svg]:w-8 [&>svg]:h-8"
+          onClick={() => handleOptionOpen("settings")}
+        >
+          <RiSettings4Line />
+          <span className="sr-only">Options</span>
+        </Button>
+      </div>
     </header>
   );
 };
