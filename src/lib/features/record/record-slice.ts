@@ -42,7 +42,7 @@ const rallyDetailState: RallyDetail = {
   player: { _id: "", zone: 0 },
 };
 
-export const initialState: ReduxRecordState = {
+const initialState: ReduxRecordState = {
   _id: "",
   mode: "general",
   general: {
@@ -64,10 +64,10 @@ export const initialState: ReduxRecordState = {
 };
 
 // Define the reducers
-export const initialize: CaseReducer<
-  ReduxRecordState,
-  PayloadAction<Record>
-> = (state, action) => {
+const initialize: CaseReducer<ReduxRecordState, PayloadAction<Record>> = (
+  state,
+  action
+) => {
   const record = action.payload;
   const setIndex = record.sets.length ? record.sets.length - 1 : 0;
   const entryIndex = record.sets[setIndex]?.entries?.length || 0;
@@ -86,7 +86,7 @@ export const initialize: CaseReducer<
       home: previousRally?.home?.score || 0,
       away: previousRally?.away?.score || 0,
     },
-    setIndex,
+    setIndex: inProgress ? setIndex : setIndex + 1,
     entryIndex,
     isServing,
     inProgress,
@@ -97,14 +97,14 @@ export const initialize: CaseReducer<
   state.editing.status = { ...state.editing.status, ...status };
 };
 
-export const setRecordMode: CaseReducer<
+const setRecordMode: CaseReducer<
   ReduxRecordState,
   PayloadAction<ReduxRecordState["mode"]>
 > = (state, action) => {
   state.mode = action.payload;
 };
 
-export const setRecordingPlayer: CaseReducer<
+const setRecordingPlayer: CaseReducer<
   ReduxRecordState,
   PayloadAction<{ _id: string; zone: number }>
 > = (state, action) => {
@@ -129,7 +129,7 @@ export const setRecordingPlayer: CaseReducer<
   };
 };
 
-export const setRecordingHomeMove: CaseReducer<
+const setRecordingHomeMove: CaseReducer<
   ReduxRecordState,
   PayloadAction<ScoringMove>
 > = (state, action) => {
@@ -153,7 +153,7 @@ export const setRecordingHomeMove: CaseReducer<
   };
 };
 
-export const setRecordingAwayMove: CaseReducer<
+const setRecordingAwayMove: CaseReducer<
   ReduxRecordState,
   PayloadAction<ScoringMove>
 > = (state, action) => {
@@ -162,7 +162,7 @@ export const setRecordingAwayMove: CaseReducer<
   state[mode].recording.away = { ...state[mode].recording.away, type, num };
 };
 
-export const confirmRecordingRally: CaseReducer<
+const confirmRecordingRally: CaseReducer<
   ReduxRecordState,
   PayloadAction<Record>
 > = (state, action) => {
@@ -181,6 +181,7 @@ export const confirmRecordingRally: CaseReducer<
       home: state[mode].recording.home.score,
       away: state[mode].recording.away.score,
     },
+    setIndex: inProgress ? setIndex : setIndex + 1,
     entryIndex: entryIndex + 1,
     isServing: state[mode].recording.win,
     inProgress,
@@ -201,7 +202,7 @@ export const confirmRecordingRally: CaseReducer<
   };
 };
 
-export const setRecordingSubstitution: CaseReducer<
+const setRecordingSubstitution: CaseReducer<
   ReduxRecordState,
   PayloadAction<string>
 > = (state, action) => {
@@ -217,18 +218,14 @@ export const setRecordingSubstitution: CaseReducer<
   };
 };
 
-export const resetRecordingSubstitution: CaseReducer<ReduxRecordState> = (
-  state
-) => {
+const resetRecordingSubstitution: CaseReducer<ReduxRecordState> = (state) => {
   const { mode } = state;
   const { substitution, ...rest } = state[mode].recording;
   state[mode].recording = { ...rest };
   state[mode].status.panel = "home";
 };
 
-export const confirmRecordingSubstitution: CaseReducer<ReduxRecordState> = (
-  state
-) => {
+const confirmRecordingSubstitution: CaseReducer<ReduxRecordState> = (state) => {
   const { mode } = state;
   state[mode].status.panel = "home";
   state[mode].status.entryIndex += 1;
@@ -245,7 +242,7 @@ export const confirmRecordingSubstitution: CaseReducer<ReduxRecordState> = (
   };
 };
 
-export const setPanel: CaseReducer<
+const setPanel: CaseReducer<
   ReduxRecordState,
   PayloadAction<ReduxStatus["panel"]>
 > = (state, action) => {
@@ -253,7 +250,7 @@ export const setPanel: CaseReducer<
   state[mode].status.panel = action.payload;
 };
 
-export const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
+const resetRecording: CaseReducer<ReduxRecordState> = (state) => {
   const { mode } = state;
   state[mode].status.panel = "home";
   state[mode].recording = {
@@ -273,8 +270,7 @@ const setSetIndex: CaseReducer<ReduxRecordState, PayloadAction<number>> = (
   state,
   action
 ) => {
-  const { mode } = state;
-  state[mode].status.setIndex = action.payload;
+  state.editing.status.setIndex = action.payload;
 };
 
 // TODO: 修正編輯狀態之 isSetPoint 計算邏輯

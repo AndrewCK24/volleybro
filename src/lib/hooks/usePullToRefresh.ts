@@ -4,20 +4,20 @@ import { globalActions } from "@/lib/features/global-slice";
 
 /**
  * A custom hook that implements pull-to-refresh functionality for touch devices.
- * 
+ *
  * @param refresh - A callback function that will be executed when the pull-to-refresh action is completed.
  *                 This function can return void or an empty object.
- * 
+ *
  * @returns An object containing two boolean states:
  *          - isRefreshing: Indicates whether the refresh action is currently in progress
  *          - isPulling: Indicates whether the user is currently pulling down to refresh
- * 
+ *
  * @remarks
  * This hook handles touch events to detect pull-to-refresh gestures.
  * The refresh action is triggered when:
  * - The page is scrolled to the top (scrollY <= 0)
  * - The user pulls down more than 48 pixels
- * 
+ *
  * After triggering the refresh:
  * 1. The refresh callback is executed
  * 2. A 300ms delay is applied
@@ -76,7 +76,7 @@ export const usePullToRefresh = (refresh: () => {} | void) => {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [refresh]);
+  }, [refresh, dispatch]);
 
   return { isRefreshing, isPulling };
 };

@@ -16,9 +16,12 @@ export const StatsCell = ({ children }: { children?: React.ReactNode }) => {
 };
 
 const RecordOptionsOverview = ({ recordId }: { recordId: string }) => {
-  const { setIndex } = useAppSelector((state) => state.record.editing.status);
+  const { setIndex, inProgress } = useAppSelector(
+    (state) => state.record.editing.status
+  );
   const { record } = useRecord(recordId) as { record: Record };
   const { home, away } = record.teams;
+  const set = inProgress ? setIndex : setIndex - 1;
 
   return (
     <>
@@ -28,24 +31,24 @@ const RecordOptionsOverview = ({ recordId }: { recordId: string }) => {
         <StatsCell>對方</StatsCell>
       </StatsRow>
       <StatsRow>
-        <StatsCell>{home.stats[setIndex][MoveType.ATTACK].success}</StatsCell>
+        <StatsCell>{home.stats[set][MoveType.ATTACK].success}</StatsCell>
         <StatsCell>ATTACKS</StatsCell>
-        <StatsCell>{away.stats[setIndex][MoveType.ATTACK].success}</StatsCell>
+        <StatsCell>{away.stats[set][MoveType.ATTACK].success}</StatsCell>
       </StatsRow>
       <StatsRow>
-        <StatsCell>{home.stats[setIndex][MoveType.BLOCKING].success}</StatsCell>
+        <StatsCell>{home.stats[set][MoveType.BLOCKING].success}</StatsCell>
         <StatsCell>BLOCKS</StatsCell>
-        <StatsCell>{away.stats[setIndex][MoveType.BLOCKING].success}</StatsCell>
+        <StatsCell>{away.stats[set][MoveType.BLOCKING].success}</StatsCell>
       </StatsRow>
       <StatsRow>
-        <StatsCell>{home.stats[setIndex][MoveType.SERVING].success}</StatsCell>
+        <StatsCell>{home.stats[set][MoveType.SERVING].success}</StatsCell>
         <StatsCell>SERVES</StatsCell>
-        <StatsCell>{away.stats[setIndex][MoveType.SERVING].success}</StatsCell>
+        <StatsCell>{away.stats[set][MoveType.SERVING].success}</StatsCell>
       </StatsRow>
       <StatsRow>
-        <StatsCell>{home.stats[setIndex][MoveType.UNFORCED].success}</StatsCell>
+        <StatsCell>{home.stats[set][MoveType.UNFORCED].success}</StatsCell>
         <StatsCell>OPPO_ERRORS</StatsCell>
-        <StatsCell>{away.stats[setIndex][MoveType.UNFORCED].success}</StatsCell>
+        <StatsCell>{away.stats[set][MoveType.UNFORCED].success}</StatsCell>
       </StatsRow>
     </>
   );
