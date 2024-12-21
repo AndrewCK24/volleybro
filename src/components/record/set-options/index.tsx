@@ -1,15 +1,13 @@
 "use client";
+import { useEffect } from "react";
 import { useRecord } from "@/hooks/use-data";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import LineupCourt from "@/components/team/lineup/court";
 import RecordSetPanels from "@/components/record/set-options/panels";
@@ -17,7 +15,7 @@ import RecordSetPanels from "@/components/record/set-options/panels";
 const RecordSetOptions = ({ recordId }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setIndex } = useAppSelector((state) => state.record.editing.status);
+  const { setIndex } = useAppSelector((state) => state.record.general.status);
   const { lineups } = useAppSelector((state) => state.lineup);
   const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
   const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;
@@ -37,39 +35,31 @@ const RecordSetOptions = ({ recordId }) => {
           );
         }));
 
+  useEffect(() => {
+    const lineup =
+      record?.sets[setIndex]?.lineups?.home || record.teams.home.lineup;
+    dispatch(lineupActions.initialize([lineup]));
+    console.log("initialize", lineup);
+  }, [record, setIndex]);
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          size="lg"
-          className="w-full"
-          onClick={() => {
-            const lineup =
-              record?.sets[setIndex]?.lineups?.home || record.teams.home.lineup;
-            dispatch(lineupActions.initialize([lineup]));
-          }}
-        >
-          開始下一局
-        </Button>
-      </DialogTrigger>
-      <DialogContent size="lg">
-        <DialogDescription className="sr-only">
-          設定第 {setIndex + 1} 局的陣容
-        </DialogDescription>
-        <DialogHeader>
-          <DialogTitle className="pb-2 font-medium text-center">
-            第 {setIndex + 1} 局設定
-          </DialogTitle>
-        </DialogHeader>
-        <LineupCourt members={record.teams.home.players} />
-        <RecordSetPanels
-          recordId={recordId}
-          members={record.teams.home.players}
-          hasPairedSwitchPosition={hasPairedSwitchPosition}
-          className="flex-1 px-0 overflow-scroll shadow-none"
-        />
-      </DialogContent>
-    </Dialog>
+    <DialogContent size="lg">
+      <DialogDescription className="sr-only">
+        設定第 {setIndex + 1} 局的陣容
+      </DialogDescription>
+      <DialogHeader>
+        <DialogTitle className="pb-2 font-medium text-center">
+          第 {setIndex + 1} 局設定
+        </DialogTitle>
+      </DialogHeader>
+      <LineupCourt members={record.teams.home.players} />
+      <RecordSetPanels
+        recordId={recordId}
+        members={record.teams.home.players}
+        hasPairedSwitchPosition={hasPairedSwitchPosition}
+        className="flex-1 px-0 overflow-scroll shadow-none"
+      />
+    </DialogContent>
   );
 };
 
