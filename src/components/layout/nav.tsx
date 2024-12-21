@@ -80,7 +80,7 @@ export const Nav = () => {
         隊伍
       </NavLink>
       <NavLink
-        href={`/record/new?team=${defaultTeamId}`}
+        href={`/team/${defaultTeamId}/records/new`}
         pathname={pathname}
         className="[&>svg]:w-10 [&>svg]:h-10"
         aria-label="Start recording match"
