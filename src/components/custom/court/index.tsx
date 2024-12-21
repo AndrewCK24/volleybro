@@ -34,7 +34,7 @@ export const Outside = ({
   return (
     <div
       className={cn(
-        "relative grid h-full grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1",
+        "relative grid h-full max-h-[35vh] grid-rows-3 gap-2 border-4 border-transparent before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:border-b-4 before:border-dashed before:border-primary-foreground border-l-0 pr-1 flex-1",
         className
       )}
     >
@@ -46,7 +46,7 @@ export const Outside = ({
 
 export const Inside = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="relative flex-[9] aspect-[1/1] h-full py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4">
+    <div className="relative flex-[9] aspect-[1/1] h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4">
       {children}
     </div>
   );

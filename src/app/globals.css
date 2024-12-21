@@ -33,6 +33,11 @@
     --ring: 221, 220, 221;
 
     --radius: 0.5rem;
+
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-right: env(safe-area-inset-right);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left: env(safe-area-inset-left);
   }
 
   .dark {
@@ -69,7 +74,7 @@
     @apply box-border overscroll-x-none select-none;
   }
   body {
-    @apply text-foreground w-screen h-dvh max-w-full transition-colors;
+    @apply text-foreground w-screen h-lvh max-w-full transition-colors bg-accent overflow-y-auto overscroll-y-contain;
   }
 }
 

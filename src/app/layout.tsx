@@ -7,6 +7,7 @@ import { ReduxProvider } from "@/lib/redux/provider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundColorHandler } from "@/components/layout/bg-handler";
+import type { Metadata, Viewport } from "next";
 
 const APP_NAME = "VolleyBro";
 const APP_DEFAULT_TITLE = "VolleyBro";
@@ -26,14 +27,13 @@ const notoSansTC = Noto_Sans_TC({
   display: "fallback",
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   manifest: "/manifest.json",
   applicationName: APP_NAME,
   title: { default: APP_DEFAULT_TITLE, template: APP_TITLE_TEMPLATE },
   description: APP_DESCRIPTION,
   keywords: ["volleyball", "stats", "app", "volleybro", "VolleyBro"],
   authors: [{ name: APP_NAME }, { name: AUTHOR }],
-  colorTheme: "light",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -64,13 +64,15 @@ export const metadata = {
   },
 };
 
-export const viewport = {
-  themeColor: "#f6f4f5",
+export const viewport: Viewport = {
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f6f4f5" }],
   initialScale: 1,
   minimumScale: 1,
   maximumScale: 1,
   width: "device-width",
   userScalable: false,
+  viewportFit: "cover",
+  colorScheme: "light",
 };
 
 export default async function RootLayout({

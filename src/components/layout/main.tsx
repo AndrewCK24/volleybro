@@ -1,22 +1,31 @@
 "use client";
-import { useSelectedLayoutSegments } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { useRefreshState } from "@/lib/hooks/usePullToRefresh";
 
 export const Main = ({ children }: { children: React.ReactNode }) => {
-  const segments = useSelectedLayoutSegments();
+  const { isRefreshing, isPulling } = useRefreshState();
 
   return (
-    <main className="w-full h-full pt-[3rem] md:px-[5%] overflow-y-scroll overscroll-y-contain bg-accent">
-      <div className="h-16 -mt-16 pointer-events-none" />
+    <main
+      style={{
+        paddingTop: `calc(env(safe-area-inset-top) + 3rem)`,
+        paddingRight: `env(safe-area-inset-right)`,
+        paddingLeft: `env(safe-area-inset-left)`,
+      }}
+    >
       <div
-        className={cn(
-          "w-full max-w-[640px] gap-2 flex flex-col h-fit min-h-[calc(100%-4rem)] mb-16 mx-auto",
-          segments.length > 2 && "mb-4"
-        )}
+        className={`flex items-center justify-center transition-all duration-300 -pb-2 ${
+          isPulling || isRefreshing ? "h-12 opacity-100" : "h-0 opacity-0"
+        }`}
       >
+        <div
+          className={`w-6 h-6 border-2 rounded-full border-primary border-t-transparent ${
+            isRefreshing ? "animate-spin" : ""
+          }`}
+        />
+      </div>
+      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 gap-2">
         {children}
       </div>
-      <div className="h-16 pointer-events-none" />
     </main>
   );
 };
