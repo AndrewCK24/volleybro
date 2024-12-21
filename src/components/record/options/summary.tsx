@@ -10,8 +10,11 @@ import Entry from "@/components/record/entry";
 const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
   const dispatch = useAppDispatch();
   const { record } = useRecord(recordId);
-  const { setIndex } = useAppSelector((state) => state.record.editing.status);
-  const { entries } = record.sets[setIndex];
+  const { setIndex, inProgress } = useAppSelector(
+    (state) => state.record.editing.status
+  );
+  const set = inProgress ? setIndex : setIndex - 1;
+  const { entries } = record.sets[set];
   const { players } = record.teams.home;
 
   const handleEntryClick = (entryIndex: number) => {
@@ -24,20 +27,20 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => dispatch(recordActions.setSetIndex(setIndex - 1))}
-          disabled={setIndex <= 0}
+          onClick={() => dispatch(recordActions.setSetIndex(set - 1))}
+          disabled={set <= 0}
         >
           <RiArrowLeftWideLine />
           <span className="sr-only">last set</span>
         </Button>
         <span className="flex-1 text-xl text-center">
-          第 {setIndex + 1} 局逐球紀錄
+          第 {set + 1} 局逐球紀錄
         </span>
         <Button
           size="icon"
           className="w-8 h-8"
-          onClick={() => dispatch(recordActions.setSetIndex(setIndex + 1))}
-          disabled={setIndex >= record.sets.length - 1}
+          onClick={() => dispatch(recordActions.setSetIndex(set + 1))}
+          disabled={set >= record.sets.length - 1}
         >
           <RiArrowRightWideLine />
           <span className="sr-only">next set</span>
