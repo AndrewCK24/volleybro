@@ -40,7 +40,7 @@ const RecordSetOptions = ({ recordId }) => {
       record?.sets[setIndex]?.lineups?.home || record.teams.home.lineup;
     dispatch(lineupActions.initialize([lineup]));
     console.log("initialize", lineup);
-  }, [record, setIndex]);
+  }, [record, setIndex, dispatch]);
 
   return (
     <DialogContent size="lg">
