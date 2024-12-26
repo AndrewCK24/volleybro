@@ -41,8 +41,8 @@ export const POST = async (req) => {
       ],
       lineups: new Array(3).fill({
         options: {
-          liberoSwitchMode: 0,
-          liberoSwitchPosition: "",
+          liberoReplaceMode: 0,
+          liberoReplacePosition: "",
         },
         starting: new Array(6).fill({ _id: null }),
         liberos: [],

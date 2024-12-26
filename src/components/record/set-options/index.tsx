@@ -17,11 +17,11 @@ const RecordSetOptions = ({ recordId }) => {
   const { record } = useRecord(recordId);
   const { setIndex } = useAppSelector((state) => state.record.general.status);
   const { lineups } = useAppSelector((state) => state.lineup);
-  const liberoSwitchMode = lineups[0]?.options.liberoSwitchMode;
-  const liberoSwitchPosition = lineups[0]?.options.liberoSwitchPosition;
+  const liberoReplaceMode = lineups[0]?.options.liberoReplaceMode;
+  const liberoReplacePosition = lineups[0]?.options.liberoReplacePosition;
   const hasPairedSwitchPosition =
-    liberoSwitchMode === 0 ||
-    (liberoSwitchPosition === "OP"
+    liberoReplaceMode === 0 ||
+    (liberoReplacePosition === "OP"
       ? lineups[0]?.starting.some(
           (player) => player._id && player.position === "OP"
         )
@@ -29,9 +29,10 @@ const RecordSetOptions = ({ recordId }) => {
           const oppositeIndex = index >= 3 ? index - 3 : index + 3;
           return (
             player._id &&
-            player.position === liberoSwitchPosition &&
+            player.position === liberoReplacePosition &&
             lineups[0].starting[oppositeIndex]._id &&
-            lineups[0].starting[oppositeIndex].position === liberoSwitchPosition
+            lineups[0].starting[oppositeIndex].position ===
+              liberoReplacePosition
           );
         }));
 
