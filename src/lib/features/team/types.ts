@@ -2,12 +2,12 @@ import { z } from "zod";
 import { type Lineup, Position } from "@/entities/team";
 
 // For Forms
-export const LiberoSwitchFormSchema = z.object({
+export const LiberoReplaceFormSchema = z.object({
   mode: z.enum(["0", "1", "2"]),
   position: z.enum([Position.NONE, Position.MB, Position.OP, Position.OH]),
 });
 
-export type LiberoSwitchFormValues = z.infer<typeof LiberoSwitchFormSchema>;
+export type LiberoReplaceFormValues = z.infer<typeof LiberoReplaceFormSchema>;
 
 // For Redux
 export enum LineupOptionMode {

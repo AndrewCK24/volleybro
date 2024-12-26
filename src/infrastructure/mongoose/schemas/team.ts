@@ -3,8 +3,8 @@ import { Position, Role } from "@/entities/team";
 
 export const lineupSchema = new Schema({
   options: {
-    liberoSwitchMode: { type: Number, enum: [0, 1, 2], default: 0 },
-    liberoSwitchPosition: {
+    liberoReplaceMode: { type: Number, enum: [0, 1, 2], default: 0 },
+    liberoReplacePosition: {
       type: String,
       enum: Position,
       default: Position.NONE,

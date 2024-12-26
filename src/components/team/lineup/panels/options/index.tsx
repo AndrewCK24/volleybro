@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import LineupError from "@/components/team/lineup/panels/options/lineup-error";
-import LiberoSwitch from "@/components/team/lineup/panels/options/libero-switch";
+import LiberoReplace from "@/components/team/lineup/panels/options/libero-replace";
 
 import { LineupOptionMode } from "@/lib/features/team/types";
 
@@ -64,7 +64,7 @@ const LineupOptions = ({
         </CardBtnGroup>
       </CardHeader>
       <LineupError open={dialogOpen} setOpen={setDialogOpen} />
-      <LiberoSwitch />
+      <LiberoReplace />
       <Table>
         <TableHeader className="text-lg">
           <TableRow>

@@ -133,7 +133,7 @@ export const useLineup = (recordId: string, status: ReduxStatus) => {
 
   const switchTargetIndex = lineup.starting.findIndex(
     (player, index) =>
-      player.position === lineups.home.options.liberoSwitchPosition &&
+      player.position === lineups.home.options.liberoReplacePosition &&
       ((index === 0 && !isServing) || index >= 4)
   );
   if (switchTargetIndex !== -1) {
