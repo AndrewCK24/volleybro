@@ -1,6 +1,6 @@
 {
   "name": "volleybro",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -36,8 +36,8 @@
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.4.0",
     "react-redux": "^9.2.0",
-    "swr": "^2.2.5",
-    "tailwind-merge": "^2.5.5",
+    "swr": "^2.3.0",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"
   },
