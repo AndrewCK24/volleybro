@@ -17,8 +17,8 @@ export type LineupPlayer = {
 
 export type Lineup = {
   options: {
-    liberoSwitchMode: 0 | 1 | 2;
-    liberoSwitchPosition:
+    liberoReplaceMode: 0 | 1 | 2;
+    liberoReplacePosition:
       | Position.NONE
       | Position.OH
       | Position.MB

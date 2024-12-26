@@ -12,13 +12,13 @@ import LoadingCard from "@/components/custom/loading/card";
 const Lineup = ({ team, members, handleSave }) => {
   const dispatch = useAppDispatch();
   const { lineups, status } = useAppSelector((state) => state.lineup);
-  const liberoSwitchMode =
-    lineups[status.lineupIndex]?.options.liberoSwitchMode;
-  const liberoSwitchPosition =
-    lineups[status.lineupIndex]?.options.liberoSwitchPosition;
+  const liberoReplaceMode =
+    lineups[status.lineupIndex]?.options.liberoReplaceMode;
+  const liberoReplacePosition =
+    lineups[status.lineupIndex]?.options.liberoReplacePosition;
   const hasPairedSwitchPosition =
-    liberoSwitchMode === 0 ||
-    (liberoSwitchPosition === "OP"
+    liberoReplaceMode === 0 ||
+    (liberoReplacePosition === "OP"
       ? lineups[status.lineupIndex]?.starting.some(
           (player) => player._id && player.position === "OP"
         )
@@ -26,10 +26,10 @@ const Lineup = ({ team, members, handleSave }) => {
           const oppositeIndex = index >= 3 ? index - 3 : index + 3;
           return (
             player._id &&
-            player.position === liberoSwitchPosition &&
+            player.position === liberoReplacePosition &&
             lineups[status.lineupIndex].starting[oppositeIndex]._id &&
             lineups[status.lineupIndex].starting[oppositeIndex].position ===
-              liberoSwitchPosition
+              liberoReplacePosition
           );
         }));
 

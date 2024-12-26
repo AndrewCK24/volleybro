@@ -58,15 +58,15 @@ const setOptionMode: CaseReducer<
   }
 };
 
-const setLiberoSwitch: CaseReducer<
+const setLiberoReplace: CaseReducer<
   ReduxLineupState,
   PayloadAction<Lineup["options"]>
 > = (state, action) => {
   const { lineupIndex } = state.status;
-  const { liberoSwitchMode, liberoSwitchPosition } = action.payload;
-  state.lineups[lineupIndex].options.liberoSwitchMode = liberoSwitchMode;
-  state.lineups[lineupIndex].options.liberoSwitchPosition =
-    liberoSwitchPosition;
+  const { liberoReplaceMode, liberoReplacePosition } = action.payload;
+  state.lineups[lineupIndex].options.liberoReplaceMode = liberoReplaceMode;
+  state.lineups[lineupIndex].options.liberoReplacePosition =
+    liberoReplacePosition;
   state.status.edited = true;
 };
 
@@ -100,10 +100,10 @@ const removeEditingPlayer: CaseReducer<ReduxLineupState> = (state) => {
   } else {
     state.lineups[lineupIndex].liberos.splice(zone - 1, 1);
     if (
-      state.lineups[lineupIndex].options.liberoSwitchMode >
+      state.lineups[lineupIndex].options.liberoReplaceMode >
       state.lineups[lineupIndex].liberos.length
     ) {
-      state.lineups[lineupIndex].options.liberoSwitchMode--;
+      state.lineups[lineupIndex].options.liberoReplaceMode--;
     }
   }
   state.status = {
@@ -182,7 +182,7 @@ const lineupSlice = createSlice({
     rotateLineup,
     setLineupIndex,
     setOptionMode,
-    setLiberoSwitch,
+    setLiberoReplace,
     setEditingPlayer,
     removeEditingPlayer,
     replaceEditingPlayer,

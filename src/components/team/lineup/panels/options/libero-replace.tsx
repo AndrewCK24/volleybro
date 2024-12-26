@@ -37,50 +37,50 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import {
-  LiberoSwitchFormSchema,
-  type LiberoSwitchFormValues,
+  LiberoReplaceFormSchema,
+  type LiberoReplaceFormValues,
 } from "@/lib/features/team/types";
 
-const LiberoSwitch = () => {
+const LiberoReplace = () => {
   const dispatch = useAppDispatch();
   const { lineups, status } = useAppSelector((state) => state.lineup);
-  const { liberoSwitchMode, liberoSwitchPosition } =
+  const { liberoReplaceMode, liberoReplacePosition } =
     lineups[status.lineupIndex]?.options;
   const hasPairedSwitchPosition =
-    liberoSwitchPosition === "OP"
+    liberoReplacePosition === "OP"
       ? true
       : lineups[status.lineupIndex]?.starting.some((player, index) => {
           const oppositeIndex = index >= 3 ? index - 3 : index + 3;
           return (
             player._id &&
-            player.position === liberoSwitchPosition &&
+            player.position === liberoReplacePosition &&
             lineups[status.lineupIndex].starting[oppositeIndex]._id &&
             lineups[status.lineupIndex].starting[oppositeIndex].position ===
-              liberoSwitchPosition
+              liberoReplacePosition
           );
         });
 
-  const form = useForm<LiberoSwitchFormValues>({
-    resolver: zodResolver(LiberoSwitchFormSchema),
+  const form = useForm<LiberoReplaceFormValues>({
+    resolver: zodResolver(LiberoReplaceFormSchema),
     defaultValues: {
-      mode: String(liberoSwitchMode) as LiberoSwitchFormValues["mode"],
-      position: liberoSwitchPosition,
+      mode: String(liberoReplaceMode) as LiberoReplaceFormValues["mode"],
+      position: liberoReplacePosition,
     },
   });
 
   useEffect(() => {
     form.reset({
-      mode: String(liberoSwitchMode) as LiberoSwitchFormValues["mode"],
-      position: liberoSwitchPosition,
+      mode: String(liberoReplaceMode) as LiberoReplaceFormValues["mode"],
+      position: liberoReplacePosition,
     });
-  }, [form, liberoSwitchMode, liberoSwitchPosition]);
+  }, [form, liberoReplaceMode, liberoReplacePosition]);
 
-  const onSubmit = (data: LiberoSwitchFormValues) => {
+  const onSubmit = (data: LiberoReplaceFormValues) => {
     const modeNumber = parseInt(data.mode, 10) as 0 | 1 | 2;
     dispatch(
-      lineupActions.setLiberoSwitch({
-        liberoSwitchMode: modeNumber,
-        liberoSwitchPosition: data.position,
+      lineupActions.setLiberoReplace({
+        liberoReplaceMode: modeNumber,
+        liberoReplacePosition: data.position,
       })
     );
   };
@@ -91,12 +91,12 @@ const LiberoSwitch = () => {
         自由球員設定
       </h4>
       <Separator />
-      {!!liberoSwitchMode && !hasPairedSwitchPosition && (
+      {!!liberoReplaceMode && !hasPairedSwitchPosition && (
         <Alert variant="destructive">
           <RiAlertLine />
-          <AlertTitle>無對位 {liberoSwitchPosition}</AlertTitle>
+          <AlertTitle>無對位 {liberoReplacePosition}</AlertTitle>
           <AlertDescription>
-            陣容中未設定對位 {liberoSwitchPosition}
+            陣容中未設定對位 {liberoReplacePosition}
             ，無法使用自動替換自由球員功能。
           </AlertDescription>
         </Alert>
@@ -107,8 +107,8 @@ const LiberoSwitch = () => {
           <Button variant="outline" size="wide">
             替換模式
             <span className="flex-1 text-left text-primary">
-              {liberoSwitchMode === 0 ? "手動替換" : "自動替換"}{" "}
-              {liberoSwitchMode ? liberoSwitchPosition : ""}
+              {liberoReplaceMode === 0 ? "手動替換" : "自動替換"}{" "}
+              {liberoReplaceMode ? liberoReplacePosition : ""}
             </span>
             <RiArrowRightWideLine />
           </Button>
@@ -174,7 +174,7 @@ const LiberoSwitch = () => {
           </Form>
         </DialogContent>
       </Dialog>
-      {liberoSwitchMode === 0 ? (
+      {liberoReplaceMode === 0 ? (
         <Alert>
           <RiQuestionLine />
           <AlertTitle>手動替換自由球員</AlertTitle>
@@ -187,14 +187,14 @@ const LiberoSwitch = () => {
           <RiQuestionLine />
           <AlertTitle>自動替換自由球員</AlertTitle>
           <AlertDescription>
-            當我方 {liberoSwitchPosition} 發球輪次失分時，自動將該名{" "}
-            {liberoSwitchPosition}{" "}
+            當我方 {liberoReplacePosition} 發球輪次失分時，自動將該名{" "}
+            {liberoReplacePosition}{" "}
             替換為第一位自由球員。且在自由球員即將輪轉至前排時，自動將自由球員更換為原先之{" "}
-            {liberoSwitchPosition}。
+            {liberoReplacePosition}。
           </AlertDescription>
-          {liberoSwitchPosition !== "OP" && (
+          {liberoReplacePosition !== "OP" && (
             <AlertDescription className="text-destructive">
-              陣容中須有對位之 {liberoSwitchPosition}。
+              陣容中須有對位之 {liberoReplacePosition}。
             </AlertDescription>
           )}
         </Alert>
@@ -203,4 +203,4 @@ const LiberoSwitch = () => {
   );
 };
 
-export default LiberoSwitch;
+export default LiberoReplace;
