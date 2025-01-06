@@ -64,7 +64,7 @@ export const Nav = () => {
   return (
     <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full pb-[calc(env(safe-area-inset-bottom)-1rem)] bg-background">
       <NavLink
-        href="/"
+        href="/home"
         pathname={pathname}
         activeIcon={<RiHome5Fill />}
         inactiveIcon={<RiHome5Line />}
