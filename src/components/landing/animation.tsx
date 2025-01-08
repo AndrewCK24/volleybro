@@ -26,7 +26,7 @@ export const SquaresStack = () => {
         <div
           key={index}
           className={cn(
-            "absolute bg-background top-0 right-0 aspect-square transition duration-300",
+            "absolute bg-background top-0 right-0 aspect-square transition duration-300 rounded-[1.5rem]",
             index === squares - highlight ? "bg-destructive" : "bg-background"
           )}
           style={{
