@@ -59,7 +59,7 @@ export const Nav = () => {
   const defaultTeamId = user?.teams?.joined[0] || null;
   const defaultTeamUrl = defaultTeamId ? `/team/${defaultTeamId}` : "/team";
 
-  if (segments.length > 2) return null;
+  if (segments.length > 2 || pathname === "/user/invitations") return null;
 
   return (
     <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full pb-[calc(env(safe-area-inset-bottom)-1rem)] bg-background">
