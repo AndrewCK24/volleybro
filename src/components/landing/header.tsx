@@ -14,7 +14,7 @@ export const Header = ({ observerRef }: HeaderProps) => {
     const targetElement = observerRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => setIsShowingCTA(!entry.isIntersecting),
-      { threshold: 1 }
+      { threshold: 0.5 }
     );
 
     if (targetElement) {
@@ -29,11 +29,7 @@ export const Header = ({ observerRef }: HeaderProps) => {
   }, [observerRef]);
 
   return (
-    <header
-      className={`sticky top-0 left-0 z-50 flex flex-row items-center justify-start w-full px-4 py-2 transition-colors ${
-        isShowingCTA ? "bg-primary" : "bg-transparent"
-      }`}
-    >
+    <header className="sticky top-0 left-0 z-50 flex flex-row items-center justify-start w-full px-4 py-2 transition-colors">
       <div className="flex items-center justify-start flex-1 h-9">
         <Image
           src="/logo.svg"

@@ -15,16 +15,16 @@ export const Hero = () => {
       <section className="flex flex-col items-start justify-start w-full h-[calc(100vh-3.25rem)] pt-10 md:px-[5%] bg-primary">
         <div className="flex flex-col items-start justify-center flex-1 w-full h-full gap-4 px-4">
           <Badge variant="destructive">Beta</Badge>
-          <h1
-            className="text-5xl font-medium text-white text-nowrap md:text-7xl"
-            ref={observerRef}
-          >
+          <h1 className="text-5xl font-medium leading-[1.1] tracking-wider text-white text-nowrap md:text-7xl">
             讓排球比賽紀錄
             <br />
             更加
             <FlipWords words={words} className="text-primary-foreground" />
           </h1>
-          <div className="flex flex-col items-start justify-start w-full gap-2 py-6 md:flex-row">
+          <div
+            ref={observerRef}
+            className="flex flex-col items-start justify-start w-full gap-2 py-6 md:flex-row"
+          >
             <CTAButton
               className="w-full h-10 px-4 text-lg md:w-auto"
               size="lg"
