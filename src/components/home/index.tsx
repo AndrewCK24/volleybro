@@ -1,4 +1,6 @@
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useUser, useTeamRecords } from "@/hooks/use-data";
 import { usePullToRefresh } from "@/lib/hooks/usePullToRefresh";
 import Result from "@/components/home/result";
@@ -34,11 +36,20 @@ const TeamMatches = ({ teamId }: { teamId: string }) => {
 };
 
 const Home = () => {
+  const router = useRouter();
   const { user, isLoading } = useUser();
+
+  useEffect(() => {
+    if (user && !user.teams.joined[0]) {
+      router.push("/user/invitations");
+    }
+  }, [user, router]);
 
   if (isLoading) return <LoadingCard className="w-full" />;
   if (!user) return null;
-  const defaultTeamId = user.teams.joined[0].toString();
+
+  const defaultTeamId = user.teams.joined[0]?.toString();
+  if (!defaultTeamId) return null;
 
   return <TeamMatches teamId={defaultTeamId} />;
 };
