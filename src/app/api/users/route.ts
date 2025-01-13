@@ -13,7 +13,7 @@ export const GET = async () => {
     }
 
     await connectToMongoDB();
-    const user = await User.findById(session.user._id);
+    const user = await User.findById(session.user.id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
