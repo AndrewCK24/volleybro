@@ -39,7 +39,7 @@ export const PATCH = async (
     }
 
     await connectToMongoDB();
-    const user = await User.findById((session.user as { _id: string })._id);
+    const user = await User.findById(session.user.id);
     if (!user) {
       console.error("[PATCH /api/users/teams] User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
