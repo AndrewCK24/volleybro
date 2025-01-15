@@ -9,10 +9,7 @@ const authConfig = {
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      allowDangerousEmailAccountLinking: true, // TODO: Remove this option
-      authorization: {
-        params: { prompt: "select_account" },
-      },
+      authorization: { params: { prompt: "select_account" } },
     }),
   ],
   callbacks: {
