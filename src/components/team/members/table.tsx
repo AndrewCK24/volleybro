@@ -120,7 +120,7 @@ const TeamMembersTable = ({ team, members, teamId }) => {
           <Button
             variant="ghost"
             size="lg"
-            className="gap-0 svg-[1rem]"
+            className="gap-0 [&>svg]:w-4 [&>svg]:h-4"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             No.

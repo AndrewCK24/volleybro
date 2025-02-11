@@ -230,9 +230,9 @@ const radioItemVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary has-[:checked]:bg-primary has-[:checked]:text-primary-foreground",
+          "border-primary has-checked:bg-primary has-checked:text-primary-foreground",
         destructive:
-          "border-destructive has-[:checked]:bg-destructive has-[:checked]:text-destructive-foreground",
+          "border-destructive has-checked:bg-destructive has-checked:text-destructive-foreground",
       },
     },
     defaultVariants: {

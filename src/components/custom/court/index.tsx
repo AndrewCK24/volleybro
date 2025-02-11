@@ -15,7 +15,7 @@ export const Court = ({
   return (
     <div
       className={cn(
-        "flex flex-row items-center justify-center w-full max-h-[35vh] aspect-[11/9] bg-primary p-2",
+        "flex flex-row items-center justify-center w-full max-h-[35vh] aspect-11/9 bg-primary p-2",
         className
       )}
     >
@@ -46,7 +46,7 @@ export const Outside = ({
 
 export const Inside = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="relative flex-[9] aspect-[1/1] h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4">
+    <div className="relative flex-9 aspect-1/1 h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4 before:border-background">
       {children}
     </div>
   );
@@ -92,7 +92,7 @@ const Number = ({ children }: { children?: React.ReactNode }) => {
       className={cn(
         "flex items-center justify-center",
         "max-h-[3rem] min-h-[3rem] max-w-[3rem] min-w-[3rem]",
-        "text-[3rem] font-bold svg-[3rem]"
+        "text-[3rem] font-bold [&>svg]:w-12 [&>svg]:h-12"
       )}
     >
       {children}
@@ -106,7 +106,7 @@ const Position = ({ children }: { children?: React.ReactNode }) => {
       className={cn(
         "flex items-center justify-center",
         "max-h-[1.25rem] min-h-[1.25rem] max-w-[1.25rem] min-w-[1.25rem]",
-        "text-[1.25rem] font-normal svg-[1.25rem]"
+        "text-[1.25rem] font-normal [&>svg]:w-5 [&>svg]:h-5"
       )}
     >
       {children}
@@ -118,11 +118,11 @@ export const SubIndicator = ({ number }: { number: number }) => {
   return (
     <Badge
       className={cn(
-        "absolute w-[1.5rem] h-[1.5rem] aspect-[1/1]",
+        "absolute w-[1.5rem] h-[1.5rem] aspect-1/1",
         "flex items-center justify-center",
         "m-1 border-2 border-primary-foreground rounded-full",
         "transition-all duration-200",
-        "text-primary-foreground svg-[1.25rem]",
+        "text-primary-foreground [&>svg]:w-5 [&>svg]:h-5",
         "top-[-0.75rem] right-[-0.75rem] bg-primary"
       )}
     >
@@ -205,7 +205,7 @@ export const AdjustButton = ({
     <div
       className={cn(
         "flex flex-col items-center justify-center gap-2",
-        "text-primary-foreground svg-[2.5rem]",
+        "text-primary-foreground [&>svg]:w-10 [&>svg]:h-10",
         "z-10"
       )}
       onClick={onClick}

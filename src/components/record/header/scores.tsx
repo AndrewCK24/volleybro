@@ -14,7 +14,7 @@ const Container = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center w-16 h-20 text-[3rem] svg-[3rem] leading-none font-bold",
+        "flex flex-col items-center justify-center w-16 h-20 text-[3rem] [&>svg]:w-12 [&>svg]:h-12 leading-none font-bold",
         className
       )}
     >
