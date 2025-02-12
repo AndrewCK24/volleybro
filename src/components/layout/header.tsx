@@ -17,7 +17,7 @@ export const Header = () => {
           onClick={() => router.back()}
           variant="ghost"
           size="icon"
-          className="[&>svg]:w-8 [&>svg]:h-8"
+          className="[&>svg]:size-8"
         >
           <RiArrowLeftLine />
         </Button>
@@ -30,7 +30,7 @@ export const Header = () => {
       >
         VolleyBro
       </h1>
-      <Button variant="ghost" size="icon" className="[&>svg]:w-8 [&>svg]:h-8">
+      <Button variant="ghost" size="icon" className="[&>svg]:size-8">
         <RiNotification2Line />
         <span className="sr-only">notifications</span>
       </Button>

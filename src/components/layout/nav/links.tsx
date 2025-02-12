@@ -42,7 +42,7 @@ export const NavLinks = ({ session }) => {
             ? `/team/${defaultTeamId}/records/new`
             : "/user/invitations"
         }
-        className="[&>svg]:w-10 [&>svg]:h-10"
+        className="[&>svg]:size-10"
         aria-label="Start recording match"
       >
         <RiAddBoxLine />
@@ -87,7 +87,7 @@ const NavLink = ({
       href={href}
       className={cn(
         "flex flex-col items-center justify-center flex-1 h-full pt-2",
-        "no-underline text-foreground [&>svg]:w-7 [&>svg]:h-7 text-xs",
+        "no-underline text-foreground [&>svg]:size-7 text-xs",
         "transition-all duration-200 ease-in-out",
         active && "pt-1 font-semibold border-t-4 border-primary text-primary",
         className

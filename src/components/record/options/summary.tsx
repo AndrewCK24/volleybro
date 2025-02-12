@@ -26,7 +26,7 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
       <div className="flex flex-row items-center w-full">
         <Button
           size="icon"
-          className="w-8 h-8"
+          className="size-8"
           onClick={() => dispatch(recordActions.setSetIndex(set - 1))}
           disabled={set <= 0}
         >
@@ -38,7 +38,7 @@ const RecordOptionsSummary = ({ recordId }: { recordId: string }) => {
         </span>
         <Button
           size="icon"
-          className="w-8 h-8"
+          className="size-8"
           onClick={() => dispatch(recordActions.setSetIndex(set + 1))}
           disabled={set >= record.sets.length - 1}
         >

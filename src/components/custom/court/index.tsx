@@ -46,7 +46,7 @@ export const Outside = ({
 
 export const Inside = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="relative flex-9 aspect-1/1 h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[rgba(253,162,137,1)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4 before:border-background">
+    <div className="relative flex-9 aspect-1/1 h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[hsl(12.93,96.67%,76.47%)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4 before:border-background">
       {children}
     </div>
   );
@@ -71,7 +71,7 @@ const Card = ({
   return (
     <div
       className={cn(
-        "relative w-full h-full flex flex-col items-center justify-center",
+        "relative size-full flex flex-col items-center justify-center",
         "p-1 rounded-lg border-4 border-primary-foreground bg-primary-foreground",
         "transition-all duration-200 z-1",
         empty && "bg-primary-foreground/50 border-primary-foreground/50",
@@ -92,7 +92,7 @@ const Number = ({ children }: { children?: React.ReactNode }) => {
       className={cn(
         "flex items-center justify-center",
         "max-h-[3rem] min-h-[3rem] max-w-[3rem] min-w-[3rem]",
-        "text-[3rem] font-bold [&>svg]:w-12 [&>svg]:h-12"
+        "text-[3rem] font-bold [&>svg]:size-12"
       )}
     >
       {children}
@@ -106,7 +106,7 @@ const Position = ({ children }: { children?: React.ReactNode }) => {
       className={cn(
         "flex items-center justify-center",
         "max-h-[1.25rem] min-h-[1.25rem] max-w-[1.25rem] min-w-[1.25rem]",
-        "text-[1.25rem] font-normal [&>svg]:w-5 [&>svg]:h-5"
+        "text-[1.25rem] font-normal [&>svg]:size-5"
       )}
     >
       {children}
@@ -122,7 +122,7 @@ export const SubIndicator = ({ number }: { number: number }) => {
         "flex items-center justify-center",
         "m-1 border-2 border-primary-foreground rounded-full",
         "transition-all duration-200",
-        "text-primary-foreground [&>svg]:w-5 [&>svg]:h-5",
+        "text-primary-foreground [&>svg]:size-5",
         "top-[-0.75rem] right-[-0.75rem] bg-primary"
       )}
     >
@@ -205,7 +205,7 @@ export const AdjustButton = ({
     <div
       className={cn(
         "flex flex-col items-center justify-center gap-2",
-        "text-primary-foreground [&>svg]:w-10 [&>svg]:h-10",
+        "text-primary-foreground [&>svg]:size-10",
         "z-10"
       )}
       onClick={onClick}

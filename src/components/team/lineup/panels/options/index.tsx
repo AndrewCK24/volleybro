@@ -56,7 +56,7 @@ const LineupOptions = ({
               variant={status.lineupIndex === index ? "default" : "outline"}
               size="icon"
               onClick={() => handlelineupIndexClick(index)}
-              className="text-[1.25rem] w-8 h-8"
+              className="text-[1.25rem] size-8"
             >
               {index + 1}
             </Button>
@@ -95,7 +95,7 @@ const LineupOptions = ({
               const member = members?.find((m) => m._id === player._id);
               return (
                 <TableRow key={member._id}>
-                  <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                  <TableCell className="w-6 [&>svg]:size-6">
                     <RiUserLine />
                   </TableCell>
                   <TableCell className="text-right w-[2.5rem]">
@@ -134,7 +134,7 @@ const LineupOptions = ({
             others.map((member) => {
               return (
                 <TableRow key={member._id}>
-                  <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                  <TableCell className="w-6 [&>svg]:size-6">
                     <RiUserLine />
                   </TableCell>
                   <TableCell className="text-right w-[2.5rem]">

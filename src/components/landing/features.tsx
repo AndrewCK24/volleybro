@@ -49,7 +49,7 @@ const Card = ({ card }) => {
           {card.id}
         </p>
       </div>
-      <div className="h-[80%] w-[80%] transition-transform duration-300 group-hover:scale-110 relative overflow-hidden rounded-3xl border-2 border-foreground md:w-auto md:aspect-[1/2.17]">
+      <div className="size-[80%] transition-transform duration-300 group-hover:scale-110 relative overflow-hidden rounded-3xl border-2 border-foreground md:w-auto md:aspect-[1/2.17]">
         <Image
           src={card.src}
           fill={true}

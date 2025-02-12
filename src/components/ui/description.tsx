@@ -9,7 +9,7 @@ export const Description = React.forwardRef<HTMLDivElement, DescriptionProps>(
   ({ startIcon, endIcon, children, ...props }, ref) => {
     return (
       <div
-        className="flex flex-row [&>svg]:w-6 [&>svg]:h-6 gap-2 items-center basis-10 min-h-10"
+        className="flex flex-row [&>svg]:size-6 gap-2 items-center basis-10 min-h-10"
         ref={ref}
         {...props}
       >

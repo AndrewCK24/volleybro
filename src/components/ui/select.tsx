@@ -31,7 +31,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <HiChevronUpDown className="w-4 h-4 opacity-50" />
+      <HiChevronUpDown className="size-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -128,13 +128,13 @@ const SelectItem = React.forwardRef<
     )}
     {...props}
   >
-    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute right-2 flex size-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <RiCheckLine className="w-4 h-4" />
+        <RiCheckLine className="size-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>
-      <div className="flex items-center w-full h-full gap-1 [&>svg]:w-6 [&>svg]:h-6">
+      <div className="flex items-center size-full gap-1 [&>svg]:size-6">
         {children}
       </div>
     </SelectPrimitive.ItemText>
