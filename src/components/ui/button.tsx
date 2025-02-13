@@ -43,36 +43,36 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-Button.displayName = "Button";
+const Button = ({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: ButtonProps) => {
+  const Comp = asChild ? Slot : "button";
+  return (
+    <Comp
+      data-slot="Button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+};
 
 export interface LinkProps
   extends NextLinkProps,
     React.HTMLAttributes<HTMLAnchorElement>,
     VariantProps<typeof buttonVariants> {}
 
-const ButtonLink = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <Link
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-ButtonLink.displayName = "ButtonLink";
+const ButtonLink = ({ className, variant, size, ...props }: LinkProps) => {
+  return (
+    <Link
+      data-slot="ButtonLink"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+};
 
 export { Button, ButtonLink as Link, buttonVariants };
