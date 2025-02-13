@@ -32,7 +32,7 @@
   --safe-area-inset-left: env(safe-area-inset-left);
 }
 
-[data-theme="dark"] {
+.dark {
   --background: hsl(222.2, 84%, 4.9%);
   --foreground: hsl(210, 40%, 98%);
   --card: hsl(222.2, 84%, 4.9%);
@@ -47,8 +47,8 @@
   --muted-foreground: hsl(215, 20.2%, 65.1%);
   --accent: hsl(217.2, 32.6%, 17.5%);
   --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(13.01, 96.51%, 66.27%);
+  --destructive-foreground: hsl(330, 10%, 96.08%);
   --border: hsl(217.2, 32.6%, 17.5%);
   --input: hsl(217.2, 32.6%, 17.5%);
   --ring: hsl(212.7, 26.8%, 83.9%);

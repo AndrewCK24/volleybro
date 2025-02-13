@@ -16,6 +16,7 @@ import { GoArrowSwitch } from "react-icons/go";
 import { Button, Link } from "@/components/ui/button";
 import { Card, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { DarkMode } from "@/components/user/menu/dark-mode";
 
 const Menu = ({ className }: { className?: string }) => {
   const router = useRouter();
@@ -135,6 +136,7 @@ const Menu = ({ className }: { className?: string }) => {
         <RiSettings4Line />
         設定
       </Button>
+      <DarkMode />
     </Card>
   );
 };
