@@ -55,20 +55,20 @@ export const Invitations = ({ className }: { className?: string }) => {
           ) : (
             teams.inviting.map((team) => (
               <TableRow key={team._id}>
-                <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                <TableCell className="w-6 [&>svg]:size-6">
                   <RiGroupLine />
                 </TableCell>
                 <TableCell onClick={() => router.push(`/team/${team._id}`)}>
                   {team.name}
                 </TableCell>
                 <TableCell
-                  className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-primary"
+                  className="w-6 [&>svg]:size-6 text-primary"
                   onClick={() => handleAccept(team._id, true)}
                 >
                   <RiCheckLine />
                 </TableCell>
                 <TableCell
-                  className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-destructive"
+                  className="w-6 [&>svg]:size-6 text-destructive"
                   onClick={() => handleAccept(team._id, false)}
                 >
                   <RiCloseLine />

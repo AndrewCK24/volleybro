@@ -13,7 +13,7 @@ import {
   useFormContext,
   UseFormReturn,
 } from "react-hook-form";
-import { cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -25,23 +25,24 @@ interface FormProps<TFieldValues extends FieldValues> {
   children?: React.ReactNode;
 }
 
-const Form = React.forwardRef<HTMLFormElement, FormProps<FieldValues>>(
-  ({ form, onSubmit, className, children, ...props }, ref) => {
-    return (
-      <FormProvider {...form}>
-        <form
-          ref={ref}
-          onSubmit={onSubmit}
-          className={cn("flex flex-col gap-4", className)}
-          {...props}
-        >
-          {children}
-        </form>
-      </FormProvider>
-    );
-  }
+const Form = ({
+  form,
+  onSubmit,
+  className,
+  children,
+  ...props
+}: FormProps<FieldValues>) => (
+  <FormProvider {...form}>
+    <form
+      data-slot="Form"
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-4", className)}
+      {...props}
+    >
+      {children}
+    </form>
+  </FormProvider>
 );
-Form.displayName = "Form";
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -98,34 +99,30 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 );
 
-const FormItem = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+const FormItem = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const id = React.useId();
 
   return (
     <FormItemContext.Provider value={{ id }}>
       <div
-        ref={ref}
+        data-slot="FormItem"
         className={cn("flex flex-col gap-1", className)}
         {...props}
       />
     </FormItemContext.Provider>
   );
-});
-FormItem.displayName = "FormItem";
+};
 
-const FormControl = React.forwardRef<
-  React.ElementRef<typeof Slot>,
-  React.ComponentPropsWithoutRef<typeof Slot>
->(({ ...props }, ref) => {
+const FormControl = ({ ...props }: React.ComponentProps<typeof Slot>) => {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 
   return (
     <Slot
-      ref={ref}
+      data-slot="FormControl"
       id={formItemId}
       aria-describedby={
         !error
@@ -136,40 +133,37 @@ const FormControl = React.forwardRef<
       {...props}
     />
   );
-});
-FormControl.displayName = "FormControl";
+};
 
-const FormDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => {
+const FormDescription = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) => {
   const { formDescriptionId } = useFormField();
 
   return (
     <p
-      ref={ref}
+      data-slot="FormDescription"
       id={formDescriptionId}
       className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   );
-});
-FormDescription.displayName = "FormDescription";
+};
 
-const FormMessage = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+const FormMessage = ({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) => {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message) : children;
 
-  if (!body) {
-    return null;
-  }
+  if (!body) return null;
 
   return (
     <p
-      ref={ref}
+      data-slot="FormMessage"
       id={formMessageId}
       className={cn(
         "text-sm font-medium leading-none text-destructive",
@@ -180,19 +174,18 @@ const FormMessage = React.forwardRef<
       {body}
     </p>
   );
-});
-FormMessage.displayName = "FormMessage";
+};
 
-const FormLabel = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => {
+const FormLabel = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof LabelPrimitive.Root>) => {
   const { formItemId } = useFormField();
 
   return (
     <div className="flex flex-row items-baseline gap-2">
       <Label
-        ref={ref}
+        data-slot="FormLabel"
         className={cn(className)}
         htmlFor={formItemId}
         {...props}
@@ -200,29 +193,28 @@ const FormLabel = React.forwardRef<
       <FormMessage />
     </div>
   );
-});
-FormLabel.displayName = "FormLabel";
+};
 
-const FormRadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root> & {
-    onChange?: (value: string) => void;
-    value?: string;
-  }
->(({ children, className, ...props }, ref) => {
+const FormRadioGroup = ({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Root> & {
+  onChange?: (value: string) => void;
+  value?: string;
+}) => {
   return (
     <RadioGroupPrimitive.Root
+      data-slot="FormRadioGroup"
       className={cn("grid gap-2", className)}
       onValueChange={props.onChange}
       defaultValue={props.value}
       {...props}
-      ref={ref}
     >
       {children}
     </RadioGroupPrimitive.Root>
   );
-});
-FormRadioGroup.displayName = "FormRadioGroup";
+};
 
 const radioItemVariants = cva(
   "flex flex-row items-center justify-center text-lg font-medium transition-colors border-2 rounded-md h-9",
@@ -230,9 +222,9 @@ const radioItemVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary has-[:checked]:bg-primary has-[:checked]:text-primary-foreground",
+          "border-primary has-checked:bg-primary has-checked:text-primary-foreground",
         destructive:
-          "border-destructive has-[:checked]:bg-destructive has-[:checked]:text-destructive-foreground",
+          "border-destructive has-checked:bg-destructive has-checked:text-destructive-foreground",
       },
     },
     defaultVariants: {
@@ -241,33 +233,33 @@ const radioItemVariants = cva(
   }
 );
 
-const FormRadioItem = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> & {
-    variant?: "default" | "destructive";
-  }
->(({ children, variant, className, value, id, ...props }, ref) => {
-  return (
-    <FormItem>
-      <Label
-        htmlFor={id}
-        className={cn(radioItemVariants({ variant }), className)}
-      >
-        <FormControl>
-          <RadioGroupPrimitive.Item
-            ref={ref}
-            id={id}
-            value={value}
-            className="sr-only"
-            {...props}
-          />
-        </FormControl>
-        {children}
-      </Label>
-    </FormItem>
-  );
-});
-FormRadioItem.displayName = "FormRadioItem";
+const FormRadioItem = ({
+  children,
+  variant,
+  className,
+  value,
+  id,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item> &
+  VariantProps<typeof radioItemVariants>) => (
+  <FormItem>
+    <Label
+      htmlFor={id}
+      className={cn(radioItemVariants({ variant }), className)}
+    >
+      <FormControl>
+        <RadioGroupPrimitive.Item
+          data-slot="FormRadioItem"
+          id={id}
+          value={value}
+          className="sr-only"
+          {...props}
+        />
+      </FormControl>
+      {children}
+    </Label>
+  </FormItem>
+);
 
 export {
   useFormField,

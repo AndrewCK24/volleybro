@@ -1,6 +1,5 @@
-import { Saira, Noto_Sans_TC } from "next/font/google";
-import "normalize.css";
 import "@/app/globals.css";
+import { Saira, Noto_Sans_TC } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ReduxProvider } from "@/lib/redux/provider";

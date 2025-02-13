@@ -4,7 +4,7 @@ import { useEffect, useState, RefObject } from "react";
 import { CTAButton } from "@/components/landing/cta-button";
 
 interface HeaderProps {
-  observerRef: RefObject<HTMLDivElement>;
+  observerRef: RefObject<HTMLDivElement | null>;
 }
 
 export const Header = ({ observerRef }: HeaderProps) => {

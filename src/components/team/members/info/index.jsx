@@ -34,7 +34,7 @@ const MembersInfo = ({ teamId, memberId, className }) => {
             className="rounded-full"
           />
         ) : (
-          <RiUserLine className="w-16 h-16 rounded-full text-muted-foreground" />
+          <RiUserLine className="size-16 rounded-full text-muted-foreground" />
         )}
         <CardTitle>{member.name}</CardTitle>
         {isAdmin && (
