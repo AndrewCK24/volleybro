@@ -129,7 +129,7 @@ const Options = ({
                 const member = members?.find((m) => m._id === player._id);
                 return (
                   <TableRow key={member._id}>
-                    <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                    <TableCell className="w-6 [&>svg]:size-6">
                       <RiUserLine />
                     </TableCell>
                     <TableCell className="text-right w-[2.5rem]">

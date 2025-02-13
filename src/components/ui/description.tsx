@@ -5,49 +5,45 @@ interface DescriptionProps extends React.HTMLAttributes<HTMLDivElement> {
   endIcon?: React.ReactNode;
 }
 
-export const Description = React.forwardRef<HTMLDivElement, DescriptionProps>(
-  ({ startIcon, endIcon, children, ...props }, ref) => {
-    return (
-      <div
-        className="flex flex-row [&>svg]:w-6 [&>svg]:h-6 gap-2 items-center basis-10 min-h-10"
-        ref={ref}
-        {...props}
-      >
-        {startIcon}
-        <div className="flex flex-col flex-1">{children}</div>
-        {endIcon}
-      </div>
-    );
-  }
-);
-Description.displayName = "Description";
+const Description = ({
+  startIcon,
+  endIcon,
+  children,
+  ...props
+}: DescriptionProps) => {
+  return (
+    <div
+      data-slot="Description"
+      className="flex flex-row [&>svg]:size-6 gap-2 items-center basis-10 min-h-10"
+      {...props}
+    >
+      {startIcon}
+      <div className="flex flex-col flex-1">{children}</div>
+      {endIcon}
+    </div>
+  );
+};
 
 interface DescriptionTitleProps
   extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-export const DescriptionTitle = React.forwardRef<
-  HTMLParagraphElement,
-  DescriptionTitleProps
->(({ children }, ref) => {
+const DescriptionTitle = ({ children }: DescriptionTitleProps) => {
   return (
-    <p className="font-semibold" ref={ref}>
+    <p data-slot="DescriptionTitle" className="font-semibold">
       {children}
     </p>
   );
-});
-DescriptionTitle.displayName = "DescriptionTitle";
+};
 
 interface DescriptionContentProps
   extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-export const DescriptionContent = React.forwardRef<
-  HTMLParagraphElement,
-  DescriptionContentProps
->(({ children }, ref) => {
+const DescriptionContent = ({ children }: DescriptionContentProps) => {
   return (
-    <p className="text-muted-foreground" ref={ref}>
+    <p data-slot="DescriptionContent" className="text-muted-foreground">
       {children}
     </p>
   );
-});
-DescriptionContent.displayName = "DescriptionContent";
+};
+
+export { Description, DescriptionTitle, DescriptionContent };

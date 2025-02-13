@@ -20,7 +20,7 @@ export const Features = () => {
   return (
     <section
       ref={targetRef}
-      className="relative h-[300vh] bg-gradient-to-b from-black/0 from-20% to-foreground to-80%"
+      className="relative h-[300vh] bg-linear-to-b from-black/0 from-20% to-foreground to-80%"
     >
       <div className="sticky top-0 flex items-center h-screen overflow-hidden">
         <motion.div style={{ x }} className="flex gap-4">
@@ -39,8 +39,8 @@ const Card = ({ card }) => {
       key={card.id}
       className={cn(
         "group relative h-[80vh] aspect-[1/2.17] overflow-hidden",
-        "flex flex-col justify-end items-center rounded-3xl shadow",
-        "bg-gradient-to-t from-background from-30% to-destructive to-80%",
+        "flex flex-col justify-end items-center rounded-3xl shadow-sm",
+        "bg-linear-to-t from-background from-30% to-destructive to-80%",
         "md:w-[50vw] md:aspect-auto"
       )}
     >
@@ -49,7 +49,7 @@ const Card = ({ card }) => {
           {card.id}
         </p>
       </div>
-      <div className="h-[80%] w-[80%] transition-transform duration-300 group-hover:scale-110 relative overflow-hidden rounded-3xl border-2 border-foreground md:w-auto md:aspect-[1/2.17]">
+      <div className="size-[80%] transition-transform duration-300 group-hover:scale-110 relative overflow-hidden rounded-3xl border-2 border-foreground md:w-auto md:aspect-[1/2.17]">
         <Image
           src={card.src}
           fill={true}

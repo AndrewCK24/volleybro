@@ -40,7 +40,7 @@ export const EntryScore = ({
     <div
       className={cn(
         "flex items-center justify-center flex-none",
-        "basis-8 w-8 h-8 text-[1.5rem] rounded-[0.5rem] font-semibold",
+        "basis-8 size-8 text-[1.5rem] rounded-[0.5rem] font-semibold",
         win !== null &&
           (win ? "bg-primary text-primary-foreground" : "bg-accent")
       )}
@@ -61,7 +61,7 @@ export const EntryText = ({
     className={cn(
       "flex flex-row flex-1 text-[1.375rem] items-center gap-1 px-1 h-6",
       "max-w-[calc(100%-9rem)] border-l-[0.125rem]",
-      "[&>svg]:w-6 [&>svg]:h-6 stroke-[3px]",
+      "[&>svg]:size-6 stroke-[3px]",
       className
     )}
   >

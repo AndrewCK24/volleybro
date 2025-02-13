@@ -98,13 +98,13 @@ export const CTAButton = ({ className, ...props }: ButtonProps) => {
             <li className="flex items-center">
               <span className="w-4">1.</span>
               點擊下方的分享
-              <RiShare2Line className="inline-block w-5 h-5" />
+              <RiShare2Line className="inline-block size-5" />
               按鈕
             </li>
             <li className="flex items-start">
               <span className="w-4">2.</span>
               向下滑動並選擇「加入主畫面
-              <RiAddBoxLine className="inline-block w-5 h-5" />」
+              <RiAddBoxLine className="inline-block size-5" />」
             </li>
           </ul>
           <DialogFooter>

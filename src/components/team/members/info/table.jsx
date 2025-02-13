@@ -12,7 +12,7 @@ const MembersInfoTable = ({ team, member, className }) => {
       <TableBody className="text-xl">
         {contents.map(({ key, value, icon }) => (
           <TableRow key={key}>
-            <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+            <TableCell className="w-6 [&>svg]:size-6">
               {icon}
             </TableCell>
             <TableCell className="text-nowrap text-muted-foreground">

@@ -18,7 +18,7 @@ export const Main = ({ children }: { children: React.ReactNode }) => {
         }`}
       >
         <div
-          className={`w-6 h-6 border-2 rounded-full border-primary border-t-transparent ${
+          className={`size-6 border-2 rounded-full border-primary border-t-transparent ${
             isRefreshing ? "animate-spin" : ""
           }`}
         />
