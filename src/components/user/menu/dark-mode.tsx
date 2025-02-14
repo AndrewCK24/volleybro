@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import {
   RiSunLine,
@@ -20,7 +21,21 @@ import {
 } from "@/components/ui/dialog";
 
 export const DarkMode = () => {
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="wide">
+        <RiMoonLine />
+        深色模式
+      </Button>
+    );
+  }
 
   return (
     <Dialog>

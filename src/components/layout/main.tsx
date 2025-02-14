@@ -23,7 +23,7 @@ export const Main = ({ children }: { children: React.ReactNode }) => {
           }`}
         />
       </div>
-      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 gap-2">
+      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 gap-1">
         {children}
       </div>
     </main>
