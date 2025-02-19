@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { RiGroupLine, RiArrowRightWideLine } from "react-icons/ri";
+import { Card } from "@/components/ui/card";
 import { Rally, type Record } from "@/entities/record";
 
 const Result = ({ record }: { record: Record }) => {
@@ -33,9 +34,9 @@ const Result = ({ record }: { record: Record }) => {
   );
 
   return (
-    <div
+    <Card
       onClick={() => router.push(`/record/${record._id}`)}
-      className="flex flex-col gap-2 px-4 py-2 bg-background md:flex-row"
+      className="flex flex-col gap-2 px-4 py-2 bg-card md:flex-row"
     >
       <div className="flex flex-row items-center justify-center grow-0 gap-2 md:flex-col">
         <p className="flex-1">{record.info.name || "no title"}</p>
@@ -49,7 +50,7 @@ const Result = ({ record }: { record: Record }) => {
         查看比賽
         <RiArrowRightWideLine />
       </div>
-    </div>
+    </Card>
   );
 };
 

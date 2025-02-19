@@ -20,7 +20,7 @@ export const Features = () => {
   return (
     <section
       ref={targetRef}
-      className="relative h-[300vh] bg-linear-to-b from-black/0 from-20% to-foreground to-80%"
+      className="relative h-[300vh] bg-linear-to-b from-black/0 from-20% to-muted to-80%"
     >
       <div className="sticky top-0 flex items-center h-screen overflow-hidden">
         <motion.div style={{ x }} className="flex gap-4">

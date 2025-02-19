@@ -16,8 +16,10 @@ export const SquaresStack = () => {
         <div
           key={index}
           className={cn(
-            "absolute bg-background top-0 right-0 aspect-square transition duration-300 rounded-full",
-            index === SQUARES - HIGHLIGHT ? "bg-destructive" : "bg-background"
+            "absolute top-0 right-0 aspect-square transition duration-300 rounded-full",
+            index === SQUARES - HIGHLIGHT
+              ? "bg-destructive"
+              : "bg-background dark:bg-foreground"
           )}
           style={{
             width: `calc(min(100vw, 100vh) * (0.65 - ${index * 0.05}))`,

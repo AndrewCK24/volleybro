@@ -58,7 +58,7 @@ const RecordSetOptions = ({ recordId }) => {
         recordId={recordId}
         members={record.teams.home.players}
         hasPairedSwitchPosition={hasPairedSwitchPosition}
-        className="flex-1 px-0 overflow-scroll shadow-none"
+        className="flex-1 px-0 overflow-x-hidden overflow-y-scroll shadow-none"
       />
     </DialogContent>
   );

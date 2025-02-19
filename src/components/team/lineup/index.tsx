@@ -55,10 +55,10 @@ const Lineup = ({ team, members, handleSave }) => {
       <LineupPanels
         members={members}
         hasPairedSwitchPosition={hasPairedSwitchPosition}
-        className="flex-1 w-full overflow-scroll"
+        className="w-full"
       />
       {!status.optionMode && (
-        <div className="flex flex-col w-full px-4">
+        <div className="flex flex-col w-full px-4 pt-2">
           <Button
             size="lg"
             onClick={() => handleSave(lineups)}

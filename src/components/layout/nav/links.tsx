@@ -19,7 +19,7 @@ export const NavLinks = ({ session }) => {
   const defaultTeamId = session?.user?.teams?.joined[0];
 
   return (
-    <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full pb-[calc(env(safe-area-inset-bottom)-1rem)] bg-background">
+    <nav className="fixed bottom-0 left-0 flex flex-row items-center justify-center w-full pb-[calc(env(safe-area-inset-bottom)-1rem)] bg-card">
       <NavLink
         href="/home"
         active={pathname === "/home"}

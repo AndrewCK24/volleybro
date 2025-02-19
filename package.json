@@ -1,6 +1,6 @@
 {
   "name": "volleybro",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -33,6 +33,7 @@
     "motion": "^12.4.2",
     "next": "15.1.7",
     "next-auth": "^5.0.0-beta.25",
+    "next-themes": "^0.4.4",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-hook-form": "^7.54.2",

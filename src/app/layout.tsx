@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ReduxProvider } from "@/lib/redux/provider";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundColorHandler } from "@/components/layout/bg-handler";
 import type { Metadata, Viewport } from "next";
@@ -80,7 +81,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${saira.variable} ${notoSansTC.variable}`}>
+    <html
+      lang="en"
+      className={`${saira.variable} ${notoSansTC.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -182,13 +187,20 @@ export default async function RootLayout({
       <body>
         <SessionProvider>
           <ReduxProvider>
-            {children}
-            <Toaster />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster />
+              <BackgroundColorHandler />
+              <Analytics />
+              <SpeedInsights />
+            </ThemeProvider>
           </ReduxProvider>
         </SessionProvider>
-        <BackgroundColorHandler />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

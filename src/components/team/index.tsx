@@ -18,7 +18,7 @@ const Team = ({ teamId, tab }: { teamId: string; tab: string }) => {
   usePullToRefresh(mutate);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       <ConfirmInvitation teamId={teamId} />
       <TeamHero teamId={teamId} />
       <Tabs defaultValue={defaultTab} className="relative w-full">
