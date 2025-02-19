@@ -98,7 +98,7 @@ const Options = ({
       onSubmit={form.handleSubmit(onSubmit)}
       className="flex flex-col flex-1 w-full gap-2 pt-2 overflow-auto"
     >
-      <Card className="flex-1 p-0 overflow-scroll shadow-none">
+      <Card className="flex-1 p-0 overflow-y-scroll shadow-none">
         <FormField
           control={form.control}
           name="serve"

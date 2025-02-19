@@ -46,7 +46,7 @@ export const Outside = ({
 
 export const Inside = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className="relative flex-9 aspect-1/1 h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[hsl(12.93,96.67%,76.47%)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4 before:border-background">
+    <div className="relative flex-9 aspect-1/1 h-full max-h-[35vh] py-[5%] px-2 grid [grid-template-areas:'z4_z3_z2''z5_z6_z1'] gap-2 bg-[hsl(12.93,96.67%,76.47%)] border-4 border-primary-foreground before:content-[''] before:absolute before:top-0 before:w-full before:min-h-[calc((100%-1rem)/3)] before:bg-destructive before:border-b-4 before:border-background dark:before:border-primary-foreground">
       {children}
     </div>
   );
@@ -72,10 +72,10 @@ const Card = ({
     <div
       className={cn(
         "relative size-full flex flex-col items-center justify-center",
-        "p-1 rounded-lg border-4 border-primary-foreground bg-primary-foreground",
+        "p-1 rounded-lg border-4 border-primary-foreground text-foreground bg-card dark:text-card dark:bg-foreground",
         "transition-all duration-200 z-1",
         empty && "bg-primary-foreground/50 border-primary-foreground/50",
-        toggled && "bg-primary text-primary-foreground",
+        toggled && "bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground",
         className
       )}
       onClick={onClick}

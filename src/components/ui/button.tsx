@@ -6,7 +6,7 @@ import Link, { type LinkProps as NextLinkProps } from "next/link";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap gap-2 rounded-md font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap gap-2 rounded-md font-medium transition-[color,box-shadow] focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -15,19 +15,19 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+          "bg-background border shadow-xs hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 xl:hover:underline",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 rounded-md px-2 py-2 text-sm [&>svg]:size-5",
-        xs: "h-4 rounded-md text-xs [&>svg]:size-4",
+        xs: "h-6 rounded-md p-0 md:px-1 text-xs [&>svg]:size-4",
         sm: "h-8 rounded-md p-0 md:px-3 text-xs [&>svg]:size-4",
         lg: "h-10 rounded-md p-0 md:px-8 text-lg [&>svg]:size-6",
         wide: "w-full h-10 px-3 text-lg rounded-md justify-start [&>svg]:size-6",
-        icon: "size-6 [&>svg]:size-6",
+        icon: "size-8 [&>svg]:size-7",
       },
     },
     defaultVariants: {
