@@ -5,7 +5,7 @@ import { Footer } from "@/components/landing/footer";
 
 const LandingPage = () => {
   return (
-    <main className="w-full min-h-full bg-primary">
+    <main className="w-full min-h-full bg-primary select-text">
       <Hero />
       <Features />
       <Benefits />
