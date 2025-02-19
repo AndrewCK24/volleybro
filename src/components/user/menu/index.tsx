@@ -70,7 +70,7 @@ const Menu = ({ className }: { className?: string }) => {
         )}
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         size="wide"
         onClick={() => setExtendTeams(!extendTeams)}
       >
@@ -132,7 +132,7 @@ const Menu = ({ className }: { className?: string }) => {
             </Link>
           </>
         ))}
-      <Button variant="outline" size="wide">
+      <Button variant="secondary" size="wide">
         <RiSettings4Line />
         設定
       </Button>

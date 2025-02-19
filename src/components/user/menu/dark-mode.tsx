@@ -40,7 +40,7 @@ export const DarkMode = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="wide">
+        <Button variant="secondary" size="wide">
           <RiMoonLine />
           深色模式
         </Button>
@@ -55,7 +55,7 @@ export const DarkMode = () => {
         <div className="flex flex-col gap-2">
           <DialogClose asChild>
             <Button
-              variant={theme === "system" ? "default" : "outline"}
+              variant={theme === "system" ? "default" : "secondary"}
               onClick={() => setTheme("system")}
             >
               {theme === "system" ? <RiDeviceFill /> : <RiDeviceLine />}
@@ -64,7 +64,7 @@ export const DarkMode = () => {
           </DialogClose>
           <DialogClose asChild>
             <Button
-              variant={theme === "light" ? "default" : "outline"}
+              variant={theme === "light" ? "default" : "secondary"}
               onClick={() => setTheme("light")}
             >
               {theme === "light" ? <RiSunFill /> : <RiSunLine />}
@@ -73,7 +73,7 @@ export const DarkMode = () => {
           </DialogClose>
           <DialogClose asChild>
             <Button
-              variant={theme === "dark" ? "default" : "outline"}
+              variant={theme === "dark" ? "default" : "secondary"}
               onClick={() => setTheme("dark")}
             >
               {theme === "dark" ? <RiMoonFill /> : <RiMoonLine />}
