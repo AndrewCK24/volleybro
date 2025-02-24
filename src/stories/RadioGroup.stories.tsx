@@ -17,15 +17,15 @@ export const Default: Story = {
     <RadioGroup defaultValue="1">
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="1" id="r1" />
-        <Label htmlFor="r1">選項一</Label>
+        <Label htmlFor="r1">Option 1</Label>
       </div>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="2" id="r2" />
-        <Label htmlFor="r2">選項二</Label>
+        <Label htmlFor="r2">Option 2</Label>
       </div>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="3" id="r3" />
-        <Label htmlFor="r3">選項三</Label>
+        <Label htmlFor="r3">Option 3</Label>
       </div>
     </RadioGroup>
   ),
@@ -37,12 +37,12 @@ export const Disabled: Story = {
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="1" id="dr1" disabled />
         <Label htmlFor="dr1" className="text-muted-foreground">
-          已禁用選項
+          Disabled Option
         </Label>
       </div>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="2" id="dr2" />
-        <Label htmlFor="dr2">可用選項</Label>
+        <Label htmlFor="dr2">Available Option</Label>
       </div>
     </RadioGroup>
   ),

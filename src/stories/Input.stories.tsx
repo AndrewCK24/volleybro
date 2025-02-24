@@ -12,15 +12,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => <Input placeholder="請輸入..." className="w-[300px]" />,
+  render: () => <Input placeholder="Enter text..." className="w-[300px]" />,
 };
 
 export const WithValue: Story = {
   render: () => (
-    <Input value="預設文字" onChange={() => {}} className="w-[300px]" />
+    <Input value="Default text" onChange={() => {}} className="w-[300px]" />
   ),
 };
 
 export const Disabled: Story = {
-  render: () => <Input disabled value="禁用狀態" className="w-[300px]" />,
+  render: () => <Input disabled value="Disabled state" className="w-[300px]" />,
 };

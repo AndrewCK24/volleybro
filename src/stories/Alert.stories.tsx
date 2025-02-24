@@ -23,9 +23,10 @@ export const Default: Story = {
   render: (args) => (
     <Alert {...args}>
       <RiInformationLine />
-      <AlertTitle>注意</AlertTitle>
+      <AlertTitle>Note</AlertTitle>
       <AlertDescription>
-        這是一個預設樣式的警示訊息，用於展示一般資訊。
+        This is a default style alert message used to display general
+        information.
       </AlertDescription>
     </Alert>
   ),
@@ -36,9 +37,9 @@ export const Destructive: Story = {
   render: (args) => (
     <Alert {...args}>
       <RiAlertLine />
-      <AlertTitle>錯誤</AlertTitle>
+      <AlertTitle>Error</AlertTitle>
       <AlertDescription>
-        這是一個破壞性的警示訊息，用於顯示錯誤或警告。
+        This is a destructive alert message used to display errors or warnings.
       </AlertDescription>
     </Alert>
   ),

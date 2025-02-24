@@ -14,7 +14,7 @@ const meta = {
       control: { type: "select" },
     },
   },
-  args: { children: "標籤" },
+  args: { children: "Badge" },
 } satisfies Meta<typeof Badge>;
 
 export default meta;
@@ -29,7 +29,7 @@ export const WithIcon: Story = {
   render: (args) => (
     <Badge {...args}>
       <RiStarFill />
-      收藏
+      Favorite
     </Badge>
   ),
 };

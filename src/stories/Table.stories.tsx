@@ -24,34 +24,34 @@ type Story = StoryObj<typeof meta>;
 const invoices = [
   {
     invoice: "INV001",
-    paymentStatus: "已付款",
+    paymentStatus: "Paid",
     totalAmount: "$250.00",
-    paymentMethod: "信用卡",
+    paymentMethod: "Credit Card",
   },
   {
     invoice: "INV002",
-    paymentStatus: "待處理",
+    paymentStatus: "Pending",
     totalAmount: "$150.00",
-    paymentMethod: "銀行轉帳",
+    paymentMethod: "Bank Transfer",
   },
   {
     invoice: "INV003",
-    paymentStatus: "已付款",
+    paymentStatus: "Paid",
     totalAmount: "$350.00",
-    paymentMethod: "信用卡",
+    paymentMethod: "Credit Card",
   },
 ];
 
 export const Default: Story = {
   render: () => (
     <Table>
-      <TableCaption>近期訂單列表</TableCaption>
+      <TableCaption>Recent Orders List</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>訂單編號</TableHead>
-          <TableHead>付款狀態</TableHead>
-          <TableHead>金額</TableHead>
-          <TableHead>付款方式</TableHead>
+          <TableHead>Order ID</TableHead>
+          <TableHead>Payment Status</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Payment Method</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -61,7 +61,7 @@ export const Default: Story = {
             <TableCell>
               <Badge
                 variant={
-                  invoice.paymentStatus === "已付款" ? "default" : "outline"
+                  invoice.paymentStatus === "Paid" ? "default" : "outline"
                 }
               >
                 {invoice.paymentStatus}
@@ -74,7 +74,7 @@ export const Default: Story = {
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={3}>總計</TableCell>
+          <TableCell colSpan={3}>Total</TableCell>
           <TableCell>$750.00</TableCell>
         </TableRow>
       </TableFooter>
@@ -87,21 +87,21 @@ export const Simple: Story = {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>名稱</TableHead>
-          <TableHead>狀態</TableHead>
-          <TableHead>操作</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow>
-          <TableCell className="font-medium">項目 A</TableCell>
-          <TableCell>使用中</TableCell>
-          <TableCell>檢視</TableCell>
+          <TableCell className="font-medium">Item A</TableCell>
+          <TableCell>Active</TableCell>
+          <TableCell>View</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell className="font-medium">項目 B</TableCell>
-          <TableCell>停用</TableCell>
-          <TableCell>編輯</TableCell>
+          <TableCell className="font-medium">Item B</TableCell>
+          <TableCell>Inactive</TableCell>
+          <TableCell>Edit</TableCell>
         </TableRow>
       </TableBody>
     </Table>

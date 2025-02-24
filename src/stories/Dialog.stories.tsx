@@ -24,17 +24,17 @@ export const Default: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>打開對話框</Button>
+        <Button>Open Dialog</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>標題</DialogTitle>
-          <DialogDescription>這是一段說明文字</DialogDescription>
+          <DialogTitle>Title</DialogTitle>
+          <DialogDescription>This is a description text</DialogDescription>
         </DialogHeader>
-        <div className="py-4">這裡是對話框的主要內容區域</div>
+        <div className="py-4">This is the main content area of the dialog</div>
         <DialogFooter>
-          <Button variant="secondary">取消</Button>
-          <Button>確認</Button>
+          <Button variant="secondary">Cancel</Button>
+          <Button>Confirm</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -45,17 +45,19 @@ export const Large: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>大型對話框</Button>
+        <Button>Large Dialog</Button>
       </DialogTrigger>
       <DialogContent size="lg">
         <DialogHeader>
-          <DialogTitle>大型對話框</DialogTitle>
-          <DialogDescription>這是一個全螢幕的對話框範例</DialogDescription>
+          <DialogTitle>Large Dialog</DialogTitle>
+          <DialogDescription>
+            This is an example of a full-screen dialog
+          </DialogDescription>
         </DialogHeader>
-        <div className="py-4">可以放置更多的內容</div>
+        <div className="py-4">More content can be placed here</div>
         <DialogFooter>
-          <Button variant="secondary">取消</Button>
-          <Button>確認</Button>
+          <Button variant="secondary">Cancel</Button>
+          <Button>Confirm</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

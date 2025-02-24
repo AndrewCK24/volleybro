@@ -20,8 +20,10 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <Description>
-      <DescriptionTitle>基本說明</DescriptionTitle>
-      <DescriptionContent>這是一段說明文字的內容</DescriptionContent>
+      <DescriptionTitle>Basic Description</DescriptionTitle>
+      <DescriptionContent>
+        This is the content of a description text
+      </DescriptionContent>
     </Description>
   ),
 };
@@ -29,8 +31,10 @@ export const Default: Story = {
 export const WithStartIcon: Story = {
   render: () => (
     <Description startIcon={<RiInformationLine />}>
-      <DescriptionTitle>帶有起始圖示</DescriptionTitle>
-      <DescriptionContent>在左側添加資訊圖示的說明文字</DescriptionContent>
+      <DescriptionTitle>With Start Icon</DescriptionTitle>
+      <DescriptionContent>
+        Description with an information icon on the left
+      </DescriptionContent>
     </Description>
   ),
 };
@@ -38,8 +42,10 @@ export const WithStartIcon: Story = {
 export const WithEndIcon: Story = {
   render: () => (
     <Description endIcon={<RiArrowRightLine />}>
-      <DescriptionTitle>帶有結尾圖示</DescriptionTitle>
-      <DescriptionContent>在右側添加箭頭圖示的說明文字</DescriptionContent>
+      <DescriptionTitle>With End Icon</DescriptionTitle>
+      <DescriptionContent>
+        Description with an arrow icon on the right
+      </DescriptionContent>
     </Description>
   ),
 };
@@ -50,8 +56,8 @@ export const WithBothIcons: Story = {
       startIcon={<RiInformationLine />}
       endIcon={<RiArrowRightLine />}
     >
-      <DescriptionTitle>雙側圖示</DescriptionTitle>
-      <DescriptionContent>在兩側都添加圖示的說明文字範例</DescriptionContent>
+      <DescriptionTitle>Both Icons</DescriptionTitle>
+      <DescriptionContent>Example with icons on both sides</DescriptionContent>
     </Description>
   ),
 };
@@ -59,10 +65,11 @@ export const WithBothIcons: Story = {
 export const LongContent: Story = {
   render: () => (
     <Description startIcon={<RiInformationLine />}>
-      <DescriptionTitle>較長的說明標題範例</DescriptionTitle>
+      <DescriptionTitle>Long Description Title Example</DescriptionTitle>
       <DescriptionContent>
-        這是一段較長的說明文字內容，用來展示當內容較多時的排版效果。
-        在這裡可以放置更詳細的說明資訊，幫助使用者更好地理解功能或內容。
+        This is a longer description content to demonstrate the layout when
+        there is more text. Here you can place more detailed information to help
+        users better understand the feature or content.
       </DescriptionContent>
     </Description>
   ),

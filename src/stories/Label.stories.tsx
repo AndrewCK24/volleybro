@@ -13,14 +13,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => <Label>標籤文字</Label>,
+  render: () => <Label>Label Text</Label>,
 };
 
 export const WithInput: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="input">使用者名稱</Label>
-      <Input id="input" placeholder="請輸入使用者名稱" className="w-[300px]" />
+      <Label htmlFor="input">Username</Label>
+      <Input id="input" placeholder="Enter username" className="w-[300px]" />
     </div>
   ),
 };
@@ -29,12 +29,12 @@ export const Disabled: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
       <Label htmlFor="disabled-input" className="text-muted-foreground">
-        禁用狀態
+        Disabled State
       </Label>
       <Input
         id="disabled-input"
         disabled
-        value="無法編輯"
+        value="Cannot edit"
         className="w-[300px]"
       />
     </div>

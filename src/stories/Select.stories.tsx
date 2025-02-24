@@ -21,12 +21,12 @@ export const Default: Story = {
   render: () => (
     <Select>
       <SelectTrigger className="w-[200px]">
-        <SelectValue placeholder="請選擇..." />
+        <SelectValue placeholder="Select..." />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="1">選項一</SelectItem>
-        <SelectItem value="2">選項二</SelectItem>
-        <SelectItem value="3">選項三</SelectItem>
+        <SelectItem value="1">Option 1</SelectItem>
+        <SelectItem value="2">Option 2</SelectItem>
+        <SelectItem value="3">Option 3</SelectItem>
       </SelectContent>
     </Select>
   ),
@@ -39,9 +39,9 @@ export const WithDefaultValue: Story = {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="1">選項一</SelectItem>
-        <SelectItem value="2">選項二</SelectItem>
-        <SelectItem value="3">選項三</SelectItem>
+        <SelectItem value="1">Option 1</SelectItem>
+        <SelectItem value="2">Option 2</SelectItem>
+        <SelectItem value="3">Option 3</SelectItem>
       </SelectContent>
     </Select>
   ),

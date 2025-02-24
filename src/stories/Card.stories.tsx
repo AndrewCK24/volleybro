@@ -26,10 +26,12 @@ export const Default: Story = {
   render: () => (
     <Card className="w-[450px]">
       <CardHeader>
-        <CardTitle>卡片標題</CardTitle>
+        <CardTitle>Card Title</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>這是卡片的內容區域，可以放置任何內容。</p>
+        <p>
+          This is the content area of the card, which can contain any content.
+        </p>
       </CardContent>
     </Card>
   ),
@@ -39,14 +41,16 @@ export const WithDescription: Story = {
   render: () => (
     <Card className="w-[450px]">
       <CardHeader>
-        <CardTitle>使用說明</CardTitle>
-        <CardDescription>這裡是卡片的補充說明文字</CardDescription>
+        <CardTitle>Instructions</CardTitle>
+        <CardDescription>
+          This is the supplementary description text for the card
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>主要內容區域</p>
+        <p>Main Content Area</p>
       </CardContent>
       <CardFooter>
-        <p className="text-sm text-muted-foreground">更新於 2024/03/21</p>
+        <p className="text-sm text-muted-foreground">Updated on 2024/03/21</p>
       </CardFooter>
     </Card>
   ),
@@ -56,7 +60,7 @@ export const WithActions: Story = {
   render: () => (
     <Card className="w-[450px]">
       <CardHeader>
-        <CardTitle>操作範例</CardTitle>
+        <CardTitle>Action Example</CardTitle>
         <CardBtnGroup>
           <Button variant="ghost" size="icon">
             <RiEditFill />
@@ -70,7 +74,9 @@ export const WithActions: Story = {
         </CardBtnGroup>
       </CardHeader>
       <CardContent>
-        <p>這個卡片展示了如何在標題區域添加操作按鈕。</p>
+        <p>
+          This card demonstrates how to add action buttons in the title area.
+        </p>
       </CardContent>
     </Card>
   ),

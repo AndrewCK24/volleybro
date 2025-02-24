@@ -28,12 +28,12 @@ export const Default: Story = {
       <Button
         onClick={() =>
           toast({
-            title: "已完成",
-            description: "操作已成功完成",
+            title: "Completed",
+            description: "Operation completed successfully",
           })
         }
       >
-        顯示通知
+        Show Toast
       </Button>
     );
   },
@@ -46,17 +46,17 @@ export const WithAction: Story = {
       <Button
         onClick={() =>
           toast({
-            title: "更新可用",
-            description: "新版本已經準備就緒",
+            title: "Update Available",
+            description: "A new version is ready to install",
             action: (
               <Button variant="outline" size="sm">
-                立即更新
+                Update Now
               </Button>
             ),
           })
         }
       >
-        帶有操作的通知
+        Toast with Action
       </Button>
     );
   },
@@ -71,12 +71,12 @@ export const Destructive: Story = {
         onClick={() =>
           toast({
             variant: "destructive",
-            title: "錯誤",
-            description: "發生了一些問題",
+            title: "Error",
+            description: "Something went wrong",
           })
         }
       >
-        錯誤通知
+        Error Toast
       </Button>
     );
   },
