@@ -62,7 +62,9 @@ export const Disabled: Story = {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="active">This is active tab content</TabsContent>
-      <TabsContent value="disabled">This content won't be shown</TabsContent>
+      <TabsContent value="disabled">
+        {"This content won't be shown"}
+      </TabsContent>
     </Tabs>
   ),
 };
