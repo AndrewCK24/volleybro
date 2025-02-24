@@ -2,7 +2,7 @@
 import { useRef } from "react";
 import { Header } from "@/components/landing/header";
 import { Badge } from "@/components/ui/badge";
-import { FlipWords } from "@/components/ui/filp-words";
+import { FlipWords } from "@/components/ui/flip-words";
 import { CTAButton } from "@/components/landing/cta-button";
 import { SquaresStack } from "@/components/landing/animation";
 
