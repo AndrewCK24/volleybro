@@ -40,8 +40,8 @@ const RecordOptions = ({
               {tabValue === "summary" && "逐球紀錄"}
               {tabValue === "settings" && "賽事資訊與設定"}
             </DialogTitle>
+            <DialogDescription className="sr-only">Options</DialogDescription>
           </DialogHeader>
-          <DialogDescription className="sr-only">Options</DialogDescription>
           <Tabs value={tabValue} onValueChange={setTabValue}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">總覽</TabsTrigger>

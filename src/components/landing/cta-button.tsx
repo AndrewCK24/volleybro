@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -90,9 +91,10 @@ export const CTAButton = ({ className, ...props }: ButtonProps) => {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="mb-2 text-lg font-semibold">
-              安裝此應用程式到主頁面
-            </DialogTitle>
+            <DialogTitle>安裝此應用程式到主頁面</DialogTitle>
+            <DialogDescription>
+              透過以下步驟將此應用程式安裝到您的 iOS 裝置主頁面
+            </DialogDescription>
           </DialogHeader>
           <ul className="space-y-2 text-sm">
             <li className="flex items-center">

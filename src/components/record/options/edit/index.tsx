@@ -3,7 +3,11 @@ import { useAppDispatch } from "@/lib/redux/hooks";
 import { recordActions } from "@/lib/features/record/record-slice";
 import { RiArrowLeftWideLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import RecordCourt from "@/components/record/court";
 import RecordPreview from "@/components/record/preview";
 import RecordPanels from "@/components/record/panels";
@@ -13,7 +17,7 @@ const EntriesEdit = ({ recordId }: { recordId: string }) => {
 
   return (
     <>
-      <DialogHeader>
+      <DialogHeader className="flex-row items-center">
         <Button
           variant="ghost"
           size="icon"
@@ -23,6 +27,9 @@ const EntriesEdit = ({ recordId }: { recordId: string }) => {
           <span className="sr-only">back</span>
         </Button>
         <DialogTitle>編輯逐球紀錄</DialogTitle>
+        <DialogDescription className="sr-only">
+          逐球紀錄編輯頁面
+        </DialogDescription>
       </DialogHeader>
       <RecordCourt recordId={recordId} mode="editing" />
       <RecordPreview

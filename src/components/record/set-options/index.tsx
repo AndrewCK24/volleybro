@@ -45,13 +45,13 @@ const RecordSetOptions = ({ recordId }) => {
 
   return (
     <DialogContent size="lg">
-      <DialogDescription className="sr-only">
-        設定第 {setIndex + 1} 局的陣容
-      </DialogDescription>
       <DialogHeader>
         <DialogTitle className="pb-2 font-medium text-center">
           第 {setIndex + 1} 局設定
         </DialogTitle>
+        <DialogDescription className="sr-only">
+          設定第 {setIndex + 1} 局的陣容
+        </DialogDescription>
       </DialogHeader>
       <LineupCourt members={record.teams.home.players} />
       <RecordSetPanels
