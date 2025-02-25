@@ -33,7 +33,7 @@ const PlayerInfo = ({ members, className }) => {
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="flex-row items-center">
         <Button
           variant="ghost"
           size="icon"

@@ -57,7 +57,7 @@ const RecordMoves = ({
 
   return (
     <Card className={cn("flex-1 w-full pb-4", className)}>
-      <CardHeader>
+      <CardHeader className="flex-row">
         <CardTitle
           onClick={() => dispatch(recordActions.setPanel("home"))}
           className={cn(

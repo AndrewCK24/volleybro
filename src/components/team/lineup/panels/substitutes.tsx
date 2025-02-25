@@ -51,16 +51,18 @@ const Substitutes = ({ members, others, className }) => {
   return (
     <Card className={className}>
       <CardHeader>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
-          }
-        >
-          <RiArrowLeftWideLine />
-        </Button>
-        <CardTitle>{`替補名單 (${substituteCount}/${substituteLimit})`}</CardTitle>
+        <CardTitle>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
+            }
+          >
+            <RiArrowLeftWideLine />
+          </Button>
+          {`替補名單 (${substituteCount}/${substituteLimit})`}
+        </CardTitle>
       </CardHeader>
       {lineups[status.lineupIndex].substitutes.map((player, index) => {
         const member = members.find((m) => m._id === player._id);

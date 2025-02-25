@@ -23,7 +23,21 @@ const CardHeader = ({
   <div
     data-slot="CardHeader"
     className={cn(
-      "flex flex-row justify-start items-center h-10 py-2 gap-2",
+      "flex flex-col justify-center items-start py-2 gap-2",
+      className
+    )}
+    {...props}
+  />
+);
+
+const CardTitle = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement>) => (
+  <h3
+    data-slot="CardTitle"
+    className={cn(
+      "w-full flex flex-row justify-start items-center text-xl font-medium leading-none tracking-tight gap-1",
       className
     )}
     {...props}
@@ -38,20 +52,6 @@ const CardBtnGroup = ({
     data-slot="CardBtnGroup"
     className={cn(
       "flex-1 flex flex-row justify-end items-center gap-2",
-      className
-    )}
-    {...props}
-  />
-);
-
-const CardTitle = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3
-    data-slot="CardTitle"
-    className={cn(
-      "flex flex-row justify-start items-center text-xl font-medium leading-none tracking-tight gap-1",
       className
     )}
     {...props}

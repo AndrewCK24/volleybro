@@ -116,7 +116,10 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
         </CardHeader>
         <Dialog>
           <DialogTrigger asChild>
-            <Description startIcon={<RiInformationLine />} endIcon={<RiArrowRightWideLine />}>
+            <Description
+              startIcon={<RiInformationLine />}
+              endIcon={<RiArrowRightWideLine />}
+            >
               <DescriptionTitle>{info.name || "賽事資訊"}</DescriptionTitle>
               <DescriptionContent>
                 場次{info.number || "未設定"}
@@ -151,20 +154,22 @@ const MatchConfirmation = ({ teamId }: { teamId: string }) => {
           <MatchMiscForm info={info} setInfo={setInfo} />
         </Dialog>
         <CardHeader>
-          <CardTitle>陣容配置 {lineupIndex + 1}</CardTitle>
-          <CardBtnGroup>
-            {team?.lineups.map((_, index) => (
-              <Button
-                key={index}
-                variant={lineupIndex === index ? "default" : "outline"}
-                size="icon"
-                onClick={() => setLineupIndex(index)}
-                className="text-[1.25rem] w-8 h-8"
-              >
-                {index + 1}
-              </Button>
-            ))}
-          </CardBtnGroup>
+          <CardTitle>
+            陣容配置 {lineupIndex + 1}{" "}
+            <CardBtnGroup>
+              {team?.lineups.map((_, index) => (
+                <Button
+                  key={index}
+                  variant={lineupIndex === index ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => setLineupIndex(index)}
+                  className="text-[1.25rem] w-8 h-8"
+                >
+                  {index + 1}
+                </Button>
+              ))}
+            </CardBtnGroup>
+          </CardTitle>
         </CardHeader>
         <RosterTable roster={players} />
       </Card>
