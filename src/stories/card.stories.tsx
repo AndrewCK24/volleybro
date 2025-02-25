@@ -60,18 +60,20 @@ export const WithActions: Story = {
   render: () => (
     <Card className="w-[450px]">
       <CardHeader>
-        <CardTitle>Action Example</CardTitle>
-        <CardBtnGroup>
-          <Button variant="ghost" size="icon">
-            <RiEditFill />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <RiDeleteBinLine />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <RiMore2Fill />
-          </Button>
-        </CardBtnGroup>
+        <CardTitle>
+          Action Example
+          <CardBtnGroup>
+            <Button variant="ghost" size="icon">
+              <RiEditFill />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <RiDeleteBinLine />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <RiMore2Fill />
+            </Button>
+          </CardBtnGroup>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <p>

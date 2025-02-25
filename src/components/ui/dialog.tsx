@@ -22,7 +22,7 @@ const DialogOverlay = ({
   <DialogPrimitive.Overlay
     data-slot="DialogOverlay"
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
       className
     )}
     {...props}
@@ -30,17 +30,15 @@ const DialogOverlay = ({
 );
 
 const dialogContentVariants = cva(
-  "fixed left-[50%] top-[50%] z-50 flex flex-col w-full translate-x-[-50%] translate-y-[-50%] gap-2 bg-card p-6 shadow-lg duration-200 overflow-x-hidden overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-md sm:rounded-lg max-w-[90vw] sm:max-w-lg",
+  "fixed left-[50%] z-50 flex flex-col w-full translate-x-[-50%] translate-y-[-50%] gap-2 bg-card p-6 shadow-lg duration-200 overflow-x-hidden overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom rounded-md sm:rounded-lg sm:max-w-lg",
   {
     variants: {
       size: {
-        default: "",
-        lg: "w-full h-[calc(100%-3rem)] top-[calc(50%+1.5rem)] max-w-full p-4",
+        default: "top-[50%] max-w-[90vw]",
+        lg: "w-full h-[calc(100%-var(--safe-area-inset-top)-3rem)] top-[calc(50%+(var(--safe-area-inset-top)+3rem)/2)] max-w-full p-4",
       },
     },
-    defaultVariants: {
-      size: "default",
-    },
+    defaultVariants: { size: "default" },
   }
 );
 
@@ -94,21 +92,7 @@ const DialogHeader = ({
   <div
     data-slot="DialogHeader"
     className={cn(
-      "flex flex-row flex-none justify-start items-center h-8 gap-2",
-      className
-    )}
-    {...props}
-  />
-);
-
-const DialogFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    data-slot="DialogFooter"
-    className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      "flex flex-col flex-none justify-start items-start gap-1",
       className
     )}
     {...props}
@@ -133,6 +117,20 @@ const DialogDescription = ({
   <DialogPrimitive.Description
     data-slot="DialogDescription"
     className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+);
+
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    data-slot="DialogFooter"
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
+    )}
     {...props}
   />
 );
