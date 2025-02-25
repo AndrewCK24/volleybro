@@ -48,20 +48,22 @@ const LineupOptions = ({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>陣容配置 {status.lineupIndex + 1}</CardTitle>
-        <CardBtnGroup>
-          {lineups.map((_, index) => (
-            <Button
-              key={index}
-              variant={status.lineupIndex === index ? "default" : "outline"}
-              size="icon"
-              onClick={() => handlelineupIndexClick(index)}
-              className="text-[1.25rem] size-8"
-            >
-              {index + 1}
-            </Button>
-          ))}
-        </CardBtnGroup>
+        <CardTitle>
+          陣容配置 {status.lineupIndex + 1}
+          <CardBtnGroup>
+            {lineups.map((_, index) => (
+              <Button
+                key={index}
+                variant={status.lineupIndex === index ? "default" : "outline"}
+                size="icon"
+                onClick={() => handlelineupIndexClick(index)}
+                className="text-[1.25rem] size-8"
+              >
+                {index + 1}
+              </Button>
+            ))}
+          </CardBtnGroup>
+        </CardTitle>
       </CardHeader>
       <LineupError open={dialogOpen} setOpen={setDialogOpen} />
       <LiberoReplace />
