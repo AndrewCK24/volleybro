@@ -101,9 +101,6 @@ const DataTable = ({ columns, data }: DataTableProps<Member>) => {
 };
 
 const TeamMembersTable = ({ team, members, teamId }) => {
-  // FIXME: [Table] Column with id 'undefined' does not exist.
-  // https://ui.shadcn.com/docs/components/data-table#update-column-definitions
-  // https://tanstack.com/table/latest/docs/guide/column-defs
   const columns: ColumnDef<Member, any>[] = [
     {
       id: "image",
