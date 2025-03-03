@@ -1,6 +1,27 @@
-import { Schema, model, models } from "mongoose";
+import {
+  Schema,
+  model,
+  models,
+  type Document,
+  type Model,
+  type Types,
+} from "mongoose";
 
-const userSchema = new Schema(
+export interface UserDocument extends Document {
+  name: string;
+  email: string;
+  emailVerified?: Date;
+  image?: string;
+  password?: string;
+  teams: {
+    joined: Types.ObjectId[];
+    inviting: Types.ObjectId[];
+  };
+  info?: object;
+  preferences?: object;
+}
+
+const userSchema = new Schema<UserDocument>(
   {
     name: {
       type: String,
@@ -58,5 +79,7 @@ const userSchema = new Schema(
 
 userSchema.index({ email: 1 });
 
-export const User = models.User || model("User", userSchema, "users");
+export const User =
+  (models.User as Model<UserDocument>) ||
+  model<UserDocument>("User", userSchema, "users");
 export default User;

@@ -22,25 +22,25 @@ export enum MatchCategory {
 
 export type Match = {
   _id?: string;
-  name: string;
-  number: number;
-  phase: MatchPhase;
-  division: MatchDivision;
-  category: MatchCategory;
+  name?: string;
+  number?: number;
+  phase?: MatchPhase;
+  division?: MatchDivision;
+  category?: MatchCategory;
   scoring: {
     setCount: number;
     decidingSetPoints: number;
   };
-  location: {
-    city: string;
-    hall: string;
+  location?: {
+    city?: string;
+    hall?: string;
   };
-  time: {
-    date: string;
-    start: string;
-    end: string;
+  time?: {
+    date?: string;
+    start?: string;
+    end?: string;
   };
-  weather: {
+  weather?: {
     temperature: number;
   };
 };
