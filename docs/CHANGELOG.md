@@ -1,6 +1,6 @@
 ## [0.5.2](https://github.com/AndrewCK24/volleybro/compare/v0.5.1...v0.5.2) (2025-03-04)
 
 
-### Bug Fixes
+### CI
 
-* **deps:** update `eslint-plugin-storybook` version for TypeScript 5.8 compatibility ([fbbc907](https://github.com/AndrewCK24/volleybro/commit/fbbc9072e76304402f5a155fffa34ccd2fbbd53a))
+* **ci:** integrate `semantic-release` for automated versioning ([19dafca](https://github.com/AndrewCK24/volleybro/commit/19dafcae0c8382008cac648362196db8c5bc02b7))
