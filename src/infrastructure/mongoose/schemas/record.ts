@@ -1,4 +1,11 @@
-import { Schema, model, models } from "mongoose";
+import {
+  Schema,
+  model,
+  models,
+  type Document,
+  type Model,
+  type Types,
+} from "mongoose";
 import {
   MatchCategory,
   MatchDivision,
@@ -7,9 +14,34 @@ import {
   Side,
   EntryType,
 } from "@/entities/record";
-import { lineupSchema } from "@/infrastructure/mongoose/schemas/team";
+import { lineupSchema, type LineupDocument } from "@/infrastructure/mongoose/schemas/team";
 
-const matchSchema = new Schema({
+interface MatchDocument extends Document {
+  _id: Types.ObjectId;
+  name?: string;
+  number?: number;
+  phase?: MatchPhase;
+  division?: MatchDivision;
+  category?: MatchCategory;
+  scoring: {
+    setCount: number;
+    decidingSetPoints: number;
+  };
+  location?: {
+    city?: string;
+    hall?: string;
+  };
+  time?: {
+    date?: string;
+    start?: string;
+    end?: string;
+  };
+  weather?: {
+    temperature: number;
+  };
+}
+
+const matchSchema = new Schema<MatchDocument>({
   _id: { type: Schema.Types.ObjectId },
   name: { type: String },
   number: { type: Number },
@@ -46,7 +78,34 @@ const matchSchema = new Schema({
   },
 });
 
-const playerStatsSchema = new Schema({
+interface PlayerStatsDocument extends Document {
+  [MoveType.SERVING]: {
+    success: number;
+    error: number;
+  };
+  [MoveType.ATTACK]: {
+    success: number;
+    error: number;
+  };
+  [MoveType.BLOCKING]: {
+    success: number;
+    error: number;
+  };
+  [MoveType.RECEPTION]: {
+    success: number;
+    error: number;
+  };
+  [MoveType.DEFENSE]: {
+    success: number;
+    error: number;
+  };
+  [MoveType.SETTING]: {
+    success: number;
+    error: number;
+  };
+}
+
+const playerStatsSchema = new Schema<PlayerStatsDocument>({
   [MoveType.SERVING]: {
     success: { type: Number },
     error: { type: Number },
@@ -73,7 +132,14 @@ const playerStatsSchema = new Schema({
   },
 });
 
-const playerSchema = new Schema({
+interface PlayerDocument extends Document {
+  _id: Types.ObjectId;
+  name: string;
+  number: number;
+  stats: PlayerStatsDocument[];
+}
+
+const playerSchema = new Schema<PlayerDocument>({
   _id: {
     type: Schema.Types.ObjectId,
     ref: "Member",
@@ -83,7 +149,14 @@ const playerSchema = new Schema({
   stats: [{ type: playerStatsSchema }],
 });
 
-const staffSchema = new Schema({
+interface StaffDocument extends Document {
+  _id: Types.ObjectId;
+  name: string;
+  number: number;
+  position: string;
+}
+
+const staffSchema = new Schema<StaffDocument>({
   _id: {
     type: Schema.Types.ObjectId,
     ref: "Member",
@@ -93,7 +166,21 @@ const staffSchema = new Schema({
   position: { type: String, enum: ["", "C", "AC", "T", "M"], default: "" },
 });
 
-const teamStatsSchema = new Schema({
+interface TeamStatsDocument extends Document {
+  [MoveType.SERVING]: { success: number; error: number };
+  [MoveType.ATTACK]: { success: number; error: number };
+  [MoveType.BLOCKING]: { success: number; error: number };
+  [MoveType.RECEPTION]: { success: number; error: number };
+  [MoveType.DEFENSE]: { success: number; error: number };
+  [MoveType.SETTING]: { success: number; error: number };
+  [MoveType.UNFORCED]: { success: number; error: number };
+  rotation: number;
+  timeout: number;
+  substitution: number;
+  challenge: number;
+}
+
+const teamStatsSchema = new Schema<TeamStatsDocument>({
   [MoveType.SERVING]: { success: { type: Number }, error: { type: Number } },
   [MoveType.ATTACK]: { success: { type: Number }, error: { type: Number } },
   [MoveType.BLOCKING]: { success: { type: Number }, error: { type: Number } },
@@ -107,7 +194,16 @@ const teamStatsSchema = new Schema({
   challenge: { type: Number },
 });
 
-const teamSchema = new Schema({
+interface TeamDocument extends Document {
+  _id: Types.ObjectId;
+  name: string;
+  players: PlayerDocument[];
+  staffs: StaffDocument[];
+  stats: TeamStatsDocument[];
+  lineup: { [key: number]: Types.ObjectId };
+}
+
+const teamSchema = new Schema<TeamDocument>({
   _id: {
     type: Schema.Types.ObjectId,
     ref: "Team",
@@ -119,7 +215,17 @@ const teamSchema = new Schema({
   lineup: { type: lineupSchema },
 });
 
-const rallyDetailSchema = new Schema({
+interface RallyDetailDocument extends Document {
+  score: number;
+  type: MoveType;
+  num: number;
+  player: {
+    _id: Types.ObjectId;
+    zone: number;
+  };
+}
+
+const rallyDetailSchema = new Schema<RallyDetailDocument>({
   score: { type: Number },
   type: { type: Number, enum: MoveType },
   num: { type: Number },
@@ -129,7 +235,13 @@ const rallyDetailSchema = new Schema({
   },
 });
 
-const rallySchema = new Schema({
+interface RallyDocument extends Document {
+  win: boolean;
+  home: RallyDetailDocument;
+  away: RallyDetailDocument;
+}
+
+const rallySchema = new Schema<RallyDocument>({
   win: { type: Boolean },
   home: { type: rallyDetailSchema },
   away: { type: rallyDetailSchema },
@@ -153,12 +265,33 @@ const challengeSchema = new Schema({
   success: { type: Boolean },
 });
 
-const entrySchema = new Schema({
+interface EntryDocument extends Document {
+  type: EntryType;
+  data: object;
+}
+
+const entrySchema = new Schema<EntryDocument>({
   type: { type: Number, enum: EntryType },
   data: { type: Schema.Types.Mixed },
 });
 
-const setSchema = new Schema({
+interface SetDocument extends Document {
+  win: boolean;
+  lineups: {
+    home: LineupDocument;
+    away: LineupDocument;
+  };
+  options: {
+    serve: Side;
+    time: {
+      start: string;
+      end: string;
+    };
+  };
+  entries: EntryDocument[];
+}
+
+const setSchema = new Schema<SetDocument>({
   win: { type: Boolean },
   lineups: {
     home: { type: lineupSchema },
@@ -174,7 +307,18 @@ const setSchema = new Schema({
   entries: [{ type: entrySchema }],
 });
 
-const recordSchema = new Schema(
+export interface RecordDocument extends Document {
+  win: boolean;
+  team_id: Types.ObjectId;
+  info: MatchDocument;
+  teams: {
+    home: LineupDocument;
+    away: LineupDocument;
+  };
+  sets: SetDocument[];
+}
+
+const recordSchema = new Schema<RecordDocument>(
   {
     win: { type: Boolean },
     team_id: {
@@ -195,5 +339,7 @@ const recordSchema = new Schema(
 
 recordSchema.index({ team_id: 1 });
 
-export const Record = models.Record || model("Record", recordSchema, "records");
+export const Record =
+  (models.Record as Model<RecordDocument>) ||
+  model<RecordDocument>("Record", recordSchema, "records");
 export default Record;

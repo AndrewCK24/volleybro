@@ -1,4 +1,11 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, type Document, type Model } from "mongoose";
+
+export interface VerificationTokenDocument extends Document {
+  email: string;
+  expires: Date;
+  token: string;
+  identifier: string;
+}
 
 /**
  * @typedef {Object} VerificationToken
@@ -8,7 +15,7 @@ import { Schema, model, models } from "mongoose";
  * @param {String} identifier - Identifier: "sign-up" or "forgot-password"
  */
 
-const verificationTokenSchema = new Schema({
+const verificationTokenSchema = new Schema<VerificationTokenDocument>({
   email: {
     type: String,
     trim: true,
@@ -30,6 +37,10 @@ const verificationTokenSchema = new Schema({
 verificationTokenSchema.index({ email: 1 }, { unique: true });
 
 const VerificationToken =
-  models.VerificationToken ||
-  model("VerificationToken", verificationTokenSchema, "verificationTokens");
+  (models.VerificationToken as Model<VerificationTokenDocument>) ||
+  model<VerificationTokenDocument>(
+    "VerificationToken",
+    verificationTokenSchema,
+    "verificationTokens"
+  );
 export default VerificationToken;
