@@ -45,20 +45,20 @@ const RecordSetOptions = ({ recordId }) => {
 
   return (
     <DialogContent size="lg">
-      <DialogDescription className="sr-only">
-        設定第 {setIndex + 1} 局的陣容
-      </DialogDescription>
       <DialogHeader>
         <DialogTitle className="pb-2 font-medium text-center">
           第 {setIndex + 1} 局設定
         </DialogTitle>
+        <DialogDescription className="sr-only">
+          設定第 {setIndex + 1} 局的陣容
+        </DialogDescription>
       </DialogHeader>
       <LineupCourt members={record.teams.home.players} />
       <RecordSetPanels
         recordId={recordId}
         members={record.teams.home.players}
         hasPairedSwitchPosition={hasPairedSwitchPosition}
-        className="flex-1 px-0 overflow-scroll shadow-none"
+        className="flex-1 px-0 overflow-x-hidden overflow-y-scroll shadow-none"
       />
     </DialogContent>
   );

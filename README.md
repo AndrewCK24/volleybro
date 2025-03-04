@@ -1,36 +1,180 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# VolleyBro
 
-## Getting Started
+VolleyBro 是一個專為排球球隊設計的比賽記錄與隊伍管理應用程式，幫助教練及管理者方便記錄賽事數據、管理球隊成員以及設定比賽陣容。
 
-First, run the development server:
+獲取最新版本的 [VolleyBro](https://volleybro.vercel.app/)。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+VolleyBro is a volleyball team management and match recording application that helps coaches and managers easily record match data, manage team members, and set up game lineups.
+
+Get the latest version of [VolleyBro](https://volleybro.vercel.app/).
+
+## 目錄 / Table of Contents
+
+1. [項目介紹 / Project Overview](#項目介紹--project-overview)
+2. [主要功能 / Key Features](#主要功能--key-features)
+3. [專案架構 / Project Structure](#專案架構--project-structure)
+4. [安裝與執行 / Installation & Setup](#安裝與執行--installation--setup)
+5. [部署指南 / Deployment](#部署指南--deployment)
+6. [貢獻指南 / Contribution Guidelines](#貢獻指南--contribution-guidelines)
+7. [Git Commit 規範 / Git Commit Convention](#git-commit-規範--git-commit-convention)
+8. [程式碼風格 / Code Style](#程式碼風格--code-style)
+9. [授權條款 / License](#授權條款--license)
+10. [聯絡方式 / Contact](#聯絡方式--contact)
+
+## 項目介紹 / Project Overview
+
+VolleyBro 是一個基於 [Next.js](https://nextjs.org/) 的現代化應用程式，專注於排球比賽記錄與球隊管理。系統整合用戶認證、比賽記錄、陣容管理及即時通知等功能，確保使用者能夠輕鬆掌握比賽數據。
+
+VolleyBro is a modern application built on [Next.js](https://nextjs.org/), designed for volleyball match recording and team management. The system integrates user authentication, match data recording, lineup management, and real-time notifications to help users easily keep track of match data.
+
+## 主要功能 / Key Features
+
+- **比賽記錄：** 詳細記錄比賽數據，包括得分、替換、拉力等資訊。
+- **隊伍管理：** 管理球隊資訊、成員資料、陣容設定與替補名單。
+- **用戶認證：** 透過 NextAuth 與 Google 驗證進行安全登入。
+- **現代化 UI：** 使用 Tailwind CSS 及自訂元件打造流暢的使用者介面。
+- **即時通知：** [**開發中**] 提供比賽狀態更新與即時通知功能。
+
+- **Match Recording:** Detailed recording of match data, including scores, substitutions, rallies, etc.
+- **Team Management:** Manage team information, member data, lineup settings, and substitutes.
+- **User Authentication:** Secure login using NextAuth with Google authentication.
+- **Modern UI:** Built with Tailwind CSS and custom components for a smooth user experience.
+- **Real-time Notifications:** [**In Development**] Provides match status updates and real-time notifications.
+
+## 專案架構 / Project Structure
+
+```txt
+andrewck24-volleybro/
+├── README.md            // 此文件 / This document
+├── LICENSE              // 授權條款 / License
+├── package.json         // 專案依賴與腳本設定 / Project dependencies and scripts
+├── next.config.js       // Next.js 配置 / Next.js configuration
+├── public/              // 靜態資源 / Static assets (icons, manifest, splash screens, etc.)
+└── src/                 // 源碼目錄 / Source code directory
+    ├── app/             // Next.js 頁面與路由 / Pages and routing
+    ├── components/      // 可重用 UI 元件 / Reusable UI components
+    ├── entities/        // 實體定義（如隊伍、球員、比賽記錄） / Entity definitions (e.g., team, player, record)
+    ├── hooks/           // React hooks
+    ├── infrastructure/  // 資料庫連線與存取層（使用 Mongoose） / Database connection and access (using Mongoose)
+    ├── interface/       // API 與控制器 / API and controllers
+    ├── lib/             // 工具函數及輔助模組 / Utility functions and helpers
+    └── types/           // TypeScript 型別定義 / TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Storybook 元件庫 / Storybook Component Library
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+VolleyBro 使用 Storybook 進行元件開發與文件管理。您可以透過以下連結查看我們的元件庫：
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This project uses [Storybook](https://storybook.js.org/) for component development and documentation. You can view our component library at the following links:
 
-## Learn More
+- [Master Branch](https://master--67bbfeabbc72894ce5eb92db.chromatic.com)
+- [Development Branch](https://dev--67bbfeabbc72894ce5eb92db.chromatic.com)
 
-To learn more about Next.js, take a look at the following resources:
+## 安裝與執行 / Installation & Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 前置需求 / Prerequisites
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Node.js（建議使用 v20 以上版本）/ Node.js (v20+ recommended)
+- npm 或 yarn 套件管理工具 / npm or yarn
 
-## Deploy on Vercel
+### 設定步驟 / Setup Steps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone 專案 / Clone the repository**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   ```bash
+   git clone https://github.com/andrewck24/volleybro.git
+   cd volleybro
+   ```
+
+2. **安裝相依套件 / Install dependencies**
+
+   ```bash
+   npm install
+   # 或使用 yarn / or using yarn:
+   yarn install
+   ```
+
+3. **環境變數設定 / Environment Variables**  
+   在專案根目錄建立 `.env.local` 檔案，並設定以下變數：
+
+   ```env
+   AUTH_GOOGLE_ID=your_google_client_id
+   AUTH_GOOGLE_SECRET=your_google_client_secret
+   MONGODB_URI=your_mongodb_connection_string
+   ```
+
+4. **啟動開發伺服器 / Run the development server**
+
+   ```bash
+   npm run dev
+   # 或使用 yarn:
+   yarn dev
+   ```
+
+   開啟 [http://localhost:3000](http://localhost:3000) 以檢視專案運行狀態。
+
+## 部署指南 / Deployment
+
+此專案可輕鬆部署至 [Vercel](https://vercel.com/)，建議參考 [Next.js 部署文件](https://nextjs.org/docs/deployment) 以獲取更多詳細資訊。
+
+This project can be easily deployed on [Vercel](https://vercel.com/). Please refer to the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for further details.
+
+## 貢獻指南 / Contribution Guidelines
+
+歡迎所有開發者參與貢獻，請遵循以下流程：
+
+1. Fork 此專案至您的 GitHub 帳戶。
+2. 建立新分支（例如：`feature/your-feature`）。
+3. **Git commit 訊息必須參照 Angular 規範**（例如：`feat: 新增比賽記錄功能`、`fix: 修正隊伍管理介面錯誤`）。
+4. **程式碼風格請依據 Airbnb 風格指南撰寫**，並確保通過 ESLint 檢查。
+5. 提交 Pull Request，並清楚說明修改內容。
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository to your GitHub account.
+2. Create a new branch (e.g., `feature/your-feature`).
+3. **All Git commit messages must follow the Angular commit message convention** (e.g., `feat: add match recording feature`, `fix: correct team management UI bug`).
+4. **Ensure that your code adheres to the Airbnb JavaScript Style Guide**, and pass all ESLint checks.
+5. Submit a pull request with a clear description of your changes.
+
+## Git Commit 規範 / Git Commit Convention
+
+所有 commit 訊息必須遵循 [Angular Commit Message 規範](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-format)。常見類型包括：
+
+- `build:` 用於變更建置系統或外部依賴
+- `ci:` 用於變更 CI 設定
+- `docs:` 用於變更文件
+- `feat:` 用於新增功能
+- `fix:` 用於修正 bug
+- `style:` 用於格式修正，不影響程式邏輯
+- `refactor:` 用於重構程式碼
+- `test:` 用於新增或修正測試
+
+All commit messages must follow the [Angular Commit Message Convention](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-format). Common types include:
+
+- `build:` Changes that affect the build system or external dependencies
+- `ci:` Changes to our CI configuration files and scripts
+- `docs:` Documentation only changes
+- `feat:` A new feature
+- `fix:` A bug fix
+- `style:` Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- `refactor:` A code change that neither fixes a bug nor adds a feature
+- `test:` Adding missing tests or correcting existing tests
+
+## 程式碼風格 / Code Style
+
+本專案的程式碼風格採用 [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) 為基礎。請確保您的程式碼符合該風格規範，並透過 ESLint 等工具進行檢查。
+
+The project follows the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) as its coding standard. Please ensure that your code complies with this style guide, and use tools like ESLint for verification.
+
+## 授權條款 / License
+
+請至 [LICENSE](./LICENSE) 查看完整授權條款。
+
+See [LICENSE](./LICENSE) for the full license.
+
+## 聯絡方式 / Contact
+
+如有任何疑問或建議，請透過 GitHub Issue 與我們聯絡。
+
+If you have any questions or suggestions, please contact us via GitHub Issues.

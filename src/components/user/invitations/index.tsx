@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useUser, useUserTeams } from "@/hooks/use-data";
 import { FiPlus } from "react-icons/fi";
 import { RiGroupLine, RiCheckLine, RiCloseLine } from "react-icons/ri";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Link } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
-const Invitations = ({ className }: { className?: string }) => {
+export const Invitations = ({ className }: { className?: string }) => {
   const router = useRouter();
   const { user, mutate: mutateUser } = useUser();
   const { teams, isLoading, mutate: mutateUserTeams } = useUserTeams();
@@ -44,6 +45,7 @@ const Invitations = ({ className }: { className?: string }) => {
       <CardHeader>
         <CardTitle>隊伍邀請</CardTitle>
       </CardHeader>
+      {user && !user?.teams?.joined?.length && <Message />}
       <Table>
         <TableBody className="text-xl">
           {isLoading ? (
@@ -53,20 +55,20 @@ const Invitations = ({ className }: { className?: string }) => {
           ) : (
             teams.inviting.map((team) => (
               <TableRow key={team._id}>
-                <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                <TableCell className="w-6 [&>svg]:size-6">
                   <RiGroupLine />
                 </TableCell>
                 <TableCell onClick={() => router.push(`/team/${team._id}`)}>
                   {team.name}
                 </TableCell>
                 <TableCell
-                  className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-primary"
+                  className="w-6 [&>svg]:size-6 text-primary"
                   onClick={() => handleAccept(team._id, true)}
                 >
                   <RiCheckLine />
                 </TableCell>
                 <TableCell
-                  className="w-6 [&>svg]:w-6 [&>svg]:h-6 text-destructive"
+                  className="w-6 [&>svg]:size-6 text-destructive"
                   onClick={() => handleAccept(team._id, false)}
                 >
                   <RiCloseLine />
@@ -88,4 +90,14 @@ const Invitations = ({ className }: { className?: string }) => {
   );
 };
 
-export default Invitations;
+const Message = () => {
+  return (
+    <Alert className="w-full">
+      <AlertTitle>歡迎使用 VolleyBro !</AlertTitle>
+      <AlertDescription>
+        請查看下方隊伍邀請。若您的隊伍是初次使用
+        VolleyBro，請點選下方按鈕創建隊伍。
+      </AlertDescription>
+    </Alert>
+  );
+};

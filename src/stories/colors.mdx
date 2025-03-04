@@ -1,0 +1,79 @@
+import { Meta, ColorPalette, ColorItem } from "@storybook/blocks";
+
+<Meta title="Design System/Semantic Color Palette" />
+
+<ColorPalette>
+  <ColorItem
+    title="bg-background"
+    subtitle="className='bg-background'"
+    colors={{ "bg-background": 'var(--background)'}}
+  />
+  <ColorItem
+    title="text-foreground"
+    subtitle="className='text-foreground'"
+    colors={{ "text-foreground": 'var(--foreground)'}}
+  />
+
+{/* Primary */}
+
+<ColorItem
+  title="primary"
+  subtitle="className='text-primary bg-primary'"
+  colors={{
+    primary: "var(--primary)",
+    "primary-foreground": "var(--primary-foreground)",
+  }}
+/>
+
+{/* Secondary */}
+
+<ColorItem
+  title="secondary"
+  subtitle="className='text-secondary bg-secondary'"
+  colors={{
+    secondary: "var(--secondary)",
+    "secondary-foreground": "var(--secondary-foreground)",
+  }}
+/>
+
+{/* Muted */}
+
+<ColorItem
+  title="muted"
+  subtitle="className='text-muted-foreground bg-muted'"
+  colors={{
+    muted: "var(--muted)",
+    "muted-foreground": "var(--muted-foreground)",
+  }}
+/>
+
+{/* destructive */}
+
+<ColorItem
+  title="destructive"
+  subtitle="className='text-destructive-foreground bg-destructive'"
+  colors={{
+    destructive: "var(--destructive)",
+    "destructive-foreground": "var(--destructive-foreground)",
+  }}
+/>
+
+{/* border, input, ring */}
+
+<ColorItem
+  title="border"
+  subtitle="className='border-border'"
+  colors={{ border: "var(--border)" }}
+/>
+<ColorItem
+  title="input"
+  subtitle="className='bg-input'"
+  colors={{ input: "var(--input)" }}
+/>
+<ColorItem
+  title="ring"
+  subtitle="className='bg-ring'"
+  colors={{ ring: "var(--ring)" }}
+/>
+
+</ColorPalette>

@@ -48,20 +48,22 @@ const LineupOptions = ({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>陣容配置 {status.lineupIndex + 1}</CardTitle>
-        <CardBtnGroup>
-          {lineups.map((_, index) => (
-            <Button
-              key={index}
-              variant={status.lineupIndex === index ? "default" : "outline"}
-              size="icon"
-              onClick={() => handlelineupIndexClick(index)}
-              className="text-[1.25rem] w-8 h-8"
-            >
-              {index + 1}
-            </Button>
-          ))}
-        </CardBtnGroup>
+        <CardTitle>
+          陣容配置 {status.lineupIndex + 1}
+          <CardBtnGroup>
+            {lineups.map((_, index) => (
+              <Button
+                key={index}
+                variant={status.lineupIndex === index ? "default" : "outline"}
+                size="icon"
+                onClick={() => handlelineupIndexClick(index)}
+                className="text-[1.25rem] size-8"
+              >
+                {index + 1}
+              </Button>
+            ))}
+          </CardBtnGroup>
+        </CardTitle>
       </CardHeader>
       <LineupError open={dialogOpen} setOpen={setDialogOpen} />
       <LiberoReplace />
@@ -95,7 +97,7 @@ const LineupOptions = ({
               const member = members?.find((m) => m._id === player._id);
               return (
                 <TableRow key={member._id}>
-                  <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                  <TableCell className="w-6 [&>svg]:size-6">
                     <RiUserLine />
                   </TableCell>
                   <TableCell className="text-right w-[2.5rem]">
@@ -134,7 +136,7 @@ const LineupOptions = ({
             others.map((member) => {
               return (
                 <TableRow key={member._id}>
-                  <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                  <TableCell className="w-6 [&>svg]:size-6">
                     <RiUserLine />
                   </TableCell>
                   <TableCell className="text-right w-[2.5rem]">

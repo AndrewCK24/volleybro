@@ -4,6 +4,7 @@ import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
 import User from "@/infrastructure/mongoose/schemas/user";
 import Team from "@/infrastructure/mongoose/schemas/team";
 import Member from "@/infrastructure/mongoose/schemas/member";
+import { ObjectId } from "mongodb";
 
 export const GET = async (
   req: NextRequest,
@@ -34,7 +35,7 @@ export const PATCH = async (
     }
 
     await connectToMongoDB();
-    const user = await User.findById((session.user as { _id: string })._id);
+    const user = await User.findById(session.user.id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -85,7 +86,7 @@ export const PATCH = async (
       if (formData.email) {
         const invitingUser = await User.findOne({ email: formData.email });
         if (invitingUser) {
-          invitingUser.teams.inviting.push(teamId);
+          invitingUser.teams.inviting.push(new ObjectId(teamId));
           await invitingUser.save();
         }
         team.members[memberIndex].email = formData.email;

@@ -7,9 +7,9 @@ export const BackgroundColorHandler = () => {
 
   useEffect(() => {
     if (pathname.startsWith("/auth")) {
-      document.body.style.backgroundColor = "rgba(var(--primary))";
+      document.body.style.backgroundColor = "var(--color-primary)";
     } else {
-      document.body.style.backgroundColor = "rgba(var(--accent))";
+      document.body.style.backgroundColor = "var(--color-accent)";
     }
   }, [pathname]);
 

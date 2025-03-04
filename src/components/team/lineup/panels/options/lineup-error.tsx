@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -13,11 +12,11 @@ const LineupError = ({ open, setOpen }) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>無法儲存當前陣容配置</DialogTitle>
-          <DialogClose />
+          <DialogDescription className="sr-only">
+            Error message
+          </DialogDescription>
         </DialogHeader>
-        <DialogDescription>
-          由於目前陣容中沒有自由球員自動替換所對應的位置，故無法完成陣容設定。
-        </DialogDescription>
+        由於目前陣容中沒有自由球員自動替換所對應的位置，故無法完成陣容設定。
       </DialogContent>
     </Dialog>
   );

@@ -101,9 +101,6 @@ const DataTable = ({ columns, data }: DataTableProps<Member>) => {
 };
 
 const TeamMembersTable = ({ team, members, teamId }) => {
-  // FIXME: [Table] Column with id 'undefined' does not exist.
-  // https://ui.shadcn.com/docs/components/data-table#update-column-definitions
-  // https://tanstack.com/table/latest/docs/guide/column-defs
   const columns: ColumnDef<Member, any>[] = [
     {
       id: "image",
@@ -120,11 +117,11 @@ const TeamMembersTable = ({ team, members, teamId }) => {
           <Button
             variant="ghost"
             size="lg"
-            className="gap-0 svg-[1rem]"
+            className="gap-0 [&>svg]:size-4"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             No.
-            <HiChevronUpDown className="w-4 h-4 ml-2" />
+            <HiChevronUpDown className="ml-2" />
           </Button>
         );
       },
@@ -154,7 +151,7 @@ const TeamMembersTable = ({ team, members, teamId }) => {
           : { text: "已加入", type: "default", icon: <RiCheckboxCircleLine /> };
 
         return (
-          <Badge variant={identity.type} className="[&>svg]:w-4 [&>svg]:h-4">
+          <Badge variant={identity.type} className="[&>svg]:size-4">
             {identity.icon} {identity.text}
           </Badge>
         );

@@ -40,16 +40,18 @@ const Positions = ({ className }) => {
   return (
     <Card className={className}>
       <CardHeader>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
-          }
-        >
-          <RiArrowLeftWideLine />
-        </Button>
-        <CardTitle>選擇位置</CardTitle>
+        <CardTitle>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
+            }
+          >
+            <RiArrowLeftWideLine />
+          </Button>
+          選擇位置
+        </CardTitle>
       </CardHeader>
       <>
         {positions.map((position) => (

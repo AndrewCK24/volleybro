@@ -14,7 +14,7 @@ export const POST = async (req) => {
     }
 
     await connectToMongoDB();
-    const user = await User.findById(session.user._id);
+    const user = await User.findById(session.user.id);
     if (!user) {
       console.error("[POST /api/members] User not found");
       return NextResponse.json({ error: "User not found" }, { status: 404 });

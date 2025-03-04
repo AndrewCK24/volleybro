@@ -1,6 +1,12 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models, type Document, type Model } from "mongoose";
 
-const sessionSchema = new Schema({
+export interface SessionDocument extends Document {
+  expires: Date;
+  sessionToken: string;
+  userId: string;
+}
+
+const sessionSchema = new Schema<SessionDocument>({
   expires: {
     type: Date,
     trim: true,
@@ -15,5 +21,7 @@ const sessionSchema = new Schema({
   },
 });
 
-export const Session = models.Session || model("Session", sessionSchema, "sessions");
+export const Session =
+  (models.Session as Model<SessionDocument>) ||
+  model<SessionDocument>("Session", sessionSchema, "sessions");
 export default Session;

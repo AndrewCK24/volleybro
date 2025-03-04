@@ -52,14 +52,16 @@ const Substitutes = ({
   return (
     <Card className={cn("flex-1 w-full pb-4", className)}>
       <CardHeader>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => dispatch(recordActions.resetRecordingSubstitution())}
-        >
-          <RiArrowLeftWideLine />
-        </Button>
-        <CardTitle>選擇替補球員</CardTitle>
+        <CardTitle>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => dispatch(recordActions.resetRecordingSubstitution())}
+          >
+            <RiArrowLeftWideLine />
+          </Button>
+          選擇替補球員
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex-1">
         {substitutes.map((substitute) => {

@@ -18,12 +18,12 @@ export const Main = ({ children }: { children: React.ReactNode }) => {
         }`}
       >
         <div
-          className={`w-6 h-6 border-2 rounded-full border-primary border-t-transparent ${
+          className={`size-6 border-2 rounded-full border-primary border-t-transparent ${
             isRefreshing ? "animate-spin" : ""
           }`}
         />
       </div>
-      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 gap-2">
+      <div className="w-full max-w-[640px] flex flex-col h-fit mx-auto pb-16 gap-1">
         {children}
       </div>
     </main>

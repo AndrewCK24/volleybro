@@ -1,30 +1,25 @@
-import mongoose from "mongoose";
+import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
 
+/**
+ * For more information on the configuration, see: https://authjs.dev/guides/edge-compatibility#split-config
+ */
 const authConfig = {
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      authorization: {
-        params: { prompt: "select_account" },
-      },
+      authorization: { params: { prompt: "select_account" } },
     }),
   ],
-  events: {
-    linkAccount: async ({ user }) => {
-      await connectToMongoDB();
-      await mongoose.models.User.findByIdAndUpdate(user._id, {
-        $set: { emailVerified: new Date() },
-      });
-    },
-  },
   callbacks: {
     async jwt({ token, user, session, trigger }) {
       if (user) {
-        const { password, ...rest } = user._doc;
-        token.user = { ...token.user, ...rest };
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.image = user.image;
+        token.teams = user.teams;
       }
       if (trigger === "update") {
         return { ...token, user: session?.user };
@@ -32,7 +27,11 @@ const authConfig = {
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user;
+      session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.email = token.email;
+      session.user.image = token.image;
+      session.user.teams = token.teams;
       return session;
     },
   },
@@ -41,6 +40,6 @@ const authConfig = {
     error: "/auth/error",
     newUser: "/user/invitations",
   },
-};
+} satisfies NextAuthConfig;
 
 export default authConfig;

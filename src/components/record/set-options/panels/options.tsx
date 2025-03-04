@@ -98,7 +98,7 @@ const Options = ({
       onSubmit={form.handleSubmit(onSubmit)}
       className="flex flex-col flex-1 w-full gap-2 pt-2 overflow-auto"
     >
-      <Card className="flex-1 p-0 overflow-scroll shadow-none">
+      <Card className="flex-1 p-0 overflow-y-scroll shadow-none">
         <FormField
           control={form.control}
           name="serve"
@@ -129,7 +129,7 @@ const Options = ({
                 const member = members?.find((m) => m._id === player._id);
                 return (
                   <TableRow key={member._id}>
-                    <TableCell className="w-6 [&>svg]:w-6 [&>svg]:h-6">
+                    <TableCell className="w-6 [&>svg]:size-6">
                       <RiUserLine />
                     </TableCell>
                     <TableCell className="text-right w-[2.5rem]">

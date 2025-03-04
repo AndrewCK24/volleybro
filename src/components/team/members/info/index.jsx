@@ -25,29 +25,31 @@ const MembersInfo = ({ teamId, memberId, className }) => {
   return (
     <Card className={className}>
       <CardHeader className="h-fit">
-        {member?.image ? (
-          <Image
-            src={member.image}
-            alt={member.name}
-            width={64}
-            height={64}
-            className="rounded-full"
-          />
-        ) : (
-          <RiUserLine className="w-16 h-16 rounded-full text-muted-foreground" />
-        )}
-        <CardTitle>{member.name}</CardTitle>
-        {isAdmin && (
-          <CardBtnGroup>
-            <Link
-              variant="link"
-              size="lg"
-              href={`/team/${teamId}/members/${memberId}/edit`}
-            >
-              編輯
-            </Link>
-          </CardBtnGroup>
-        )}
+        <CardTitle>
+          {member?.image ? (
+            <Image
+              src={member.image}
+              alt={member.name}
+              width={64}
+              height={64}
+              className="rounded-full"
+            />
+          ) : (
+            <RiUserLine className="size-16 rounded-full text-muted-foreground" />
+          )}
+          {member.name}
+          {isAdmin && (
+            <CardBtnGroup>
+              <Link
+                variant="link"
+                size="lg"
+                href={`/team/${teamId}/members/${memberId}/edit`}
+              >
+                編輯
+              </Link>
+            </CardBtnGroup>
+          )}
+        </CardTitle>
       </CardHeader>
       <MembersInfoTable team={team} member={member} />
       <AccessConfig teamId={teamId} memberId={memberId} />

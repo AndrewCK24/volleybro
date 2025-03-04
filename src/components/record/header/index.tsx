@@ -15,10 +15,10 @@ export const Header = ({
 
   return (
     <header className="fixed top-0 z-10 flex items-center justify-between w-full max-w-[640px]">
-      <div className="flex items-center justify-between w-full gap-2 px-2 rounded-b-lg shadow bg-background pt-[env(safe-area-inset-top)]">
+      <div className="flex items-center justify-between w-full gap-2 px-2 rounded-b-lg shadow-sm bg-card pt-[env(safe-area-inset-top)]">
         <Button
           variant="ghost"
-          className="[&>svg]:w-8 [&>svg]:h-8"
+          className="[&>svg]:size-8"
           onClick={() => router.back()}
         >
           <RiArrowLeftLine />
@@ -30,7 +30,7 @@ export const Header = ({
         />
         <Button
           variant="ghost"
-          className="[&>svg]:w-8 [&>svg]:h-8"
+          className="[&>svg]:size-8"
           onClick={() => handleOptionOpen("settings")}
         >
           <RiSettings4Line />

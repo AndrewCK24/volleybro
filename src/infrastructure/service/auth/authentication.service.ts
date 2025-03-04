@@ -9,10 +9,8 @@ export class AuthenticationService implements IAuthenticationService {
     const session = await auth();
     if (!session) throw new Error("Invalid session");
 
-    // TODO: use TypeScript’s Module Augmentation to extend Session type
-    // https://authjs.dev/getting-started/typescript
     const user = await this.userRepository.findOne({
-      _id: (session.user as { _id: string })._id,
+      _id: session.user.id,
     });
     if (!user) throw new Error("User not found");
 

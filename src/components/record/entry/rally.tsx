@@ -49,7 +49,7 @@ const Rally = ({ rally, players }: { rally: Rally; players: Player[] }) => {
         {away.type &&
           (away.type !== MoveType.UNFORCED ? (
             <>
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-primary-foreground">
+              <span className="flex items-center justify-center size-6 rounded-full bg-destructive text-primary-foreground">
                 <RiUserLine />
               </span>
               {scoringMoves[away.num]?.text}

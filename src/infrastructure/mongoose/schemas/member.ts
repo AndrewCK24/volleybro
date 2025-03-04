@@ -1,6 +1,21 @@
-import { Schema, model, models } from "mongoose";
+import {
+  Schema,
+  model,
+  models,
+  type Document,
+  type Model,
+  type Types,
+} from "mongoose";
 
-const memberSchema = new Schema(
+export interface MemberDocument extends Document {
+  team_id: Types.ObjectId;
+  name: string;
+  number: number;
+  info?: object;
+  stats?: object;
+}
+
+const memberSchema = new Schema<MemberDocument>(
   {
     team_id: {
       type: Schema.Types.ObjectId,
@@ -29,5 +44,7 @@ const memberSchema = new Schema(
 
 memberSchema.index({ team_id: 1 });
 
-export const Member = models.Member || model("Member", memberSchema, "members");
+export const Member =
+  (models.Member as Model<MemberDocument>) ||
+  model<MemberDocument>("Member", memberSchema, "members");
 export default Member;
