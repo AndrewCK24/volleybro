@@ -4,7 +4,7 @@ import { useAppSelector } from "@/lib/redux/hooks";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import Entry from "@/components/record/entry";
-import { EntryType } from "@/entities/record";
+import { type Entry as IEntry, EntryType } from "@/entities/record";
 import type { ReduxRecordState } from "@/lib/features/record/types";
 
 const RecordPreview = ({
@@ -29,7 +29,7 @@ const RecordPreview = ({
 
   const lastRally = record.sets[setIndex].entries[entryIndex - 1];
   const isEditing = recording.home.player._id || recording.home.type;
-  const recordingEntry = recording.substitution
+  const recordingEntry: IEntry = recording.substitution
     ? { type: EntryType.SUBSTITUTION, data: recording.substitution }
     : recording.timeout
     ? { type: EntryType.TIMEOUT, data: recording.timeout }
