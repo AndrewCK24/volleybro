@@ -1,21 +1,16 @@
+import { container } from "@/infrastructure/di/inversify.config";
+import { TYPES } from "@/types/types";
 import {
   CreateRecordUseCase,
   type ICreateRecordInput,
   type ICreateRecordOutput,
-} from "@/applications/use-cases/record/create-record.use-case";
-import {
-  UserRepositoryImpl,
-  TeamRepositoryImpl,
-  RecordRepositoryImpl,
-} from "@/infrastructure/repositories";
+} from "@/applications/usecases/record/create-record.usecase";
 
 export const createRecordController = async (
   input: ICreateRecordInput
 ): Promise<ICreateRecordOutput | undefined> => {
-  const createRecordUseCase = new CreateRecordUseCase(
-    new UserRepositoryImpl(),
-    new TeamRepositoryImpl(),
-    new RecordRepositoryImpl()
+  const createRecordUseCase = container.get<CreateRecordUseCase>(
+    TYPES.CreateRecordUseCase
   );
 
   return await createRecordUseCase.execute(input);

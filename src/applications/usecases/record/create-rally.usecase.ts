@@ -1,8 +1,8 @@
-import { IUserRepository } from "@/applications/repositories/user.repository.interface";
-import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
-import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
-import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
-import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
+import { injectable, inject } from "inversify";
+import { TYPES } from "@/types/types";
+import type { IRecordRepository } from "@/applications/repositories/record.repository.interface";
+import type { IAuthenticationService } from "@/applications/services/auth/authentication.service.interface";
+import type { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
 import { getPreviousRally } from "@/lib/features/record/helpers";
 import { type Entry, type Rally, EntryType } from "@/entities/record";
 import { Role } from "@/entities/team";
@@ -14,51 +14,28 @@ export interface ICreateRallyInput {
 
 export type ICreateRallyOutput = Entry[];
 
-/**
- * Use case for creating a rally in a volleyball match record.
- *
- * @class CreateRallyUseCase
- *
- * @param {IUserRepository} userRepository - Repository for user data.
- * @param {ITeamRepository} teamRepository - Repository for team data.
- * @param {IRecordRepository} recordRepository - Repository for record data.
- *
- * @method execute
- * @async
- * @param {ICreateRallyInput} input - Input data for creating a rally.
- * @returns {Promise<ICreateRallyOutput | undefined>} - The updated list of entries for the specified set.
- *
- * @throws {Error} If the record or set is not found.
- *
- * @description
- * This use case handles the creation of a rally within a specific set of a volleyball match record.
- * It verifies the user's session and team role before updating the record. If the specified set or
- * record is not found, it throws an error. The method also includes a TODO to handle potential race
- * conditions when multiple users attempt to update the same rally simultaneously.
- */
+@injectable()
 export class CreateRallyUseCase {
   constructor(
-    private userRepository: IUserRepository,
-    private teamRepository: ITeamRepository,
-    private recordRepository: IRecordRepository
+    @inject(TYPES.RecordRepository) private recordRepository: IRecordRepository,
+    @inject(TYPES.AuthenticationService)
+    private authenticationService: IAuthenticationService,
+    @inject(TYPES.AuthorizationService)
+    private authorizationService: IAuthorizationService
   ) {}
 
   async execute(
     input: ICreateRallyInput
   ): Promise<ICreateRallyOutput | undefined> {
     const { params, data: rally } = input;
-    const authenticationService = new AuthenticationService(
-      this.userRepository
-    );
-    const user = await authenticationService.verifySession();
+    const user = await this.authenticationService.verifySession();
 
     const record = await this.recordRepository.findOne({
       _id: params.recordId,
     });
     if (!record) throw new Error("Record not found");
 
-    const authorizationService = new AuthorizationService(this.teamRepository);
-    await authorizationService.verifyTeamRole(
+    await this.authorizationService.verifyTeamRole(
       record.team_id.toString(),
       user._id.toString(),
       Role.MEMBER

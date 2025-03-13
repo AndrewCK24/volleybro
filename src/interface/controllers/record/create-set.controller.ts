@@ -1,21 +1,16 @@
+import { container } from "@/infrastructure/di/inversify.config";
+import { TYPES } from "@/types/types";
 import {
   CreateSetUseCase,
   type ICreateSetInput,
   type ICreateSetOutput,
-} from "@/applications/use-cases/record/create-set.use-case";
-import {
-  UserRepositoryImpl,
-  TeamRepositoryImpl,
-  RecordRepositoryImpl,
-} from "@/infrastructure/repositories";
+} from "@/applications/usecases/record/create-set.usecase";
 
 export const createSetController = async (
   input: ICreateSetInput
 ): Promise<ICreateSetOutput | undefined> => {
-  const createSetUseCase = new CreateSetUseCase(
-    new UserRepositoryImpl(),
-    new TeamRepositoryImpl(),
-    new RecordRepositoryImpl()
+  const createSetUseCase = container.get<CreateSetUseCase>(
+    TYPES.CreateSetUseCase
   );
 
   return await createSetUseCase.execute(input);
