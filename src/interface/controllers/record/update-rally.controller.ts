@@ -1,5 +1,5 @@
 import { container } from "@/infrastructure/di/inversify.config";
-import { TYPES } from "@/types/types";
+import { TYPES } from "@/infrastructure/di/types";
 import {
   UpdateRallyUseCase,
   type IUpdateRallyInput,

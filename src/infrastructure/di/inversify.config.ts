@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Container } from "inversify";
-import { TYPES } from "@/types/types";
+import { TYPES } from "@/infrastructure/di/types";
 
 import { IUserRepository } from "@/applications/repositories/user.repository.interface";
 import { ITeamRepository } from "@/applications/repositories/team.repository.interface";

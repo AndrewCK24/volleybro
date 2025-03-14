@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { TYPES } from "@/types/types";
+import { TYPES } from "@/infrastructure/di/types";
 import { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
 import type { ITeamRepository } from "@/applications/repositories/team.repository.interface";
 import { Role } from "@/entities/team";
