@@ -14,7 +14,10 @@ import {
   Side,
   EntryType,
 } from "@/entities/record";
-import { lineupSchema, type LineupDocument } from "@/infrastructure/mongoose/schemas/team";
+import {
+  lineupSchema,
+  type LineupDocument,
+} from "@/infrastructure/db/mongoose/schemas/team";
 
 interface MatchDocument extends Document {
   _id: Types.ObjectId;

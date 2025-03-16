@@ -8,9 +8,9 @@ import { IRecordRepository } from "@/applications/repositories/record.repository
 import { IAuthenticationService } from "@/applications/services/auth/authentication.service.interface";
 import { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
 
-import { UserRepositoryImpl } from "@/infrastructure/repositories";
-import { TeamRepositoryImpl } from "@/infrastructure/repositories";
-import { RecordRepositoryImpl } from "@/infrastructure/repositories";
+import { UserRepositoryImpl } from "@/infrastructure/db/repositories";
+import { TeamRepositoryImpl } from "@/infrastructure/db/repositories";
+import { RecordRepositoryImpl } from "@/infrastructure/db/repositories";
 import { AuthenticationService } from "@/infrastructure/services/auth/authentication.service";
 import { AuthorizationService } from "@/infrastructure/services/auth/authorization.service";
 
