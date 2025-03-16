@@ -2,9 +2,9 @@ import { IUserRepository } from "@/applications/repositories/user.repository.int
 import {
   User as UserModel,
   UserDocument,
-} from "@/infrastructure/mongoose/schemas/user";
+} from "@/infrastructure/db/mongoose/schemas/user";
 import { User } from "@/entities/user";
-import { BaseMongoRepository } from "@/infrastructure/repositories";
+import { BaseMongoRepository } from "@/infrastructure/db/repositories";
 
 export class UserRepositoryImpl
   extends BaseMongoRepository<User, UserDocument>

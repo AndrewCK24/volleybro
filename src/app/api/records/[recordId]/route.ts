@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
-import User from "@/infrastructure/mongoose/schemas/user";
-import Record from "@/infrastructure/mongoose/schemas/record";
+import connectToMongoDB from "@/infrastructure/db/mongoose/connect-to-mongodb";
+import User from "@/infrastructure/db/mongoose/schemas/user";
+import Record from "@/infrastructure/db/mongoose/schemas/record";
 
 export const GET = async (
   req: NextRequest,

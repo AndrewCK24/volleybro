@@ -1,12 +1,12 @@
 import { Types } from "mongoose";
-import { UserRepositoryImpl } from "@/infrastructure/repositories/user.repository.mongo";
-import { User as UserModel } from "@/infrastructure/mongoose/schemas/user";
+import { UserRepositoryImpl } from "@/infrastructure/db/repositories/user.repository.mongo";
+import { User as UserModel } from "@/infrastructure/db/mongoose/schemas/user";
 import {
   createMockDocument,
   setupModelMocks,
-} from "@/infrastructure/repositories/tests/helpers";
+} from "@/infrastructure/db/repositories/tests/helpers";
 
-jest.mock("@/infrastructure/mongoose/schemas/user");
+jest.mock("@/infrastructure/db/mongoose/schemas/user");
 
 describe("UserRepositoryImpl", () => {
   let repository: UserRepositoryImpl;

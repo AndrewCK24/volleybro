@@ -4,7 +4,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["@serwist/next/typings"],
+    "types": ["@serwist/next/typings", "reflect-metadata"],
     "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -12,7 +12,9 @@
     "noEmit": true,
     "incremental": true,
     "module": "esnext",
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,

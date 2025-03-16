@@ -1,21 +1,16 @@
+import { container } from "@/infrastructure/di/inversify.config";
+import { TYPES } from "@/infrastructure/di/types";
 import {
   CreateRallyUseCase,
   type ICreateRallyInput,
   type ICreateRallyOutput,
-} from "@/applications/use-cases/record/create-rally.use-case";
-import {
-  UserRepositoryImpl,
-  TeamRepositoryImpl,
-  RecordRepositoryImpl,
-} from "@/infrastructure/repositories";
+} from "@/applications/usecases/record/create-rally.usecase";
 
 export const createRallyController = async (
   input: ICreateRallyInput
 ): Promise<ICreateRallyOutput | undefined> => {
-  const createRallyUseCase = new CreateRallyUseCase(
-    new UserRepositoryImpl(),
-    new TeamRepositoryImpl(),
-    new RecordRepositoryImpl()
+  const createRallyUseCase = container.get<CreateRallyUseCase>(
+    TYPES.CreateRallyUseCase
   );
 
   return await createRallyUseCase.execute(input);

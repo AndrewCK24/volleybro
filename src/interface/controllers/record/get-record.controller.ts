@@ -1,21 +1,16 @@
+import { container } from "@/infrastructure/di/inversify.config";
+import { TYPES } from "@/infrastructure/di/types";
 import {
   GetRecordUseCase,
   type IGetRecordInput,
   type IGetRecordOutput,
-} from "@/applications/use-cases/record/get-record.use-case";
-import {
-  UserRepositoryImpl,
-  TeamRepositoryImpl,
-  RecordRepositoryImpl,
-} from "@/infrastructure/repositories";
+} from "@/applications/usecases/record/get-record.usecase";
 
 export const getRecordController = async (
   input: IGetRecordInput
 ): Promise<IGetRecordOutput | undefined> => {
-  const getRecordUseCase = new GetRecordUseCase(
-    new UserRepositoryImpl(),
-    new TeamRepositoryImpl(),
-    new RecordRepositoryImpl()
+  const getRecordUseCase = container.get<GetRecordUseCase>(
+    TYPES.GetRecordUseCase
   );
 
   return await getRecordUseCase.execute(input);

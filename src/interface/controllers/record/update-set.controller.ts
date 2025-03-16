@@ -1,21 +1,16 @@
+import { container } from "@/infrastructure/di/inversify.config";
+import { TYPES } from "@/infrastructure/di/types";
 import {
   UpdateSetUseCase,
   type IUpdateSetInput,
   type IUpdateSetOutput,
-} from "@/applications/use-cases/record/update-set.use-case";
-import {
-  UserRepositoryImpl,
-  TeamRepositoryImpl,
-  RecordRepositoryImpl,
-} from "@/infrastructure/repositories";
+} from "@/applications/usecases/record/update-set.usecase";
 
 export const updateSetController = async (
   input: IUpdateSetInput
 ): Promise<IUpdateSetOutput | undefined> => {
-  const updateSetUseCase = new UpdateSetUseCase(
-    new UserRepositoryImpl(),
-    new TeamRepositoryImpl(),
-    new RecordRepositoryImpl()
+  const updateSetUseCase = container.get<UpdateSetUseCase>(
+    TYPES.UpdateSetUseCase
   );
 
   return await updateSetUseCase.execute(input);

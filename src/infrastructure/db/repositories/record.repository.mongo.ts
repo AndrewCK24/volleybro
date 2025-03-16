@@ -2,9 +2,9 @@ import { IRecordRepository } from "@/applications/repositories/record.repository
 import {
   Record as RecordModel,
   RecordDocument,
-} from "@/infrastructure/mongoose/schemas/record";
+} from "@/infrastructure/db/mongoose/schemas/record";
 import { Record } from "@/entities/record";
-import { BaseMongoRepository } from "@/infrastructure/repositories";
+import { BaseMongoRepository } from "@/infrastructure/db/repositories";
 
 export class RecordRepositoryImpl
   extends BaseMongoRepository<Record, RecordDocument>

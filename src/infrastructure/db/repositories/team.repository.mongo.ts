@@ -2,9 +2,9 @@ import { ITeamRepository } from "@/applications/repositories/team.repository.int
 import {
   Team as TeamModel,
   TeamDocument,
-} from "@/infrastructure/mongoose/schemas/team";
+} from "@/infrastructure/db/mongoose/schemas/team";
 import { Team } from "@/entities/team";
-import { BaseMongoRepository } from "@/infrastructure/repositories";
+import { BaseMongoRepository } from "@/infrastructure/db/repositories";
 
 export class TeamRepositoryImpl
   extends BaseMongoRepository<Team, TeamDocument>
