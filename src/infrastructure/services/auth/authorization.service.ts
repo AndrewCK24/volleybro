@@ -1,9 +1,15 @@
+import { injectable, inject } from "inversify";
+import { TYPES } from "@/infrastructure/di/types";
 import { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
-import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
+import type { ITeamRepository } from "@/applications/repositories/team.repository.interface";
 import { Role } from "@/entities/team";
 
+@injectable()
 export class AuthorizationService implements IAuthorizationService {
-  constructor(private teamRepository: ITeamRepository) {}
+  constructor(
+    @inject(TYPES.TeamRepository) private teamRepository: ITeamRepository
+  ) {}
+
   async verifyTeamRole(
     teamId: string,
     userId: string,

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import connectToMongoDB from "@/infrastructure/mongoose/connect-to-mongodb";
-import User from "@/infrastructure/mongoose/schemas/user";
+import connectToMongoDB from "@/infrastructure/db/mongoose/connect-to-mongodb";
+import User from "@/infrastructure/db/mongoose/schemas/user";
 
 export const dynamic = "force-dynamic";
 

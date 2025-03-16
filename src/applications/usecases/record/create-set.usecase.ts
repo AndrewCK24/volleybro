@@ -1,8 +1,8 @@
-import { IUserRepository } from "@/applications/repositories/user.repository.interface";
-import { ITeamRepository } from "@/applications/repositories/team.repository.interface";
-import { IRecordRepository } from "@/applications/repositories/record.repository.interface";
-import { AuthenticationService } from "@/infrastructure/service/auth/authentication.service";
-import { AuthorizationService } from "@/infrastructure/service/auth/authorization.service";
+import { injectable, inject } from "inversify";
+import { TYPES } from "@/infrastructure/di/types";
+import type { IRecordRepository } from "@/applications/repositories/record.repository.interface";
+import type { IAuthenticationService } from "@/applications/services/auth/authentication.service.interface";
+import type { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
 import {
   type Record,
   type Set,
@@ -21,35 +21,26 @@ export interface ICreateSetInput {
 
 export interface ICreateSetOutput extends Record {}
 
+@injectable()
 export class CreateSetUseCase {
-  private userRepository: IUserRepository;
-  private teamRepository: ITeamRepository;
-  private recordRepository: IRecordRepository;
-
   constructor(
-    userRepository: IUserRepository,
-    teamRepository: ITeamRepository,
-    recordRepository: IRecordRepository
-  ) {
-    this.userRepository = userRepository;
-    this.teamRepository = teamRepository;
-    this.recordRepository = recordRepository;
-  }
+    @inject(TYPES.RecordRepository) private recordRepository: IRecordRepository,
+    @inject(TYPES.AuthenticationService)
+    private authenticationService: IAuthenticationService,
+    @inject(TYPES.AuthorizationService)
+    private authorizationService: IAuthorizationService
+  ) {}
 
   async execute(input: ICreateSetInput): Promise<ICreateSetOutput | undefined> {
     const { params, data } = input;
-    const authenticationService = new AuthenticationService(
-      this.userRepository
-    );
-    const user = await authenticationService.verifySession();
+    const user = await this.authenticationService.verifySession();
 
     const record = await this.recordRepository.findOne({
       _id: params.recordId,
     });
     if (!record) throw new Error("Record not found");
 
-    const authorizationService = new AuthorizationService(this.teamRepository);
-    await authorizationService.verifyTeamRole(
+    await this.authorizationService.verifyTeamRole(
       record.team_id.toString(),
       user._id.toString(),
       Role.MEMBER

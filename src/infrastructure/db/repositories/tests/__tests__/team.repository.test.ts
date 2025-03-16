@@ -1,12 +1,12 @@
 import { Types } from "mongoose";
-import { TeamRepositoryImpl } from "@/infrastructure/repositories/team.repository.mongo";
-import { Team as TeamModel } from "@/infrastructure/mongoose/schemas/team";
+import { TeamRepositoryImpl } from "@/infrastructure/db/repositories/team.repository.mongo";
+import { Team as TeamModel } from "@/infrastructure/db/mongoose/schemas/team";
 import {
   createMockDocument,
   setupModelMocks,
-} from "@/infrastructure/repositories/tests/helpers";
+} from "@/infrastructure/db/repositories/tests/helpers";
 
-jest.mock("@/infrastructure/mongoose/schemas/team");
+jest.mock("@/infrastructure/db/mongoose/schemas/team");
 
 describe("TeamRepositoryImpl", () => {
   let repository: TeamRepositoryImpl;

@@ -14,12 +14,9 @@ Get the latest version of [VolleyBro](https://volleybro.vercel.app/).
 2. [主要功能 / Key Features](#主要功能--key-features)
 3. [專案架構 / Project Structure](#專案架構--project-structure)
 4. [安裝與執行 / Installation & Setup](#安裝與執行--installation--setup)
-5. [部署指南 / Deployment](#部署指南--deployment)
-6. [貢獻指南 / Contribution Guidelines](#貢獻指南--contribution-guidelines)
-7. [Git Commit 規範 / Git Commit Convention](#git-commit-規範--git-commit-convention)
-8. [程式碼風格 / Code Style](#程式碼風格--code-style)
-9. [授權條款 / License](#授權條款--license)
-10. [聯絡方式 / Contact](#聯絡方式--contact)
+5. [貢獻指南 / Contribution Guidelines](#貢獻指南--contribution-guidelines)
+6. [授權條款 / License](#授權條款--license)
+7. [聯絡方式 / Contact](#聯絡方式--contact)
 
 ## 項目介紹 / Project Overview
 
@@ -53,13 +50,20 @@ andrewck24-volleybro/
 └── src/                 // 源碼目錄 / Source code directory
     ├── app/             // Next.js 頁面與路由 / Pages and routing
     ├── components/      // 可重用 UI 元件 / Reusable UI components
-    ├── entities/        // 實體定義（如隊伍、球員、比賽記錄） / Entity definitions (e.g., team, player, record)
+    ├── entities/        // 領域實體定義（如隊伍、比賽記錄） / Entity definitions (e.g., team, record)
     ├── hooks/           // React hooks
-    ├── infrastructure/  // 資料庫連線與存取層（使用 Mongoose） / Database connection and access (using Mongoose)
-    ├── interface/       // API 與控制器 / API and controllers
-    ├── lib/             // 工具函數及輔助模組 / Utility functions and helpers
-    └── types/           // TypeScript 型別定義 / TypeScript type definitions
+    ├── infrastructure/  // 基礎架構層 / Infrastructure layer
+    │   ├── db/          // 資料庫相關（Mongoose 連線、Schema 定義）/ Database related (Mongoose connection, Schema definitions)
+    │   │   ├── mongoose/   // Mongoose Schema 定義 / Mongoose Schema definitions
+    │   │   └── repositories/ // 資料庫存取實作 / Repository implementations
+    │   └── di/          // 依賴注入相關 / Dependency Injection related
+    ├── interface/       // 控制器 / Controllers
+    └── lib/             // 工具函數及輔助模組 / Utility functions and helpers
 ```
+
+本專案採用乾淨架構設計，並透過 InversifyJS 實現依賴注入，提供類型安全的依賴解析與管理。
+
+This project uses a clean architecture and implements dependency injection with InversifyJS for type-safe dependency resolution and management.
 
 ### Storybook 元件庫 / Storybook Component Library
 
@@ -113,31 +117,21 @@ This project uses [Storybook](https://storybook.js.org/) for component developme
 
    開啟 [http://localhost:3000](http://localhost:3000) 以檢視專案運行狀態。
 
-## 部署指南 / Deployment
-
-此專案可輕鬆部署至 [Vercel](https://vercel.com/)，建議參考 [Next.js 部署文件](https://nextjs.org/docs/deployment) 以獲取更多詳細資訊。
-
-This project can be easily deployed on [Vercel](https://vercel.com/). Please refer to the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for further details.
-
 ## 貢獻指南 / Contribution Guidelines
 
 歡迎所有開發者參與貢獻，請遵循以下流程：
 
 1. Fork 此專案至您的 GitHub 帳戶。
 2. 建立新分支（例如：`feature/your-feature`）。
-3. **Git commit 訊息必須參照 Angular 規範**（例如：`feat: 新增比賽記錄功能`、`fix: 修正隊伍管理介面錯誤`）。
-4. **程式碼風格請依據 Airbnb 風格指南撰寫**，並確保通過 ESLint 檢查。
-5. 提交 Pull Request，並清楚說明修改內容。
+3. 開發完成後，提交 Pull Request，並清楚說明修改內容。
 
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository to your GitHub account.
 2. Create a new branch (e.g., `feature/your-feature`).
-3. **All Git commit messages must follow the Angular commit message convention** (e.g., `feat: add match recording feature`, `fix: correct team management UI bug`).
-4. **Ensure that your code adheres to the Airbnb JavaScript Style Guide**, and pass all ESLint checks.
-5. Submit a pull request with a clear description of your changes.
+3. After development, submit a pull request with a clear description of your changes.
 
-## Git Commit 規範 / Git Commit Convention
+### Git Commit 規範 / Git Commit Convention
 
 所有 commit 訊息必須遵循 [Angular Commit Message 規範](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-format)。常見類型包括：
 
@@ -150,6 +144,14 @@ Contributions are welcome! Please follow these steps:
 - `refactor:` 用於重構程式碼
 - `test:` 用於新增或修正測試
 
+commit 訊息格式範例：
+
+```txt
+feat(core): implement dependency injection with InversifyJS
+fix(ui): correct team selection dropdown behavior
+docs(readme): update installation instructions
+```
+
 All commit messages must follow the [Angular Commit Message Convention](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-format). Common types include:
 
 - `build:` Changes that affect the build system or external dependencies
@@ -161,11 +163,29 @@ All commit messages must follow the [Angular Commit Message Convention](https://
 - `refactor:` A code change that neither fixes a bug nor adds a feature
 - `test:` Adding missing tests or correcting existing tests
 
-## 程式碼風格 / Code Style
+Example commit message format:
 
-本專案的程式碼風格採用 [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) 為基礎。請確保您的程式碼符合該風格規範，並透過 ESLint 等工具進行檢查。
+```txt
+feat(core): implement dependency injection with InversifyJS
+fix(ui): correct team selection dropdown behavior
+docs(readme): update installation instructions
+```
 
-The project follows the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) as its coding standard. Please ensure that your code complies with this style guide, and use tools like ESLint for verification.
+### 程式碼風格 / Code Style
+
+本專案的程式碼風格採用 [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) 為基礎。提交前請確保您的程式碼：
+
+- 符合 Airbnb JavaScript/TypeScript 風格指南
+- 通過 ESLint 檢查 (`npm run lint`)
+- 使用適當的型別定義（TypeScript）
+- 包含必要的測試（如適用）
+
+The project follows the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) as its coding standard. Before submitting, please ensure your code:
+
+- Complies with the Airbnb JavaScript/TypeScript style guide
+- Passes ESLint checks (`npm run lint`)
+- Uses proper type definitions (TypeScript)
+- Includes necessary tests (if applicable)
 
 ## 授權條款 / License
 

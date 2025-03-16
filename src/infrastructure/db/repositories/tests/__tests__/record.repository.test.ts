@@ -1,12 +1,12 @@
 import { Types } from "mongoose";
-import { RecordRepositoryImpl } from "@/infrastructure/repositories/record.repository.mongo";
-import { Record as RecordModel } from "@/infrastructure/mongoose/schemas/record";
+import { RecordRepositoryImpl } from "@/infrastructure/db/repositories/record.repository.mongo";
+import { Record as RecordModel } from "@/infrastructure/db/mongoose/schemas/record";
 import {
   createMockDocument,
   setupModelMocks,
-} from "@/infrastructure/repositories/tests/helpers";
+} from "@/infrastructure/db/repositories/tests/helpers";
 
-jest.mock("@/infrastructure/mongoose/schemas/record");
+jest.mock("@/infrastructure/db/mongoose/schemas/record");
 
 describe("RecordRepositoryImpl", () => {
   let repository: RecordRepositoryImpl;

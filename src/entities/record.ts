@@ -187,10 +187,11 @@ export enum EntryType {
   CHALLENGE,
 }
 
-export type Entry = {
-  type: EntryType;
-  data: Rally | Substitution | Timeout | Challenge;
-};
+export type Entry =
+  | { type: EntryType.RALLY; data: Rally }
+  | { type: EntryType.SUBSTITUTION; data: Substitution }
+  | { type: EntryType.TIMEOUT; data: Timeout }
+  | { type: EntryType.CHALLENGE; data: Challenge };
 
 export type Set = {
   win: boolean;
