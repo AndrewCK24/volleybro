@@ -8,7 +8,14 @@ const config: Partial<GlobalConfig> = {
     "@semantic-release/github",
     ["@semantic-release/npm", { npmPublish: false }],
     ["@semantic-release/changelog", { changelogFile: "docs/CHANGELOG.md" }],
-    ["@semantic-release/git", { assets: ["docs/CHANGELOG.md"] }],
+    [
+      "@semantic-release/git",
+      {
+        assets: ["docs/CHANGELOG.md"],
+        message:
+          "release: ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      },
+    ],
   ],
 };
 
