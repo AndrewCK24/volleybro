@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/AndrewCK24/volleybro/compare/v0.6.0...v0.6.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* **pwa:** add apple-mobile-web-app-capable meta tag to enable iOS splash screen ([61dc50d](https://github.com/AndrewCK24/volleybro/commit/61dc50d99159c3f878e012b9dd38dbf0284ddfbd))
+
 # [0.6.0](https://github.com/AndrewCK24/volleybro/compare/v0.5.2...v0.6.0) (2025-03-16)
 
 
