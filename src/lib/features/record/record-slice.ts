@@ -5,7 +5,8 @@ import {
 } from "@reduxjs/toolkit";
 import {
   matchPhaseHelper,
-  getPreviousRally,
+  getServingStatus,
+  getPreviousScores,
 } from "@/lib/features/record/helpers";
 
 import {
@@ -23,6 +24,7 @@ import type {
   ReduxStatus,
 } from "@/lib/features/record/types";
 import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
+import { get } from "http";
 
 // Define the initial states
 const statusState: ReduxStatus = {
@@ -71,21 +73,15 @@ const initialize: CaseReducer<ReduxRecordState, PayloadAction<Record>> = (
   const record = action.payload;
   const setIndex = record.sets.length ? record.sets.length - 1 : 0;
   const entryIndex = record.sets[setIndex]?.entries?.length || 0;
-  const previousRally = getPreviousRally(record, setIndex, entryIndex);
   const { inProgress, isSetPoint } = matchPhaseHelper(
     record,
     setIndex,
-    previousRally
+    entryIndex
   );
-  const isServing = previousRally
-    ? previousRally.win
-    : record.sets[setIndex]?.options?.serve === "home";
+  const isServing = getServingStatus(record, setIndex, entryIndex);
   state._id = record._id;
   const status = {
-    scores: {
-      home: previousRally?.home?.score || 0,
-      away: previousRally?.away?.score || 0,
-    },
+    scores: getPreviousScores(record, setIndex, entryIndex),
     setIndex: inProgress ? setIndex : setIndex + 1,
     entryIndex,
     isServing,
@@ -172,7 +168,7 @@ const confirmRecordingRally: CaseReducer<
   const { inProgress, isSetPoint } = matchPhaseHelper(
     record,
     setIndex,
-    state[mode].recording
+    entryIndex
   );
 
   state[mode].status = {
@@ -280,8 +276,6 @@ const setEditingEntryStatus: CaseReducer<
 > = (state, action) => {
   const { record, entryIndex } = action.payload;
   const { setIndex } = state.editing.status;
-
-  const previousRally = getPreviousRally(record, setIndex, entryIndex);
   const entry = record.sets[setIndex].entries[entryIndex];
 
   state.mode = "editing";
@@ -310,13 +304,8 @@ const setEditingEntryStatus: CaseReducer<
   };
   state.editing.status = {
     ...state.editing.status,
-    isServing: previousRally
-      ? previousRally.win
-      : record.sets[setIndex].options.serve === "home",
-    scores: {
-      home: previousRally ? previousRally.home.score : 0,
-      away: previousRally ? previousRally.away.score : 0,
-    },
+    isServing: getServingStatus(record, setIndex, entryIndex),
+    scores: getPreviousScores(record, setIndex, entryIndex),
     entryIndex,
     inProgress: true,
     isSetPoint: false,

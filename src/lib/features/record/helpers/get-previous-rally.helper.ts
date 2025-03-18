@@ -4,16 +4,16 @@ export const getPreviousRally = (
   record: Record,
   setIndex: number,
   entryIndex: number
-): Rally => {
-  const set = record.sets[setIndex];
-
-  if (entryIndex === 0) return null;
-
+): Rally | null => {
+  if (entryIndex <= 0) return null;
+  
+  const entries = record.sets[setIndex].entries;
+  
   for (let i = entryIndex - 1; i >= 0; i--) {
-    if (set.entries[i].type === EntryType.RALLY) {
-      return set.entries[i].data as Rally;
+    if (entries[i].type === EntryType.RALLY) {
+      return entries[i].data as Rally;
     }
   }
-
+  
   return null;
 };

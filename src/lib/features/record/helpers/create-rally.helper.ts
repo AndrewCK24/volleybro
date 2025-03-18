@@ -1,4 +1,4 @@
-import { getPreviousRally } from "@/lib/features/record/helpers";
+import { getServingStatus } from "@/lib/features/record/helpers";
 import { type Record, type Rally, EntryType } from "@/entities/record";
 
 export const createRallyOptimistic = (
@@ -8,10 +8,7 @@ export const createRallyOptimistic = (
 ) => {
   const { setIndex, entryIndex } = params;
   const { win, home, away } = recording;
-  const previousRally = getPreviousRally(record, setIndex, entryIndex);
-  const isServing = previousRally
-    ? previousRally.win
-    : record.sets[setIndex].options.serve === "home";
+  const isServing = getServingStatus(record, setIndex, entryIndex);
   if (win && !isServing) record.teams.home.stats[setIndex].rotation += 1;
 
   const homePlayerIndex = record.teams.home.players.findIndex(
