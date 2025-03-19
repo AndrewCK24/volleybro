@@ -1,10 +1,13 @@
-import { getPreviousRally } from "@/lib/features/record/helpers/get-previous-rally.helper";
-import { getServingStatus } from "@/lib/features/record/helpers/get-serving-status.helper";
-import { getPreviousScores } from "./get-previous-scores.helpers";
-import { matchPhaseHelper } from "@/lib/features/record/helpers/match-phase.helper";
-import { createRallyOptimistic } from "@/lib/features/record/helpers/create-rally.helper";
-import { updateRallyOptimistic } from "@/lib/features/record/helpers/update-rally.helper";
-import { createSubstitutionOptimistic } from "@/lib/features/record/helpers/create-substitution.helper";
+import { getPreviousRally } from "@/lib/features/record/helpers/queries/previous-rally.helper";
+import { getServingStatus } from "@/lib/features/record/helpers/queries/serving-status.helper";
+import { getPreviousScores } from "@/lib/features/record/helpers/queries/previous-scores.helper";
+import { matchPhaseHelper } from "@/lib/features/record/helpers/queries/match-phase.helper";
+
+import {
+  createRallyOptimistic,
+  updateRallyOptimistic,
+} from "@/lib/features/record/helpers/optimistic/rally.helper";
+import { createSubstitutionOptimistic } from "@/lib/features/record/helpers/optimistic/substitution.helper";
 
 export {
   getPreviousRally,

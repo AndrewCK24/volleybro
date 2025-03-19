@@ -24,7 +24,6 @@ import type {
   ReduxStatus,
 } from "@/lib/features/record/types";
 import { scoringMoves, type ScoringMove } from "@/lib/scoring-moves";
-import { get } from "http";
 
 // Define the initial states
 const statusState: ReduxStatus = {

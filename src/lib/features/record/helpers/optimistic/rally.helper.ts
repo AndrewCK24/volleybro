@@ -1,4 +1,54 @@
+import { getServingStatus } from "@/lib/features/record/helpers";
 import { type Record, type Rally, EntryType } from "@/entities/record";
+
+export const createRallyOptimistic = (
+  params: { recordId: string; setIndex: number; entryIndex: number },
+  recording: Rally,
+  record: Record
+) => {
+  const { setIndex, entryIndex } = params;
+
+  updateStats(record, setIndex, recording);
+
+  // update rotation
+  const isServing = getServingStatus(record, setIndex, entryIndex);
+  if (recording.win && !isServing)
+    record.teams.home.stats[setIndex].rotation += 1;
+
+  record.sets[setIndex].entries[entryIndex] = {
+    type: EntryType.RALLY,
+    data: recording,
+  };
+
+  return record;
+};
+
+export const updateRallyOptimistic = (
+  params: { recordId: string; setIndex: number; entryIndex: number },
+  recording: Rally,
+  record: Record
+) => {
+  const { setIndex, entryIndex } = params;
+  const entries = record.sets[setIndex].entries;
+  const originalEntry = entries[entryIndex];
+  if (originalEntry.type !== EntryType.RALLY) {
+    throw new Error("Entry is not a rally");
+  }
+  const originalRally = originalEntry.data as Rally;
+
+  discardOriginalStats(record, setIndex, originalRally);
+  updateStats(record, setIndex, recording);
+
+  record.sets[setIndex].entries[entryIndex] = {
+    type: EntryType.RALLY,
+    data: recording,
+  };
+
+  // 若有更新 rally 之得分結果，則重新計算 rotation
+  if (originalRally.win !== recording.win) updateRotation(record, setIndex);
+
+  return record;
+};
 
 const discardOriginalStats = (
   record: Record,
@@ -73,31 +123,4 @@ const updateRotation = (record: Record, setIndex: number) => {
     isServing = rally.win;
   }
   record.teams.home.stats[setIndex].rotation = rotation;
-};
-
-export const updateRallyOptimistic = (
-  params: { recordId: string; setIndex: number; entryIndex: number },
-  recording: Rally,
-  record: Record
-) => {
-  const { setIndex, entryIndex } = params;
-  const entries = record.sets[setIndex].entries;
-  const originalEntry = entries[entryIndex];
-  if (originalEntry.type !== EntryType.RALLY) {
-    throw new Error("Entry is not a rally");
-  }
-  const originalRally = originalEntry.data as Rally;
-
-  discardOriginalStats(record, setIndex, originalRally);
-  updateStats(record, setIndex, recording);
-
-  record.sets[setIndex].entries[entryIndex] = {
-    type: EntryType.RALLY,
-    data: recording,
-  };
-
-  // 若有更新 rally 之得分結果，則重新計算 rotation
-  if (originalRally.win !== recording.win) updateRotation(record, setIndex);
-
-  return record;
 };
