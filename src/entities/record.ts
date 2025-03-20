@@ -201,7 +201,7 @@ export type Set = {
   };
   options: {
     serve: "home" | "away";
-    time: {
+    time?: {
       start: string;
       end: string;
     };
