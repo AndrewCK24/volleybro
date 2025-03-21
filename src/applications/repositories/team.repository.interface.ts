@@ -1,9 +1,4 @@
 import { Team } from "@/entities/team";
+import type { IBaseRepository } from "@/applications/repositories/base.repository.interface";
 
-export interface ITeamRepository {
-  find(filter: { [key: string]: any }): Promise<Team[]>;
-  findOne(filter: { [key: string]: any }): Promise<Team | undefined>;
-  create(data: any): Promise<Team>;
-  update(filter: { [key: string]: any }, data: any): Promise<Team>;
-  delete(filter: { [key: string]: any }): Promise<boolean>;
-}
+export interface ITeamRepository extends IBaseRepository<Team> {}
