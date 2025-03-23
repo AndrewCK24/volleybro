@@ -37,7 +37,7 @@
     "mongodb": "^6.14.2",
     "mongoose": "^8.12.1",
     "motion": "^12.5.0",
-    "next": "15.2.2",
+    "next": "15.2.3",
     "next-auth": "^5.0.0-beta.25",
     "react": "19.0.0",
     "react-dom": "19.0.0",
