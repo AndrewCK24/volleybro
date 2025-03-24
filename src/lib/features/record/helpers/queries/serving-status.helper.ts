@@ -9,5 +9,7 @@ export const getServingStatus = (
   const previousRally = getPreviousRally(record, setIndex, entryIndex);
   return previousRally
     ? previousRally.win
-    : record.sets[setIndex].options.serve === "home";
+    : record.sets[setIndex]
+    ? record.sets[setIndex].options.serve === "home"
+    : true;
 };
