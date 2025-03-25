@@ -222,3 +222,13 @@ export type Record = {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export type MatchResult = {
+  _id: string;
+  win: boolean;
+  info: Match;
+  teams: {
+    home: { _id: string; name: string; sets: number; scores: number[] };
+    away: { _id: string; name: string; sets: number; scores: number[] };
+  };
+};
