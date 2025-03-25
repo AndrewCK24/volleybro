@@ -4,16 +4,20 @@ import type { IRecordRepository } from "@/applications/repositories/record.repos
 import type { IAuthenticationService } from "@/applications/services/auth/authentication.service.interface";
 import type { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
 import { Role } from "@/entities/team";
-import type { Record } from "@/entities/record";
+import type { MatchResult } from "@/entities/record";
 
-export interface IGetRecordInput {
-  params: { _id: string };
+export interface IGetMatchesInput {
+  params: { teamId: string; lastId?: string; limit?: number };
 }
 
-export type IGetRecordOutput = Record;
+export type IGetMatchesOutput = {
+  matches: MatchResult[];
+  hasMore: boolean;
+  lastId: string;
+};
 
 @injectable()
-export class GetRecordUseCase {
+export class GetMatchesUseCase {
   constructor(
     @inject(TYPES.RecordRepository) private recordRepository: IRecordRepository,
     @inject(TYPES.AuthenticationService)
@@ -22,20 +26,29 @@ export class GetRecordUseCase {
     private authorizationService: IAuthorizationService
   ) {}
 
-  async execute(input: IGetRecordInput): Promise<IGetRecordOutput | undefined> {
+  async execute(
+    input: IGetMatchesInput
+  ): Promise<IGetMatchesOutput | undefined> {
     const { params } = input;
     const user = await this.authenticationService.verifySession();
 
-    const record = await this.recordRepository.findOne({
-      _id: params._id,
-    });
-
     await this.authorizationService.verifyTeamRole(
-      record.team_id.toString(),
+      params.teamId.toString(),
       user._id.toString(),
       Role.MEMBER
     );
 
-    return record;
+    const results = await this.recordRepository.findMatchesWithPagination(
+      { team_id: params.teamId },
+      { lastId: params.lastId }
+    );
+
+    const { data: matches, hasMore, lastId } = results;
+
+    return {
+      matches,
+      hasMore,
+      lastId,
+    };
   }
 }

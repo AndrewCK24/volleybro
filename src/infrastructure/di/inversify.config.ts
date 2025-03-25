@@ -18,6 +18,7 @@ import { CreateRecordUseCase } from "@/applications/usecases/record/create-recor
 import { CreateSetUseCase } from "@/applications/usecases/record/create-set.usecase";
 import { CreateRallyUseCase } from "@/applications/usecases/record/create-rally.usecase";
 import { CreateSubstitutionUseCase } from "@/applications/usecases/record/create-substitution.usecase";
+import { GetMatchesUseCase } from "@/applications/usecases/record/get-matches.usecase";
 import { GetRecordUseCase } from "@/applications/usecases/record/get-record.usecase";
 import { UpdateSetUseCase } from "@/applications/usecases/record/update-set.usecase";
 import { UpdateRallyUseCase } from "@/applications/usecases/record/update-rally.usecase";
@@ -40,6 +41,9 @@ container
   .to(AuthorizationService);
 
 // register usecases
+container
+  .bind<GetMatchesUseCase>(TYPES.GetMatchesUseCase)
+  .to(GetMatchesUseCase);
 container
   .bind<CreateRecordUseCase>(TYPES.CreateRecordUseCase)
   .to(CreateRecordUseCase);
