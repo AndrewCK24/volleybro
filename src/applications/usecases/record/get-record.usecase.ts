@@ -7,10 +7,10 @@ import { Role } from "@/entities/team";
 import type { Record } from "@/entities/record";
 
 export interface IGetRecordInput {
-  params: { teamId: string };
+  params: { _id: string };
 }
 
-export type IGetRecordOutput = Record[];
+export type IGetRecordOutput = Record;
 
 @injectable()
 export class GetRecordUseCase {
@@ -26,16 +26,16 @@ export class GetRecordUseCase {
     const { params } = input;
     const user = await this.authenticationService.verifySession();
 
+    const record = await this.recordRepository.findOne({
+      _id: params._id,
+    });
+
     await this.authorizationService.verifyTeamRole(
-      params.teamId.toString(),
+      record.team_id.toString(),
       user._id.toString(),
       Role.MEMBER
     );
 
-    const records = await this.recordRepository.find({
-      team_id: params.teamId,
-    });
-
-    return records;
+    return record;
   }
 }
