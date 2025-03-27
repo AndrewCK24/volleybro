@@ -8,10 +8,10 @@ export const TYPES = {
 
   FindRecordUseCase: Symbol.for("FindRecordUseCase"),
   CreateRecordUseCase: Symbol.for("CreateRecordUseCase"),
+  FindMatchesUseCase: Symbol.for("FindMatchesUseCase"),
   CreateSetUseCase: Symbol.for("CreateSetUseCase"),
   CreateRallyUseCase: Symbol.for("CreateRallyUseCase"),
   CreateSubstitutionUseCase: Symbol.for("CreateSubstitutionUseCase"),
-  GetMatchesUseCase: Symbol.for("GetMatchesUseCase"),
   UpdateSetUseCase: Symbol.for("UpdateSetUseCase"),
   UpdateRallyUseCase: Symbol.for("UpdateRallyUseCase"),
 };

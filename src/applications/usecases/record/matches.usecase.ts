@@ -6,18 +6,18 @@ import type { IAuthorizationService } from "@/applications/services/auth/authori
 import { Role } from "@/entities/team";
 import type { MatchResult } from "@/entities/record";
 
-export interface IGetMatchesInput {
+export interface IFindMatchesInput {
   params: { teamId: string; lastId?: string; limit?: number };
 }
 
-export type IGetMatchesOutput = {
+export type IFindMatchesOutput = {
   matches: MatchResult[];
   hasMore: boolean;
   lastId: string;
 };
 
 @injectable()
-export class GetMatchesUseCase {
+export class FindMatchesUseCase {
   constructor(
     @inject(TYPES.RecordRepository) private recordRepository: IRecordRepository,
     @inject(TYPES.AuthenticationService)
@@ -27,8 +27,8 @@ export class GetMatchesUseCase {
   ) {}
 
   async execute(
-    input: IGetMatchesInput
-  ): Promise<IGetMatchesOutput | undefined> {
+    input: IFindMatchesInput
+  ): Promise<IFindMatchesOutput | undefined> {
     const { params } = input;
     const user = await this.authenticationService.verifySession();
 
