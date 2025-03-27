@@ -1,3 +1,16 @@
+# [0.7.0](https://github.com/AndrewCK24/volleybro/compare/v0.6.1...v0.7.0) (2025-03-27)
+
+
+### Bug Fixes
+
+* **entities:** make Set.options.time property optional ([b5d7053](https://github.com/AndrewCK24/volleybro/commit/b5d7053396cb68707fe6841ed26e094c136bbbe1))
+* **record:** handle undefined sets in serving status calculation ([f76257f](https://github.com/AndrewCK24/volleybro/commit/f76257ff43dc9a16b71f87c8fbe6bc17d757be1a))
+
+
+### Features
+
+* **record:** implement infinite scrolling for match listing ([db42a27](https://github.com/AndrewCK24/volleybro/commit/db42a274a539c9b5c18fb0d2c91795274f2933ba))
+
 ## [0.6.1](https://github.com/AndrewCK24/volleybro/compare/v0.6.0...v0.6.1) (2025-03-17)
 
 
