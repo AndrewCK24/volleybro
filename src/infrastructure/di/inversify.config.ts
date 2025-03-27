@@ -19,10 +19,12 @@ import {
   CreateRecordUseCase,
 } from "@/applications/usecases/record/record.usecase";
 import { FindMatchesUseCase } from "@/applications/usecases/record/matches.usecase";
-import { CreateSetUseCase } from "@/applications/usecases/record/create-set.usecase";
+import {
+  CreateSetUseCase,
+  UpdateSetUseCase,
+} from "@/applications/usecases/record/set.usecase";
 import { CreateRallyUseCase } from "@/applications/usecases/record/create-rally.usecase";
 import { CreateSubstitutionUseCase } from "@/applications/usecases/record/create-substitution.usecase";
-import { UpdateSetUseCase } from "@/applications/usecases/record/update-set.usecase";
 import { UpdateRallyUseCase } from "@/applications/usecases/record/update-rally.usecase";
 
 const container = new Container();

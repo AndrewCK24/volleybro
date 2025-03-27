@@ -4,7 +4,10 @@ import {
   CreateSetUseCase,
   type ICreateSetInput,
   type ICreateSetOutput,
-} from "@/applications/usecases/record/create-set.usecase";
+  UpdateSetUseCase,
+  type IUpdateSetInput,
+  type IUpdateSetOutput,
+} from "@/applications/usecases/record/set.usecase";
 
 export const createSetController = async (
   input: ICreateSetInput
@@ -14,4 +17,14 @@ export const createSetController = async (
   );
 
   return await createSetUseCase.execute(input);
+};
+
+export const updateSetController = async (
+  input: IUpdateSetInput
+): Promise<IUpdateSetOutput | undefined> => {
+  const updateSetUseCase = container.get<UpdateSetUseCase>(
+    TYPES.UpdateSetUseCase
+  );
+
+  return await updateSetUseCase.execute(input);
 };
