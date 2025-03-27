@@ -6,12 +6,12 @@ export const TYPES = {
   AuthenticationService: Symbol.for("AuthenticationService"),
   AuthorizationService: Symbol.for("AuthorizationService"),
 
+  FindRecordUseCase: Symbol.for("FindRecordUseCase"),
   CreateRecordUseCase: Symbol.for("CreateRecordUseCase"),
   CreateSetUseCase: Symbol.for("CreateSetUseCase"),
   CreateRallyUseCase: Symbol.for("CreateRallyUseCase"),
   CreateSubstitutionUseCase: Symbol.for("CreateSubstitutionUseCase"),
   GetMatchesUseCase: Symbol.for("GetMatchesUseCase"),
-  GetRecordUseCase: Symbol.for("GetRecordUseCase"),
   UpdateSetUseCase: Symbol.for("UpdateSetUseCase"),
   UpdateRallyUseCase: Symbol.for("UpdateRallyUseCase"),
 };

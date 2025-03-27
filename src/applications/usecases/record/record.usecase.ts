@@ -6,6 +6,42 @@ import type { IAuthorizationService } from "@/applications/services/auth/authori
 import { type Lineup, Role } from "@/entities/team";
 import type { Record, Team } from "@/entities/record";
 
+export interface IFindRecordInput {
+  params: { _id: string };
+}
+
+export type IFindRecordOutput = Record;
+
+@injectable()
+export class FindRecordUseCase {
+  constructor(
+    @inject(TYPES.RecordRepository) private recordRepository: IRecordRepository,
+    @inject(TYPES.AuthenticationService)
+    private authenticationService: IAuthenticationService,
+    @inject(TYPES.AuthorizationService)
+    private authorizationService: IAuthorizationService
+  ) {}
+
+  async execute(
+    input: IFindRecordInput
+  ): Promise<IFindRecordOutput | undefined> {
+    const { params } = input;
+    const user = await this.authenticationService.verifySession();
+
+    const record = await this.recordRepository.findOne({
+      _id: params._id,
+    });
+
+    await this.authorizationService.verifyTeamRole(
+      record.team_id.toString(),
+      user._id.toString(),
+      Role.MEMBER
+    );
+
+    return record;
+  }
+}
+
 export interface ICreateRecordInput {
   params: { teamId: string };
   data: {
