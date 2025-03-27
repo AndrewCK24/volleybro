@@ -3,22 +3,21 @@ import { TYPES } from "@/infrastructure/di/types";
 import type { IRecordRepository } from "@/applications/repositories/record.repository.interface";
 import type { IAuthenticationService } from "@/applications/services/auth/authentication.service.interface";
 import type { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
-import { type Lineup, Role } from "@/entities/team";
-import type { Record, Team } from "@/entities/record";
+import { Role } from "@/entities/team";
+import type { MatchResult } from "@/entities/record";
 
-export interface ICreateRecordInput {
-  params: { teamId: string };
-  data: {
-    info: Record["info"];
-    team: Team;
-    lineup: Lineup;
-  };
+export interface IFindMatchesInput {
+  params: { teamId: string; lastId?: string; limit?: number };
 }
 
-export interface ICreateRecordOutput extends Record {}
+export type IFindMatchesOutput = {
+  matches: MatchResult[];
+  hasMore: boolean;
+  lastId: string;
+};
 
 @injectable()
-export class CreateRecordUseCase {
+export class FindMatchesUseCase {
   constructor(
     @inject(TYPES.RecordRepository) private recordRepository: IRecordRepository,
     @inject(TYPES.AuthenticationService)
@@ -28,9 +27,9 @@ export class CreateRecordUseCase {
   ) {}
 
   async execute(
-    input: ICreateRecordInput
-  ): Promise<ICreateRecordOutput | undefined> {
-    const { params, data } = input;
+    input: IFindMatchesInput
+  ): Promise<IFindMatchesOutput | undefined> {
+    const { params } = input;
     const user = await this.authenticationService.verifySession();
 
     await this.authorizationService.verifyTeamRole(
@@ -39,12 +38,17 @@ export class CreateRecordUseCase {
       Role.MEMBER
     );
 
-    const record = await this.recordRepository.create({
-      team_id: params.teamId,
-      info: data.info,
-      teams: { home: { ...data.team, lineup: data.lineup }, away: {} },
-    });
+    const results = await this.recordRepository.findMatchesWithPagination(
+      { team_id: params.teamId },
+      { lastId: params.lastId }
+    );
 
-    return record;
+    const { data: matches, hasMore, lastId } = results;
+
+    return {
+      matches,
+      hasMore,
+      lastId,
+    };
   }
 }

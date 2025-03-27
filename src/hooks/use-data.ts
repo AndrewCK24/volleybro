@@ -1,8 +1,9 @@
 import useSWR, { useSWRConfig } from "swr";
+import useSWRInfinite from "swr/infinite";
 import type { User } from "@/entities/user";
 import type { Team } from "@/entities/team";
 import type { Member } from "@/entities/member";
-import type { Record } from "@/entities/record";
+import type { Record, MatchResult } from "@/entities/record";
 
 class FetchError extends Error {
   info: any;
@@ -114,22 +115,48 @@ export const useRecord = (
   return { record: data, error, isLoading, isValidating, mutate };
 };
 
-export const useTeamRecords = (
+export const useMatches = (
   teamId: string,
   fetcher = defaultFetcher,
   options = {}
 ) => {
-  const key = `/api/records?ti=${teamId}`;
-  const hasCache = useHasCache(key);
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
-    key,
-    fetcher,
-    {
-      dedupingInterval: 5 * 60 * 1000,
-      revalidateOnMount: !hasCache,
-      ...options,
-    }
-  );
+  const getKey = (pageIndex: number, previousPageData: any) => {
+    // Reached the end
+    if (previousPageData && !previousPageData.hasMore) return null;
 
-  return { records: data, error, isLoading, isValidating, mutate };
+    // First page, no lastId needed
+    if (pageIndex === 0) return `/api/matches?ti=${teamId}`;
+
+    // Add the lastId from the previous page
+    return `/api/matches?ti=${teamId}&li=${previousPageData!.lastId}`;
+  };
+
+  const { data, error, isLoading, isValidating, mutate, size, setSize } =
+    useSWRInfinite<{
+      matches: MatchResult[];
+      hasMore: boolean;
+      lastId: string;
+    }>(getKey, fetcher, {
+      dedupingInterval: 5 * 60 * 1000,
+      ...options,
+    });
+
+  const matches = data ? data.flatMap((page) => page.matches || []) : [];
+  const isEmpty = data?.[0]?.matches?.length === 0;
+  const isReachingEnd = isEmpty || (data && !data[data.length - 1]?.hasMore);
+  const isLoadingMore =
+    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
+
+  return {
+    matches,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+    size,
+    setSize,
+    isEmpty,
+    isReachingEnd,
+    isLoadingMore,
+  };
 };

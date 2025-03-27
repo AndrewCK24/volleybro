@@ -6,7 +6,7 @@ import {
   PlayerStatsClass,
 } from "@/entities/record";
 
-export const createSubstitutionOptimistic = (
+export const createSubstitutionHelper = (
   params: { recordId: string; setIndex: number; entryIndex: number },
   substitution: Substitution,
   record: Record
