@@ -23,8 +23,10 @@ import {
   CreateSetUseCase,
   UpdateSetUseCase,
 } from "@/applications/usecases/record/set.usecase";
-import { CreateRallyUseCase } from "@/applications/usecases/record/create-rally.usecase";
-import { UpdateRallyUseCase } from "@/applications/usecases/record/update-rally.usecase";
+import {
+  CreateRallyUseCase,
+  UpdateRallyUseCase,
+} from "@/applications/usecases/record/rally.usecase";
 import { CreateSubstitutionUseCase } from "@/applications/usecases/record/substitution.usecase";
 
 const container = new Container();
@@ -55,15 +57,15 @@ container
   .bind<FindMatchesUseCase>(TYPES.FindMatchesUseCase)
   .to(FindMatchesUseCase);
 container.bind<CreateSetUseCase>(TYPES.CreateSetUseCase).to(CreateSetUseCase);
+container.bind<UpdateSetUseCase>(TYPES.UpdateSetUseCase).to(UpdateSetUseCase);
 container
   .bind<CreateRallyUseCase>(TYPES.CreateRallyUseCase)
   .to(CreateRallyUseCase);
 container
-  .bind<CreateSubstitutionUseCase>(TYPES.CreateSubstitutionUseCase)
-  .to(CreateSubstitutionUseCase);
-container.bind<UpdateSetUseCase>(TYPES.UpdateSetUseCase).to(UpdateSetUseCase);
-container
   .bind<UpdateRallyUseCase>(TYPES.UpdateRallyUseCase)
   .to(UpdateRallyUseCase);
+container
+  .bind<CreateSubstitutionUseCase>(TYPES.CreateSubstitutionUseCase)
+  .to(CreateSubstitutionUseCase);
 
 export { container };

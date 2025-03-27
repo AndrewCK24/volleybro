@@ -9,8 +9,8 @@ import { Container, MoveButton } from "@/components/record/panels/moves";
 import { createRally } from "@/lib/features/record/actions/create-rally";
 import { updateRally } from "@/lib/features/record/actions/update-rally";
 import {
-  createRallyOptimistic,
-  updateRallyOptimistic,
+  createRallyHelper,
+  updateRallyHelper,
 } from "@/lib/features/record/helpers";
 
 const OppoMoves = ({ recordId }: { recordId: string }) => {
@@ -29,7 +29,7 @@ const OppoMoves = ({ recordId }: { recordId: string }) => {
   const create = () => {
     mutate(createRally({ recordId, setIndex, entryIndex }, recording, record), {
       revalidate: false,
-      optimisticData: createRallyOptimistic(
+      optimisticData: createRallyHelper(
         { recordId, setIndex, entryIndex },
         recording,
         record
@@ -41,7 +41,7 @@ const OppoMoves = ({ recordId }: { recordId: string }) => {
   const update = () => {
     mutate(updateRally({ recordId, setIndex, entryIndex }, recording, record), {
       revalidate: false,
-      optimisticData: updateRallyOptimistic(
+      optimisticData: updateRallyHelper(
         { recordId, setIndex, entryIndex },
         recording,
         record
