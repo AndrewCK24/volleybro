@@ -1,7 +1,7 @@
 import { getServingStatus } from "@/lib/features/record/helpers";
 import { type Record, type Rally, EntryType } from "@/entities/record";
 
-export const createRallyOptimistic = (
+export const createRallyHelper = (
   params: { recordId: string; setIndex: number; entryIndex: number },
   recording: Rally,
   record: Record
@@ -23,7 +23,7 @@ export const createRallyOptimistic = (
   return record;
 };
 
-export const updateRallyOptimistic = (
+export const updateRallyHelper = (
   params: { recordId: string; setIndex: number; entryIndex: number },
   recording: Rally,
   record: Record
@@ -66,21 +66,16 @@ const discardOriginalStats = (
   if (win) {
     if (homePlayerIndex !== -1) {
       homePlayer.stats[setIndex][home.type].success -= 1;
-      record.teams.home.players[homePlayerIndex] = homePlayer;
     }
     homeTeam.stats[setIndex][home.type].success -= 1;
     awayTeam.stats[setIndex][away.type].error -= 1;
   } else {
     if (homePlayerIndex !== -1) {
       homePlayer.stats[setIndex][home.type].error -= 1;
-      record.teams.home.players[homePlayerIndex] = homePlayer;
     }
     homeTeam.stats[setIndex][home.type].error -= 1;
     awayTeam.stats[setIndex][away.type].success -= 1;
   }
-
-  record.teams.home = homeTeam;
-  record.teams.away = awayTeam;
 };
 
 const updateStats = (record: Record, setIndex: number, recording: Rally) => {
@@ -95,21 +90,16 @@ const updateStats = (record: Record, setIndex: number, recording: Rally) => {
   if (win) {
     if (homePlayerIndex !== -1) {
       homePlayer.stats[setIndex][home.type].success += 1;
-      record.teams.home.players[homePlayerIndex] = homePlayer;
     }
     homeTeam.stats[setIndex][home.type].success += 1;
     awayTeam.stats[setIndex][away.type].error += 1;
   } else {
     if (homePlayerIndex !== -1) {
       homePlayer.stats[setIndex][home.type].error += 1;
-      record.teams.home.players[homePlayerIndex] = homePlayer;
     }
     homeTeam.stats[setIndex][home.type].error += 1;
     awayTeam.stats[setIndex][away.type].success += 1;
   }
-
-  record.teams.home = homeTeam;
-  record.teams.away = awayTeam;
 };
 
 const updateRotation = (record: Record, setIndex: number) => {

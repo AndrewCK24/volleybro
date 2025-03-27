@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSetController } from "@/interface/controllers/record/create-set.controller";
-import { updateSetController } from "@/interface/controllers/record/update-set.controller";
+import {
+  createSetController,
+  updateSetController,
+} from "@/interface/controllers/record/set.controller";
 
 export const POST = async (
   req: NextRequest,
@@ -41,11 +43,10 @@ export const PUT = async (
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
 
+    // TODO: update lineup of the set (without increasing substitution count)
     const input = {
       params: { recordId, setIndex },
-      data: {
-        options: request.options,
-      },
+      data: { options: request.options },
     };
 
     const record = await updateSetController(input);

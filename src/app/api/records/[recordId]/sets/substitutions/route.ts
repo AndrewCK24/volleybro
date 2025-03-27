@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSubstitutionController } from "@/interface/controllers/record/create-substitution.controller";
+import { createSubstitutionController } from "@/interface/controllers/record/substitution.controller";
 
 export const POST = async (
   req: NextRequest,

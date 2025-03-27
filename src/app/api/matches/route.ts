@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getMatchesController } from "@/interface/controllers/record/match.controller";
+import { findMatchesController } from "@/interface/controllers/record/match.controller";
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -9,7 +9,7 @@ export const GET = async (req: NextRequest) => {
 
     const input = { params: { teamId, lastId } };
 
-    const results = await getMatchesController(input);
+    const results = await findMatchesController(input);
 
     return NextResponse.json(results);
   } catch (error) {

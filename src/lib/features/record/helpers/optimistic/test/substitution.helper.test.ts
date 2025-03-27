@@ -1,4 +1,4 @@
-import { createSubstitutionOptimistic } from "@/lib/features/record/helpers";
+import { createSubstitutionHelper } from "@/lib/features/record/helpers";
 import { Position } from "@/entities/team";
 import { EntryType, MoveType, Side } from "@/entities/record";
 import type { Substitution, Record } from "@/entities/record";
@@ -7,7 +7,7 @@ describe("substitution.helper.ts", () => {
   const mockSubstitution: Substitution = {
     team: Side.HOME,
     players: {
-      in: "player-8",  // Substitute player entering
+      in: "player-8", // Substitute player entering
       out: "player-1", // Starting player leaving
     },
   };
@@ -159,7 +159,7 @@ describe("substitution.helper.ts", () => {
     test("should create substitution entry at specified index", () => {
       const mockRecord = createMockRecord();
 
-      const result = createSubstitutionOptimistic(
+      const result = createSubstitutionHelper(
         mockParams,
         mockSubstitution,
         mockRecord
@@ -174,7 +174,7 @@ describe("substitution.helper.ts", () => {
     test("should update starting lineup with substitution player", () => {
       const mockRecord = createMockRecord();
 
-      const result = createSubstitutionOptimistic(
+      const result = createSubstitutionHelper(
         mockParams,
         mockSubstitution,
         mockRecord
@@ -192,7 +192,7 @@ describe("substitution.helper.ts", () => {
     test("should update substitutes list with replaced player", () => {
       const mockRecord = createMockRecord();
 
-      const result = createSubstitutionOptimistic(
+      const result = createSubstitutionHelper(
         mockParams,
         mockSubstitution,
         mockRecord
@@ -211,7 +211,7 @@ describe("substitution.helper.ts", () => {
       const mockRecord = createMockRecord();
       mockRecord.teams.home.stats[0].substitution = 6;
 
-      const result = createSubstitutionOptimistic(
+      const result = createSubstitutionHelper(
         mockParams,
         mockSubstitution,
         mockRecord
@@ -257,7 +257,7 @@ describe("substitution.helper.ts", () => {
         },
       };
 
-      const result = createSubstitutionOptimistic(
+      const result = createSubstitutionHelper(
         { ...mockParams, entryIndex: 2 },
         secondSubstitution,
         mockRecord
@@ -282,7 +282,7 @@ describe("substitution.helper.ts", () => {
         },
       };
 
-      const result = createSubstitutionOptimistic(
+      const result = createSubstitutionHelper(
         mockParams,
         awaySubstitution,
         mockRecord

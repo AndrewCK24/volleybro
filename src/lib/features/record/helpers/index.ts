@@ -4,17 +4,17 @@ import { getPreviousScores } from "@/lib/features/record/helpers/queries/previou
 import { matchPhaseHelper } from "@/lib/features/record/helpers/queries/match-phase.helper";
 
 import {
-  createRallyOptimistic,
-  updateRallyOptimistic,
+  createRallyHelper,
+  updateRallyHelper,
 } from "@/lib/features/record/helpers/optimistic/rally.helper";
-import { createSubstitutionOptimistic } from "@/lib/features/record/helpers/optimistic/substitution.helper";
+import { createSubstitutionHelper } from "@/lib/features/record/helpers/optimistic/substitution.helper";
 
 export {
   getPreviousRally,
   getServingStatus,
   getPreviousScores,
   matchPhaseHelper,
-  createRallyOptimistic,
-  updateRallyOptimistic,
-  createSubstitutionOptimistic,
+  createRallyHelper,
+  updateRallyHelper,
+  createSubstitutionHelper,
 };

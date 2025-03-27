@@ -1,6 +1,6 @@
 import {
-  createRallyOptimistic,
-  updateRallyOptimistic,
+  createRallyHelper,
+  updateRallyHelper,
 } from "@/lib/features/record/helpers";
 import { Position } from "@/entities/team";
 import { EntryType, MoveType } from "@/entities/record";
@@ -170,7 +170,7 @@ describe("rally.helper.ts", () => {
     test("should create new rally entry at specified index", () => {
       const mockRecord = createMockRecord();
 
-      const result = createRallyOptimistic(mockParams, mockRally, mockRecord);
+      const result = createRallyHelper(mockParams, mockRally, mockRecord);
 
       expect(result.sets[0].entries[1]).toEqual({
         type: EntryType.RALLY,
@@ -180,7 +180,7 @@ describe("rally.helper.ts", () => {
 
     test("should update player stats when home team wins", () => {
       const mockRecord = createMockRecord();
-      const result = createRallyOptimistic(mockParams, mockRally, mockRecord);
+      const result = createRallyHelper(mockParams, mockRally, mockRecord);
 
       expect(
         result.teams.home.players[0].stats[0][MoveType.ATTACK].success
@@ -190,7 +190,7 @@ describe("rally.helper.ts", () => {
     test("should update team stats when home team wins", () => {
       const mockRecord = createMockRecord();
 
-      const result = createRallyOptimistic(mockParams, mockRally, mockRecord);
+      const result = createRallyHelper(mockParams, mockRally, mockRecord);
 
       expect(result.teams.home.stats[0][MoveType.ATTACK].success).toBe(1);
       expect(result.teams.away.stats[0][MoveType.DEFENSE].error).toBe(1);
@@ -202,7 +202,7 @@ describe("rally.helper.ts", () => {
       // add a lost rally before the winning rally for rotation
       (mockRecord.sets[0].entries[0].data as Rally).win = false;
 
-      const result = createRallyOptimistic(mockParams, mockRally, mockRecord);
+      const result = createRallyHelper(mockParams, mockRally, mockRecord);
 
       expect(result.teams.home.stats[0].rotation).toBe(1);
     });
@@ -213,7 +213,7 @@ describe("rally.helper.ts", () => {
       // Set home team as serving team
       mockRecord.sets[0].options.serve = "home";
 
-      const result = createRallyOptimistic(mockParams, mockRally, mockRecord);
+      const result = createRallyHelper(mockParams, mockRally, mockRecord);
 
       expect(result.teams.home.stats[0].rotation).toBe(0);
     });
@@ -245,7 +245,7 @@ describe("rally.helper.ts", () => {
     test("should update existing rally entry with new data", () => {
       const mockRecord = createMockRecord();
 
-      const result = updateRallyOptimistic(mockParams, newRally, mockRecord);
+      const result = updateRallyHelper(mockParams, newRally, mockRecord);
 
       expect(result.sets[0].entries[0]).toEqual({
         type: EntryType.RALLY,
@@ -256,7 +256,7 @@ describe("rally.helper.ts", () => {
     test("should update player and team stats when rally details change", () => {
       const mockRecord = createMockRecord();
 
-      const result = updateRallyOptimistic(mockParams, newRally, mockRecord);
+      const result = updateRallyHelper(mockParams, newRally, mockRecord);
 
       // Original stats should be removed
       expect(
@@ -293,10 +293,10 @@ describe("rally.helper.ts", () => {
           player: { _id: "rival-1", zone: 1 },
         },
       };
-      createRallyOptimistic(mockParams, lostRally, mockRecord);
+      createRallyHelper(mockParams, lostRally, mockRecord);
 
       // Change the first rally from lost to win
-      const result = updateRallyOptimistic(mockParams, newRally, mockRecord);
+      const result = updateRallyHelper(mockParams, newRally, mockRecord);
 
       // Original stats should be removed
       expect(result.teams.home.players[0].stats[0][MoveType.ATTACK].error).toBe(
@@ -320,7 +320,7 @@ describe("rally.helper.ts", () => {
       mockRecord.sets[0].entries[0].type = EntryType.TIMEOUT;
 
       expect(() => {
-        updateRallyOptimistic(mockParams, newRally, mockRecord);
+        updateRallyHelper(mockParams, newRally, mockRecord);
       }).toThrow("Entry is not a rally");
     });
 
@@ -363,7 +363,7 @@ describe("rally.helper.ts", () => {
         },
       };
 
-      const result = updateRallyOptimistic(mockParams, newRally, mockRecord);
+      const result = updateRallyHelper(mockParams, newRally, mockRecord);
 
       // Rotation should be updated since we've changed win status
       expect(result.teams.home.stats[0].rotation).toBe(1);
@@ -372,7 +372,7 @@ describe("rally.helper.ts", () => {
     test("should not change rotation when win status remains the same", () => {
       const mockRecord = createMockRecord();
 
-      const result = updateRallyOptimistic(mockParams, newRally, mockRecord);
+      const result = updateRallyHelper(mockParams, newRally, mockRecord);
 
       // Rotation should remain unchanged
       expect(result.teams.home.stats[0].rotation).toBe(0);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createRecordController } from "@/interface/controllers/record/create-record.controller";
+import { createRecordController } from "@/interface/controllers/record/record.controller";
 
 export const POST = async (req: NextRequest) => {
   try {

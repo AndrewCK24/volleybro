@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRecordController } from "@/interface/controllers/record/get-record.controller";
+import { findRecordController } from "@/interface/controllers/record/record.controller";
 
 export const GET = async (
   req: NextRequest,
   props: { params: Promise<{ recordId: string }> }
 ) => {
-  const params = await props.params;
-  const { recordId } = params;
   try {
+    const params = await props.params;
+    const { recordId } = params;
     const input = { params: { _id: recordId } };
 
-    const record = await getRecordController(input);
+    const record = await findRecordController(input);
 
     return NextResponse.json(record, { status: 200 });
   } catch (error) {

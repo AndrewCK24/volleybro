@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createRallyController } from "@/interface/controllers/record/create-rally.controller";
-import { updateRallyController } from "@/interface/controllers/record/update-rally.controller";
+import {
+  createRallyController,
+  updateRallyController,
+} from "@/interface/controllers/record/rally.controller";
 
 export const POST = async (
   req: NextRequest,

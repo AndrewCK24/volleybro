@@ -4,7 +4,7 @@ import {
   CreateSubstitutionUseCase,
   type ICreateSubstitutionInput,
   type ICreateSubstitutionOutput,
-} from "@/applications/usecases/record/create-substitution.usecase";
+} from "@/applications/usecases/record/substitution.usecase";
 
 export const createSubstitutionController = async (
   input: ICreateSubstitutionInput

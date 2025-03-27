@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { createSubstitution } from "@/lib/features/record/actions/create-substitution";
-import { createSubstitutionOptimistic } from "@/lib/features/record/helpers";
+import { createSubstitutionHelper } from "@/lib/features/record/helpers";
 import type { ReduxRecordState } from "@/lib/features/record/types";
 
 const Substitutes = ({
@@ -36,7 +36,7 @@ const Substitutes = ({
         ),
         {
           revalidate: false,
-          optimisticData: createSubstitutionOptimistic(
+          optimisticData: createSubstitutionHelper(
             { recordId, setIndex, entryIndex },
             recording.substitution,
             record
