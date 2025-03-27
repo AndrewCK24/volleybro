@@ -24,8 +24,8 @@ import {
   UpdateSetUseCase,
 } from "@/applications/usecases/record/set.usecase";
 import { CreateRallyUseCase } from "@/applications/usecases/record/create-rally.usecase";
-import { CreateSubstitutionUseCase } from "@/applications/usecases/record/create-substitution.usecase";
 import { UpdateRallyUseCase } from "@/applications/usecases/record/update-rally.usecase";
+import { CreateSubstitutionUseCase } from "@/applications/usecases/record/substitution.usecase";
 
 const container = new Container();
 
