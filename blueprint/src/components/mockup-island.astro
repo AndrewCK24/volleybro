@@ -9,20 +9,21 @@ import {
 } from "../../content/changes/game-positional-writes/design";
 import { GamePositionalDetails } from "./game-positional-details";
 import { RetainedMockupIsland } from "./retained-mockup-island";
+import { DesignMockupIsland } from "./design-mockup-island";
 import AppleSplashMockup from "./apple-splash-mockup.astro";
 import { renderAnnotatedDiffHtml } from "../lib/annotated-diff-html";
 import { createElement, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const slug = (Astro.url.pathname.replace(/\.html$/u, "").split("/").filter(Boolean).at(-1) ?? "");
-const mode = {
+const retainedMode = {
   "apple-splash-dynamic": "static-svg",
   "elevation-depth-system": "client-frame-2",
   "game-positional-writes": "client-flowchart",
   "logo-v-splash-redesign": "client-frame-1",
   "sync-recording": "client-frame-1",
 }[slug];
-if (!mode) throw new Error(`No accepted design rendering mode for ${slug}`);
+const mode = retainedMode ?? "client-fallback";
 
 function safeStaticMarkup<Props extends object>(
   Component: ComponentType<Props>,
@@ -58,4 +59,5 @@ const gameDetails = slug === "game-positional-writes"
   </>}
   {slug === "logo-v-splash-redesign" && <RetainedMockupIsland client:load name="logo-redesign" />}
   {slug === "sync-recording" && <RetainedMockupIsland client:load name="sync-conflict-simulator" />}
+  {!retainedMode && <DesignMockupIsland client:load slug={slug} />}
 </div>
