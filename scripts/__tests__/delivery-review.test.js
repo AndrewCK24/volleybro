@@ -13,14 +13,6 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import {
-  chooseCandidate,
-  exactLgtm,
-  isAuthorizedAcceptance,
-  parseMarkedJson,
-  validateCandidate,
-} from "../delivery-review.js";
-
 const marker = "<!-- volleybro-g2-candidate -->";
 const reviewer = { login: "andrewck24", type: "User" };
 const shaA = "a".repeat(40);
@@ -53,155 +45,6 @@ function comment(body, overrides = {}) {
   };
 }
 
-test("accepts only an exact LGTM body after trimming whitespace", () => {
-  assert.equal(exactLgtm(" LGTM\n"), true);
-  assert.equal(exactLgtm("lgtm"), false);
-  assert.equal(exactLgtm("LGTM, please merge"), false);
-  assert.equal(exactLgtm("Looks good. LGTM"), false);
-});
-
-test("acceptance must be an unedited comment by the configured human", () => {
-  const acceptance = comment("LGTM");
-  assert.equal(isAuthorizedAcceptance(acceptance, "andrewck24"), true);
-  assert.equal(
-    isAuthorizedAcceptance(
-      { ...acceptance, updated_at: "2026-10-10T10:01:00Z" },
-      "andrewck24",
-    ),
-    false,
-  );
-  assert.equal(isAuthorizedAcceptance(acceptance, "another-user"), false);
-  assert.equal(
-    isAuthorizedAcceptance(
-      { ...acceptance, user: { login: "andrewck24", type: "Bot" } },
-      "andrewck24",
-    ),
-    false,
-  );
-});
-
-test("parses only the expected JSON marker and rejects malformed JSON", () => {
-  assert.deepEqual(parseMarkedJson(`${marker}\n{"pullRequest":12}`, marker), {
-    pullRequest: 12,
-  });
-  assert.equal(parseMarkedJson("ordinary comment", marker), null);
-  assert.equal(parseMarkedJson(`${marker}\n{bad}`, marker), null);
-});
-
-test("chooses the newest authorized candidate that existed unchanged before LGTM", () => {
-  const prior = comment(`${marker}\n${JSON.stringify(candidate())}`, {
-    id: 11,
-    created_at: "2026-10-10T10:00:00Z",
-    updated_at: "2026-10-10T10:00:00Z",
-  });
-  const newerPrior = comment(
-    `${marker}\n${JSON.stringify(candidate({ change: "newer" }))}`,
-    {
-      id: 12,
-      created_at: "2026-10-10T10:30:00Z",
-      updated_at: "2026-10-10T10:30:00Z",
-    },
-  );
-  const editedAfter = comment(
-    `${marker}\n${JSON.stringify(candidate({ change: "edited" }))}`,
-    {
-      id: 13,
-      created_at: "2026-10-10T10:20:00Z",
-      updated_at: "2026-10-10T11:10:00Z",
-    },
-  );
-  const bot = comment(`${marker}\n${JSON.stringify(candidate())}`, {
-    user: { login: "review-bot", type: "Bot" },
-  });
-  const accepted = chooseCandidate(
-    [prior, newerPrior, editedAfter, bot],
-    "andrewck24",
-    "2026-10-10T11:00:00Z",
-  );
-  assert.equal(accepted, newerPrior);
-});
-
-test("does not treat post-acceptance or untrusted candidates as eligible", () => {
-  const postAcceptance = comment(`${marker}\n${JSON.stringify(candidate())}`, {
-    created_at: "2026-10-10T11:01:00Z",
-    updated_at: "2026-10-10T11:01:00Z",
-  });
-  const wrongActor = comment(`${marker}\n${JSON.stringify(candidate())}`, {
-    user: { login: "someone-else", type: "User" },
-  });
-  const bot = comment(`${marker}\n${JSON.stringify(candidate())}`, {
-    user: { login: "andrewck24", type: "Bot" },
-  });
-  assert.equal(
-    chooseCandidate(
-      [postAcceptance, wrongActor, bot],
-      "andrewck24",
-      "2026-10-10T11:00:00Z",
-    ),
-    null,
-  );
-});
-
-test("same-second candidate ordering uses comment IDs and later candidates revoke LGTM", () => {
-  const before = comment(`${marker}\n${JSON.stringify(candidate())}`, {
-    id: 19,
-  });
-  const after = comment(
-    `${marker}\n${JSON.stringify(candidate({ specHash: "d".repeat(64) }))}`,
-    {
-      id: 30,
-    },
-  );
-  const acceptedAt = "2026-10-10T10:00:00Z";
-  assert.equal(chooseCandidate([before], "andrewck24", acceptedAt, 20), before);
-  assert.equal(
-    chooseCandidate([before, after], "andrewck24", acceptedAt, 20),
-    null,
-  );
-  const older = comment(
-    `${marker}\n${JSON.stringify(candidate({ change: "older" }))}`,
-    {
-      id: 10,
-    },
-  );
-  assert.equal(
-    chooseCandidate([older, before], "andrewck24", acceptedAt, 20),
-    before,
-  );
-});
-
-test("validates candidate repository, PR, reviewed head/base, and snapshot hash", () => {
-  const valid = candidate();
-  assert.equal(
-    validateCandidate(valid, {
-      repository: "owner/repo",
-      number: 12,
-      headSha: shaA,
-      baseSha: shaB,
-      reviewer: "andrewck24",
-    }),
-    valid,
-  );
-  for (const override of [
-    { repository: "fork/repo" },
-    { pullRequest: 13 },
-    { headSha: "d".repeat(40) },
-    { baseSha: "e".repeat(40) },
-    { specHash: "bad" },
-    { snapshotUrl: "" },
-  ]) {
-    assert.throws(() =>
-      validateCandidate(candidate(override), {
-        repository: "owner/repo",
-        number: 12,
-        headSha: shaA,
-        baseSha: shaB,
-        reviewer: "andrewck24",
-      }),
-    );
-  }
-});
-
 const fakeGh = `#!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
 const [command, ...args] = process.argv.slice(2);
@@ -218,14 +61,25 @@ if (command === "api") {
   } else if (path === "issues/12/comments") emit([state.comments]);
   else if (path === "pulls/12") emit(state.nativePr);
   else if (path === "actions/workflows/ci.yml") emit({ id: 5, path: ".github/workflows/ci.yml" });
-  else if (path.startsWith("actions/workflows/5/runs")) emit([state.ciRuns]);
+  else if (path.startsWith("actions/workflows/5/runs")) emit([{ total_count: state.ciRuns.length, workflow_runs: state.ciRuns }]);
   else if (path === "actions/runs/888/jobs?filter=latest&per_page=100") emit({ total_count: 1, jobs: state.ciJobs });
   else if (path === "actions/workflows/delivery-review.yml") emit({ id: 6, path: ".github/workflows/delivery-review.yml" });
-  else if (path.startsWith("actions/workflows/6/runs")) emit([state.deliveryRuns]);
-  else if (path === "actions/runs/777/attempts/1") emit(state.deliveryRun);
-  else if (path === "actions/runs/777/attempts/1/jobs?filter=latest&per_page=100") emit({ total_count: 1, jobs: state.deliveryJobs });
+  else if (path.startsWith("actions/workflows/6/runs")) emit([{ total_count: state.deliveryRuns.length, workflow_runs: state.deliveryRuns }]);
+  else if (/^actions\\/runs\\/777\\/attempts\\/\\d+$/.test(path)) {
+    const attempt = path.split("/").at(-1);
+    emit(state.deliveryAttempts?.[attempt] || state.deliveryRun);
+  }
+  else if (/^actions\\/runs\\/777\\/attempts\\/\\d+\\/jobs\\?filter=latest&per_page=100$/.test(path)) {
+    const attempt = path.split("/")[4];
+    emit({ total_count: 1, jobs: state.deliveryAttemptJobs?.[attempt] || state.deliveryJobs });
+  }
   else if (path === "actions/runs/777/artifacts?per_page=100") emit({ total_count: state.artifacts.length, artifacts: state.artifacts });
   else if (path.startsWith("commits/") && path.includes("/check-runs")) {
+    if (state.republishDuringChecks) {
+      state.comments.push(state.republishDuringChecks);
+      state.republishDuringChecks = null;
+      save();
+    }
     if (state.advanceBaseDuringChecks) {
       state.nativePr.base.sha = "e".repeat(40);
       state.prView.baseRefOid = "e".repeat(40);
@@ -440,8 +294,10 @@ globalThis.fetch = async (url, options) => {
   return {
     root,
     env,
+    eventPath,
     state: async () => JSON.parse(await readFile(statePath, "utf8")),
     writeState: async (value) => writeFile(statePath, JSON.stringify(value)),
+    writeEvent: async (value) => writeFile(eventPath, JSON.stringify(value)),
     run: (archivePath) =>
       spawnSync(process.execPath, [cli, "event"], {
         env: {
@@ -485,6 +341,84 @@ async function installEvidenceArtifact(fixture, mutate = () => {}) {
   return archive;
 }
 
+test("event CLI accepts only configured-human exact LGTM comments", async (t) => {
+  for (const mutate of [
+    (event) => {
+      event.comment.body = "lgtm";
+    },
+    (event) => {
+      event.comment.body = "LGTM, merge";
+    },
+    (event) => {
+      event.comment.user = { login: "andrewck24", type: "Bot" };
+    },
+  ]) {
+    const fixture = await eventFixture(t);
+    const event = JSON.parse(await readFile(fixture.eventPath, "utf8"));
+    mutate(event);
+    await fixture.writeEvent(event);
+    const result = fixture.run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal((await fixture.state()).mergeCount, 0);
+  }
+
+  const fixture = await eventFixture(t);
+  const event = JSON.parse(await readFile(fixture.eventPath, "utf8"));
+  event.comment.body = " LGTM\n";
+  await fixture.writeEvent(event);
+  const result = fixture.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal((await fixture.state()).mergeCount, 1);
+});
+
+test("event CLI binds LGTM to the newest unchanged candidate and rechecks before merge", async (t) => {
+  const newer = await eventFixture(t);
+  const newerState = await newer.state();
+  const newerCandidate = candidate({ change: "newest-review-candidate" });
+  newerState.comments.push(
+    comment(`${marker}\n${JSON.stringify(newerCandidate)}`, {
+      id: 15,
+      created_at: "2026-10-11T09:45:00Z",
+      updated_at: "2026-10-11T09:45:00Z",
+    }),
+  );
+  await newer.writeState(newerState);
+  const newerResult = newer.run();
+  assert.equal(newerResult.status, 0, newerResult.stderr);
+  const newerReceipt = (await newer.state()).comments.find((item) =>
+    item.body.startsWith("<!-- volleybro-g2-receipt -->"),
+  );
+  assert.equal(
+    JSON.parse(newerReceipt.body.split("\n").slice(1).join("\n"))
+      .candidateCommentId,
+    "15",
+  );
+
+  const edited = await eventFixture(t);
+  const editedState = await edited.state();
+  editedState.comments[0].body = `${marker}\n${JSON.stringify(candidate({ change: "edited-after-lgtm" }))}`;
+  editedState.comments[0].updated_at = "2026-10-11T10:00:00Z";
+  await edited.writeState(editedState);
+  const editedResult = edited.run();
+  assert.notEqual(editedResult.status, 0);
+  assert.equal((await edited.state()).mergeCount, 0);
+
+  const republished = await eventFixture(t);
+  const republishedState = await republished.state();
+  republishedState.republishDuringChecks = {
+    ...comment(
+      `${marker}\n${JSON.stringify(candidate({ specHash: "d".repeat(64) }))}`,
+      { id: 30 },
+    ),
+    created_at: "2026-10-11T10:00:00Z",
+    updated_at: "2026-10-11T10:00:00Z",
+  };
+  await republished.writeState(republishedState);
+  const republishedResult = republished.run();
+  assert.notEqual(republishedResult.status, 0);
+  assert.equal((await republished.state()).mergeCount, 0);
+});
+
 test("event merges exact head and recovers a missing receipt from its digest-bound run artifact", async (t) => {
   const fixture = await eventFixture(t);
   const first = fixture.run();
@@ -516,6 +450,55 @@ test("event merges exact head and recovers a missing receipt from its digest-bou
     ).length,
     1,
   );
+});
+
+test("recovery searches completed historical attempts after an in-progress or failed rerun", async (t) => {
+  for (const currentStatus of ["in_progress", "completed"]) {
+    const fixture = await eventFixture(t);
+    const first = fixture.run();
+    assert.equal(first.status, 0, first.stderr);
+    await installEvidenceArtifact(fixture);
+    const state = await fixture.state();
+    state.comments = state.comments.filter(
+      (item) => !item.body.startsWith("<!-- volleybro-g2-receipt -->"),
+    );
+    state.deliveryRuns = [
+      {
+        ...state.deliveryRun,
+        run_attempt: 2,
+        status: currentStatus,
+        conclusion: currentStatus === "completed" ? "failure" : null,
+      },
+    ];
+    state.deliveryAttempts = {
+      1: state.deliveryRun,
+      2: {
+        ...state.deliveryRun,
+        run_attempt: 2,
+        status: currentStatus,
+        conclusion: currentStatus === "completed" ? "failure" : null,
+      },
+    };
+    state.deliveryAttemptJobs = {
+      1: state.deliveryJobs,
+      2: [
+        { name: "record-or-merge", status: "completed", conclusion: "failure" },
+      ],
+    };
+    await fixture.writeState(state);
+
+    fixture.env.GITHUB_RUN_ATTEMPT = "2";
+    const retry = fixture.run(path.join(fixture.root, "evidence.zip"));
+    assert.equal(retry.status, 0, retry.stderr);
+    const recovered = await fixture.state();
+    assert.equal(recovered.mergeCount, 1);
+    assert.equal(
+      recovered.comments.filter((item) =>
+        item.body.startsWith("<!-- volleybro-g2-receipt -->"),
+      ).length,
+      1,
+    );
+  }
 });
 
 test("missing receipt fails closed on wrong digest, PR, run, or attempt evidence", async (t) => {
@@ -706,7 +689,7 @@ test("an untrusted matching receipt marker cannot suppress the bot receipt", asy
   );
 });
 
-test("reconcile allows a verified direct human merge without a receipt and never mutates", async (t) => {
+async function directHumanMergeFixture(t) {
   const fixture = await eventFixture(t);
   const repo = path.join(fixture.root, "checkout");
   await mkdir(repo);
@@ -736,6 +719,11 @@ test("reconcile allows a verified direct human merge without a receipt and never
   state.comments[0].body = `${marker}\n${JSON.stringify(directCandidate)}`;
   await fixture.writeState(state);
 
+  return { fixture, repo, git, localHead };
+}
+
+test("reconcile allows a verified direct human merge without a receipt and never mutates", async (t) => {
+  const { fixture, repo, git } = await directHumanMergeFixture(t);
   const before = git(["status", "--porcelain"]);
   const result = spawnSync(process.execPath, [cli, "reconcile", "--pr", "12"], {
     cwd: repo,
@@ -750,29 +738,56 @@ test("reconcile allows a verified direct human merge without a receipt and never
   assert.equal((await fixture.state()).comments.length, 2);
 });
 
-test("reconcile rejects unrelated local remotes and unmerged PRs", async (t) => {
-  const fixture = await eventFixture(t);
-  const repo = path.join(fixture.root, "checkout");
-  await mkdir(repo);
-  const git = (args) =>
-    execFileSync("git", args, { cwd: repo, encoding: "utf8" }).trim();
-  git(["init", "-b", "feat/test"]);
-  git(["config", "user.name", "Fixture"]);
-  git(["config", "user.email", "fixture@example.invalid"]);
-  await writeFile(path.join(repo, "tracked.txt"), "fixture\n");
-  git(["add", "tracked.txt"]);
-  git(["commit", "-m", "fixture"]);
-  const localHead = git(["rev-parse", "HEAD"]);
-  git(["remote", "add", "origin", "https://github.com/unrelated/repo.git"]);
-  const result = spawnSync(process.execPath, [cli, "reconcile", "--pr", "12"], {
-    cwd: repo,
-    env: fixture.env,
-    encoding: "utf8",
-  });
-  assert.equal(result.status, 0, result.stderr);
-  assert.equal(JSON.parse(result.stdout).mergeVerified, false);
-  assert.equal(JSON.parse(result.stdout).cleanupEligible, false);
-  assert.equal(git(["rev-parse", "HEAD"]), localHead);
+test("reconcile independently rejects wrong remote, OPEN PR, and mismatched PR head", async (t) => {
+  const scenarios = [
+    {
+      name: "remote",
+      apply: async ({ repo, git }) =>
+        git([
+          "remote",
+          "set-url",
+          "origin",
+          "https://github.com/unrelated/repo.git",
+        ]),
+      resultKey: "repositoryMatches",
+    },
+    {
+      name: "OPEN PR",
+      apply: async ({ fixture }) => {
+        const state = await fixture.state();
+        state.prView.state = "OPEN";
+        await fixture.writeState(state);
+      },
+      resultKey: "merged",
+    },
+    {
+      name: "PR head",
+      apply: async ({ fixture }) => {
+        const state = await fixture.state();
+        state.prView.headRefOid = "d".repeat(40);
+        await fixture.writeState(state);
+      },
+      resultKey: "shaMatches",
+    },
+  ];
+  for (const scenario of scenarios) {
+    const context = await directHumanMergeFixture(t);
+    await scenario.apply(context);
+    const result = spawnSync(
+      process.execPath,
+      [cli, "reconcile", "--pr", "12"],
+      {
+        cwd: context.repo,
+        env: context.fixture.env,
+        encoding: "utf8",
+      },
+    );
+    assert.equal(result.status, 0, `${scenario.name}: ${result.stderr}`);
+    const status = JSON.parse(result.stdout);
+    assert.equal(status[scenario.resultKey], false, scenario.name);
+    assert.equal(status.mergeVerified, false, scenario.name);
+    assert.equal(status.cleanupEligible, false, scenario.name);
+  }
 });
 
 test("merged event records direct human acceptance after trusted native read-back", async (t) => {

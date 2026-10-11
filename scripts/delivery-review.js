@@ -9,21 +9,21 @@ import { promisify } from "node:util";
 import { validateRequiredChecks } from "./release-controls.js";
 
 const execFile = promisify(execFileCallback);
-const candidateMarker = "<!-- volleybro-g2-candidate -->";
-const receiptMarker = "<!-- volleybro-g2-receipt -->";
-const shaPattern = /^[0-9a-f]{40}$/;
-const hashPattern = /^[0-9a-f]{64}$/;
-const artifactDigestPattern = /^sha256:([0-9a-f]{64})$/;
+const CANDIDATE_MARKER = "<!-- volleybro-g2-candidate -->";
+const RECEIPT_MARKER = "<!-- volleybro-g2-receipt -->";
+const SHA_PATTERN = /^[0-9a-f]{40}$/;
+const HASH_PATTERN = /^[0-9a-f]{64}$/;
+const ARTIFACT_DIGEST_PATTERN = /^sha256:([0-9a-f]{64})$/;
 
 function fail(message) {
   throw new Error(message);
 }
 
-export function exactLgtm(body) {
+function exactLgtm(body) {
   return typeof body === "string" && body.trim() === "LGTM";
 }
 
-export function isAuthorizedAcceptance(comment, reviewer) {
+function isAuthorizedAcceptance(comment, reviewer) {
   return (
     comment?.user?.login === reviewer &&
     comment.user.type === "User" &&
@@ -32,7 +32,7 @@ export function isAuthorizedAcceptance(comment, reviewer) {
   );
 }
 
-export function parseMarkedJson(body, marker) {
+function parseMarkedJson(body, marker) {
   if (typeof body !== "string" || !body.startsWith(`${marker}\n`)) return null;
   try {
     return JSON.parse(body.slice(marker.length).trim());
@@ -53,13 +53,13 @@ function compareCommentOrder(a, b, timeKey = "created_at") {
   }
 }
 
-export function chooseCandidate(comments, reviewer, acceptedAt, acceptedId) {
+function chooseCandidate(comments, reviewer, acceptedAt, acceptedId) {
   const cutoff = Date.parse(acceptedAt);
   if (!Number.isFinite(cutoff)) return null;
   const candidates = comments.filter((comment) => {
     if (comment.user?.login !== reviewer || comment.user?.type !== "User")
       return false;
-    const candidate = parseMarkedJson(comment.body, candidateMarker);
+    const candidate = parseMarkedJson(comment.body, CANDIDATE_MARKER);
     const created = Date.parse(comment.created_at);
     const updated = Date.parse(comment.updated_at);
     return (
@@ -84,7 +84,9 @@ export function chooseCandidate(comments, reviewer, acceptedAt, acceptedId) {
   const latest = [...candidates].sort((a, b) => compareCommentOrder(b, a))[0];
   if (
     latest &&
-    (!beforeAcceptance(latest, "created_at") ||
+    ((Date.parse(latest.updated_at) === cutoff &&
+      Date.parse(latest.created_at) < cutoff) ||
+      !beforeAcceptance(latest, "created_at") ||
       !beforeAcceptance(latest, "updated_at"))
   )
     return null;
@@ -99,7 +101,7 @@ export function chooseCandidate(comments, reviewer, acceptedAt, acceptedId) {
   );
 }
 
-export function validateCandidate(
+function validateCandidate(
   candidate,
   { repository, number, headSha, baseSha, reviewer },
 ) {
@@ -122,9 +124,9 @@ export function validateCandidate(
     fail("Candidate snapshot URL must be a valid HTTPS URL");
   }
   if (
-    !shaPattern.test(candidate.baseSha || "") ||
+    !SHA_PATTERN.test(candidate.baseSha || "") ||
     snapshotUrl.protocol !== "https:" ||
-    !hashPattern.test(candidate.specHash || "") ||
+    !HASH_PATTERN.test(candidate.specHash || "") ||
     !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidate.change || "")
   )
     fail("Candidate is missing its snapshot URL, spec hash, or Change slug");
@@ -150,7 +152,7 @@ function required(name) {
 }
 
 function safeSha(value, label) {
-  if (typeof value !== "string" || !shaPattern.test(value))
+  if (typeof value !== "string" || !SHA_PATTERN.test(value))
     fail(`${label} must be a full lowercase commit SHA`);
   return value;
 }
@@ -187,6 +189,11 @@ async function apiAll(path) {
   return Array.isArray(pages[0]) ? pages.flat() : pages;
 }
 
+async function workflowRuns(path) {
+  const pages = await apiAll(path);
+  return pages.flatMap((page) => page?.workflow_runs || []);
+}
+
 async function saveIntentArtifact(intent) {
   const target = process.env.RUNNER_TEMP;
   if (!target)
@@ -211,7 +218,7 @@ async function downloadIntentArtifact(run, attempt) {
     (item) => item.name === `delivery-review-evidence-${attempt}`,
   );
   const digest = String(artifact?.digest || "").match(
-    artifactDigestPattern,
+    ARTIFACT_DIGEST_PATTERN,
   )?.[1];
   const expectedUrl = `https://api.github.com/repos/${repository()}/actions/artifacts/${artifact?.id}/zip`;
   if (
@@ -302,7 +309,7 @@ async function validateTrustedVerify(sha, checkRuns) {
   const workflow = await api("actions/workflows/ci.yml");
   if (workflow.path !== ".github/workflows/ci.yml")
     fail("Expected CI workflow identity is unavailable");
-  const runs = await apiAll(
+  const runs = await workflowRuns(
     `actions/workflows/${workflow.id}/runs?head_sha=${sha}&per_page=100`,
   );
   const matchingRuns = runs
@@ -376,34 +383,19 @@ async function recordReceipt(number, receipt) {
   if (
     existing.some((comment) => {
       if (comment.user?.login !== "github-actions[bot]") return false;
-      const prior = parseMarkedJson(comment.body, receiptMarker);
+      const prior = parseMarkedJson(comment.body, RECEIPT_MARKER);
       return prior && JSON.stringify(prior) === JSON.stringify(receipt);
     })
   )
     return;
   await postComment(
     number,
-    `${receiptMarker}\n${JSON.stringify(receipt, null, 2)}`,
+    `${RECEIPT_MARKER}\n${JSON.stringify(receipt, null, 2)}`,
   );
 }
 
-function eventRunContext(eventId, eventName) {
-  const runId = required("GITHUB_RUN_ID");
-  const attempt = process.env.GITHUB_RUN_ATTEMPT || "1";
-  if (!/^[1-9]\d*$/.test(runId) || !/^[1-9]\d*$/.test(attempt))
-    fail("GitHub Actions run identity is invalid");
-  return {
-    eventId,
-    event: eventName,
-    runId,
-    runAttempt: Number(attempt),
-    runUrl: `${process.env.GITHUB_SERVER_URL || "https://github.com"}/${repository()}/actions/runs/${runId}`,
-    workflowSha: required("GITHUB_WORKFLOW_SHA"),
-  };
-}
-
 function candidateFromComment(comment) {
-  const candidate = parseMarkedJson(comment.body, candidateMarker);
+  const candidate = parseMarkedJson(comment.body, CANDIDATE_MARKER);
   return (
     candidate && {
       ...candidate,
@@ -481,7 +473,7 @@ function evidenceMatches(evidence, { number, headSha, allComments, reviewer }) {
     !/^[1-9]\d*$/.test(String(evidence.runId)) ||
     !Number.isSafeInteger(evidence.runAttempt) ||
     evidence.runAttempt < 1 ||
-    !shaPattern.test(evidence.workflowSha || "") ||
+    !SHA_PATTERN.test(evidence.workflowSha || "") ||
     !sourceEventMatches(evidence)
   )
     return false;
@@ -591,28 +583,29 @@ async function findAcceptedEvidence({
 }) {
   const workflow = await api("actions/workflows/delivery-review.yml");
   if (workflow.path !== ".github/workflows/delivery-review.yml") return null;
-  const runs = await apiAll(
+  const runs = await workflowRuns(
     `actions/workflows/${workflow.id}/runs?per_page=100`,
   );
   for (const run of runs) {
     if (
       run.repository?.full_name !== repository() ||
-      String(run.workflow_id) !== String(workflow.id) ||
-      run.status !== "completed"
+      String(run.workflow_id) !== String(workflow.id)
     )
       continue;
     const attempts = Number(run.run_attempt);
     if (!Number.isSafeInteger(attempts) || attempts < 1) continue;
-    try {
-      const { evidence } = await readTrustedEvidence(run.id, attempts);
-      if (
-        evidence &&
-        String(evidence.acceptedCommentId) === String(acceptedCommentId) &&
-        evidenceMatches(evidence, { number, headSha, allComments, reviewer })
-      )
-        return evidence;
-    } catch {
-      // Missing, expired, or malformed artifacts are not evidence.
+    for (let attempt = attempts; attempt >= 1; attempt -= 1) {
+      try {
+        const { evidence } = await readTrustedEvidence(run.id, attempt);
+        if (
+          evidence &&
+          String(evidence.acceptedCommentId) === String(acceptedCommentId) &&
+          evidenceMatches(evidence, { number, headSha, allComments, reviewer })
+        )
+          return evidence;
+      } catch {
+        // Missing, expired, or malformed artifacts are not evidence.
+      }
     }
   }
   return null;
@@ -652,7 +645,7 @@ async function validateBotReceipt({
     receipt.headSha !== headSha ||
     receipt.mergeCommit !== nativePr.merge_commit_sha ||
     receipt.mergedAt !== nativePr.merged_at ||
-    !shaPattern.test(receipt.baseSha || "") ||
+    !SHA_PATTERN.test(receipt.baseSha || "") ||
     !receipt.acceptedCommentId ||
     !receipt.candidateCommentId ||
     !Number.isSafeInteger(receipt.runAttempt) ||
@@ -687,7 +680,7 @@ async function validateBotReceipt({
     accepted.id,
   );
   const candidate = candidateComment
-    ? parseMarkedJson(candidateComment.body, candidateMarker)
+    ? parseMarkedJson(candidateComment.body, CANDIDATE_MARKER)
     : null;
   if (
     !candidate ||
@@ -789,7 +782,7 @@ async function mergeAccepted({
   if (pr.state === "MERGED") {
     const prior = allComments
       .filter((comment) => comment.user?.login === "github-actions[bot]")
-      .map((comment) => parseMarkedJson(comment.body, receiptMarker))
+      .map((comment) => parseMarkedJson(comment.body, RECEIPT_MARKER))
       .find(
         (receipt) =>
           receipt?.eventId === eventId && receipt.headSha === pr.headRefOid,
@@ -891,6 +884,27 @@ async function mergeAccepted({
     nativeBeforeMerge.head?.sha !== headSha
   )
     fail("PR head or observed base changed before merge");
+
+  const commentsBeforeMerge = await comments(number);
+  const currentAcceptance = commentsBeforeMerge.find(
+    (comment) => String(comment.id) === String(acceptedComment.id),
+  );
+  const currentCandidate = chooseCandidate(
+    commentsBeforeMerge,
+    reviewer,
+    acceptedComment.created_at,
+    acceptedComment.id,
+  );
+  if (
+    !currentAcceptance ||
+    !isAuthorizedAcceptance(currentAcceptance, reviewer) ||
+    currentAcceptance.body !== acceptedComment.body ||
+    !currentCandidate ||
+    String(currentCandidate.id) !== String(candidateComment.id) ||
+    currentCandidate.body !== candidateComment.body ||
+    currentCandidate.updated_at !== candidateComment.updated_at
+  )
+    fail("LGTM or its candidate changed before merge");
 
   const evidence = await saveAcceptanceEvidence({
     number,
@@ -1104,7 +1118,7 @@ async function handleEvent() {
 
 async function publish(number, snapshotUrl, specHash, change) {
   const reviewer = required("DELIVERY_REVIEWER_LOGIN");
-  if (!hashPattern.test(specHash || ""))
+  if (!HASH_PATTERN.test(specHash || ""))
     fail("--spec-hash must be a lowercase SHA-256 digest");
   if (!/^https:\/\//.test(snapshotUrl || ""))
     fail("--snapshot must be an HTTPS URL");
@@ -1133,7 +1147,7 @@ async function publish(number, snapshotUrl, specHash, change) {
   };
   const response = await postComment(
     number,
-    `${candidateMarker}\n${JSON.stringify(candidate, null, 2)}`,
+    `${CANDIDATE_MARKER}\n${JSON.stringify(candidate, null, 2)}`,
   );
   process.stdout.write(`${response}\n`);
 }
@@ -1149,13 +1163,13 @@ async function reconcile(number) {
   );
   const pr = await prView(number);
   const nativePr = await api(`pulls/${number}`);
-  const ownsContext = remoteMatchesRepository(localRemote, repositoryName);
-  const branchMatches = localBranch === pr.headRefName;
-  const shaMatches = localHead === pr.headRefOid;
+  const isOwnedContext = remoteMatchesRepository(localRemote, repositoryName);
+  const hasMatchingBranch = localBranch === pr.headRefName;
+  const hasMatchingSha = localHead === pr.headRefOid;
   const allComments = await comments(number);
   const receipts = allComments
     .filter((comment) => comment.user?.login === "github-actions[bot]")
-    .map((comment) => parseMarkedJson(comment.body, receiptMarker))
+    .map((comment) => parseMarkedJson(comment.body, RECEIPT_MARKER))
     .filter(Boolean);
   const receipt = receipts.find(
     (item) =>
@@ -1164,10 +1178,10 @@ async function reconcile(number) {
       item.actor === reviewer &&
       item.kind === "G2_ACCEPTED_AND_MERGED",
   );
-  const directHumanMerge =
+  const isDirectHumanMerge =
     nativePr.merged_by?.login === reviewer &&
     nativePr.merged_by?.type === "User";
-  const botMerge = nativePr.merged_by?.login === "github-actions[bot]";
+  const isBotMerge = nativePr.merged_by?.login === "github-actions[bot]";
   const candidateComment = chooseCandidate(
     allComments,
     reviewer,
@@ -1176,26 +1190,26 @@ async function reconcile(number) {
   const candidate = candidateComment
     ? candidateFromComment(candidateComment)
     : null;
-  let candidateMatches = false;
+  let hasMatchingCandidate = false;
   if (candidate) {
     try {
       validateCandidate(candidate, {
         repository: repositoryName,
         number,
         headSha: localHead,
-        baseSha: directHumanMerge ? candidate.baseSha : receipt?.baseSha,
+        baseSha: isDirectHumanMerge ? candidate.baseSha : receipt?.baseSha,
         reviewer,
       });
-      candidateMatches = directHumanMerge
+      hasMatchingCandidate = isDirectHumanMerge
         ? await mergeParentsMatch(nativePr, candidate.baseSha, localHead)
         : candidate.specHash === receipt?.specHash &&
           candidate.snapshotUrl === receipt?.snapshotUrl &&
           candidate.change === receipt?.change;
     } catch {
-      candidateMatches = false;
+      hasMatchingCandidate = false;
     }
   }
-  const merged = Boolean(
+  const isMerged = Boolean(
     nativePr.merged &&
     nativePr.merged_at &&
     nativePr.base?.ref === "main" &&
@@ -1205,8 +1219,8 @@ async function reconcile(number) {
     nativePr.merge_commit_sha &&
     pr.state === "MERGED",
   );
-  const automationEligible = Boolean(
-    botMerge &&
+  const isAutomationEligible = Boolean(
+    isBotMerge &&
     receipt &&
     (await validateBotReceipt({
       receipt,
@@ -1217,16 +1231,16 @@ async function reconcile(number) {
       headSha: localHead,
     })),
   );
-  const mergeVerified = Boolean(
-    ownsContext &&
-    branchMatches &&
-    shaMatches &&
-    merged &&
-    (directHumanMerge || automationEligible) &&
-    candidateMatches,
+  const isMergeVerified = Boolean(
+    isOwnedContext &&
+    hasMatchingBranch &&
+    hasMatchingSha &&
+    isMerged &&
+    (isDirectHumanMerge || isAutomationEligible) &&
+    hasMatchingCandidate,
   );
   process.stdout.write(
-    `${JSON.stringify({ repository: repositoryName, pullRequest: Number(number), localBranch, localHead, repositoryMatches: ownsContext, branchMatches, shaMatches, merged, directHumanMerge, botMerge, receipt: Boolean(receipt), candidateMatches, mergeVerified, cleanupEligible: false, ownershipVerificationRequired: true }, null, 2)}\n`,
+    `${JSON.stringify({ repository: repositoryName, pullRequest: Number(number), localBranch, localHead, repositoryMatches: isOwnedContext, branchMatches: hasMatchingBranch, shaMatches: hasMatchingSha, merged: isMerged, directHumanMerge: isDirectHumanMerge, botMerge: isBotMerge, receipt: Boolean(receipt), candidateMatches: hasMatchingCandidate, mergeVerified: isMergeVerified, cleanupEligible: false, ownershipVerificationRequired: true }, null, 2)}\n`,
   );
 }
 
