@@ -73,6 +73,7 @@ const expectedFrames =
   {
     "client-frame-1": 1,
     "client-frame-2": 2,
+    "client-flowchart": 1,
     "client-fallback": 1,
   }[renderMode] ?? 0;
 assert.ok(
