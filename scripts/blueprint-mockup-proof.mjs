@@ -257,7 +257,22 @@ try {
   );
 
   await page.waitForLoadState("networkidle", { timeout: 20_000 });
-  if (expectedFrames > 0) {
+  if (renderMode === "client-flowchart") {
+    const chart = page.locator(
+      '[data-blueprint-mockup-mode="client-flowchart"] svg[role="img"]',
+    );
+    await chart.waitFor({ state: "visible", timeout: 20_000 });
+    const mounted = page.locator('[data-blueprint-mockup-mounted="true"]');
+    await mounted.waitFor({ state: "attached", timeout: 20_000 });
+    assert.equal(
+      await mounted.count(),
+      1,
+      "the retained flowchart island must reach its client-mounted branch",
+    );
+    const loader = page.getByText("載入設計稿…", { exact: true });
+    await loader.waitFor({ state: "detached", timeout: 20_000 });
+    assert.equal(await loader.count(), 0, "the initial loaders must disappear");
+  } else if (expectedFrames > 0) {
     const mounted = page.locator('[data-blueprint-mockup-mounted="true"]');
     await mounted.first().waitFor({ state: "attached", timeout: 20_000 });
     assert.equal(
@@ -274,20 +289,6 @@ try {
         .count(),
       0,
       "MockupFrame must not show its error fallback",
-    );
-  } else if (renderMode === "client-flowchart") {
-    const chart = page.locator(
-      '[data-blueprint-mockup-mode="client-flowchart"] svg[role="img"]',
-    );
-    await chart.waitFor({ state: "visible", timeout: 20_000 });
-    const mounted = page.locator(
-      '[data-blueprint-mockup-mode="client-flowchart"] [data-blueprint-mockup-mounted="true"]',
-    );
-    await mounted.waitFor({ state: "attached", timeout: 20_000 });
-    assert.equal(
-      await mounted.count(),
-      1,
-      "the retained flowchart island must reach its client-mounted branch",
     );
   } else {
     const region = page.locator("[data-blueprint-mockup-mode]");
