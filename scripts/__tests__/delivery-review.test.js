@@ -13,22 +13,22 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
-const marker = "<!-- volleybro-g2-candidate -->";
-const reviewer = { login: "andrewck24", type: "User" };
-const shaA = "a".repeat(40);
-const shaB = "b".repeat(40);
-const specHash = "c".repeat(64);
-const cli = fileURLToPath(new URL("../delivery-review.js", import.meta.url));
+const CANDIDATE_MARKER = "<!-- volleybro-g2-candidate -->";
+const REVIEWER = { login: "andrewck24", type: "User" };
+const SHA_A = "a".repeat(40);
+const SHA_B = "b".repeat(40);
+const SPEC_HASH = "c".repeat(64);
+const CLI = fileURLToPath(new URL("../delivery-review.js", import.meta.url));
 
 function candidate(overrides = {}) {
   return {
     schemaVersion: 1,
     repository: "owner/repo",
     pullRequest: 12,
-    headSha: shaA,
-    baseSha: shaB,
+    headSha: SHA_A,
+    baseSha: SHA_B,
     snapshotUrl: "https://linear.app/team/doc",
-    specHash,
+    specHash: SPEC_HASH,
     change: "pr-based-blueprint-workflow",
     publishedBy: "andrewck24",
     ...overrides,
@@ -37,7 +37,7 @@ function candidate(overrides = {}) {
 
 function comment(body, overrides = {}) {
   return {
-    user: reviewer,
+    user: REVIEWER,
     body,
     created_at: "2026-10-10T10:00:00Z",
     updated_at: "2026-10-10T10:00:00Z",
@@ -45,7 +45,7 @@ function comment(body, overrides = {}) {
   };
 }
 
-const fakeGh = `#!/usr/bin/env node
+const FAKE_GH = `#!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
 const [command, ...args] = process.argv.slice(2);
 const statePath = process.env.GH_FIXTURE;
@@ -75,6 +75,12 @@ if (command === "api") {
   }
   else if (path === "actions/runs/777/artifacts?per_page=100") emit({ total_count: state.artifacts.length, artifacts: state.artifacts });
   else if (path.startsWith("commits/") && path.includes("/check-runs")) {
+    if (state.prMutationDuringChecks) {
+      Object.assign(state.prView, state.prMutationDuringChecks.prView);
+      Object.assign(state.nativePr, state.prMutationDuringChecks.nativePr);
+      state.prMutationDuringChecks = null;
+      save();
+    }
     if (state.republishDuringChecks) {
       state.comments.push(state.republishDuringChecks);
       state.republishDuringChecks = null;
@@ -105,6 +111,10 @@ else if (command === "pr" && args[0] === "merge") {
     state.nativePr.merge_commit_sha = state.prView.mergeCommit.oid;
     state.nativePr.merged_by = { login: "github-actions[bot]", type: "Bot" };
     state.nativePr.base.sha = state.prView.mergeCommit.oid;
+    if (state.prMutationOnMerge) {
+      Object.assign(state.prView, state.prMutationOnMerge.prView);
+      Object.assign(state.nativePr, state.prMutationOnMerge.nativePr);
+    }
     save();
     process.stdout.write("merged");
   }
@@ -114,7 +124,7 @@ else if (command === "pr" && args[0] === "merge") {
 async function eventFixture(
   t,
   {
-    candidateHead = shaA,
+    candidateHead = SHA_A,
     candidateRepository = "owner/repo",
     fork = false,
     failMerge = false,
@@ -128,7 +138,7 @@ async function eventFixture(
   const bin = path.join(root, "bin");
   await mkdir(bin);
   const gh = path.join(bin, "gh");
-  await writeFile(gh, fakeGh);
+  await writeFile(gh, FAKE_GH);
   await chmod(gh, 0o755);
   const fetchPreload = path.join(root, "fetch-fixture.mjs");
   await writeFile(
@@ -151,7 +161,7 @@ globalThis.fetch = async (url, options) => {
     advanceBaseDuringChecks,
     mergeCount: 0,
     comments: [
-      comment(`${marker}\n${JSON.stringify(currentCandidate)}`, {
+      comment(`${CANDIDATE_MARKER}\n${JSON.stringify(currentCandidate)}`, {
         id: 10,
         created_at: "2026-10-11T09:00:00Z",
         updated_at: "2026-10-11T09:00:00Z",
@@ -168,10 +178,10 @@ globalThis.fetch = async (url, options) => {
       isDraft: false,
       mergedAt: null,
       mergeCommit: null,
-      headRefOid: shaA,
+      headRefOid: SHA_A,
       headRefName: "feat/test",
       baseRefName: "main",
-      baseRefOid: shaB,
+      baseRefOid: SHA_B,
       mergeStateStatus: "CLEAN",
       url: "https://github.com/owner/repo/pull/12",
     },
@@ -180,9 +190,9 @@ globalThis.fetch = async (url, options) => {
       merged_at: null,
       merged_by: null,
       merge_commit_sha: null,
-      base: { ref: "main", sha: shaB, repo: { full_name: "owner/repo" } },
+      base: { ref: "main", sha: SHA_B, repo: { full_name: "owner/repo" } },
       head: {
-        sha: shaA,
+        sha: SHA_A,
         repo: { full_name: fork ? "other/repo" : "owner/repo" },
       },
     },
@@ -190,7 +200,7 @@ globalThis.fetch = async (url, options) => {
       {
         id: 50,
         name: "Verify",
-        head_sha: shaA,
+        head_sha: SHA_A,
         app: { id: 15368 },
         status: "completed",
         conclusion: "success",
@@ -206,7 +216,7 @@ globalThis.fetch = async (url, options) => {
         event: "pull_request",
         status: "completed",
         conclusion: "success",
-        head_sha: shaA,
+        head_sha: SHA_A,
         repository: { full_name: "owner/repo" },
         head_repository: { full_name: "owner/repo" },
         ...ciRunOverrides,
@@ -230,7 +240,7 @@ globalThis.fetch = async (url, options) => {
       event: "issue_comment",
       status: "completed",
       conclusion: "failure",
-      head_sha: shaA,
+      head_sha: SHA_A,
       head_branch: "main",
       path: ".github/workflows/delivery-review.yml@refs/heads/main",
       repository: { full_name: "owner/repo" },
@@ -243,7 +253,7 @@ globalThis.fetch = async (url, options) => {
     statuses: [
       {
         context: "Vercel",
-        url: "https://api.github.com/repos/owner/repo/statuses/" + shaA,
+        url: "https://api.github.com/repos/owner/repo/statuses/" + SHA_A,
         creator: { id: 35613825, login: "vercel[bot]", type: "Bot" },
         state: "success",
         updated_at: "2026-10-11T09:30:00Z",
@@ -270,7 +280,7 @@ globalThis.fetch = async (url, options) => {
           url: "https://api.github.com/repos/owner/repo/pulls/12",
         },
       },
-      comment: { ...state.comments[1], user: reviewer },
+      comment: { ...state.comments[1], user: REVIEWER },
       repository: { full_name: "owner/repo", default_branch: "main" },
     }),
   );
@@ -286,7 +296,7 @@ globalThis.fetch = async (url, options) => {
     GITHUB_RUN_ID: "777",
     GH_TOKEN: "fixture-token",
     GITHUB_RUN_ATTEMPT: "1",
-    GITHUB_WORKFLOW_SHA: shaA,
+    GITHUB_WORKFLOW_SHA: SHA_A,
     RUNNER_TEMP: root,
     NODE_OPTIONS: `--import=${pathToFileURL(fetchPreload).href}`,
     GITHUB_SERVER_URL: "https://github.com",
@@ -299,7 +309,7 @@ globalThis.fetch = async (url, options) => {
     writeState: async (value) => writeFile(statePath, JSON.stringify(value)),
     writeEvent: async (value) => writeFile(eventPath, JSON.stringify(value)),
     run: (archivePath) =>
-      spawnSync(process.execPath, [cli, "event"], {
+      spawnSync(process.execPath, [CLI, "event"], {
         env: {
           ...env,
           ...(archivePath ? { G2_FIXTURE_ARCHIVE: archivePath } : {}),
@@ -329,7 +339,7 @@ async function installEvidenceArtifact(fixture, mutate = () => {}) {
       expired: false,
       workflow_run: {
         id: 777,
-        head_sha: shaA,
+        head_sha: SHA_A,
         event: "issue_comment",
       },
       digest: `sha256:${createHash("sha256").update(archive).digest("hex")}`,
@@ -376,7 +386,7 @@ test("event CLI binds LGTM to the newest unchanged candidate and rechecks before
   const newerState = await newer.state();
   const newerCandidate = candidate({ change: "newest-review-candidate" });
   newerState.comments.push(
-    comment(`${marker}\n${JSON.stringify(newerCandidate)}`, {
+    comment(`${CANDIDATE_MARKER}\n${JSON.stringify(newerCandidate)}`, {
       id: 15,
       created_at: "2026-10-11T09:45:00Z",
       updated_at: "2026-10-11T09:45:00Z",
@@ -396,7 +406,7 @@ test("event CLI binds LGTM to the newest unchanged candidate and rechecks before
 
   const edited = await eventFixture(t);
   const editedState = await edited.state();
-  editedState.comments[0].body = `${marker}\n${JSON.stringify(candidate({ change: "edited-after-lgtm" }))}`;
+  editedState.comments[0].body = `${CANDIDATE_MARKER}\n${JSON.stringify(candidate({ change: "edited-after-lgtm" }))}`;
   editedState.comments[0].updated_at = "2026-10-11T10:00:00Z";
   await edited.writeState(editedState);
   const editedResult = edited.run();
@@ -407,7 +417,7 @@ test("event CLI binds LGTM to the newest unchanged candidate and rechecks before
   const republishedState = await republished.state();
   republishedState.republishDuringChecks = {
     ...comment(
-      `${marker}\n${JSON.stringify(candidate({ specHash: "d".repeat(64) }))}`,
+      `${CANDIDATE_MARKER}\n${JSON.stringify(candidate({ specHash: "d".repeat(64) }))}`,
       { id: 30 },
     ),
     created_at: "2026-10-11T10:00:00Z",
@@ -417,6 +427,67 @@ test("event CLI binds LGTM to the newest unchanged candidate and rechecks before
   const republishedResult = republished.run();
   assert.notEqual(republishedResult.status, 0);
   assert.equal((await republished.state()).mergeCount, 0);
+});
+
+test("event rejects PR context changes during checks before requesting merge", async (t) => {
+  const scenarios = [
+    {
+      name: "target branch at the same base SHA",
+      change: (state) => ({
+        prView: { baseRefName: "other" },
+        nativePr: { base: { ...state.nativePr.base, ref: "other" } },
+      }),
+    },
+    {
+      name: "draft",
+      change: () => ({ prView: { isDraft: true }, nativePr: { draft: true } }),
+    },
+    {
+      name: "head repository",
+      change: (state) => ({
+        nativePr: {
+          head: { ...state.nativePr.head, repo: { full_name: "other/repo" } },
+        },
+      }),
+    },
+    {
+      name: "merge readiness",
+      change: () => ({ prView: { mergeStateStatus: "BLOCKED" } }),
+    },
+  ];
+  for (const scenario of scenarios) {
+    const fixture = await eventFixture(t);
+    const state = await fixture.state();
+    state.prMutationDuringChecks = scenario.change(state);
+    await fixture.writeState(state);
+    const result = fixture.run();
+    assert.notEqual(result.status, 0, scenario.name);
+    assert.match(result.stderr, /PR context, head or observed base changed/);
+    const after = await fixture.state();
+    assert.equal(after.mergeCount, 0, scenario.name);
+    assert.equal(after.comments.length, 2, scenario.name);
+  }
+});
+
+test("event refuses to certify or recover a merge on a different target branch", async (t) => {
+  const fixture = await eventFixture(t);
+  const state = await fixture.state();
+  state.prMutationOnMerge = {
+    prView: { baseRefName: "other" },
+    nativePr: { base: { ...state.nativePr.base, ref: "other" } },
+  };
+  await fixture.writeState(state);
+  const result = fixture.run();
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /did not confirm merge/);
+  const after = await fixture.state();
+  assert.equal(after.mergeCount, 1);
+  assert.equal(after.comments.length, 2);
+
+  const retry = fixture.run();
+  assert.notEqual(retry.status, 0);
+  assert.match(retry.stderr, /same-repository pull request targeting main/);
+  assert.equal((await fixture.state()).comments.length, 2);
 });
 
 test("event merges exact head and recovers a missing receipt from its digest-bound run artifact", async (t) => {
@@ -429,7 +500,7 @@ test("event merges exact head and recovers a missing receipt from its digest-bou
     state.comments.at(-1).body.slice("<!-- volleybro-g2-receipt -->\n".length),
   );
   assert.equal(receipt.pullRequest, 12);
-  assert.equal(receipt.headSha, shaA);
+  assert.equal(receipt.headSha, SHA_A);
   assert.equal(receipt.acceptedCommentId, "20");
   assert.equal(receipt.eventId, "issue_comment:20");
   assert.equal(receipt.mergeCommit, "f".repeat(40));
@@ -669,7 +740,7 @@ test("an untrusted matching receipt marker cannot suppress the bot receipt", asy
         JSON.stringify({
           eventId: "issue_comment:20",
           kind: "G2_ACCEPTED_AND_MERGED",
-          headSha: shaA,
+          headSha: SHA_A,
         }),
       { id: 21, user: { login: "attacker", type: "User" } },
     ),
@@ -714,9 +785,9 @@ async function directHumanMergeFixture(t) {
   state.nativePr.merged_by = { login: "andrewck24", type: "User" };
   state.nativePr.merge_commit_sha = state.prView.mergeCommit.oid;
   state.nativePr.head.sha = localHead;
-  state.nativePr.base.sha = shaB;
-  const directCandidate = candidate({ headSha: localHead, baseSha: shaB });
-  state.comments[0].body = `${marker}\n${JSON.stringify(directCandidate)}`;
+  state.nativePr.base.sha = SHA_B;
+  const directCandidate = candidate({ headSha: localHead, baseSha: SHA_B });
+  state.comments[0].body = `${CANDIDATE_MARKER}\n${JSON.stringify(directCandidate)}`;
   await fixture.writeState(state);
 
   return { fixture, repo, git, localHead };
@@ -725,7 +796,7 @@ async function directHumanMergeFixture(t) {
 test("reconcile allows a verified direct human merge without a receipt and never mutates", async (t) => {
   const { fixture, repo, git } = await directHumanMergeFixture(t);
   const before = git(["status", "--porcelain"]);
-  const result = spawnSync(process.execPath, [cli, "reconcile", "--pr", "12"], {
+  const result = spawnSync(process.execPath, [CLI, "reconcile", "--pr", "12"], {
     cwd: repo,
     env: fixture.env,
     encoding: "utf8",
@@ -742,7 +813,7 @@ test("reconcile independently rejects wrong remote, OPEN PR, and mismatched PR h
   const scenarios = [
     {
       name: "remote",
-      apply: async ({ repo, git }) =>
+      apply: async ({ git }) =>
         git([
           "remote",
           "set-url",
@@ -775,7 +846,7 @@ test("reconcile independently rejects wrong remote, OPEN PR, and mismatched PR h
     await scenario.apply(context);
     const result = spawnSync(
       process.execPath,
-      [cli, "reconcile", "--pr", "12"],
+      [CLI, "reconcile", "--pr", "12"],
       {
         cwd: context.repo,
         env: context.fixture.env,
@@ -812,11 +883,11 @@ test("merged event records direct human acceptance after trusted native read-bac
         merged_at: state.prView.mergedAt,
         merged_by: { login: "andrewck24", type: "User" },
         merge_commit_sha: state.prView.mergeCommit.oid,
-        head: { sha: shaA },
+        head: { sha: SHA_A },
       },
     }),
   );
-  const result = spawnSync(process.execPath, [cli, "event"], {
+  const result = spawnSync(process.execPath, [CLI, "event"], {
     env: {
       ...fixture.env,
       GITHUB_EVENT_NAME: "pull_request_target",
@@ -834,5 +905,5 @@ test("merged event records direct human acceptance after trusted native read-bac
     receiptComment.body.slice("<!-- volleybro-g2-receipt -->\n".length),
   );
   assert.equal(receipt.event, "pull_request_target");
-  assert.equal(receipt.headSha, shaA);
+  assert.equal(receipt.headSha, SHA_A);
 });

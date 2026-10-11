@@ -768,6 +768,15 @@ function receiptForEvidence({
   };
 }
 
+function isSameRepositoryMainPr(pr, nativePr) {
+  return (
+    pr.baseRefName === "main" &&
+    nativePr.base?.ref === "main" &&
+    nativePr.base?.repo?.full_name === repository() &&
+    nativePr.head?.repo?.full_name === repository()
+  );
+}
+
 async function mergeAccepted({
   number,
   acceptedComment,
@@ -779,6 +788,8 @@ async function mergeAccepted({
   const allComments = await comments(number);
   const pr = await prView(number);
   const nativePr = await api(`pulls/${number}`);
+  if (!isSameRepositoryMainPr(pr, nativePr))
+    fail("G2 requires a same-repository pull request targeting main");
   if (pr.state === "MERGED") {
     const prior = allComments
       .filter((comment) => comment.user?.login === "github-actions[bot]")
@@ -848,12 +859,9 @@ async function mergeAccepted({
       "No pre-acceptance G2 candidate was published by the configured reviewer",
     );
   const candidate = candidateFromComment(candidateComment);
-  if (pr.baseRefName !== "main" || pr.state !== "OPEN" || pr.isDraft)
+  if (pr.state !== "OPEN" || pr.isDraft || nativePr.draft)
     fail("G2 requires an open, ready PR targeting main");
   if (
-    nativePr.base?.repo?.full_name !== repository() ||
-    nativePr.head?.repo?.full_name !== repository() ||
-    nativePr.base?.ref !== "main" ||
     nativePr.base?.sha !== pr.baseRefOid ||
     nativePr.head?.sha !== pr.headRefOid
   )
@@ -877,13 +885,17 @@ async function mergeAccepted({
   const beforeMerge = await prView(number);
   const nativeBeforeMerge = await api(`pulls/${number}`);
   if (
+    !isSameRepositoryMainPr(beforeMerge, nativeBeforeMerge) ||
     beforeMerge.state !== "OPEN" ||
+    beforeMerge.isDraft ||
+    nativeBeforeMerge.draft ||
+    beforeMerge.mergeStateStatus !== "CLEAN" ||
     beforeMerge.headRefOid !== headSha ||
     beforeMerge.baseRefOid !== candidate.baseSha ||
     nativeBeforeMerge.base?.sha !== candidate.baseSha ||
     nativeBeforeMerge.head?.sha !== headSha
   )
-    fail("PR head or observed base changed before merge");
+    fail("PR context, head or observed base changed before merge");
 
   const commentsBeforeMerge = await comments(number);
   const currentAcceptance = commentsBeforeMerge.find(
@@ -931,11 +943,11 @@ async function mergeAccepted({
   const merged = await prView(number);
   const nativeMerged = await api(`pulls/${number}`);
   if (
+    !isSameRepositoryMainPr(merged, nativeMerged) ||
     merged.state !== "MERGED" ||
     merged.headRefOid !== headSha ||
     !nativeMerged.merged ||
     nativeMerged.head?.sha !== headSha ||
-    nativeMerged.base?.repo?.full_name !== repository() ||
     !(await mergeParentsMatch(
       nativeMerged,
       nativeBeforeMerge.base.sha,
