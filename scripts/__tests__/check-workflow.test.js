@@ -277,6 +277,56 @@ test("accepts a page with a TLDR and a scenario", async () => {
   assert.deepEqual(await messages(inChange("c", changePage())), []);
 });
 
+test("accepts an explicitly visual-only page without a TLDR or scenarios", async () => {
+  assert.deepEqual(
+    await messages({
+      "blueprint/content/changes/c/index.mdx":
+        "---\ntitle: Flow preview\nvisualOnly: true\n---\n",
+      "blueprint/content/changes/c/proposal.mdx":
+        "<InteractiveFlowchart nodes={nodes} details={details} />\n",
+    }),
+    [],
+  );
+});
+
+test("a visual-only page cannot include Review files", async () => {
+  const diagnostics = (
+    await messages({
+      "blueprint/content/changes/c/index.mdx":
+        "---\ntitle: Flow preview\nvisualOnly: true\n---\n",
+      "blueprint/content/changes/c/proposal.mdx": "<InteractiveFlowchart />\n",
+      "blueprint/content/changes/c/review.mdx": "Historical review\n",
+    })
+  ).join("\n");
+  assert.match(
+    diagnostics,
+    /blueprint-visual-only.*cannot contain Review files/i,
+  );
+});
+
+test("a visual-only page requires a flowchart or mockup", async () => {
+  const diagnostics = (
+    await messages({
+      "blueprint/content/changes/c/index.mdx":
+        "---\ntitle: Flow preview\nvisualOnly: true\n---\n",
+      "blueprint/content/changes/c/proposal.mdx": "Visual description only.\n",
+    })
+  ).join("\n");
+  assert.match(diagnostics, /blueprint-visual-only.*InteractiveFlowchart/i);
+});
+
+test("does not apply the legacy scenario target to a visual-only page", async () => {
+  const root = await makeRepository({
+    "blueprint/content/changes/c/index.mdx":
+      "---\ntitle: Flow preview\nvisualOnly: true\n---\n",
+    "blueprint/content/changes/c/proposal.mdx": `export const scenarios = [${Array.from(
+      { length: 9 },
+      (_, index) => `{ id: "S${index + 1}" }`,
+    ).join(", ")}];\n\n<InteractiveFlowchart />\n`,
+  });
+  assert.deepEqual(await checkChangeScope(root, { gateSlug: "c" }), []);
+});
+
 // MDX eats the indentation of a multi-line template literal in an attribute.
 test("reports a snippet written as a multi-line template literal", async () => {
   assert.match(
@@ -765,6 +815,24 @@ async function pageGate(files, options = {}) {
 
 test("page gate accepts a complete G1 page", async () => {
   assert.equal(await pageGate(changePage()), "");
+});
+
+test("page gate accepts an explicitly visual-only page without scenarios", async () => {
+  const files = changePage({ proposal: "<InteractiveFlowchart />" });
+  files["index.mdx"] = "---\ntitle: Flow preview\nvisualOnly: true\n---\n";
+  files["proposal.mdx"] = "<InteractiveFlowchart />\n";
+  delete files["review.mdx"];
+  assert.equal(await pageGate(files), "");
+});
+
+test("page gate rejects Review files on an explicitly visual-only page", async () => {
+  const files = changePage({ review: "Historical review\n" });
+  files["index.mdx"] = "---\ntitle: Flow preview\nvisualOnly: true\n---\n";
+  files["proposal.mdx"] = "<InteractiveFlowchart />\n";
+  assert.match(
+    await pageGate(files),
+    /gate-visual-only.*cannot contain Review files/i,
+  );
 });
 
 test("page gate accepts a complete G2 page", async () => {

@@ -21,5 +21,6 @@
     "A Review with nothing to decide and no deviations can be accepted after reading its first sections.",
     "Scenario results and test plan items are data rendered as cards, so a missing result is caught mechanically."
   ],
-  "originChange": "single-page-change"
+  "originChange": "single-page-change",
+  "supersededBy": "0118"
 }

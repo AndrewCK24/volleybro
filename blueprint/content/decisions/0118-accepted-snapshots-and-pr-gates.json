@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 2,
+  "id": "0118",
+  "title": "Accepted Team snapshots govern G1 and GitHub PRs govern G2",
+  "capabilities": ["platform/blueprint", "platform/delivery-workflow"],
+  "context": "Duplicating complete specifications and review reports into Blueprint increased authored diff and human navigation. Mutable operational issues alone cannot preserve what G1 accepted.",
+  "decision": "Store the complete accepted G1 specification and its canonical hash receipt in an independent owning-Team Doc, retaining each accepted version. Implementation and Spec review consume that snapshot. Promote verified current knowledge and review it on the delivery branch before opening the GitHub PR. The PR is G2; a configured human standalone LGTM accepts and authorizes its exact reviewed head, while direct human Merge also accepts. Material changes renew the relevant acceptance.",
+  "alternatives": [
+    {
+      "option": "Keep full specifications and G2 Reviews in Blueprint",
+      "reason": "Duplicates the working spec and native PR diff/evidence, increasing review and maintenance cost."
+    },
+    {
+      "option": "Preserve complete accepted snapshots in GitHub repository issues",
+      "reason": "More accessible beside PRs, but adds a second tracker and specification navigation path for the Linear-based delivery flow."
+    },
+    {
+      "option": "Commit specification and receipt files to main",
+      "reason": "Provides Git-local history but adds authored diff and storage maintenance to every delivery."
+    }
+  ],
+  "consequences": [
+    "Team Docs require explicit read-back, attachment and canonical hash validation.",
+    "GitHub event handling is separately activated and does not wake local Agent sessions; local resume reconciles merge evidence before owned cleanup.",
+    "No post-merge knowledge sync PR or new Blueprint Review is required."
+  ],
+  "originChange": "pr-based-blueprint-workflow",
+  "supersededBy": "0120"
+}

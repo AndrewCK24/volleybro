@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 
 import { fromMarkdown } from "mdast-util-from-markdown";
 
-export const MAX_GITHUB_PR_BODY_CHARS = 60_000;
+const MAX_GITHUB_PR_BODY_CHARS = 60_000;
 
 function textContent(node) {
   if (node.type === "text" || node.type === "inlineCode") return node.value;
@@ -16,7 +16,7 @@ function versionOf(heading) {
     .match(/^(\d+\.\d+\.\d+(?:-[\da-z.-]+)?)(?:\s|$)/i)?.[1];
 }
 
-export function changelogEntryForVersion(changelog, version) {
+function changelogEntryForVersion(changelog, version) {
   const headings = fromMarkdown(changelog).children.filter(
     (node) => node.type === "heading" && node.depth === 2,
   );

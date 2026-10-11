@@ -1,11 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  buildReleasePrBody,
-  changelogEntryForVersion,
-  MAX_GITHUB_PR_BODY_CHARS,
-} from "../release-pr-body.js";
+import { buildReleasePrBody } from "../release-pr-body.js";
 
 test("release PR body includes this version's notes, not oversized history", () => {
   const history =
@@ -32,13 +28,21 @@ test("release PR body includes this version's notes, not oversized history", () 
   assert.match(body, /## volleybro@0\.16\.3/);
   assert.match(body, /Fix the current authentication issue\./);
   assert.doesNotMatch(body, /Historical release notes/);
-  assert.ok(body.length < MAX_GITHUB_PR_BODY_CHARS);
+  assert.ok(body.length < 60_000);
 });
 
 test("release PR body supports an unlinked Changesets version heading", () => {
-  const changelog = "# Changes\n\n## 1.2.3\n\n- Current note.\n";
+  const changelog =
+    "# Changes\n\n## 1.2.3\n\n- Current note.\n\n## 1.2.2\n\n- Older note.\n";
 
-  assert.equal(changelogEntryForVersion(changelog, "1.2.3"), "- Current note.");
+  const body = buildReleasePrBody({
+    packageName: "fixture",
+    version: "1.2.3",
+    changelog,
+  });
+  assert.match(body, /## fixture@1\.2\.3/);
+  assert.match(body, /- Current note\./);
+  assert.doesNotMatch(body, /Older note/);
 });
 
 test("release PR body fails closed if the current entry exceeds GitHub's limit", () => {
@@ -47,7 +51,7 @@ test("release PR body fails closed if the current entry exceeds GitHub's limit",
     "",
     "## [1.2.3](https://example.test) 2026-10-06",
     "",
-    "x".repeat(MAX_GITHUB_PR_BODY_CHARS),
+    "x".repeat(60_000),
   ].join("\n");
 
   assert.throws(

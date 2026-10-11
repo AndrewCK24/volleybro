@@ -19,5 +19,6 @@
     "Each tab renders its file on its own call stack, so a tab that cannot render shows its error in place and leaves the other tabs readable.",
     "Every page on the store branch is converted to this layout (ADR-0079)."
   ],
-  "originChange": "migration-single-page"
+  "originChange": "migration-single-page",
+  "supersededBy": "0119"
 }

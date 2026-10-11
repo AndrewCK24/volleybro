@@ -18,5 +18,6 @@
   "consequences": [
     "The check compares files byte for byte and no longer parses MDX to find a tab."
   ],
-  "originChange": "migration-single-page"
+  "originChange": "migration-single-page",
+  "supersededBy": "0118"
 }

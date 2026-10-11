@@ -69,7 +69,7 @@ const staticDesignProposalSlugs = new Set([
   "team-routes-clean-architecture",
 ]);
 
-async function tabContent(
+async function renderContent(
   entry: CollectionEntry<"changeTabs"> | undefined,
   label: string,
 ) {
@@ -86,20 +86,17 @@ async function tabContent(
   }
 }
 
-const proposal = await tabContent(Proposal, "Proposal");
+const proposal = await renderContent(Proposal, "Proposal");
+const ProposalContent = proposal.Content;
 const reviewPanels = await Promise.all(
   reviews.map(async (review) => ({
     ...review,
     label: review.shard === undefined ? "Review" : `Shard ${review.shard}`,
     anchor: review.shard === undefined ? "review" : `review-s${review.shard}`,
     facts: review.shard === undefined ? undefined : shardFacts.get(review.shard),
-    content: await tabContent(review.entry, review.shard === undefined ? "Review" : `Shard ${review.shard}`),
+    content: await renderContent(review.entry, review.shard === undefined ? "Review" : `Shard ${review.shard}`),
   })),
 );
-const panels = [
-  { label: "Proposal", anchor: "proposal", facts: undefined, content: proposal },
-  ...reviewPanels,
-];
 const changeIdentity = readChangeBuildIdentity(slug);
 const capabilities = readCapabilities(slug);
 ---
@@ -119,68 +116,40 @@ const capabilities = readCapabilities(slug);
   >
     <main data-blueprint-build-identity={changeIdentity}>
       <ChangeHeader title={changeEntry.data.title} capabilities={capabilities} facts={facts} />
-      <div data-blueprint-tabs>
-          <div class="mb-4 flex gap-5 border-b border-border" role="tablist" aria-label="Change tabs">
-            {panels.map((panel, index) => (
-              <button
-                id={`tab-${panel.anchor}`}
-                type="button"
-                role="tab"
-                aria-controls={panel.anchor}
-                aria-selected={index === 0 ? "true" : "false"}
-                tabindex={index === 0 ? 0 : -1}
-                data-tab-anchor={panel.anchor}
-                data-state={index === 0 ? "active" : "inactive"}
-                class="border-b-2 border-transparent py-2 text-sm text-muted-foreground hover:text-foreground data-[state=active]:border-primary data-[state=active]:font-medium data-[state=active]:text-foreground"
-              >
-                {panel.label}
-              </button>
-            ))}
-          </div>
-          {panels.map((panel, index) => {
+      {ProposalContent && <section
+        id="proposal"
+        class="prose flex-1"
+        data-blueprint-mockup-mode={staticDesignProposalSlugs.has(slug) ? "static-content" : undefined}
+      >
+        <ProposalContent components={mdxComponents} />
+      </section>}
+      {proposal.error && <section
+        id="proposal"
+        class="prose flex-1"
+        data-blueprint-mockup-mode={staticDesignProposalSlugs.has(slug) ? "static-content" : undefined}
+      >
+        <span hidden data-blueprint-render-error="true" />
+        <p class="text-sm text-error-text">此內容（Proposal）在此 checkout 中無法顯示：{proposal.error}</p>
+      </section>}
+      {reviewPanels.length > 0 && <footer class="mt-10 border-t border-border pt-6">
+        <h2 class="text-lg font-semibold">歷史 Review</h2>
+        <div class="mt-3 space-y-3">
+          {reviewPanels.map((panel) => {
             const Content = panel.content.Content;
-            const attributes = {
-              "data-blueprint-mockup-mode":
-                index === 0 && staticDesignProposalSlugs.has(slug)
-                  ? "static-content"
-                  : undefined,
-            };
-            return <>
-              <section
-                id={panel.anchor}
-                role="tabpanel"
-                aria-labelledby={`tab-${panel.anchor}`}
-                tabindex="0"
-                hidden={index !== 0}
-                class="prose flex-1"
-                {...attributes}
-              >
-                {index === 0 && <div data-blueprint-tab-content>
-                  {panel.facts && <div class="not-prose mb-4"><FigureBadges facts={panel.facts} /></div>}
-                  {panel.content.error && (
-                    <>
-                      <span hidden data-blueprint-render-error="true" />
-                      <p class="text-sm text-error-text">此分頁（{panel.label}）在此 checkout 中無法顯示：{panel.content.error}</p>
-                    </>
-                  )}
-                  {Content && <Content components={mdxComponents} />}
-                </div>}
-              </section>
-              {index !== 0 && <template data-blueprint-tab-template={panel.anchor}>
-                <div data-blueprint-tab-content>
-                  {panel.facts && <div class="not-prose mb-4"><FigureBadges facts={panel.facts} /></div>}
-                  {panel.content.error && (
-                    <>
-                      <span hidden data-blueprint-render-error="true" />
-                      <p class="text-sm text-error-text">此分頁（{panel.label}）在此 checkout 中無法顯示：{panel.content.error}</p>
-                    </>
-                  )}
-                  {Content && <Content components={mdxComponents} />}
-                </div>
-              </template>}
-            </>
+            return <details id={panel.anchor} class="rounded-md border border-border px-4 py-3">
+              <summary class="cursor-pointer font-medium">{panel.label}</summary>
+              <div class="prose mt-4">
+                {panel.facts && <div class="not-prose mb-4"><FigureBadges facts={panel.facts} /></div>}
+                {panel.content.error && <>
+                  <span hidden data-blueprint-render-error="true" />
+                  <p class="text-sm text-error-text">此 Review（{panel.label}）在此 checkout 中無法顯示：{panel.content.error}</p>
+                </>}
+                {Content && <Content components={mdxComponents} />}
+              </div>
+            </details>;
           })}
-      </div>
+        </div>
+      </footer>}
     </main>
   </Docs>
 </Layout>
