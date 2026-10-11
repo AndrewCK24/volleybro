@@ -16,15 +16,15 @@ export function DesignMockupIsland({ slug }: { slug: string }) {
   }>();
 
   useEffect(() => {
-    let mounted = true;
+    let isActive = true;
     if (!loadDesign) return;
 
     void loadDesign()
       .then((module) => {
-        if (mounted) setResult({ slug, Mockup: module.default });
+        if (isActive) setResult({ slug, Mockup: module.default });
       })
       .catch((cause: unknown) => {
-        if (mounted)
+        if (isActive)
           setResult({
             slug,
             error: cause instanceof Error ? cause.message : String(cause),
@@ -32,7 +32,7 @@ export function DesignMockupIsland({ slug }: { slug: string }) {
       });
 
     return () => {
-      mounted = false;
+      isActive = false;
     };
   }, [loadDesign, slug]);
 
