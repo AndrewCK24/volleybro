@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 
 import { renderInline } from "@/lib/render-inline";
 
@@ -479,6 +479,11 @@ export function InteractiveFlowchart({
   details,
 }: InteractiveFlowchartProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const layoutNodes = preventNodeOverlap(nodes.map(layoutNode));
 
   function toggle(id: string) {
@@ -597,6 +602,11 @@ export function InteractiveFlowchart({
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-start">
+      {isMounted ? (
+        <span hidden data-blueprint-mockup-mounted="true" />
+      ) : (
+        <span hidden>載入設計稿…</span>
+      )}
       <div className="min-w-0 flex-1">
         <svg
           viewBox={`${minX} ${minY} ${vbW} ${vbH}`}
