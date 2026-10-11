@@ -2,21 +2,23 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 
-import { hashSpec, normalizeSpec, validateSnapshot } from "../g1-snapshot.js";
+import { validateSnapshot } from "../g1-snapshot.js";
 
 const TEAM_ID = "c0d9895c-57b5-4be6-981f-a57590f6232d";
 const CHANGE = "pr-based-blueprint-workflow";
 const SOURCE = "https://linear.app/example/issue/SPEC-1/change-workflow";
 const CONTENT = "# Accepted specification\r\n\r\nComplete spec.   \r\n";
+const EXPECTED_HASH = createHash("sha256")
+  .update("# Accepted specification\n\nComplete spec.\n")
+  .digest("hex");
 
 function document(overrides = {}) {
-  const normalized = normalizeSpec(CONTENT);
   const receipt = {
     schemaVersion: 1,
     change: CHANGE,
     actor: "github:andrewck24",
     acceptedAt: "2026-10-11T10:00:00.000Z",
-    specHash: createHash("sha256").update(normalized).digest("hex"),
+    specHash: EXPECTED_HASH,
     source: SOURCE,
     normalization:
       "LF line endings; trim trailing document whitespace; one final LF",
@@ -34,17 +36,7 @@ function validation(input = document()) {
   return validateSnapshot(input, { teamId: TEAM_ID, change: CHANGE });
 }
 
-test("normalizes line endings and trailing whitespace before hashing accepted spec", () => {
-  assert.equal(normalizeSpec("a\r\nb  \r\n\r\n"), "a\nb\n");
-  assert.equal(
-    hashSpec(CONTENT),
-    createHash("sha256")
-      .update("# Accepted specification\n\nComplete spec.\n")
-      .digest("hex"),
-  );
-});
-
-test("validates a complete Linear readback and returns only pointer metadata", () => {
+test("validates normalized Linear readback and returns only pointer metadata", () => {
   const result = validation();
   assert.equal(result.valid, true);
   assert.deepEqual(result.diagnostics, []);
@@ -52,7 +44,7 @@ test("validates a complete Linear readback and returns only pointer metadata", (
     change: CHANGE,
     source: SOURCE,
     documentUrl: document().url,
-    specHash: hashSpec(CONTENT),
+    specHash: EXPECTED_HASH,
   });
   assert.equal("spec" in result, false);
 });

@@ -14,11 +14,11 @@ const NORMALIZATION =
 const ISO_TIMESTAMP =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
 
-export function normalizeSpec(content) {
+function normalizeSpec(content) {
   return `${content.replace(/\r\n?/gu, "\n").trimEnd()}\n`;
 }
 
-export function hashSpec(content) {
+function hashSpec(content) {
   return createHash("sha256")
     .update(normalizeSpec(content), "utf8")
     .digest("hex");
@@ -124,5 +124,3 @@ export function validateSnapshot(document, { teamId, change } = {}) {
     },
   };
 }
-
-export const G1_SNAPSHOT_NORMALIZATION = NORMALIZATION;
