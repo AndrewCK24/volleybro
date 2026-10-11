@@ -9,40 +9,42 @@ const designModules = import.meta.glob<DesignModule>(
 
 export function DesignMockupIsland({ slug }: { slug: string }) {
   const loadDesign = designModules[`../../content/changes/${slug}/design.tsx`];
-  const [Mockup, setMockup] = useState<ComponentType>();
-  const [error, setError] = useState<string>();
+  const [result, setResult] = useState<{
+    slug: string;
+    Mockup?: ComponentType;
+    error?: string;
+  }>();
 
   useEffect(() => {
     let mounted = true;
-    if (!loadDesign) {
-      setError("找不到此 Change 的 design.tsx");
-      return () => {
-        mounted = false;
-      };
-    }
+    if (!loadDesign) return;
 
     void loadDesign()
       .then((module) => {
-        if (mounted) setMockup(() => module.default);
+        if (mounted) setResult({ slug, Mockup: module.default });
       })
       .catch((cause: unknown) => {
         if (mounted)
-          setError(cause instanceof Error ? cause.message : String(cause));
+          setResult({
+            slug,
+            error: cause instanceof Error ? cause.message : String(cause),
+          });
       });
 
     return () => {
       mounted = false;
     };
-  }, [loadDesign]);
+  }, [loadDesign, slug]);
 
-  if (error)
+  if (!loadDesign || result?.error)
     return (
       <p data-blueprint-render-error="true" className="text-sm text-error-text">
-        此設計稿在此 checkout 中無法顯示：{error}
+        此設計稿在此 checkout 中無法顯示：
+        {!loadDesign ? "找不到此 Change 的 design.tsx" : result?.error}
       </p>
     );
-  if (!Mockup)
+  if (result?.slug !== slug || !result.Mockup)
     return <p className="text-sm text-muted-foreground">載入設計稿…</p>;
 
-  return <MockupFrame Mockup={Mockup} />;
+  return <MockupFrame Mockup={result.Mockup} />;
 }
