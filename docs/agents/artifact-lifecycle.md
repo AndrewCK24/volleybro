@@ -9,6 +9,10 @@
 | Visual / historical    | Optional Proposal and read-only historical Reviews in the existing store  | Visual supplement only; preserve accepted historical contents and anchors.                                 |
 | Canonical current      | Features, Design System authority, glossary, ADRs, code/tests, Changesets | Update affected knowledge on the same delivery branch before PR/G2; later changes explicitly supersede it. |
 
+## G2 evidence retention
+
+The G2 event handler preserves run-bound acceptance evidence in a GitHub Actions artifact and writes the resulting receipt on the PR. Artifact retention requests 90 days, subject to repository/platform limits; native runs and checks are also retention-bound. Missing, expired or mismatched evidence stops automated receipt recovery and bot-merge reconciliation. PR comments alone do not prove which trusted run processed an event; do not promise indefinite automated recovery.
+
 ## Same-branch knowledge promotion
 
 Before the Pre-PR review, assess observable behavior, capability constraints and reusable UI/UX rules. Promote only supported knowledge to the narrowest affected Features; reusable design rules follow `DESIGN.md` and its explicit supplements, with Blueprint presenting that authority. Record unchanged-page decisions and their reason in the PR. Stable vocabulary follows `docs/agents/domain.md`; ADRs already occupy permanent paths and are never promoted or renumbered.
