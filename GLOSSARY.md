@@ -10,13 +10,19 @@ VolleyBro 管理排球隊伍與比賽紀錄。本文件是專案的共用詞彙�
 
 **Change**：一份共同設計與整體完成條件；一般 Change 由一張 PR 交付。
 
-**Sharded Change**：共同設計需要分批交付的 Change，包括大型 migration；各批共用 Proposal 與整體 G1，不是各自獨立的 Change。
+**Sharded Change**：共同設計需要分批交付的 Change，包括大型 migration；各批共用完整 accepted specification 與整體 G1，不是各自獨立的 Change。
 
-**Shard**：可安全交付的一批，對應 branch、Review、G2 與一張 PR；不可分割的工作屬同一批。
+**Shard**：可安全交付的一批，對應 branch、G2 與一張 PR；不可分割的工作屬同一批。
 
 **Slice**：一批內的實作步驟，不代表獨立可合併的交付。
 
 **Fast path**：適用於範圍與風險有界、無新架構或產品決策，且可由一張 PR 獨立驗收的交付模式；與 production 緊急發布的 hotfix 是不同維度。
+
+**Working specification**：交付期間可編輯的規格；進度與措辭更新不會改寫已接受的版本。
+
+**Accepted specification**：G1 接受的完整規格版本；是實作與 Spec review 的共同基準。
+
+**Acceptance receipt**：指向已接受內容、接受者與時間的紀錄；其內容識別不可替代完整規格。
 
 ### 隊伍與名單
 

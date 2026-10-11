@@ -1,12 +1,6 @@
 # Domain documentation adapter
 
-VolleyBro uses a single domain context. Create root `CONTEXT.md` lazily when the first project- specific term is resolved.
-
-`CONTEXT.md` is a glossary only:
-
-- update a stable term inline during Discuss or developer-authorized Ingest;
-- define what the term is in one or two sentences and list discouraged synonyms when useful;
-- exclude implementation details, specifications, decisions, execution state, and review evidence.
+Before any Matt Pocock playbook explores or changes domain language, read root `GLOSSARY.md` and the decision records relevant to the affected capabilities. VolleyBro uses one domain context; `domain-modeling` owns glossary format and inline term resolution. Use `domain-modeling` to decide when a trade-off warrants an ADR; the repository stores it at the path below rather than the playbook's default `docs/adr/`.
 
 Architectural decision records do not use a parallel canonical `docs/adr/` tree, and they do not belong to a Change. A decision record belongs to the repository: it lives at `blueprint/content/decisions/<nnnn>-<slug>.json`, one flat file per decision, with no per-capability copies. Its number is assigned when it is written, by scanning that directory for the highest number and adding one — one namespace, no renumbering, ever. Four digits, so the directory sorts in the order the records were made; cite a record in prose as `ADR-0046`.
 

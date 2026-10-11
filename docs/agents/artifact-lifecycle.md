@@ -1,37 +1,24 @@
 # Artifact lifecycle adapter
 
-Classify every workflow output before storing it.
+| Class                  | Authority                                                                 | Lifecycle                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Working / operational  | Linear issue spec, ticket graph, workpad, progress                        | Mutable during delivery; retain accepted-contract references and extract verified knowledge before PR.     |
+| Accepted specification | Independent owning-Team Doc with full G1 spec and JSON receipt            | Preserve each accepted version; renewed G1 creates another Doc rather than rewriting history.              |
+| Research               | Owning-Team Doc with complete cited findings                              | Issue carries conclusion and link; promote only adopted, verified knowledge to its repository authority.   |
+| G2 evidence            | GitHub PR, candidate and acceptance receipt                               | Bind acceptance to the exact reviewed head; preserve evidence after merge.                                 |
+| Visual / historical    | Optional Proposal and read-only historical Reviews in the existing store  | Visual supplement only; preserve accepted historical contents and anchors.                                 |
+| Canonical current      | Features, Design System authority, glossary, ADRs, code/tests, Changesets | Update affected knowledge on the same delivery branch before PR/G2; later changes explicitly supersede it. |
 
-| Class                  | Examples                                                                                                           | Lifecycle                                                                                                                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Operational            | Tracker intake/spec projection, Wayfinder maps, workpad, Linear slice sub-issues, temporary handoff, provider text | Update only while active; extract missing durable knowledge at Archive, then allow deletion.                                                                                                        |
-| Durable review history | Proposal and Review tabs                                                                                           | Gitignored on the Change branch; published to the `blueprint-changes` store branch at each gate, where they persist without merging into other branches. They are not a second lifecycle authority. |
-| Canonical current      | Blueprint Features, decision records, `CONTEXT.md`, code/tests, Changesets                                         | Update only when knowledge is verified and promoted at Archive; supersede explicitly through later Changes.                                                                                         |
+## Same-branch knowledge promotion
 
-## Branch-local Archive
+Before the Pre-PR review, assess observable behavior, capability constraints and reusable UI/UX rules. Promote only supported knowledge to the narrowest affected Features; reusable design rules follow `DESIGN.md` and its explicit supplements, with Blueprint presenting that authority. Record unchanged-page decisions and their reason in the PR. Stable vocabulary follows `docs/agents/domain.md`; ADRs already occupy permanent paths and are never promoted or renumbered.
 
-Archive runs automatically after Pre-PR code review reaches its fixed point and before the pull request opens:
+Run applicable validation and independent review on these edits with the delivery diff. PR feedback that changes behavior or constraints also updates this knowledge on the same branch before renewed acceptance. The verified branch describes the intended merged state; it becomes current on the default branch when merged. Merge does no second documentation-sync PR.
 
-1. require all slices complete or explicitly superseded, full verification, Changeset assessment, and independent code-review/fix rounds at a fixed point;
-2. assess whether verified behavior or durable capability knowledge changed; promote or correct only the narrowest affected Features when needed, otherwise leave them untouched. Record the assessment and its reason in Review. Decision records already live at their permanent paths and are not promoted or renumbered;
-3. reconcile `CONTEXT.md` only for stable domain vocabulary resolved during the Change;
-4. export the Review summary for the pull-request body, as `WORKFLOW.md`'s Archive section defines it;
-5. exclude tracker IDs, claim state, retries, workspace paths, temporary research, and transcript text from durable Blueprint content;
-6. generate the Review tab following `docs/agents/blueprint.md`, check its required sections and content, run `pnpm blueprint:gate <slug>`, then notify the developer and stop for acceptance (G2). The developer may inspect the dev preview; routine Agent browser inspection is not required. The Agent opens a browser only when the developer says a diagram or screen is hard to understand;
-7. once accepted, verify tracker neutrality, workflow conformance, and the Features from the branch's verified build; use explicit Preview when they are not yet on main.
-
-The archived branch describes the intended post-merge canonical state. It becomes current on the default branch only when the pull request merges. If PR feedback changes behavior, constraints, decisions, tests, or review evidence, amend the promoted knowledge on the same branch and rerun the applicable gates. Merge performs no second knowledge sync; it only permits the operational issue to move to Done.
-
-The next hosted build derives the landing date without republishing the Change. Accepted gate snapshots and measurements stay frozen; the disposable lifecycle overlay is not durable review history.
-
-Change pages are durable review history again: publishing them to the `blueprint-changes` store branch keeps every Proposal and Review tab browsable after merge, without making them a second lifecycle authority — Features, decision records, and commit bodies remain canonical current knowledge.
-
-Historical Spectra/OpenSpec artifacts under `docs/` are immutable snapshots; Change pages on the store branch are not, and are converted whenever the page format changes (ADR-0079). Migration work promotes only still-current knowledge into its canonical authority and leaves obsolete or superseded material in place as history. Remove Spectra skills, workflows, and CLI configuration only in a later cleanup after that promotion has been verified.
+Keep tracker IDs, workspace/claim/retry state and transcripts outside durable Blueprint content. Historical Spectra/OpenSpec documents remain snapshots; promote only still-current knowledge when their migration is authorized. Historical Change Reviews stay read-only in their original files; the shared route changes their presentation without rewriting accepted content.
 
 ## Research and working notes
 
-Research and working notes earn no file of their own.
+Adapt `research` storage to an independent Linear Doc attached to the owning Team. Preserve full findings, date, source links, what each supports, evidence gaps and relevant dissent. The requesting issue holds the conclusion and Doc link, not a second editable copy. Disposable drafts may be removed after saved content is read back and confirmed complete.
 
-Investigation results go back to the tracker issue that asked for them. The sources behind a decision go in the Proposal tab's `## References` section, each row naming what it supports and how strong it is, with the strongest dissenting source recorded too. That section holds research that was done: a Change that consulted no outside source simply has none, and an empty or padded References section is worse than an absent one. A working plan or measurement taken during Discuss is folded into the Proposal's own sections rather than kept as a separate note.
-
-Only what this repository has adopted earns a file — its decision records, its capability descriptions, and the rules it holds itself to. An external pattern earns one only as a rule this repository follows, never as a summary of someone else's writing.
+Research is not an accepted specification. Create the complete G1 snapshot through `docs/agents/issue-tracker.md`. Working measurements and plans stay operational; only adopted knowledge needed to understand the delivered capability enters repository authorities. No local backup or repository receipt is required.

@@ -310,12 +310,60 @@ function scenarioCount(proposal) {
   return orUndefined(() => scenarioIds(proposal ?? "").length) ?? 0;
 }
 
+function isVisualOnly(index) {
+  return /^visualOnly:\s*true\s*$/m.test(frontmatterOf(index ?? ""));
+}
+
+async function validateVisualOnlyPage(
+  directory,
+  page,
+  where,
+  rule = "blueprint-visual-only",
+) {
+  const diagnostics = [];
+  if (page.reviews.length > 0) {
+    diagnostics.push(
+      `${where} [${rule}]: a visual-only Change page cannot contain Review files`,
+    );
+  }
+  if (!page.proposal?.trim()) {
+    diagnostics.push(
+      `${where} [${rule}]: the visual Proposal is missing or empty`,
+    );
+  }
+  const mockupPath = path.join(directory, "design.tsx");
+  let hasMockup = false;
+  try {
+    const info = await lstat(mockupPath);
+    hasMockup = info.isFile() && !info.isSymbolicLink();
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  if (!page.proposal?.includes("<InteractiveFlowchart") && !hasMockup) {
+    diagnostics.push(
+      `${where} [${rule}]: include an InteractiveFlowchart or regular design.tsx mockup`,
+    );
+  }
+  return diagnostics;
+}
+
 async function validateChangePages(directories) {
   const diagnostics = [];
 
   for (const directory of directories) {
     const page = await readChangeDir(directory);
     if (page.index === undefined) continue;
+
+    if (isVisualOnly(page.index)) {
+      diagnostics.push(
+        ...(await validateVisualOnlyPage(
+          directory,
+          page,
+          `${BLUEPRINT_CHANGES}/${path.basename(directory)}`,
+        )),
+      );
+      continue;
+    }
 
     const isComplete =
       page.proposal?.includes("<TLDR") && scenarioCount(page.proposal) > 0;
@@ -436,6 +484,7 @@ async function checkChangeSizeWarnings(root, slug) {
   if (!slug) return [];
   const page = await readChangeDir(path.join(root, BLUEPRINT_CHANGES, slug));
   if (page.index === undefined) return [];
+  if (isVisualOnly(page.index)) return [];
   const count = scenarioCount(page.proposal);
   if (count <= SCENARIO_COUNT_SOFT_LIMIT) return [];
   return [
@@ -669,6 +718,18 @@ export async function checkChangePageGate(
   if (page.proposal === undefined) {
     diagnostics.push(
       `${where("proposal.mdx")} [gate-proposal]: file is missing`,
+    );
+    return diagnostics;
+  }
+
+  if (isVisualOnly(page.index)) {
+    diagnostics.push(
+      ...(await validateVisualOnlyPage(
+        path.join(root, BLUEPRINT_CHANGES, slug),
+        page,
+        where("proposal.mdx"),
+        "gate-visual-only",
+      )),
     );
     return diagnostics;
   }

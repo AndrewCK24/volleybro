@@ -31,7 +31,7 @@ The alternatives users have today are a paper scoresheet tidied up by hand after
 
 - Live matches at the sideline: one hand, divided attention, unreliable gym connectivity.
 - 6-player indoor volleyball: 25-point sets with a two-point lead, 15 in a deciding set; lineups, rotation, substitutions and a libero.
-- Teams are organised around a roster of players; a player may or may not be linked to a user account (terms defined in `CONTEXT.md`).
+- Teams are organised around a roster of players; a player may or may not be linked to a user account (terms defined in `GLOSSARY.md`).
 
 ## Capabilities and Constraints
 
@@ -51,7 +51,7 @@ Constraints:
 
 - The product is in public preview (shown as `Beta`); the 1.0 public release has not happened.
 - Interface language is Traditional Chinese (zh-TW) only; i18n is a later milestone.
-- The domain glossary in `CONTEXT.md` is authoritative for product terms.
+- The domain glossary in `GLOSSARY.md` is authoritative for product terms.
 
 ## Brand Commitments
 
