@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { checkWorkflow } from "./check-workflow.js";
 import { validateSnapshot } from "./g1-snapshot.js";
 
-export async function runDeliveryGate(root, document, expected) {
+async function runDeliveryGate(root, document, expected) {
   const workflowDiagnostics = await checkWorkflow(root);
   const snapshot = validateSnapshot(document, expected);
   return {

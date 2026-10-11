@@ -107,7 +107,7 @@ function resolveRef(tokens, value) {
   return resolved;
 }
 
-export function buildDesignSidecar(document, generatedAt) {
+function buildDesignSidecar(document, generatedAt) {
   const { tokens, sections, extensions } = document;
   const declarations = {
     backgroundColor: "background",
