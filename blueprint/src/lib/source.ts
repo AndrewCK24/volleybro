@@ -20,6 +20,9 @@ type SourceConfig = {
   metaData: MetaData;
 };
 
+// Keep the published history in the store, but retire its public route.
+const RETIRED_CHANGE_SLUGS = new Set(["pnpm12-toolchain"]);
+
 function buildContentSource(
   pages: PageEntry[],
   metas: MetaEntry[],
@@ -85,10 +88,17 @@ export async function createBlueprintSources() {
   const designPages = designMetas.flatMap((entry) => entry.data.pages);
   const changesRoot = path.resolve("content/changes");
   const featuresRoot = path.resolve("content/features");
+  const migratedChanges = changes.filter((entry) => {
+    const relativePath = entry.filePath
+      ? path.relative(changesRoot, entry.filePath)
+      : entry.id;
+    const slug = relativePath.split(path.sep)[0];
+    return !RETIRED_CHANGE_SLUGS.has(slug);
+  });
 
   const changesSource = loader({
     baseUrl: "/changes",
-    source: buildContentSource(changes, [], changesRoot),
+    source: buildContentSource(migratedChanges, [], changesRoot),
   });
   const featuresSource = loader({
     baseUrl: "/features",

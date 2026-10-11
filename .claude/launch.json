@@ -2,17 +2,17 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "blueprint",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "blueprint", "dev"],
-      "port": 3100,
-      "autoPort": true
-    },
-    {
       "name": "app",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["dev", "--port", "3000"],
       "port": 3000
+    },
+    {
+      "name": "blueprint",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "blueprint", "dev"],
+      "port": 4321,
+      "autoPort": true
     },
     {
       "name": "storybook",

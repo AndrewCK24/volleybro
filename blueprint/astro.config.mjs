@@ -131,6 +131,9 @@ const astroConfig = {
   outDir: "./out",
   build: { format: "file" },
   trailingSlash: "never",
+  server: {
+    port: process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4321,
+  },
   markdown: {
     processor: unified({
       syntaxHighlight: false,
