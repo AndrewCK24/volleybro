@@ -8,6 +8,7 @@ const changePage = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     capabilities: z.array(z.string()).optional(),
+    visualOnly: z.boolean().optional(),
   }),
 });
 
