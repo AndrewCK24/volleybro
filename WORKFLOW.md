@@ -249,15 +249,7 @@ Fast path sits beside Change and Sharded Change for work with bounded scope and 
 
 ## Decision-record contract
 
-A decision record belongs to the repository, not to a Change. Every record lives at `blueprint/content/decisions/<nnnn>-<slug>.json`, one file per decision, flat, with no per-capability copies. Its number is assigned when it is written, by scanning that directory for the highest number and adding one — one namespace, no renumbering, ever. The number is written to four digits so the directory sorts in the order the records were made; prose cites a record as `ADR-0046`, while the `id` field and the file name carry the bare digits.
-
-A record is written the moment the decision is made — during a Change's Discuss, or outside any Change — and it is adopted from that moment. There is no proposed stage and no status field, because a decision that is still open is not written down as a decision. Its lifecycle has two events: birth, and replacement by setting `supersededBy` on the record being replaced.
-
-Decision JSON is defined once, by the zod schema that `parseDecisionRecord` in `blueprint/src/lib/decision-record.ts` runs, schema version 2 (ADR-0080); no JSON Schema file mirrors it, and an unknown key is rejected. Required: `schemaVersion`, `id`, `title`, `capabilities`, `decision`. Optional: `context`, `alternatives`, `consequences`, `revisitTriggers`, `originChange`, `supersededBy`. `originDecision` no longer exists. `capabilities` is a non-empty array of hierarchical capability IDs such as `game-recording/rally-input`; Feature pages render the records whose `capabilities` name that page, matched exactly. `originChange` survives as the trace back to the branch, pull request, and discussion that produced a decision: filled when the decision was made during a Change's Discuss, left empty when it was not. `DecisionCards` renders these records on a Change page and `DecisionTimeline` on Feature pages; rendering never becomes a second editable decision source.
-
-Archive no longer promotes, reconciles, or renumbers decision records — a record already lives at its permanent path from the moment it was written. Pre-PR preparation assesses behavior and durable constraints and promotes verified knowledge only when needed.
-
-A Change page on the `blueprint-changes` store branch cites records by id and holds none of its own. A draft converted from an earlier format that never passed G1 keeps its proposed decisions as page text, because they were never adopted.
+Read `docs/agents/domain.md` before changing vocabulary or adopted decisions. It binds `domain-modeling` to the repository's glossary, flat ADR storage and executable schema. Decision records already occupy permanent paths; knowledge promotion never copies or renumbers them.
 
 ## Branch and commit strategy
 
