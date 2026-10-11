@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "id": "0120",
+  "title": "Developer PR review authorizes native Agent completion in the conversation",
+  "capabilities": ["platform/blueprint", "platform/delivery-workflow"],
+  "context": "Event-driven G2 merging and artifact recovery added substantial code, fixtures and review burden before activation. The developer chose explicit Agent completion after PR review instead.",
+  "decision": "Keep complete accepted G1 specifications and canonical receipts in independent owning-Team Docs. Promote and review current knowledge on the delivery branch before presenting the PR at G2. After PR review, the developer explicitly authorizes the Agent in the conversation to merge and clean up the identified reviewed revision; direct human Merge also accepts. Native GitHub/Git checks bind the exact head, required checks, merge readiness and completion. Remove the unactivated G2 event workflow, candidate protocol, bot receipts and artifact recovery. Material changes renew acceptance.",
+  "alternatives": [
+    {
+      "option": "Maintain event-driven LGTM merging and run-bound recovery",
+      "reason": "Adds a privileged event system and recovery lifecycle for a process the active Agent can complete on explicit authorization."
+    },
+    {
+      "option": "Require developer manual Merge for every delivery",
+      "reason": "Valid as an alternative acceptance path, but explicit Agent completion also handles the already-authorized merge and owned cleanup without another manual operation."
+    }
+  ],
+  "consequences": [
+    "No acceptance keyword, candidate comment, receiver activation or always-running poller is required.",
+    "The PR and operational issue record reviewed revision and acceptance evidence; native merge identity provides completion evidence.",
+    "GitHub's remote branch deletion is expected; local cleanup independently verifies ownership, clean state and ancestry using retained native SHAs.",
+    "G1 snapshot authority, optional Proposal/history preservation and same-branch knowledge remain unchanged."
+  ],
+  "originChange": "pr-based-blueprint-workflow"
+}

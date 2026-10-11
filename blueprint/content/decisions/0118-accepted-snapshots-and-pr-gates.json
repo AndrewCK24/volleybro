@@ -24,5 +24,6 @@
     "GitHub event handling is separately activated and does not wake local Agent sessions; local resume reconciles merge evidence before owned cleanup.",
     "No post-merge knowledge sync PR or new Blueprint Review is required."
   ],
-  "originChange": "pr-based-blueprint-workflow"
+  "originChange": "pr-based-blueprint-workflow",
+  "supersededBy": "0120"
 }

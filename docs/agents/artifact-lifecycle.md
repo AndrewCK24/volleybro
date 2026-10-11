@@ -5,13 +5,13 @@
 | Working / operational  | Linear issue spec, ticket graph, workpad, progress                        | Mutable during delivery; retain accepted-contract references and extract verified knowledge before PR.     |
 | Accepted specification | Independent owning-Team Doc with full G1 spec and JSON receipt            | Preserve each accepted version; renewed G1 creates another Doc rather than rewriting history.              |
 | Research               | Owning-Team Doc with complete cited findings                              | Issue carries conclusion and link; promote only adopted, verified knowledge to its repository authority.   |
-| G2 evidence            | GitHub PR, candidate and acceptance receipt                               | Bind acceptance to the exact reviewed head; preserve evidence after merge.                                 |
+| G2 evidence            | GitHub PR and explicit developer authorization                            | Bind acceptance to the exact reviewed head; preserve evidence after merge.                                 |
 | Visual / historical    | Optional Proposal and read-only historical Reviews in the existing store  | Visual supplement only; preserve accepted historical contents and anchors.                                 |
 | Canonical current      | Features, Design System authority, glossary, ADRs, code/tests, Changesets | Update affected knowledge on the same delivery branch before PR/G2; later changes explicitly supersede it. |
 
 ## G2 evidence retention
 
-The G2 event handler preserves run-bound acceptance evidence in a GitHub Actions artifact and writes the resulting receipt on the PR. Artifact retention requests 90 days, subject to repository/platform limits; native runs and checks are also retention-bound. Missing, expired or mismatched evidence stops automated receipt recovery and bot-merge reconciliation. PR comments alone do not prove which trusted run processed an event; do not promise indefinite automated recovery.
+G2 evidence lives in the PR: reviewed head, accepted G1 snapshot/hash, verification and review results. The developer's explicit conversation instruction to merge and clean up authorizes that reviewed revision; a direct human Merge also accepts it. Native PR merge identity and Git ancestry prove completion. There is no G2 event receiver, candidate comment, bot receipt or artifact recovery. Preserve the operational authorization/revision record on the execution issue; do not introduce a repository receipt or duplicate full specification.
 
 ## Same-branch knowledge promotion
 
