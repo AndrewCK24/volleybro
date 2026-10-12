@@ -259,7 +259,7 @@ The rule governs container elevation only: do not convey depth with a decorative
 
 Ring-instead-of-border is a formal edge technique for controls and small media. Semantic-color rings may express selected or invalid states; `--ring` stays reserved for focus-visible. Keep semantic borders for table rows, accordion separators and tab indicators. They divide content or indicate state; they do not create container elevation.
 
-Following HIG [Materials](https://developer.apple.com/design/human-interface-guidelines/materials), preserve readable foregrounds when transparency is reduced or contrast is increased. Where the browser exposes these preferences, adapt glass and translucent surfaces; provide a sufficiently opaque fallback and stronger separation when needed. Verify against the underlying content in both themes. Functional edges needed for accessibility take precedence over decorative No-Ring styling. These are requirements for affected surfaces, not claims that existing CSS already handles every preference.
+Following HIG [Materials](https://developer.apple.com/design/human-interface-guidelines/materials), preserve readable foregrounds when transparency is reduced or contrast is increased. Where the browser exposes these preferences, adapt glass and translucent surfaces (the `opaque` variant in `globals.css` matches `prefers-reduced-transparency` and `prefers-contrast: more`); provide a sufficiently opaque fallback and stronger separation when needed. Verify against the underlying content in both themes. Functional edges needed for accessibility take precedence over decorative No-Ring styling. These are requirements for affected surfaces, not claims that existing CSS already handles every preference.
 
 ### Shadows
 
@@ -296,13 +296,13 @@ Two tokens in `globals.css` carry those heights: `--control-size` (36px, 44px on
 | Page primary action and every form submit | lg, including submits inside dialogs                                                                          |
 | In-section action and AlertDialog actions | default                                                                                                       |
 | Buttons side by side                      | Same size; variant shows importance (default/destructive over outline/secondary)                              |
-| Header/back/close icon control            | icon with the `glass` variant: 44×44 CSS px for touch, 36 under pointer: fine, no outline                     |
+| Header/back/close icon control            | icon with the circular `glass` variant: 44×44 CSS px for touch, 36 under pointer: fine, no outline            |
 | Back / close glyph                        | RiArrowLeftSLine / RiCloseLine                                                                                |
 | Segmented choice                          | Button `segmented` variant: secondary at rest, primary when `aria-pressed` or radio checked; 44px under touch |
 | Recording scoring-move buttons            | At least 44px tall; opponent errors use two columns                                                           |
 | Navigation FAB and Landing CTAButton      | Own their sizes                                                                                               |
 
-Glass belongs only to floating header, back and close controls; other icon actions keep their semantic fills and keyboard focus. This does not require a whole-app glass redesign. HIG motivates the touch-target rule; CSS px are the web project's units, not native points. SwiftUI correspondence: primary actions, toolbar controls, dismiss actions and segmented selection.
+Glass belongs only to floating header, back and close controls; other icon actions keep their semantic fills and keyboard focus. The glass control is a circle (`rounded-full`) in an iOS 26 Liquid Glass-inspired material: a translucent fill (`white/60` in light, `white/10` in dark), backdrop blur, a 1px inner highlight edge, a soft shadow and a foreground-coloured glyph. Under reduced transparency or more contrast the fill becomes opaque `background` with a visible `foreground/40` edge. This does not require a whole-app glass redesign. HIG motivates the touch-target rule; CSS px are the web project's units, not native points. SwiftUI correspondence: primary actions, toolbar controls, dismiss actions and segmented selection.
 
 ### Item-first data surfaces
 

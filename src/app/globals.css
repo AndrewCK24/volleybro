@@ -2,6 +2,15 @@
 
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
+/* Reduced transparency or more contrast: translucent materials fall back to an opaque fill. */
+@custom-variant opaque {
+  @media (prefers-reduced-transparency: reduce) {
+    @slot;
+  }
+  @media (prefers-contrast: more) {
+    @slot;
+  }
+}
 
 :root,
 .light {
