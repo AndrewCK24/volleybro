@@ -61,8 +61,8 @@ export function GameOverviewSkeleton() {
         </div>
         {/* mirrors action buttons grid */}
         <div className="grid w-full grid-cols-2 gap-2 py-2">
-          <Skeleton className="h-(--control-size) w-full" />
-          <Skeleton className="h-(--control-size) w-full" />
+          <Skeleton className="h-(--control-size-lg) w-full" />
+          <Skeleton className="h-(--control-size-lg) w-full" />
         </div>
       </div>
       {/* mirrors Stats: Card with CardHeader + Tabs */}

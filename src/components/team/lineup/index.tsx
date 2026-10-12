@@ -103,7 +103,7 @@ export function LineupSkeleton() {
       </div>
       {/* mirrors save button row */}
       <div className="flex w-full flex-col px-4 pt-2">
-        <Skeleton className="h-(--control-size) w-full" />{" "}
+        <Skeleton className="h-(--control-size-lg) w-full" />{" "}
         {/* size="lg" button */}
       </div>
     </>

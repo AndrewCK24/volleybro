@@ -88,8 +88,10 @@
 }
 
 :root {
-  /* HIG minimum touch target: Button `icon` and every control that mirrors it. */
+  /* Height of Button `default`/`icon` and every control that mirrors it; the
+     coarse-pointer value below is the HIG 44pt minimum touch target. */
   --control-size: 2.25rem;
+  --control-size-lg: 2.5rem;
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-right: env(safe-area-inset-right);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
@@ -99,6 +101,7 @@
 @media (pointer: coarse) {
   :root {
     --control-size: 2.75rem;
+    --control-size-lg: 2.75rem;
   }
 }
 
