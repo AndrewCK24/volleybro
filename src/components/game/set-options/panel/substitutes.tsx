@@ -1,8 +1,8 @@
 "use client";
 import { PanelContent } from "@/components/custom/panel";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { useGame } from "@/hooks/use-data";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
@@ -34,30 +34,21 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
           const member = members.find((m) => m.id === player.id);
           if (!member) return null;
           return (
-            <Item key={member.id} asChild variant="outline">
-              <button
-                type="button"
-                onClick={() =>
-                  dispatch(
-                    lineupActions.replaceEditingPlayer({
-                      id: member.id,
-                      list: "substitutes",
-                      zone: index + 1,
-                    }),
-                  )
-                }
-              >
-                <ItemMedia>
-                  <RiUserFollowLine className="size-6" />
-                </ItemMedia>
-                <ItemMedia className="basis-8 justify-end text-xl font-semibold">
-                  {member.number || " "}
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle className="text-xl">{member.name}</ItemTitle>
-                </ItemContent>
-              </button>
-            </Item>
+            <PickerRow
+              key={member.id}
+              icon={<RiUserFollowLine className="size-6" />}
+              number={member.number}
+              label={member.name}
+              onClick={() =>
+                dispatch(
+                  lineupActions.replaceEditingPlayer({
+                    id: member.id,
+                    list: "substitutes",
+                    zone: index + 1,
+                  }),
+                )
+              }
+            />
           );
         })}
       </Card>

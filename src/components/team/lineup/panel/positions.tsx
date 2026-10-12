@@ -1,8 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { PanelContent } from "@/components/custom/panel";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Position } from "@/entities/team";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
@@ -59,32 +59,20 @@ export const Positions = () => {
         <CardTitle>選擇位置</CardTitle>
       </CardHeader>
       {positions.map((position) => {
-        const toggled =
-          toggledPosition != null && toggledPosition === position.value;
+        const toggled = toggledPosition === position.value;
         return (
-          <Item
+          <PickerRow
             key={position.value}
-            asChild
-            variant={toggled ? "primary" : "outline"}
-          >
-            <button
-              type="button"
-              aria-pressed={toggled}
-              onClick={() =>
-                dispatch(lineupActions.setPlayerPosition(position.value))
-              }
-              disabled={
-                position.value === "L" ? !isEditingLiberos : isEditingLiberos
-              }
-            >
-              <ItemMedia className="basis-8 justify-end text-xl font-semibold">
-                {position.value}
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle className="text-xl">{position.text}</ItemTitle>
-              </ItemContent>
-            </button>
-          </Item>
+            number={position.value}
+            label={position.text}
+            pressed={toggled}
+            disabled={
+              position.value === "L" ? !isEditingLiberos : isEditingLiberos
+            }
+            onClick={() =>
+              dispatch(lineupActions.setPlayerPosition(position.value))
+            }
+          />
         );
       })}
     </PanelContent>

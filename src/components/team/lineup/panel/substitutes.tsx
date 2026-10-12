@@ -1,8 +1,8 @@
 "use client";
 import { PanelContent } from "@/components/custom/panel";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode, type PlayerView } from "@/lib/features/team/types";
@@ -70,47 +70,25 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
         const player = players.find((p) => p.id === lineupPlayer.id);
         if (!player) return null;
         return (
-          <Item
+          <PickerRow
             key={player.id}
-            asChild
-            variant={isEditingStarting ? "outline" : "primary"}
-          >
-            <button
-              type="button"
-              onClick={() => handleSubstituteClick(player, index)}
-            >
-              <ItemMedia>
-                <RiUserFollowLine className="size-6" />
-              </ItemMedia>
-              <ItemMedia className="basis-8 justify-end text-xl font-semibold">
-                {player?.number || " "}
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle className="text-xl">{player?.name}</ItemTitle>
-              </ItemContent>
-            </button>
-          </Item>
+            icon={<RiUserFollowLine className="size-6" />}
+            number={player.number}
+            label={player.name}
+            onClick={() => handleSubstituteClick(player, index)}
+          />
         );
       })}
       <Separator content="以上為正式比賽 12 + 2 人名單" />
       {others.map((player, index) => {
         return (
-          <Item key={player.id} asChild variant="outline">
-            <button
-              type="button"
-              onClick={() => handleOtherClick(player, index)}
-            >
-              <ItemMedia>
-                <RiUserLine className="size-6" />
-              </ItemMedia>
-              <ItemMedia className="basis-8 justify-end text-xl font-semibold">
-                {player?.number}
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle className="text-xl">{player?.name}</ItemTitle>
-              </ItemContent>
-            </button>
-          </Item>
+          <PickerRow
+            key={player.id}
+            icon={<RiUserLine className="size-6" />}
+            number={player.number}
+            label={player.name}
+            onClick={() => handleOtherClick(player, index)}
+          />
         );
       })}
     </PanelContent>
