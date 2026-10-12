@@ -227,8 +227,8 @@ const FormRadioItem = ({
     <Label
       htmlFor={id}
       className={cn(
-        buttonVariants({ variant: "secondary" }),
-        "has-checked:bg-primary has-checked:text-primary-foreground has-checked:hover:bg-primary/90 has-focus-visible:ring-ring",
+        buttonVariants({ variant: "segmented" }),
+        "has-focus-visible:ring-ring",
         className,
       )}
     >

@@ -112,7 +112,7 @@ function TeamItem({
   const { team, isLoading } = useTeam(teamId);
 
   return (
-    <Item asChild variant={isActive ? "primary" : "default"}>
+    <Item asChild>
       <button
         type="button"
         aria-pressed={isActive}

@@ -33,6 +33,7 @@ const meta = {
         "ghost",
         "link",
         "glass",
+        "segmented",
       ],
       control: { type: "select" },
     },

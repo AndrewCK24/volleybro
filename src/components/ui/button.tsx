@@ -22,6 +22,8 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80",
         ghost: "hover:bg-muted/50",
+        segmented:
+          "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80 has-checked:bg-primary has-checked:text-primary-foreground has-checked:hover:bg-primary/90 aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90",
         link: "text-primary-text underline-offset-4 hover:underline",
         glass:
           "bg-background/94 text-foreground shadow-lg backdrop-blur-sm hover:bg-background",

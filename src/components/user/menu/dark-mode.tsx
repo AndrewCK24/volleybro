@@ -46,7 +46,7 @@ export const DarkMode = () => {
         <DialogBody>
           <DialogClose asChild>
             <Button
-              variant={theme === "system" ? "default" : "secondary"}
+              variant="segmented"
               aria-pressed={theme === "system"}
               onClick={() => setTheme("system")}
             >
@@ -56,7 +56,7 @@ export const DarkMode = () => {
           </DialogClose>
           <DialogClose asChild>
             <Button
-              variant={theme === "light" ? "default" : "secondary"}
+              variant="segmented"
               aria-pressed={theme === "light"}
               onClick={() => setTheme("light")}
             >
@@ -66,7 +66,7 @@ export const DarkMode = () => {
           </DialogClose>
           <DialogClose asChild>
             <Button
-              variant={theme === "dark" ? "default" : "secondary"}
+              variant="segmented"
               aria-pressed={theme === "dark"}
               onClick={() => setTheme("dark")}
             >

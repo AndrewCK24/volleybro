@@ -32,7 +32,7 @@ function ItemSeparator({
 }
 
 const itemVariants = cva(
-  "group/item flex min-h-11 flex-wrap items-center rounded-md text-sm transition-[background-color,color,box-shadow] duration-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_a]:transition-colors [&_a]:hover:bg-muted/40 [button&]:w-full [button&]:cursor-pointer [button&]:text-left [button&]:disabled:pointer-events-none [button&]:disabled:opacity-50",
+  "group/item flex min-h-11 flex-wrap items-center rounded-md text-sm transition-[background-color,color,box-shadow] duration-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90 [&_a]:transition-colors [&_a]:hover:bg-muted/40 [button&]:w-full [button&]:cursor-pointer [button&]:text-left [button&]:disabled:pointer-events-none [button&]:disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -41,7 +41,8 @@ const itemVariants = cva(
         primary:
           "bg-primary text-primary-foreground shadow-sm ring-1 ring-transparent hover:bg-primary/90",
         outline: "bg-card text-foreground shadow-xs hover:bg-muted/40",
-        muted: "bg-muted/60 text-foreground shadow-xs ring-1 ring-transparent",
+        muted:
+          "bg-muted/60 text-foreground shadow-xs ring-1 ring-transparent [a&]:hover:bg-muted/50 [button&]:hover:bg-muted/50",
       },
       size: {
         lg: "gap-4 p-3",
