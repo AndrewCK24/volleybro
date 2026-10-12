@@ -95,9 +95,9 @@ const moveLook = (
     : { variant: "secondary", tint: LOSE_STYLE };
 };
 
-// ADR-0122: fill the grid row; `pointer-coarse:h-full` overrides the size's fixed touch height.
+// See ADR-0122: cells fill their grid row, so `h-full` replaces the size height.
 export const MOVE_CELL_CLASS =
-  "h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7 pointer-coarse:h-full";
+  "h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7";
 
 export const MoveButton = ({
   move,

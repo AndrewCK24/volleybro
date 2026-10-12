@@ -98,7 +98,7 @@ export const StatsCarousel = () => {
             <Icon />
           </Button>
         ))}
-        <div className="absolute top-full left-1/2 mt-1 flex -translate-x-1/2 items-center pointer-coarse:gap-3">
+        <div className="absolute top-full left-1/2 mt-1 flex -translate-x-1/2 items-center">
           {SLIDES.map((slide, index) => (
             <button
               key={slide.title}
@@ -106,7 +106,7 @@ export const StatsCarousel = () => {
               aria-label={`${index + 1} / ${slideCount}：${slide.title}`}
               aria-current={index === activeIndex}
               onClick={() => goTo(index)}
-              className="touch-target grid size-8 place-items-center rounded-md focus-visible:ring-2 focus-visible:ring-court-foreground focus-visible:outline-hidden"
+              className="grid size-8 place-items-center rounded-md focus-visible:ring-2 focus-visible:ring-court-foreground focus-visible:outline-hidden pointer-coarse:size-(--control-size)"
             >
               <span
                 className={cn(
