@@ -1,8 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { RiArrowLeftSLine } from "react-icons/ri";
+
+const SPACER = buttonVariants({
+  size: "icon",
+  className: "invisible shrink-0",
+});
 
 interface HeaderProps {
   title?: string;
@@ -64,12 +69,12 @@ export const Header = ({
             <RiArrowLeftSLine />
           </Button>
         ) : (
-          <div aria-hidden className="size-9 shrink-0 pointer-coarse:size-11" />
+          <div aria-hidden className={SPACER} />
         )}
         <div className="flex flex-1 items-center justify-center">
           {children ?? <h1 className="m-0 text-center text-xl">{title}</h1>}
         </div>
-        <div aria-hidden className="size-9 shrink-0 pointer-coarse:size-11" />
+        <div aria-hidden className={SPACER} />
       </div>
     </header>
   );

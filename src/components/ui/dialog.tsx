@@ -122,7 +122,7 @@ const DialogHeader = ({
       {children}
     </div>
     {(onExpand || closeButton) && (
-      <div className="-my-2 flex flex-none flex-row items-center gap-1 pointer-coarse:-my-3">
+      <div className="flex flex-none flex-row items-center gap-1">
         {onExpand && (
           <Button
             type="button"
