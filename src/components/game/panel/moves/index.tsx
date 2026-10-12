@@ -95,6 +95,10 @@ const moveLook = (
     : { variant: "secondary", tint: LOSE_STYLE };
 };
 
+// ADR-0122: fill the grid row; `pointer-coarse:h-full` overrides the size's fixed touch height.
+export const MOVE_CELL_CLASS =
+  "h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7 pointer-coarse:h-full";
+
 export const MoveButton = ({
   move,
   toggled,
@@ -114,10 +118,8 @@ export const MoveButton = ({
       variant={look.variant}
       size="lg"
       className={cn(
-        // leading-7 makes the natural height 44px (py-2 + 28px line). The label
-        // is 24px from 360px wide and scales with the viewport below that so a
-        // six-character label never overflows its half-width cell.
-        "h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7 transition-colors duration-200",
+        MOVE_CELL_CLASS,
+        "transition-colors duration-200",
         look.tint,
       )}
       onClick={() => onClick(move)}

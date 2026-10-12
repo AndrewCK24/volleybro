@@ -1,5 +1,9 @@
 "use client";
-import { Container, MoveButton } from "@/components/game/panel/moves";
+import {
+  Container,
+  MOVE_CELL_CLASS,
+  MoveButton,
+} from "@/components/game/panel/moves";
 import { Button } from "@/components/ui/button";
 import { gameActions } from "@/lib/features/game/game-slice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -27,8 +31,7 @@ export const OursMoves = () => {
   return (
     <Container
       className={
-        // Opponent errors: three rows of two. Rows grow to share a tall panel
-        // but never drop below the 44px touch target; a short panel scrolls.
+        // ADR-0122: rows share a tall panel but never drop below 44px.
         zone === 0 ? "auto-rows-[minmax(44px,1fr)]" : undefined
       }
     >
@@ -47,7 +50,7 @@ export const OursMoves = () => {
         <Button
           variant="secondary"
           size="lg"
-          className="h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7"
+          className={MOVE_CELL_CLASS}
           onClick={() => dispatch(gameActions.setPanel("substitutes"))}
         >
           替補
