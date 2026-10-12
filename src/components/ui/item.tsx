@@ -32,7 +32,7 @@ function ItemSeparator({
 }
 
 const itemVariants = cva(
-  "group/item flex flex-wrap items-center rounded-md text-sm transition-[background-color,color,box-shadow] duration-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_a]:transition-colors [&_a]:hover:bg-muted/40",
+  "group/item flex min-h-11 flex-wrap items-center rounded-md text-sm transition-[background-color,color,box-shadow] duration-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_a]:transition-colors [&_a]:hover:bg-muted/40 [button&]:w-full [button&]:cursor-pointer [button&]:text-left [button&]:disabled:pointer-events-none [button&]:disabled:opacity-50",
   {
     variants: {
       variant: {

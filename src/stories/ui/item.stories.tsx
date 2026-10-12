@@ -69,6 +69,18 @@ export const NavigablePersonRow: Story = {
   ),
 };
 
+export const SelectableButtonRow: Story = {
+  render: (args) => (
+    <Item asChild variant="primary" {...args}>
+      <button type="button" aria-pressed>
+        <ItemContent>
+          <ItemTitle>Alice Chen</ItemTitle>
+        </ItemContent>
+      </button>
+    </Item>
+  ),
+};
+
 export const StaticWithActions: Story = {
   render: (args) => (
     <Item {...args}>

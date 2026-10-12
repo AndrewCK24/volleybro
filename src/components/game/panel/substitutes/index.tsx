@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { useToast } from "@/components/ui/use-toast";
 import { useGame } from "@/hooks/use-data";
 import { showErrorToast } from "@/lib/api/error-toast";
@@ -85,24 +86,30 @@ export const Substitutes = ({
         {substitutes.map((substitute) => {
           const toggled = draft?.substitution?.players?.in === substitute.id;
           return (
-            <Button
+            <Item
               key={substitute.id}
-              variant={toggled ? "default" : "outline"}
-              size="wide"
-              className="text-xl"
-              onClick={() =>
-                toggled
-                  ? dispatch(gameActions.resetEntryDraftSubstitution())
-                  : dispatch(
-                      gameActions.setEntryDraftSubstitution(substitute.id),
-                    )
-              }
+              asChild
+              variant={toggled ? "primary" : "outline"}
             >
-              <span className="flex basis-8 justify-end font-semibold">
-                {substitute.number}
-              </span>
-              {substitute.name}
-            </Button>
+              <button
+                type="button"
+                aria-pressed={toggled}
+                onClick={() =>
+                  toggled
+                    ? dispatch(gameActions.resetEntryDraftSubstitution())
+                    : dispatch(
+                        gameActions.setEntryDraftSubstitution(substitute.id),
+                      )
+                }
+              >
+                <ItemMedia className="basis-8 justify-end text-xl font-semibold">
+                  {substitute.number}
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle className="text-xl">{substitute.name}</ItemTitle>
+                </ItemContent>
+              </button>
+            </Item>
           );
         })}
       </CardContent>

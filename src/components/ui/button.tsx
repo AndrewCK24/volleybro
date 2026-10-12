@@ -29,7 +29,6 @@ const buttonVariants = cva(
       size: {
         default: "h-9 px-3.5 py-2 pointer-coarse:h-11 [&>svg]:size-5",
         lg: "h-10 px-8 py-2 text-lg pointer-coarse:h-11 [&>svg]:size-6",
-        wide: "h-10 w-full justify-start px-3 py-2 text-lg [&>svg]:size-6",
         icon: "size-9 pointer-coarse:size-11 [&>svg]:size-7",
       },
     },

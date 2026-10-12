@@ -113,7 +113,11 @@ function TeamItem({
 
   return (
     <Item asChild variant={isActive ? "primary" : "default"}>
-      <Button className="h-fit" onClick={() => onClick(teamId)}>
+      <button
+        type="button"
+        aria-pressed={isActive}
+        onClick={() => onClick(teamId)}
+      >
         <ItemMedia variant="icon">
           <RiGroupLine className="h-4 w-4" />
         </ItemMedia>
@@ -126,7 +130,7 @@ function TeamItem({
             )}
           </ItemTitle>
         </ItemContent>
-      </Button>
+      </button>
     </Item>
   );
 }

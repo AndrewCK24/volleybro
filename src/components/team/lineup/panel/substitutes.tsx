@@ -2,6 +2,7 @@
 import { PanelContent } from "@/components/custom/panel";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode, type PlayerView } from "@/lib/features/team/types";
@@ -69,37 +70,47 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
         const player = players.find((p) => p.id === lineupPlayer.id);
         if (!player) return null;
         return (
-          <Button
+          <Item
             key={player.id}
-            variant={isEditingStarting ? "outline" : "default"}
-            size="wide"
-            onClick={() => handleSubstituteClick(player, index)}
-            className="text-xl"
+            asChild
+            variant={isEditingStarting ? "outline" : "primary"}
           >
-            <RiUserFollowLine />
-            <span className="flex basis-8 justify-end font-semibold">
-              {player?.number || " "}
-            </span>
-            {player?.name}
-          </Button>
+            <button
+              type="button"
+              onClick={() => handleSubstituteClick(player, index)}
+            >
+              <ItemMedia>
+                <RiUserFollowLine className="size-6" />
+              </ItemMedia>
+              <ItemMedia className="basis-8 justify-end text-xl font-semibold">
+                {player?.number || " "}
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="text-xl">{player?.name}</ItemTitle>
+              </ItemContent>
+            </button>
+          </Item>
         );
       })}
       <Separator content="以上為正式比賽 12 + 2 人名單" />
       {others.map((player, index) => {
         return (
-          <Button
-            key={player.id}
-            variant="outline"
-            size="wide"
-            onClick={() => handleOtherClick(player, index)}
-            className="text-xl"
-          >
-            <RiUserLine />
-            <span className="flex basis-8 justify-end font-semibold">
-              {player?.number}
-            </span>
-            {player?.name}
-          </Button>
+          <Item key={player.id} asChild variant="outline">
+            <button
+              type="button"
+              onClick={() => handleOtherClick(player, index)}
+            >
+              <ItemMedia>
+                <RiUserLine className="size-6" />
+              </ItemMedia>
+              <ItemMedia className="basis-8 justify-end text-xl font-semibold">
+                {player?.number}
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="text-xl">{player?.name}</ItemTitle>
+              </ItemContent>
+            </button>
+          </Item>
         );
       })}
     </PanelContent>

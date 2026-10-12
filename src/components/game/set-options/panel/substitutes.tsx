@@ -2,6 +2,7 @@
 import { PanelContent } from "@/components/custom/panel";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { useGame } from "@/hooks/use-data";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
@@ -33,27 +34,30 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
           const member = members.find((m) => m.id === player.id);
           if (!member) return null;
           return (
-            <Button
-              key={member.id}
-              variant="outline"
-              size="wide"
-              onClick={() =>
-                dispatch(
-                  lineupActions.replaceEditingPlayer({
-                    id: member.id,
-                    list: "substitutes",
-                    zone: index + 1,
-                  }),
-                )
-              }
-              className="text-xl"
-            >
-              <RiUserFollowLine />
-              <span className="flex basis-8 justify-end font-semibold">
-                {member.number || " "}
-              </span>
-              {member.name}
-            </Button>
+            <Item key={member.id} asChild variant="outline">
+              <button
+                type="button"
+                onClick={() =>
+                  dispatch(
+                    lineupActions.replaceEditingPlayer({
+                      id: member.id,
+                      list: "substitutes",
+                      zone: index + 1,
+                    }),
+                  )
+                }
+              >
+                <ItemMedia>
+                  <RiUserFollowLine className="size-6" />
+                </ItemMedia>
+                <ItemMedia className="basis-8 justify-end text-xl font-semibold">
+                  {member.number || " "}
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle className="text-xl">{member.name}</ItemTitle>
+                </ItemContent>
+              </button>
+            </Item>
           );
         })}
       </Card>

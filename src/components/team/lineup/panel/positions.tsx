@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { PanelContent } from "@/components/custom/panel";
 import { Position } from "@/entities/team";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
@@ -57,29 +58,35 @@ export const Positions = () => {
         </Button>
         <CardTitle>選擇位置</CardTitle>
       </CardHeader>
-      {positions.map((position) => (
-        <Button
-          key={position.value}
-          variant={
-            toggledPosition != null && toggledPosition === position.value
-              ? "default"
-              : "outline"
-          }
-          size="wide"
-          onClick={() =>
-            dispatch(lineupActions.setPlayerPosition(position.value))
-          }
-          disabled={
-            position.value === "L" ? !isEditingLiberos : isEditingLiberos
-          }
-          className="text-xl"
-        >
-          <span className="flex basis-8 justify-end font-semibold">
-            {position.value}
-          </span>
-          <span className="flex flex-1 justify-start">{position.text}</span>
-        </Button>
-      ))}
+      {positions.map((position) => {
+        const toggled =
+          toggledPosition != null && toggledPosition === position.value;
+        return (
+          <Item
+            key={position.value}
+            asChild
+            variant={toggled ? "primary" : "outline"}
+          >
+            <button
+              type="button"
+              aria-pressed={toggled}
+              onClick={() =>
+                dispatch(lineupActions.setPlayerPosition(position.value))
+              }
+              disabled={
+                position.value === "L" ? !isEditingLiberos : isEditingLiberos
+              }
+            >
+              <ItemMedia className="basis-8 justify-end text-xl font-semibold">
+                {position.value}
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="text-xl">{position.text}</ItemTitle>
+              </ItemContent>
+            </button>
+          </Item>
+        );
+      })}
     </PanelContent>
   );
 };

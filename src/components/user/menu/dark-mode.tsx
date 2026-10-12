@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import {
   Dialog,
   DialogBody,
@@ -26,10 +27,16 @@ export const DarkMode = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="wide">
-          <RiMoonLine />
-          深色模式
-        </Button>
+        <Item asChild variant="muted">
+          <button type="button">
+            <ItemMedia>
+              <RiMoonLine />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>深色模式</ItemTitle>
+            </ItemContent>
+          </button>
+        </Item>
       </DialogTrigger>
       <DialogContent className="sm:max-w-106.25">
         <DialogHeader>

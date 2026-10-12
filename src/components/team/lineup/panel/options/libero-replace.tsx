@@ -3,6 +3,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemTitle,
+} from "@/components/ui/item";
+import {
   DialogBody,
   DialogContent,
   DialogDescription,
@@ -62,14 +68,18 @@ export const LiberoReplaceTrigger = () => {
         </Alert>
       )}
       <DialogTrigger asChild>
-        <Button variant="outline" size="wide">
-          替換模式
-          <span className="flex-1 text-left text-primary-text">
-            {liberoReplaceMode === 0 ? "手動替換" : "自動替換"}{" "}
-            {liberoReplaceMode ? liberoReplacePosition : ""}
-          </span>
-          <RiArrowRightWideLine />
-        </Button>
+        <Item asChild variant="outline">
+          <button type="button">
+            <ItemTitle>替換模式</ItemTitle>
+            <ItemContent className="text-primary-text">
+              {liberoReplaceMode === 0 ? "手動替換" : "自動替換"}{" "}
+              {liberoReplaceMode ? liberoReplacePosition : ""}
+            </ItemContent>
+            <ItemActions>
+              <RiArrowRightWideLine className="size-6" />
+            </ItemActions>
+          </button>
+        </Item>
       </DialogTrigger>
       {liberoReplaceMode === 0 ? (
         <Alert>

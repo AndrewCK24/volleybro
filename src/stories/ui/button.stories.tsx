@@ -37,7 +37,7 @@ const meta = {
       control: { type: "select" },
     },
     size: {
-      options: ["default", "lg", "wide", "icon"],
+      options: ["default", "lg", "icon"],
       control: { type: "select" },
     },
   },
@@ -61,25 +61,6 @@ export const Secondary: Story = { args: { variant: "secondary" } };
 export const Ghost: Story = { args: { variant: "ghost" } };
 export const Link: Story = { args: { variant: "link" } };
 export const Disabled: Story = { args: { disabled: true } };
-
-export const Wide: Story = {
-  args: { size: "wide" },
-  parameters: { layout: "fullscreen" },
-  render: (args) => (
-    <div
-      style={{
-        width: "300px",
-        height: "300px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        border: "1px solid black",
-      }}
-    >
-      <Button {...args} />
-    </div>
-  ),
-};
 
 export const IconOnly: Story = {
   args: {
