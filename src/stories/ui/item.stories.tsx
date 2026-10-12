@@ -26,7 +26,7 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     variant: {
-      options: ["default", "primary", "outline", "muted"],
+      options: ["default", "outline", "muted"],
       control: { type: "select" },
     },
     size: {
@@ -71,7 +71,7 @@ export const NavigablePersonRow: Story = {
 
 export const SelectableButtonRow: Story = {
   render: (args) => (
-    <Item asChild variant="primary" {...args}>
+    <Item asChild variant="outline" {...args}>
       <button type="button" aria-pressed>
         <ItemContent>
           <ItemTitle>Alice Chen</ItemTitle>
@@ -168,22 +168,6 @@ export const GroupWithSeparator: Story = {
         </Link>
       </Item>
     </ItemGroup>
-  ),
-};
-
-export const VariantPrimary: Story = {
-  args: { variant: "primary" },
-  render: (args) => (
-    <Item asChild {...args}>
-      <button type="button">
-        <ItemMedia variant="icon">
-          <RiGroupLine />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>Thunder</ItemTitle>
-        </ItemContent>
-      </button>
-    </Item>
   ),
 };
 

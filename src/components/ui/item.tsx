@@ -38,8 +38,6 @@ const itemVariants = cva(
       variant: {
         default:
           "bg-card text-foreground shadow-sm ring-1 ring-transparent hover:bg-muted/50",
-        primary:
-          "bg-primary text-primary-foreground shadow-sm ring-1 ring-transparent hover:bg-primary/90",
         outline: "bg-card text-foreground shadow-xs hover:bg-muted/40",
         muted:
           "bg-muted/60 text-foreground shadow-xs ring-1 ring-transparent [a&]:hover:bg-muted/50 [button&]:hover:bg-muted/50",

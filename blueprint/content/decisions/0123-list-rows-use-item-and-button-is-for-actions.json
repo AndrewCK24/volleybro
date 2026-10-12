@@ -4,7 +4,7 @@
   "title": "List rows use Item and Button is for actions",
   "capabilities": ["platform/design-system/components"],
   "context": "Full-width `wide` buttons stood in for user-menu rows, setting rows, selectable pickers and a form-field trigger. HIG models these as list rows, not buttons.",
-  "decision": "A tappable list row is an Item rendered `asChild` over a `button` or link. Item base has `min-h-11` so every Item row meets 44px, and `default` and `lg` differ only in padding. A selectable row uses Item `primary` when selected and exposes `aria-pressed`. Button is for actions only.",
+  "decision": "A tappable list row is an Item rendered `asChild` over a `button` or link. Item base has `min-h-11` so every Item row meets 44px, and `default` and `lg` differ only in padding. A selectable row sets `aria-pressed`, which Item styles as selected. Button is for actions only.",
   "alternatives": [
     {
       "option": "Keep `wide` Button for rows",
