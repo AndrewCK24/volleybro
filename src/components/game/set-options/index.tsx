@@ -30,7 +30,8 @@ export const SetOptions = ({
   }, [game, setIndex, dispatch]);
 
   return (
-    <DialogContent size="lg">
+    // Opens under the game header, which keeps the original 3rem height.
+    <DialogContent size="lg" className="[--header-height:3rem]">
       <DialogHeader>
         <DialogTitle className="pb-2 text-center font-medium">
           第 {setIndex + 1} 局設定
