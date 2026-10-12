@@ -75,7 +75,7 @@ const ToastClose = ({
     data-slot="ToastClose"
     className={cn(
       buttonVariants({ variant: "glass", size: "icon" }),
-      "absolute top-0 right-0 text-foreground/50 opacity-0 transition-opacity group-hover:opacity-100 group-[.error]:text-error-text hover:text-foreground focus-visible:opacity-100",
+      "absolute top-1 right-1 text-foreground/50 opacity-0 transition-opacity group-hover:opacity-100 group-[.error]:text-error-text hover:text-foreground focus-visible:opacity-100 focus-visible:group-[.error]:ring-error pointer-coarse:opacity-100",
       className,
     )}
     toast-close=""

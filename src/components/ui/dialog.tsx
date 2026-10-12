@@ -118,7 +118,14 @@ const DialogHeader = ({
     )}
     {...props}
   >
-    <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+    <div
+      className={cn(
+        "flex min-w-0 flex-1 flex-col items-start gap-1",
+        // centres the 20px title line on the control row
+        (onExpand || closeButton) &&
+          "pt-[calc((var(--control-size)-1.25rem)/2)]",
+      )}
+    >
       {children}
     </div>
     {(onExpand || closeButton) && (
