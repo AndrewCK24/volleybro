@@ -342,4 +342,4 @@ Test thoroughly with edge cases:
 
 For gestures, say what produced the evidence (emulated viewport, synthesized touch, which engine, physical device) and name what stayed untested.
 
-When edge cases are covered, hand off to `/impeccable polish` for the final pass.
+When edge cases are covered, hand off to `$impeccable polish` for the final pass.
