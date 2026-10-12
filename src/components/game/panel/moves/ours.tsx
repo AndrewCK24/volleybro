@@ -16,8 +16,7 @@ import {
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { RiRepeat2Line } from "react-icons/ri";
 
-// Zone 0 stacks "對方" (with the +/- icon) over the reason on two tight lines so the label
-// fits a half-width cell; the shorter padding replaces `lg`'s px-8. See ADR-0122.
+// px-3 replaces `lg`'s px-8, which clipped the icon in a half-width cell. See ADR-0122.
 const ERROR_CELL_CLASS =
   "flex-col items-start justify-center gap-0 px-3 py-0.5 leading-none";
 
