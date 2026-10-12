@@ -15,8 +15,8 @@ export const PlayersList = ({ players }: { players: LineupListPlayer[] }) => {
       {players.map((player) => (
         <Item key={player.id}>
           <ItemContent>
-            <ItemTitle className="h-5 text-base">{player.name}</ItemTitle>
-            <ItemDescription className="h-5">
+            <ItemTitle className="h-6">{player.name}</ItemTitle>
+            <ItemDescription className="h-6">
               {player.number != null && `#${player.number}`}
             </ItemDescription>
           </ItemContent>

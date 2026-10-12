@@ -88,6 +88,14 @@ typography:
     fontFamily: Saira, Noto Sans TC, sans-serif
     fontSize: 1rem
     fontWeight: 400
+  body-list:
+    fontFamily: Saira, Noto Sans TC, sans-serif
+    fontSize: 1.0625rem
+    fontWeight: 500
+  subheadline:
+    fontFamily: Saira, Noto Sans TC, sans-serif
+    fontSize: 0.9375rem
+    fontWeight: 400
   label:
     fontFamily: Saira, Noto Sans TC, sans-serif
     fontSize: 0.875rem
@@ -205,7 +213,7 @@ Following HIG [Accessibility](https://developer.apple.com/design/human-interface
 
 Saira is the primary Latin heading/body face; Noto Sans TC is the CJK fallback in `--font-sans`. Saira Stencil One is reserved for the existing V mark. Use semantic roles and the Tailwind rem scale, never arbitrary `text-[Npx]` literals.
 
-The floor is `text-xs` (0.75rem); body and description copy is at least `text-sm`. Text directly on court or free-zone surfaces is at least `text-base`. Reserve `text-xs` for badges, meta labels and the Beta mark. App components retain their context-specific sizes. A digit in a fixed-size badge may be smaller only when the same number appears elsewhere.
+The floor is `text-xs` (0.75rem); body and description copy is at least `text-sm`. Item rows follow HIG list type: `ItemTitle` is `text-body-list` (17px) and `ItemDescription` is `text-subheadline` (15px), both theme tokens in `globals.css`; global `body` stays `text-base`. Text directly on court or free-zone surfaces is at least `text-base`. Reserve `text-xs` for badges, meta labels and the Beta mark. App components retain their context-specific sizes. A digit in a fixed-size badge may be smaller only when the same number appears elsewhere.
 
 Following HIG [Typography](https://developer.apple.com/design/human-interface-guidelines/typography) and [Layout](https://developer.apple.com/design/human-interface-guidelines/layout), support text enlargement and adaptive layout. For the PWA, verify text at 200% enlargement: content and controls must remain readable and operable without clipping or overlap; rows may grow and horizontal groups may stack. Do not disable browser zoom. A repeated badge value does not waive legibility or resizing checks. Native correspondence is semantic text styles and Dynamic Type, not a CSS-pixel-to-point conversion.
 
@@ -217,6 +225,8 @@ Following HIG [Typography](https://developer.apple.com/design/human-interface-gu
 | subheading      | text-lg font-medium                                          |
 | entry           | text-2xl font-medium tabular-nums                            |
 | body            | text-base font-normal                                        |
+| item title      | text-body-list font-medium (17px, HIG Body)                  |
+| item subtitle   | text-subheadline (15px, HIG Subheadline)                     |
 | label           | text-sm font-medium                                          |
 | meta            | text-xs text-muted-foreground                                |
 
