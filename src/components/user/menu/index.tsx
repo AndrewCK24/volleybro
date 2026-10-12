@@ -4,7 +4,6 @@ import {
   Item,
   ItemAvatar,
   ItemContent,
-  ItemGroup,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
@@ -19,43 +18,41 @@ const Menu = ({ className }: { className?: string }) => {
 
   return (
     <Card className={className}>
-      <ItemGroup>
-        <Item asChild variant="primary">
-          <button type="button">
-            <ItemMedia>
-              <ItemAvatar
-                className="size-6"
-                src={user?.image}
-                alt={user?.name}
-                fallback={<RiUserLine />}
-              />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {!user ? <Skeleton className="h-6 w-64" /> : user?.name}
-              </ItemTitle>
-            </ItemContent>
-          </button>
-        </Item>
-        <Item asChild variant="muted">
-          <Link href="/user/invitations">
-            <ItemContent>
-              <ItemTitle>查看邀請</ItemTitle>
-            </ItemContent>
-          </Link>
-        </Item>
-        <Item asChild variant="muted">
-          <button type="button">
-            <ItemMedia>
-              <RiSettings4Line />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>設定</ItemTitle>
-            </ItemContent>
-          </button>
-        </Item>
-        <DarkMode />
-      </ItemGroup>
+      <Item asChild>
+        <button type="button">
+          <ItemMedia>
+            <ItemAvatar
+              className="size-6"
+              src={user?.image}
+              alt={user?.name}
+              fallback={<RiUserLine />}
+            />
+          </ItemMedia>
+          <ItemContent>
+            <ItemTitle>
+              {!user ? <Skeleton className="h-6 w-64" /> : user?.name}
+            </ItemTitle>
+          </ItemContent>
+        </button>
+      </Item>
+      <Item asChild variant="muted">
+        <Link href="/user/invitations">
+          <ItemContent>
+            <ItemTitle>查看邀請</ItemTitle>
+          </ItemContent>
+        </Link>
+      </Item>
+      <Item asChild variant="muted">
+        <button type="button">
+          <ItemMedia>
+            <RiSettings4Line />
+          </ItemMedia>
+          <ItemContent>
+            <ItemTitle>設定</ItemTitle>
+          </ItemContent>
+        </button>
+      </Item>
+      <DarkMode />
     </Card>
   );
 };
