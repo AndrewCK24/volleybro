@@ -84,8 +84,6 @@ export const UnconfirmedSetDialog = ({
     <Dialog open={unconfirmed} onOpenChange={() => {}}>
       <DialogContent
         size="lg"
-        // Opens under the game header, which keeps the original 3rem height.
-        className="[--header-height:3rem]"
         onEscapeKeyDown={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
       >
