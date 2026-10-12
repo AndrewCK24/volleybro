@@ -6,7 +6,7 @@ import { useGame } from "@/hooks/use-data";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { RiArrowLeftWideLine, RiUserFollowLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiUserFollowLine } from "react-icons/ri";
 
 export const Substitutes = ({ gameId }: { gameId: string }) => {
   const dispatch = useAppDispatch();
@@ -17,16 +17,15 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
   return (
     <PanelContent>
       <Card className="size-full p-0">
-        <CardHeader className="h-9 flex-row items-center justify-start">
+        <CardHeader className="flex-row items-center justify-start">
           <Button
             variant="ghost"
             size="icon"
-            className="size-7 [&>svg]:size-5"
             onClick={() =>
               dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
             }
           >
-            <RiArrowLeftWideLine />
+            <RiArrowLeftSLine />
           </Button>
           <CardTitle>替補名單</CardTitle>
         </CardHeader>

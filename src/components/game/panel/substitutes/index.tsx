@@ -11,7 +11,7 @@ import { useSubstitutes } from "@/lib/features/game/hooks/use-substitutes";
 import type { ReduxGameState } from "@/lib/features/game/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { cn } from "@/lib/utils";
-import { RiArrowLeftWideLine, RiCheckLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiCheckLine } from "react-icons/ri";
 
 export const Substitutes = ({
   gameId,
@@ -76,7 +76,7 @@ export const Substitutes = ({
             size="icon"
             onClick={() => dispatch(gameActions.resetEntryDraftSubstitution())}
           >
-            <RiArrowLeftWideLine />
+            <RiArrowLeftSLine />
           </Button>
           選擇替補球員
         </CardTitle>

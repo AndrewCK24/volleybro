@@ -126,24 +126,18 @@ const DialogHeader = ({
         {onExpand && (
           <Button
             type="button"
-            variant="ghost"
+            variant="glass"
             size="icon"
-            className="size-8"
             onClick={onExpand}
             aria-label={expandLabel}
           >
-            <RiExpandDiagonalLine className="size-4" />
+            <RiExpandDiagonalLine />
           </Button>
         )}
         {closeButton && (
           <DialogPrimitive.Close asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-8"
-            >
-              <RiCloseLine className="size-4" />
+            <Button type="button" variant="glass" size="icon">
+              <RiCloseLine />
               <span className="sr-only">關閉</span>
             </Button>
           </DialogPrimitive.Close>

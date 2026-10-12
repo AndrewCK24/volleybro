@@ -6,11 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode, type PlayerView } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import {
-  RiArrowLeftWideLine,
-  RiUserFollowLine,
-  RiUserLine,
-} from "react-icons/ri";
+import { RiArrowLeftSLine, RiUserFollowLine, RiUserLine } from "react-icons/ri";
 
 interface SubstitutesProps {
   players: PlayerView[];
@@ -57,16 +53,15 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
 
   return (
     <PanelContent>
-      <CardHeader className="h-9 w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row items-center justify-start">
         <Button
           variant="ghost"
           size="icon"
-          className="size-7 [&>svg]:size-5"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
           }
         >
-          <RiArrowLeftWideLine />
+          <RiArrowLeftSLine />
         </Button>
         <CardTitle>{`替補名單 (${substituteCount}/${substituteLimit})`}</CardTitle>
       </CardHeader>

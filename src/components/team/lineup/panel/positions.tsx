@@ -6,7 +6,7 @@ import { Position } from "@/entities/team";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { RiArrowLeftWideLine } from "react-icons/ri";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 export const positions = [
   {
@@ -45,16 +45,15 @@ export const Positions = () => {
 
   return (
     <PanelContent>
-      <CardHeader className="h-9 w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row items-center justify-start">
         <Button
           variant="ghost"
           size="icon"
-          className="size-7 [&>svg]:size-5"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
           }
         >
-          <RiArrowLeftWideLine />
+          <RiArrowLeftSLine />
         </Button>
         <CardTitle>選擇位置</CardTitle>
       </CardHeader>

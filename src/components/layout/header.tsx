@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { RiArrowLeftLine } from "react-icons/ri";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 interface HeaderProps {
   title?: string;
@@ -57,19 +57,19 @@ export const Header = ({
         {backHref ? (
           <Button
             onClick={handleBack}
-            variant="outline"
+            variant="glass"
             size="icon"
-            className="size-8 shrink-0 rounded-full text-foreground shadow-sm [&>svg]:size-6"
+            className="shrink-0"
           >
-            <RiArrowLeftLine />
+            <RiArrowLeftSLine />
           </Button>
         ) : (
-          <div aria-hidden className="size-8 shrink-0" />
+          <div aria-hidden className="size-9 shrink-0 pointer-coarse:size-11" />
         )}
         <div className="flex flex-1 items-center justify-center">
           {children ?? <h1 className="m-0 text-center text-xl">{title}</h1>}
         </div>
-        <div className="size-8 shrink-0" />
+        <div aria-hidden className="size-9 shrink-0 pointer-coarse:size-11" />
       </div>
     </header>
   );

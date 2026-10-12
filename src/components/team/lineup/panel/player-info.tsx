@@ -8,7 +8,7 @@ import { LineupOptionMode } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { BsGrid3X2Gap } from "react-icons/bs";
 import {
-  RiArrowLeftWideLine,
+  RiArrowLeftSLine,
   RiEditBoxLine,
   RiHashtag,
   RiRepeat2Line,
@@ -33,21 +33,20 @@ export const PlayerInfo = ({
 
   return (
     <PanelContent>
-      <CardHeader className="h-9 w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row items-center justify-start">
         <Button
           variant="ghost"
           size="icon"
-          className="size-7 [&>svg]:size-5"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
           }
         >
-          <RiArrowLeftWideLine />
+          <RiArrowLeftSLine />
         </Button>
         <CardTitle>球員資訊</CardTitle>
         <Button
           variant="ghost"
-          className="h-7 text-lg text-primary-text [&>svg]:size-5"
+          className="text-lg text-primary-text"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.SUBSTITUTES))
           }
@@ -82,7 +81,6 @@ export const PlayerInfo = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-7 [&>svg]:size-5"
                 onClick={() =>
                   dispatch(
                     lineupActions.setOptionMode(LineupOptionMode.POSITIONS),
