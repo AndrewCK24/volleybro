@@ -27,10 +27,9 @@ export const OursMoves = () => {
   return (
     <Container
       className={
-        // Opponent errors: fit all rows with no scroll. auto-rows-fr shares the
-        // height, and min-h-0 lets the grid shrink below its content min-height
-        // (a flex item defaults to min-height:auto and would otherwise overflow).
-        zone === 0 ? "min-h-0 auto-rows-fr grid-cols-1" : undefined
+        // Opponent errors: three rows of two. Rows grow to share a tall panel
+        // but never drop below the 44px touch target; a short panel scrolls.
+        zone === 0 ? "auto-rows-[minmax(44px,1fr)]" : undefined
       }
     >
       {oursMoves.map((move) => (
@@ -48,7 +47,7 @@ export const OursMoves = () => {
         <Button
           variant="secondary"
           size="lg"
-          className="h-full pr-1 text-[1.5rem]"
+          className="h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7"
           onClick={() => dispatch(gameActions.setPanel("substitutes"))}
         >
           替補

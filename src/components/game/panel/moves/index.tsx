@@ -114,10 +114,10 @@ export const MoveButton = ({
       variant={look.variant}
       size="lg"
       className={cn(
-        // min-h-0 lets the button shrink below its content height so an
-        // auto-rows-fr grid (opponent errors) can fit every row with no scroll;
-        // a grid/flex item defaults to min-height:auto and would overflow.
-        "h-full min-h-0 pr-1 text-[1.5rem] transition-colors duration-200",
+        // leading-7 makes the natural height 44px (py-2 + 28px line). The label
+        // is 24px from 360px wide and scales with the viewport below that so a
+        // six-character label never overflows its half-width cell.
+        "h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7 transition-colors duration-200",
         look.tint,
       )}
       onClick={() => onClick(move)}
