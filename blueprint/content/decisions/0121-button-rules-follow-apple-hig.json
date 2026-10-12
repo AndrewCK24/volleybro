@@ -4,7 +4,7 @@
   "title": "Button rules follow Apple HIG by role, with glass limited to floating controls",
   "capabilities": ["platform/design-system/components"],
   "context": "Decision 0113 fixed the touch target and placement rules but left list rows on `wide`, kept `sm` and `xs` sizes under 44px, and left the recording panel and chips open. Header, back and close controls were 32px and each page picked its own button size, below HIG's 44pt minimum.",
-  "decision": "Button sizes are `default`, `lg` and `icon` only. Under `pointer: coarse` all three are 44px tall (`icon` 44x44); under `pointer: fine` `default` is 36, `lg` 40 and `icon` 36x36, with font and padding per size unchanged. `sm`, `xs` and `wide` are removed. The glass shell, without an outline, is a Button variant used only by floating header, back and close controls; other icon actions keep their semantic fills and keyboard focus. Back is always RiArrowLeftSLine and close is always RiCloseLine. A page's primary action and every `type=\"submit\"`, including inside dialogs, use `lg`; an in-section action and AlertDialog confirm and cancel use `default`. Buttons placed side by side share one size and the variant shows importance: `default` or `destructive` for primary, `outline` or `secondary` for secondary. Single-select, immediately applied choices (segmented choice) use `buttonVariants` with `secondary` when unselected and `default` when selected, and expose `aria-pressed` or the radio semantics already provided. The navigation FAB and the landing CTAButton keep their own sizes. No lint enforces size rules because the role classification is a semantic judgement guarded by DESIGN.md and review.",
+  "decision": "Button sizes are `default`, `lg` and `icon` only, each 44px tall under `pointer: coarse` and 36, 40 and 36x36 under `pointer: fine`; `sm`, `xs` and `wide` are removed. Size follows role: a page's primary action and every `type=\"submit\"` use `lg`, an in-section action and AlertDialog actions use `default`, and side-by-side buttons share one size with the variant showing importance. Floating header, back and close controls alone use the outline-free `glass` variant, with RiArrowLeftSLine and RiCloseLine as their only glyphs. Single-select, immediately applied choices use the `segmented` variant, whose selected state follows `aria-pressed` or radio checked.",
   "alternatives": [
     {
       "option": "Enlarge every button to 44px",
@@ -20,8 +20,10 @@
     }
   ],
   "consequences": [
-    "Every `sm` and `xs` caller moves to `default`; later work migrates the remaining action sizes, header and close controls, and segmented choices.",
-    "Dialog header controls and page layouts need re-checking at the 44px size.",
+    "Every `sm` and `xs` caller moved to `default`, and header, back, close and segmented controls moved to the shared glass and segmented variants.",
+    "The navigation FAB and the landing CTAButton keep their own sizes.",
+    "No lint enforces size rules because the role classification is a semantic judgement guarded by DESIGN.md and review.",
+    "Dialog header controls and page layouts were re-checked at the 44px size.",
     "Decision 0113 is superseded; its still-valid rules are restated here."
   ],
   "revisitTriggers": ["A role appears that neither `default` nor `lg` fits."],

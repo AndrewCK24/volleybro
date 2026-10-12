@@ -285,7 +285,7 @@ Incumbent Landing examples: header shell 16/6/10, theme switcher 10/4/6, entry c
 
 ### Buttons and controls
 
-Actions use medium radius (`rounded-md`) and a clear label. The current default visual height is `h-9` (36px), within the existing 36–38px baseline. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.
+Actions use medium radius (`rounded-md`) and a clear label. Height follows the size rule below: 44px under touch, 36 or 40 under a fine pointer. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.
 
 Button sizes are `default`, `lg` and `icon`. Under `pointer: coarse` all three are 44px tall; under `pointer: fine` they are 36, 40 and 36×36. Buttons are for actions only; list rows use Item.
 
@@ -296,7 +296,7 @@ Button sizes are `default`, `lg` and `icon`. Under `pointer: coarse` all three a
 | Buttons side by side                      | Same size; variant shows importance (default/destructive over outline/secondary)                              |
 | Header/back/close icon control            | icon with the `glass` variant: 44×44 CSS px for touch, 36 under pointer: fine, no outline                     |
 | Back / close glyph                        | RiArrowLeftSLine / RiCloseLine                                                                                |
-| Segmented choice                          | `buttonVariants`: unselected secondary, selected default, 44px under touch, `aria-pressed` or radio semantics |
+| Segmented choice                          | Button `segmented` variant: secondary at rest, primary when `aria-pressed` or radio checked; 44px under touch |
 | Recording scoring-move buttons            | At least 44px tall; opponent errors use two columns                                                           |
 | Navigation FAB and Landing CTAButton      | Own their sizes                                                                                               |
 
@@ -304,7 +304,7 @@ Glass belongs only to floating header, back and close controls; other icon actio
 
 ### Item-first data surfaces
 
-Prefer Item composition for scannable data rows and for tappable list rows such as menu, setting and picker rows (`asChild` over a button or link, `min-h-11`; a selected row uses Item `primary` with `aria-pressed`): `bg-card + shadow-sm + ring-1 ring-transparent`. Use semantic Separator elements between content. Small ItemMedia blocks may use an inset ring to define their edges. Keep fetching and loading ownership in the component that owns the data; the [Components Feature](blueprint/content/features/platform/design-system/components/index.mdx) documents behavioral composition.
+Prefer Item composition for scannable data rows and for tappable list rows such as menu, setting and picker rows (`asChild` over a button or link, `min-h-11`; a selected row sets `aria-pressed`, which Item styles as primary): `bg-card + shadow-sm + ring-1 ring-transparent`. Use semantic Separator elements between content. Small ItemMedia blocks may use an inset ring to define their edges. Keep fetching and loading ownership in the component that owns the data; the [Components Feature](blueprint/content/features/platform/design-system/components/index.mdx) documents behavioral composition.
 
 ### Hover and states
 
