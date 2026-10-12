@@ -5,7 +5,7 @@ import { useState } from "react";
 import { DynamicCodeBlock } from "fumadocs-ui/components/dynamic-codeblock";
 
 import { AnnotatedDiff } from "@/components/AnnotatedDiff";
-import { DecisionTimeline } from "@/components/DecisionTimeline";
+import { DecisionTimeline } from "@/components/decision-timeline";
 import { InteractiveFlowchart } from "@/components/InteractiveFlowchart";
 import { RiskTable } from "@/components/RiskTable";
 import { Scenario } from "@/components/Scenario";
