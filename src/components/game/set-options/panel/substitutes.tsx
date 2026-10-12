@@ -20,7 +20,7 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
       <Card className="size-full p-0">
         <CardHeader className="flex-row items-center justify-start">
           <Button
-            variant="ghost"
+            variant="glass"
             size="icon"
             onClick={() =>
               dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))

@@ -73,7 +73,7 @@ export const Substitutes = ({
       <CardHeader>
         <CardTitle>
           <Button
-            variant="ghost"
+            variant="glass"
             size="icon"
             onClick={() => dispatch(gameActions.resetEntryDraftSubstitution())}
           >

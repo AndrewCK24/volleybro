@@ -56,7 +56,7 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
     <PanelContent>
       <CardHeader className="w-full flex-row items-center justify-start">
         <Button
-          variant="ghost"
+          variant="glass"
           size="icon"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
