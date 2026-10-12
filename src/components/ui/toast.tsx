@@ -25,7 +25,7 @@ const ToastViewport = ({
 );
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md p-4 pr-12 shadow-lg ring-1 ring-foreground/10 transition-all data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:animate-in data-[state=open]:slide-in-from-top-full data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=end]:animate-out data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none sm:data-[state=open]:slide-in-from-bottom-full pointer-coarse:pr-14",
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md p-4 pr-[calc(var(--control-size)+--spacing(3))] shadow-lg ring-1 ring-foreground/10 transition-all data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:animate-in data-[state=open]:slide-in-from-top-full data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=end]:animate-out data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none sm:data-[state=open]:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
@@ -74,8 +74,8 @@ const ToastClose = ({
   <ToastPrimitives.Close
     data-slot="ToastClose"
     className={cn(
-      buttonVariants({ variant: "ghost", size: "icon" }),
-      "absolute top-0 right-0 text-foreground/50 opacity-0 transition-opacity group-hover:opacity-100 group-[.error]:text-error-text hover:text-foreground focus:opacity-100 focus:ring-1 focus:outline-hidden focus:group-[.error]:ring-error",
+      buttonVariants({ variant: "glass", size: "icon" }),
+      "absolute top-0 right-0 text-foreground/50 opacity-0 transition-opacity group-hover:opacity-100 group-[.error]:text-error-text hover:text-foreground focus-visible:opacity-100",
       className,
     )}
     toast-close=""

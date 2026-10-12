@@ -134,7 +134,7 @@ function PlayerEditFormSkeleton() {
         <Skeleton className="my-0.5 h-4 w-8" />
         <Skeleton className="h-9 w-full" />
       </div>
-      <Skeleton className="h-9 w-full" /> {/* submit button */}
+      <Skeleton className="h-(--control-size) w-full" /> {/* submit button */}
     </Card>
   );
 }

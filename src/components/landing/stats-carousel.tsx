@@ -15,13 +15,13 @@ const STEP_BUTTONS = [
     label: "上一個",
     step: -1,
     Icon: RiArrowLeftSLine,
-    edge: "-left-7 pointer-coarse:-left-9",
+    edge: "left-[calc(0.5rem-var(--control-size))]",
   },
   {
     label: "下一個",
     step: 1,
     Icon: RiArrowRightSLine,
-    edge: "-right-7 pointer-coarse:-right-9",
+    edge: "right-[calc(0.5rem-var(--control-size))]",
   },
 ];
 
@@ -106,7 +106,7 @@ export const StatsCarousel = () => {
               aria-label={`${index + 1} / ${slideCount}：${slide.title}`}
               aria-current={index === activeIndex}
               onClick={() => goTo(index)}
-              className="grid size-8 place-items-center rounded-md focus-visible:ring-2 focus-visible:ring-court-foreground focus-visible:outline-hidden"
+              className="touch-target grid size-8 place-items-center rounded-md focus-visible:ring-2 focus-visible:ring-court-foreground focus-visible:outline-hidden"
             >
               <span
                 className={cn(

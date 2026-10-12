@@ -192,10 +192,9 @@ export const SyncIndicator = ({ gameId }: { gameId: string }) => {
           aria-label={label}
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            "relative flex size-6 items-center justify-center rounded-md text-muted-foreground",
-            // 44px touch target, 24px mark: the pseudo-element takes no
-            // layout space, so the popover still anchors to the visible box.
-            "after:absolute after:top-1/2 after:left-1/2 after:size-11 after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']",
+            // The touch-target pseudo-element takes no layout space, so the popover
+            // still anchors to the visible box.
+            "touch-target flex size-6 items-center justify-center rounded-md text-muted-foreground",
             warning && "text-warning ring-1 ring-warning/30",
           )}
         >
@@ -247,7 +246,7 @@ export const SyncIndicator = ({ gameId }: { gameId: string }) => {
               type="button"
               onClick={handleRetry}
               disabled={retrying}
-              className="mt-1 inline-flex h-9 shrink-0 items-center justify-center gap-1 self-start rounded-md px-3 text-sm ring-1 ring-border disabled:opacity-60"
+              className="mt-1 inline-flex h-(--control-size) shrink-0 items-center justify-center gap-1 self-start rounded-md px-3 text-sm ring-1 ring-border disabled:opacity-60"
             >
               {retrying ? (
                 <Spinner className="size-3.5 shrink-0" />

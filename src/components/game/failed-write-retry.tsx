@@ -25,7 +25,7 @@ export const FailedWriteRetry = ({
         onRetry?.();
       }}
       className={cn(
-        "rounded px-2 py-0.5 text-xs text-error-text ring-1 ring-error/50",
+        "touch-target rounded px-2 py-0.5 text-xs text-error-text ring-1 ring-error/50",
         passThroughPointerEvents && "pointer-events-auto",
       )}
     >

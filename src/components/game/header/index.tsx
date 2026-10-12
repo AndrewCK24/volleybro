@@ -1,13 +1,8 @@
 "use client";
 import { Scores } from "@/components/game/header/scores";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { RiArrowLeftSLine, RiSettings4Line } from "react-icons/ri";
-
-const SPACER = buttonVariants({
-  size: "icon",
-  className: "invisible shrink-0",
-});
 
 export const GameHeader = ({
   gameId,
@@ -43,7 +38,7 @@ export const GameHeader = ({
             <span className="sr-only">Options</span>
           </Button>
         ) : (
-          <div aria-hidden className={SPACER} />
+          <div aria-hidden className="size-(--control-size) shrink-0" />
         )}
       </div>
     </header>

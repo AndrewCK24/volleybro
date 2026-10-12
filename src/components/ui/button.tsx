@@ -6,6 +6,9 @@ import { RiLoader4Line } from "react-icons/ri";
 
 import { cn } from "@/lib/utils";
 
+const SECONDARY =
+  "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80";
+
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-[color,box-shadow,background-color] focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50",
   {
@@ -19,19 +22,17 @@ const buttonVariants = cva(
           "bg-court text-court-foreground shadow-sm ring-1 ring-transparent hover:bg-court/90",
         outline:
           "bg-background text-foreground shadow-sm ring-1 ring-gray-950/10 hover:bg-muted/50 dark:ring-white/10",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80",
+        secondary: SECONDARY,
         ghost: "hover:bg-muted/50",
-        segmented:
-          "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80 has-checked:bg-primary has-checked:text-primary-foreground has-checked:hover:bg-primary/90 aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90",
+        segmented: `${SECONDARY} has-checked:bg-primary has-checked:text-primary-foreground has-checked:hover:bg-primary/90 aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90`,
         link: "text-primary-text underline-offset-4 hover:underline",
         glass:
           "bg-background/94 text-foreground shadow-lg backdrop-blur-sm hover:bg-background",
       },
       size: {
-        default: "h-9 px-3.5 py-2 pointer-coarse:h-11 [&>svg]:size-5",
-        lg: "h-10 px-8 py-2 text-lg pointer-coarse:h-11 [&>svg]:size-6",
-        icon: "size-9 pointer-coarse:size-11 [&>svg]:size-7",
+        default: "h-(--control-size) px-3.5 py-2 [&>svg]:size-5",
+        lg: "h-10 px-8 py-2 text-lg pointer-coarse:h-(--control-size) [&>svg]:size-6",
+        icon: "size-(--control-size) [&>svg]:size-7",
       },
     },
     defaultVariants: {

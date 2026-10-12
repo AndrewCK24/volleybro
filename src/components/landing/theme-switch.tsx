@@ -34,7 +34,7 @@ export const ThemeSwitch = () => {
             disabled={!isHydrated}
             onClick={() => setTheme(value)}
             className={cn(
-              "grid size-9 place-items-center rounded-[10px] transition-colors",
+              "touch-target grid size-9 place-items-center rounded-[10px] transition-colors",
               isSelected
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",

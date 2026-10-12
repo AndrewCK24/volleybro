@@ -13,6 +13,11 @@ import {
   type DayPickerProps,
 } from "@daypicker/react";
 
+// The root's `p-3` on both sides. Cells shrink below --control-size only when
+// 7 cells, this padding and a 1rem gutter exceed the viewport (under ~348px).
+const PADDING = "var(--spacing) * 6";
+const CELL_SIZE = `min(var(--control-size), (100vw - ${PADDING} - 1rem) / 7)`;
+
 export type CalendarProps = DayPickerProps & {
   /**
    * In the year view, the number of years to display at once.
@@ -85,7 +90,7 @@ const Calendar = ({
 
   const _monthsClassName = cn("relative flex", props.monthsClassName);
   const _monthCaptionClassName = cn(
-    "relative mx-9 flex h-9 items-center justify-center pointer-coarse:mx-11 pointer-coarse:h-11",
+    "relative mx-(--control-size) flex h-(--control-size) items-center justify-center",
     props.monthCaptionClassName,
   );
   const _weekdaysClassName = cn("flex flex-row", props.weekdaysClassName);
@@ -162,13 +167,13 @@ const Calendar = ({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn(
-        "p-3 [--cell-size:--spacing(8)] pointer-coarse:[--cell-size:--spacing(11)]",
-        className,
-      )}
-      style={{
-        width: `calc((var(--cell-size) * 7 + 24.8px) * ${columnsDisplayed ?? 1})`,
-      }}
+      className={cn("p-3", className)}
+      style={
+        {
+          "--cell-size": CELL_SIZE,
+          width: `calc((var(--cell-size) * 7 + ${PADDING}) * ${columnsDisplayed ?? 1})`,
+        } as React.CSSProperties
+      }
       classNames={{
         months: _monthsClassName,
         month_caption: _monthCaptionClassName,

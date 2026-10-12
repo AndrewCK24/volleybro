@@ -26,7 +26,8 @@ export function GameOverviewSkeleton() {
     <>
       {/* mirrors Header: fixed top bar with back button + title */}
       <div className="flex h-[calc(env(safe-area-inset-top)+3rem)] w-full items-center gap-4 border-b-2 border-accent bg-card px-[5%] pt-[env(safe-area-inset-top)]">
-        <Skeleton className="size-9 rounded-md" /> {/* back button */}
+        <Skeleton className="size-(--control-size) rounded-md" />{" "}
+        {/* back button */}
         <Skeleton className="my-0.5 h-5 w-24 flex-1" /> {/* title */}
       </div>
       {/* mirrors Banner: bg-card flex-col */}
@@ -60,8 +61,8 @@ export function GameOverviewSkeleton() {
         </div>
         {/* mirrors action buttons grid */}
         <div className="grid w-full grid-cols-2 gap-2 py-2">
-          <Skeleton className="h-11 w-full" />
-          <Skeleton className="h-11 w-full" />
+          <Skeleton className="h-(--control-size) w-full" />
+          <Skeleton className="h-(--control-size) w-full" />
         </div>
       </div>
       {/* mirrors Stats: Card with CardHeader + Tabs */}

@@ -122,7 +122,7 @@ export function PlayerInfoSkeleton() {
           </Item>
         ))}
       </ItemGroup>
-      <Skeleton className="h-9 w-full" /> {/* edit button */}
+      <Skeleton className="h-(--control-size) w-full" /> {/* edit button */}
     </Card>
   );
 }
