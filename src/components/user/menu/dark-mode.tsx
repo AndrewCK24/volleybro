@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 import {
   Dialog,
   DialogBody,
@@ -26,10 +27,16 @@ export const DarkMode = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="wide">
-          <RiMoonLine />
-          深色模式
-        </Button>
+        <Item asChild variant="muted">
+          <button type="button">
+            <ItemMedia>
+              <RiMoonLine />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>深色模式</ItemTitle>
+            </ItemContent>
+          </button>
+        </Item>
       </DialogTrigger>
       <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
@@ -39,7 +46,8 @@ export const DarkMode = () => {
         <DialogBody>
           <DialogClose asChild>
             <Button
-              variant={theme === "system" ? "default" : "secondary"}
+              variant="segmented"
+              aria-pressed={theme === "system"}
               onClick={() => setTheme("system")}
             >
               {theme === "system" ? <RiDeviceFill /> : <RiDeviceLine />}
@@ -48,7 +56,8 @@ export const DarkMode = () => {
           </DialogClose>
           <DialogClose asChild>
             <Button
-              variant={theme === "light" ? "default" : "secondary"}
+              variant="segmented"
+              aria-pressed={theme === "light"}
               onClick={() => setTheme("light")}
             >
               {theme === "light" ? <RiSunFill /> : <RiSunLine />}
@@ -57,7 +66,8 @@ export const DarkMode = () => {
           </DialogClose>
           <DialogClose asChild>
             <Button
-              variant={theme === "dark" ? "default" : "secondary"}
+              variant="segmented"
+              aria-pressed={theme === "dark"}
               onClick={() => setTheme("dark")}
             >
               {theme === "dark" ? <RiMoonFill /> : <RiMoonLine />}

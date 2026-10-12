@@ -82,6 +82,7 @@ export function PlayerInfo({ teamId, playerId }: PlayerInfoProps) {
 
       <Link
         variant="outline"
+        size="lg"
         className="w-full"
         href={`/team/${teamId}/players/${player.id}/edit`}
       >
@@ -121,7 +122,7 @@ export function PlayerInfoSkeleton() {
           </Item>
         ))}
       </ItemGroup>
-      <Skeleton className="h-9 w-full" /> {/* edit button */}
+      <Skeleton className="h-(--control-size-lg) w-full" /> {/* edit button */}
     </Card>
   );
 }

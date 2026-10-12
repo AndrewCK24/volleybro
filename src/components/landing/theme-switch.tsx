@@ -19,7 +19,7 @@ export const ThemeSwitch = () => {
       role="group"
       aria-label="色彩主題"
       className={cn(
-        "flex items-center gap-1 rounded-2xl p-1.5 ring-1",
+        "flex items-center gap-1 rounded-2xl p-1.5 ring-1 pointer-coarse:gap-2",
         GLASS_PILL,
       )}
     >
@@ -34,7 +34,7 @@ export const ThemeSwitch = () => {
             disabled={!isHydrated}
             onClick={() => setTheme(value)}
             className={cn(
-              "grid size-9 place-items-center rounded-[10px] transition-colors",
+              "touch-target grid size-9 place-items-center rounded-[10px] transition-colors",
               isSelected
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",

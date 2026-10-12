@@ -32,16 +32,15 @@ function ItemSeparator({
 }
 
 const itemVariants = cva(
-  "group/item flex flex-wrap items-center rounded-md text-sm transition-[background-color,color,box-shadow] duration-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_a]:transition-colors [&_a]:hover:bg-muted/40",
+  "group/item flex min-h-11 flex-wrap items-center rounded-md text-sm transition-[background-color,color,box-shadow] duration-100 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90 [&_a]:transition-colors [&_a]:hover:bg-muted/40 [button&]:w-full [button&]:cursor-pointer [button&]:text-left [button&]:disabled:pointer-events-none [button&]:disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
           "bg-card text-foreground shadow-sm ring-1 ring-transparent hover:bg-muted/50",
-        primary:
-          "bg-primary text-primary-foreground shadow-sm ring-1 ring-transparent hover:bg-primary/90",
         outline: "bg-card text-foreground shadow-xs hover:bg-muted/40",
-        muted: "bg-muted/60 text-foreground shadow-xs ring-1 ring-transparent",
+        muted:
+          "bg-muted/60 text-foreground shadow-xs ring-1 ring-transparent [a&]:hover:bg-muted/50 [button&]:hover:bg-muted/50",
       },
       size: {
         lg: "gap-4 p-3",
@@ -144,7 +143,7 @@ function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="item-title"
       className={cn(
-        "flex w-fit items-center gap-2 text-sm leading-snug font-medium",
+        "flex w-fit items-center gap-2 text-body-list font-medium",
         className,
       )}
       {...props}
@@ -157,7 +156,7 @@ function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="item-description"
       className={cn(
-        "line-clamp-2 text-sm leading-normal font-normal text-balance text-muted-foreground",
+        "line-clamp-2 text-subheadline font-normal text-balance text-muted-foreground",
         "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-text",
         className,
       )}

@@ -1,12 +1,13 @@
 "use client";
 import { PanelContent } from "@/components/custom/panel";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGame } from "@/hooks/use-data";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { RiArrowLeftWideLine, RiUserFollowLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiUserFollowLine } from "react-icons/ri";
 
 export const Substitutes = ({ gameId }: { gameId: string }) => {
   const dispatch = useAppDispatch();
@@ -17,16 +18,15 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
   return (
     <PanelContent>
       <Card className="size-full p-0">
-        <CardHeader className="h-9 flex-row items-center justify-start">
+        <CardHeader className="flex-row items-center justify-start">
           <Button
-            variant="ghost"
+            variant="glass"
             size="icon"
-            className="size-7 [&>svg]:size-5"
             onClick={() =>
               dispatch(lineupActions.setOptionMode(LineupOptionMode.NONE))
             }
           >
-            <RiArrowLeftWideLine />
+            <RiArrowLeftSLine />
           </Button>
           <CardTitle>替補名單</CardTitle>
         </CardHeader>
@@ -34,10 +34,11 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
           const member = members.find((m) => m.id === player.id);
           if (!member) return null;
           return (
-            <Button
+            <PickerRow
               key={member.id}
-              variant="outline"
-              size="wide"
+              icon={<RiUserFollowLine className="size-6" />}
+              code={member.number}
+              label={member.name}
               onClick={() =>
                 dispatch(
                   lineupActions.replaceEditingPlayer({
@@ -47,14 +48,7 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
                   }),
                 )
               }
-              className="text-xl"
-            >
-              <RiUserFollowLine />
-              <span className="flex basis-8 justify-end font-semibold">
-                {member.number || " "}
-              </span>
-              {member.name}
-            </Button>
+            />
           );
         })}
       </Card>

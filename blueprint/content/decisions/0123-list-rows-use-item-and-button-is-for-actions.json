@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 2,
+  "id": "0123",
+  "title": "List rows use Item and Button is for actions",
+  "capabilities": ["platform/design-system/components"],
+  "context": "Full-width `wide` buttons stood in for user-menu rows, setting rows, selectable pickers and a form-field trigger. HIG models these as list rows, not buttons.",
+  "decision": "A tappable list row is an Item rendered `asChild` over a `button` or link. Item base has `min-h-11` so every Item row meets 44px, and `default` and `lg` differ only in padding. A selectable row sets `aria-pressed`, which Item styles as selected. Button is for actions only.",
+  "alternatives": [
+    {
+      "option": "Keep `wide` Button for rows",
+      "reason": "It makes a row look like an action and duplicates what Item already provides."
+    },
+    {
+      "option": "Add a new row component",
+      "reason": "Item already covers scannable rows, so a new component would duplicate it."
+    }
+  ],
+  "consequences": [
+    "The `wide` callers and the team switcher options migrate to Item before `wide` is deleted.",
+    "Interactive Item rows meet the 44px touch target by default."
+  ],
+  "revisitTriggers": ["A row needs behaviour Item cannot express."],
+  "originChange": "design-authority"
+}

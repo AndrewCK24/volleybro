@@ -26,7 +26,7 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     variant: {
-      options: ["default", "primary", "outline", "muted"],
+      options: ["default", "outline", "muted"],
       control: { type: "select" },
     },
     size: {
@@ -65,6 +65,18 @@ export const NavigablePersonRow: Story = {
           <Badge>先發</Badge>
         </ItemActions>
       </Link>
+    </Item>
+  ),
+};
+
+export const SelectableButtonRow: Story = {
+  render: (args) => (
+    <Item asChild variant="outline" {...args}>
+      <button type="button" aria-pressed>
+        <ItemContent>
+          <ItemTitle>Alice Chen</ItemTitle>
+        </ItemContent>
+      </button>
     </Item>
   ),
 };
@@ -117,15 +129,10 @@ export const InvitationOverlayPattern: Story = {
       <ItemContent>
         <ItemTitle className="h-8">Thunder</ItemTitle>
         <ItemFooter className="relative z-10 w-fit">
-          <Button size="sm" className="pr-3 pl-2" onClick={() => {}}>
+          <Button className="pr-3 pl-2" onClick={() => {}}>
             接受邀請
           </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="pr-3 pl-2"
-            onClick={() => {}}
-          >
+          <Button variant="secondary" className="pr-3 pl-2" onClick={() => {}}>
             拒絕邀請
           </Button>
         </ItemFooter>
@@ -161,22 +168,6 @@ export const GroupWithSeparator: Story = {
         </Link>
       </Item>
     </ItemGroup>
-  ),
-};
-
-export const VariantPrimary: Story = {
-  args: { variant: "primary" },
-  render: (args) => (
-    <Item asChild {...args}>
-      <button type="button">
-        <ItemMedia variant="icon">
-          <RiGroupLine />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>Thunder</ItemTitle>
-        </ItemContent>
-      </button>
-    </Item>
   ),
 };
 

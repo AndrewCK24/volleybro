@@ -83,8 +83,9 @@ const SetSwitch = ({
   return (
     <CardBtnGroup>
       <Button
-        variant={setIndex === -1 ? "default" : "outline"}
-        className="size-9"
+        variant="segmented"
+        size="icon"
+        aria-pressed={setIndex === -1}
         onClick={() => setSetIndex(-1)}
       >
         All
@@ -92,8 +93,9 @@ const SetSwitch = ({
       {sets.map((_, index) => (
         <Button
           key={index}
-          variant={setIndex === index ? "default" : "outline"}
-          className="size-9"
+          variant="segmented"
+          size="icon"
+          aria-pressed={setIndex === index}
           onClick={() => setSetIndex(index)}
         >
           {index + 1}

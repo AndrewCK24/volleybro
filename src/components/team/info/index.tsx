@@ -109,7 +109,7 @@ const TeamInfo = ({ teamId }: { teamId: string }) => {
         ))}
       </ItemGroup>
       {isAdmin && (
-        <Link href={`/team/${teamId}/edit`}>
+        <Link href={`/team/${teamId}/edit`} size="lg">
           <RiEditBoxLine /> 編輯隊伍資訊
         </Link>
       )}

@@ -36,7 +36,7 @@ const dialogContentVariants = cva(
     variants: {
       size: {
         default: "top-[50%] max-h-[85svh] max-w-[90vw]",
-        lg: "top-[calc(50%+(var(--safe-area-inset-top)+3rem)/2)] h-[calc(100%-var(--safe-area-inset-top)-3rem)] w-full sm:max-w-196",
+        lg: "top-[calc(50%+(var(--safe-area-inset-top)+var(--header-height))/2)] h-[calc(100%-var(--safe-area-inset-top)-var(--header-height))] w-full sm:max-w-196",
       },
     },
     defaultVariants: { size: "default" },
@@ -118,32 +118,33 @@ const DialogHeader = ({
     )}
     {...props}
   >
-    <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+    <div
+      className={cn(
+        "flex min-w-0 flex-1 flex-col items-start gap-1",
+        // centres the 20px title line on the control row
+        (onExpand || closeButton) &&
+          "pt-[calc((var(--control-size)-1.25rem)/2)]",
+      )}
+    >
       {children}
     </div>
     {(onExpand || closeButton) && (
-      <div className="-my-1.5 flex flex-none flex-row items-center gap-1">
+      <div className="flex flex-none flex-row items-center gap-1">
         {onExpand && (
           <Button
             type="button"
-            variant="ghost"
+            variant="glass"
             size="icon"
-            className="size-8"
             onClick={onExpand}
             aria-label={expandLabel}
           >
-            <RiExpandDiagonalLine className="size-4" />
+            <RiExpandDiagonalLine />
           </Button>
         )}
         {closeButton && (
           <DialogPrimitive.Close asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-8"
-            >
-              <RiCloseLine className="size-4" />
+            <Button type="button" variant="glass" size="icon">
+              <RiCloseLine />
               <span className="sr-only">關閉</span>
             </Button>
           </DialogPrimitive.Close>

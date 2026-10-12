@@ -1,5 +1,9 @@
 "use client";
-import { Container, MoveButton } from "@/components/game/panel/moves";
+import {
+  Container,
+  MOVE_CELL_CLASS,
+  MoveButton,
+} from "@/components/game/panel/moves";
 import { Button } from "@/components/ui/button";
 import { gameActions } from "@/lib/features/game/game-slice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -11,6 +15,9 @@ import {
 } from "@/lib/scoring-moves";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { RiRepeat2Line } from "react-icons/ri";
+
+// px-3 replaces `lg`'s px-8, which clipped the icon in a half-width cell. See ADR-0122.
+const ERROR_CELL_CLASS = "justify-between gap-1 px-3 py-0.5 leading-tight";
 
 export const OursMoves = () => {
   const dispatch = useAppDispatch();
@@ -27,28 +34,45 @@ export const OursMoves = () => {
   return (
     <Container
       className={
-        // Opponent errors: fit all rows with no scroll. auto-rows-fr shares the
-        // height, and min-h-0 lets the grid shrink below its content min-height
-        // (a flex item defaults to min-height:auto and would otherwise overflow).
-        zone === 0 ? "min-h-0 auto-rows-fr grid-cols-1" : undefined
+        // See ADR-0122.
+        zone === 0 ? "auto-rows-[minmax(44px,1fr)]" : undefined
       }
     >
-      {oursMoves.map((move) => (
-        <MoveButton
-          key={`${move.type}-${move.num}`}
-          move={move}
-          toggled={draft.home.num === move.num}
-          onClick={() => onOursClick(move)}
-        >
-          {zone === 0 ? `對方${move.text}失誤` : move.text}
-          {move.win ? <FiPlus /> : <FiMinus />}
-        </MoveButton>
-      ))}
+      {oursMoves.map((move) => {
+        const Icon = move.win ? FiPlus : FiMinus;
+        return (
+          <MoveButton
+            key={`${move.type}-${move.num}`}
+            move={move}
+            toggled={draft.home.num === move.num}
+            onClick={() => onOursClick(move)}
+            {...(zone === 0 && {
+              "aria-label": `對方${move.text}失誤`,
+              className: ERROR_CELL_CLASS,
+            })}
+          >
+            {zone === 0 ? (
+              <>
+                <span className="flex flex-col items-start text-left">
+                  <span>對方</span>
+                  <span>{move.text}失誤</span>
+                </span>
+                <Icon className="size-6" />
+              </>
+            ) : (
+              <>
+                {move.text}
+                <Icon />
+              </>
+            )}
+          </MoveButton>
+        );
+      })}
       {!!zone && (
         <Button
           variant="secondary"
           size="lg"
-          className="h-full pr-1 text-[1.5rem]"
+          className={MOVE_CELL_CLASS}
           onClick={() => dispatch(gameActions.setPanel("substitutes"))}
         >
           替補

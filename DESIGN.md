@@ -88,6 +88,14 @@ typography:
     fontFamily: Saira, Noto Sans TC, sans-serif
     fontSize: 1rem
     fontWeight: 400
+  body-list:
+    fontFamily: Saira, Noto Sans TC, sans-serif
+    fontSize: 1.0625rem
+    fontWeight: 500
+  subheadline:
+    fontFamily: Saira, Noto Sans TC, sans-serif
+    fontSize: 0.9375rem
+    fontWeight: 400
   label:
     fontFamily: Saira, Noto Sans TC, sans-serif
     fontSize: 0.875rem
@@ -205,7 +213,7 @@ Following HIG [Accessibility](https://developer.apple.com/design/human-interface
 
 Saira is the primary Latin heading/body face; Noto Sans TC is the CJK fallback in `--font-sans`. Saira Stencil One is reserved for the existing V mark. Use semantic roles and the Tailwind rem scale, never arbitrary `text-[Npx]` literals.
 
-The floor is `text-xs` (0.75rem); body and description copy is at least `text-sm`. Text directly on court or free-zone surfaces is at least `text-base`. Reserve `text-xs` for badges, meta labels and the Beta mark. App components retain their context-specific sizes. A digit in a fixed-size badge may be smaller only when the same number appears elsewhere.
+The floor is `text-xs` (0.75rem); body and description copy is at least `text-sm`. Item rows follow HIG list type: `ItemTitle` is `text-body-list` (17px) and `ItemDescription` is `text-subheadline` (15px), both theme tokens in `globals.css`; global `body` stays `text-base`. Text directly on court or free-zone surfaces is at least `text-base`. Reserve `text-xs` for badges, meta labels and the Beta mark. App components retain their context-specific sizes. A digit in a fixed-size badge may be smaller only when the same number appears elsewhere.
 
 Following HIG [Typography](https://developer.apple.com/design/human-interface-guidelines/typography) and [Layout](https://developer.apple.com/design/human-interface-guidelines/layout), support text enlargement and adaptive layout. For the PWA, verify text at 200% enlargement: content and controls must remain readable and operable without clipping or overlap; rows may grow and horizontal groups may stack. Do not disable browser zoom. A repeated badge value does not waive legibility or resizing checks. Native correspondence is semantic text styles and Dynamic Type, not a CSS-pixel-to-point conversion.
 
@@ -217,6 +225,8 @@ Following HIG [Typography](https://developer.apple.com/design/human-interface-gu
 | subheading      | text-lg font-medium                                          |
 | entry           | text-2xl font-medium tabular-nums                            |
 | body            | text-base font-normal                                        |
+| item title      | text-body-list font-medium (17px, HIG Body)                  |
+| item subtitle   | text-subheadline (15px, HIG Subheadline)                     |
 | label           | text-sm font-medium                                          |
 | meta            | text-xs text-muted-foreground                                |
 
@@ -259,7 +269,7 @@ The rule governs container elevation only: do not convey depth with a decorative
 
 Ring-instead-of-border is a formal edge technique for controls and small media. Semantic-color rings may express selected or invalid states; `--ring` stays reserved for focus-visible. Keep semantic borders for table rows, accordion separators and tab indicators. They divide content or indicate state; they do not create container elevation.
 
-Following HIG [Materials](https://developer.apple.com/design/human-interface-guidelines/materials), preserve readable foregrounds when transparency is reduced or contrast is increased. Where the browser exposes these preferences, adapt glass and translucent surfaces; provide a sufficiently opaque fallback and stronger separation when needed. Verify against the underlying content in both themes. Functional edges needed for accessibility take precedence over decorative No-Ring styling. These are requirements for affected surfaces, not claims that existing CSS already handles every preference.
+Following HIG [Materials](https://developer.apple.com/design/human-interface-guidelines/materials), preserve readable foregrounds when transparency is reduced or contrast is increased. Where the browser exposes these preferences, adapt glass and translucent surfaces (the `opaque` variant in `globals.css` matches `prefers-reduced-transparency` and `prefers-contrast: more`); provide a sufficiently opaque fallback and stronger separation when needed. Verify against the underlying content in both themes. Functional edges needed for accessibility take precedence over decorative No-Ring styling. These are requirements for affected surfaces, not claims that existing CSS already handles every preference.
 
 ### Shadows
 
@@ -285,26 +295,28 @@ Incumbent Landing examples: header shell 16/6/10, theme switcher 10/4/6, entry c
 
 ### Buttons and controls
 
-Actions use medium radius (`rounded-md`) and a clear label. The current default visual height is `h-9` (36px), within the existing 36–38px baseline. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.
+Actions use medium radius (`rounded-md`) and a clear label. Height follows the size rule below: 44px under touch, 36 or 40 under a fine pointer. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.
 
-**Adopted sizing rules; implementation is pending the button-size delivery shard:**
+Button sizes are `default`, `lg` and `icon`. Under `pointer: coarse` all three are 44px tall; under `pointer: fine` they are 36, 40 and 36×36. Buttons are for actions only; list rows use Item.
 
-| Context                              | Size / rule                                                             |
-| ------------------------------------ | ----------------------------------------------------------------------- |
-| Page primary action and form submit  | lg                                                                      |
-| In-section action and dialog footer  | default                                                                 |
-| List-row action                      | wide                                                                    |
-| Header/back/close icon control       | 44×44 CSS px for touch; 36 under pointer: fine; no outline, glass shell |
-| Back / close glyph                   | RiArrowLeftSLine / RiCloseLine                                          |
-| Chips                                | Segmented chip treatment with a 44px hit area                           |
-| Recording move buttons               | Known exception; measure before deciding                                |
-| Navigation FAB and Landing CTAButton | Own their sizes                                                         |
+Two tokens in `globals.css` carry those heights: `--control-size` (36px, 44px on touch) for `default` and `icon`, and `--control-size-lg` (40px, 44px on touch) for `lg`. Anything that mirrors a control's height (skeletons, header spacers, calendar day cells, the toast close) uses the token, never a copied number. Calendar day cells use `min(--control-size, width/7)`, so they drop to about 40px only on viewports under about 348px. Use the `.touch-target` utility for a small control that must keep its visual size, such as an inline text action or the theme switch: it grows the tap area to `--control-size` on touch through a pseudo-element that takes no layout space, so siblings need a gap of at least `--control-size` minus their visual size to keep those areas from intersecting. Use a real control size when the control is a button, since a hit area cannot grow the visible target. Page headers (including the game overview header, but not the recording page header) and the containers they push down use `--header-height` (`--control-size` plus 1rem: 52px, 60px on touch), so their controls keep 8px above and below.
 
-Frontmatter component samples describe the shipped default primitives, not the pending icon/chip changes. Glass belongs to floating controls; this does not require a whole-app glass redesign. HIG motivates the touch-target rule; CSS px are the web project's units, not native points. SwiftUI correspondence: primary actions, toolbar controls, dismiss actions and segmented selection.
+| Context                                   | Size / rule                                                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Page primary action and every form submit | lg, including submits inside dialogs                                                                          |
+| In-section action and AlertDialog actions | default                                                                                                       |
+| Buttons side by side                      | Same size; variant shows importance (default/destructive over outline/secondary)                              |
+| Header/back/close icon control            | icon with the circular `glass` variant: 44×44 CSS px for touch, 36 under pointer: fine, no outline            |
+| Back / close glyph                        | RiArrowLeftSLine / RiCloseLine                                                                                |
+| Segmented choice                          | Button `segmented` variant: secondary at rest, primary when `aria-pressed` or radio checked; 44px under touch |
+| Recording scoring-move buttons            | At least 44px tall; opponent errors use two columns                                                           |
+| Navigation FAB and Landing CTAButton      | Own their sizes                                                                                               |
+
+Glass belongs only to floating header, back and close controls; other icon actions keep their semantic fills and keyboard focus. The glass control is a circle (`rounded-full`) in an iOS 26 Liquid Glass-inspired material: a translucent fill (`white/60` in light, `white/10` in dark), backdrop blur, a 1px inner highlight edge, a soft shadow and a foreground-coloured glyph. Under reduced transparency or more contrast the fill becomes opaque `background` with a visible `foreground/40` edge. This does not require a whole-app glass redesign. HIG motivates the touch-target rule; CSS px are the web project's units, not native points. SwiftUI correspondence: primary actions, toolbar controls, dismiss actions and segmented selection.
 
 ### Item-first data surfaces
 
-Prefer Item composition for scannable data rows: `bg-card + shadow-sm + ring-1 ring-transparent`. Use semantic Separator elements between content. Small ItemMedia blocks may use an inset ring to define their edges. Keep fetching and loading ownership in the component that owns the data; the [Components Feature](blueprint/content/features/platform/design-system/components/index.mdx) documents behavioral composition.
+Prefer Item composition for scannable data rows and for tappable list rows such as menu, setting and picker rows (`asChild` over a button or link, `min-h-11`; a selected row sets `aria-pressed`, which Item styles as primary): `bg-card + shadow-sm + ring-1 ring-transparent`. Use semantic Separator elements between content. Small ItemMedia blocks may use an inset ring to define their edges. Keep fetching and loading ownership in the component that owns the data; the [Components Feature](blueprint/content/features/platform/design-system/components/index.mdx) documents behavioral composition.
 
 ### Hover and states
 
@@ -338,7 +350,7 @@ Follow Apple HIG for hierarchy, feedback and accessibility when applying these r
 - Don't reuse the `destructive` token family for opponent data or errors; this does not prohibit red error feedback.
 - Don't add a decorative container ring to express elevation; preserve functional accessibility edges and keyboard focus.
 - Don't use `accent` as a page or resting surface background.
-- Don't present the pending button-size rules as already implemented.
+- Don't use a full-width Button as a list row; use Item.
 
 ### Motion extensions
 

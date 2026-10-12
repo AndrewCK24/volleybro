@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-10T10:44:29.720Z",
+  "generatedAt": "2026-10-12T21:21:30.267Z",
   "title": "Design System: VolleyBro",
   "extensions": {
     "colorMeta": {
@@ -182,7 +182,7 @@
       "Don't reuse the destructive token family for opponent data or errors; this does not prohibit red error feedback.",
       "Don't add a decorative container ring to express elevation; preserve functional accessibility edges and keyboard focus.",
       "Don't use accent as a page or resting surface background.",
-      "Don't present the pending button-size rules as already implemented."
+      "Don't use a full-width Button as a list row; use Item."
     ]
   }
 }

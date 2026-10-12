@@ -22,5 +22,6 @@
   "revisitTriggers": [
     "The recording panel measurement shows the move buttons can meet 44px."
   ],
-  "originChange": "design-authority"
+  "originChange": "design-authority",
+  "supersededBy": "0121"
 }

@@ -13,6 +13,11 @@ import {
   type DayPickerProps,
 } from "@daypicker/react";
 
+// The root's `p-3` on both sides. Cells shrink below --control-size only when
+// 7 cells, this padding and a 1rem gutter exceed the viewport (under ~348px).
+const PADDING = "var(--spacing) * 6";
+const CELL_SIZE = `min(var(--control-size), (100vw - ${PADDING} - 1rem) / 7)`;
+
 export type CalendarProps = DayPickerProps & {
   /**
    * In the year view, the number of years to display at once.
@@ -85,12 +90,12 @@ const Calendar = ({
 
   const _monthsClassName = cn("relative flex", props.monthsClassName);
   const _monthCaptionClassName = cn(
-    "relative mx-10 flex h-7 items-center justify-center",
+    "relative mx-(--control-size) flex h-(--control-size) items-center justify-center",
     props.monthCaptionClassName,
   );
   const _weekdaysClassName = cn("flex flex-row", props.weekdaysClassName);
   const _weekdayClassName = cn(
-    "w-8 text-sm font-normal text-muted-foreground",
+    "w-(--cell-size) text-sm font-normal text-muted-foreground",
     props.weekdayClassName,
   );
   const _monthClassName = cn("w-full", props.monthClassName);
@@ -100,8 +105,8 @@ const Calendar = ({
   );
   const buttonNavClassName = buttonVariants({
     variant: "outline",
-    className:
-      "absolute h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+    size: "icon",
+    className: "absolute bg-transparent opacity-50 hover:opacity-100",
   });
   const _buttonNextClassName = cn(
     buttonNavClassName,
@@ -117,12 +122,12 @@ const Calendar = ({
   const _monthGridClassName = cn("mx-auto mt-4", props.monthGridClassName);
   const _weekClassName = cn("mt-2 flex w-max items-start", props.weekClassName);
   const _dayClassName = cn(
-    "flex size-8 flex-1 items-center justify-center p-0 text-sm",
+    "flex size-(--cell-size) flex-1 items-center justify-center p-0 text-sm",
     props.dayClassName,
   );
   const _dayButtonClassName = cn(
     buttonVariants({ variant: "ghost" }),
-    "size-8 rounded-md p-0 font-normal transition-none aria-selected:opacity-100",
+    "size-(--cell-size) rounded-md p-0 font-normal transition-none aria-selected:opacity-100",
     props.dayButtonClassName,
   );
   const buttonRangeClassName =
@@ -163,9 +168,12 @@ const Calendar = ({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
-      style={{
-        width: 248.8 * (columnsDisplayed ?? 1) + "px",
-      }}
+      style={
+        {
+          "--cell-size": CELL_SIZE,
+          width: `calc((var(--cell-size) * 7 + ${PADDING}) * ${columnsDisplayed ?? 1})`,
+        } as React.CSSProperties
+      }
       classNames={{
         months: _monthsClassName,
         month_caption: _monthCaptionClassName,
@@ -356,7 +364,8 @@ const Nav = ({
     <nav className={cn("flex items-center", className)}>
       <Button
         variant="outline"
-        className="absolute left-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
+        size="icon"
+        className="absolute left-0 bg-transparent opacity-80 hover:opacity-100"
         type="button"
         tabIndex={isPreviousDisabled ? undefined : -1}
         disabled={isPreviousDisabled}
@@ -369,12 +378,13 @@ const Nav = ({
         }
         onClick={handlePreviousClick}
       >
-        <RiArrowLeftWideLine className="h-4 w-4" />
+        <RiArrowLeftWideLine />
       </Button>
 
       <Button
         variant="outline"
-        className="absolute right-0 h-7 w-7 bg-transparent p-0 opacity-80 hover:opacity-100"
+        size="icon"
+        className="absolute right-0 bg-transparent opacity-80 hover:opacity-100"
         type="button"
         tabIndex={isNextDisabled ? undefined : -1}
         disabled={isNextDisabled}
@@ -385,7 +395,7 @@ const Nav = ({
         }
         onClick={handleNextClick}
       >
-        <RiArrowRightWideLine className="h-4 w-4" />
+        <RiArrowRightWideLine />
       </Button>
     </nav>
   );
@@ -407,9 +417,8 @@ const CaptionLabel = ({
   if (!showYearSwitcher) return <span {...props}>{children}</span>;
   return (
     <Button
-      className="h-7 w-full truncate text-sm font-medium"
+      className="w-full truncate text-sm font-medium"
       variant="ghost"
-      size="sm"
       onClick={() => setNavView((prev) => (prev === "days" ? "years" : "days"))}
     >
       {navView === "days"
@@ -497,7 +506,7 @@ const YearGrid = ({
             <Button
               key={i}
               className={cn(
-                "h-7 w-full text-sm font-normal text-foreground",
+                "w-full text-sm font-normal text-foreground",
                 displayYears.from + i === new Date().getFullYear() &&
                   "bg-accent font-medium text-accent-foreground",
               )}

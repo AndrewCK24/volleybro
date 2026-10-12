@@ -11,8 +11,18 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 const FADE_MS = 160;
 
 const STEP_BUTTONS = [
-  { label: "上一個", step: -1, Icon: RiArrowLeftSLine, edge: "-left-5" },
-  { label: "下一個", step: 1, Icon: RiArrowRightSLine, edge: "-right-5" },
+  {
+    label: "上一個",
+    step: -1,
+    Icon: RiArrowLeftSLine,
+    edge: "left-[calc(0.5rem-var(--control-size))]",
+  },
+  {
+    label: "下一個",
+    step: 1,
+    Icon: RiArrowRightSLine,
+    edge: "right-[calc(0.5rem-var(--control-size))]",
+  },
 ];
 
 export const StatsCarousel = () => {
@@ -75,14 +85,14 @@ export const StatsCarousel = () => {
             </div>
           ))}
         </div>
-        {/* straddling the card's edges: 8px inside (its padding), the rest in the margin */}
+        {/* straddling the card's edges: 8px inside (its padding), the rest in the margin (button size minus 8px) */}
         {STEP_BUTTONS.map(({ label, step, Icon, edge }) => (
           <Button
             key={label}
             variant="secondary"
             size="icon"
             aria-label={label}
-            className={cn("absolute top-1/2 size-7 -translate-y-1/2", edge)}
+            className={cn("absolute top-1/2 -translate-y-1/2", edge)}
             onClick={() => goTo(activeIndex + step)}
           >
             <Icon />
@@ -96,7 +106,7 @@ export const StatsCarousel = () => {
               aria-label={`${index + 1} / ${slideCount}：${slide.title}`}
               aria-current={index === activeIndex}
               onClick={() => goTo(index)}
-              className="grid size-8 place-items-center rounded-md focus-visible:ring-2 focus-visible:ring-court-foreground focus-visible:outline-hidden"
+              className="grid size-8 place-items-center rounded-md focus-visible:ring-2 focus-visible:ring-court-foreground focus-visible:outline-hidden pointer-coarse:size-(--control-size)"
             >
               <span
                 className={cn(

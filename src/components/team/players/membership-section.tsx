@@ -336,6 +336,7 @@ function InviteSection({
         </div>
         <Button
           type="submit"
+          size="lg"
           className="w-full"
           disabled={!email}
           loading={isSubmitting}

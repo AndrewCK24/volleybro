@@ -98,12 +98,13 @@ export function LineupSkeleton() {
       <div className="flex w-full flex-1 flex-col items-center justify-start gap-2 overflow-x-hidden bg-card px-4 py-2">
         <Skeleton className="my-0.5 h-5 w-32" />
         {Array.from({ length: 4 }, (_, i) => (
-          <Skeleton key={i} className="h-10 w-full" />
+          <Skeleton key={i} className="h-11 w-full" />
         ))}
       </div>
       {/* mirrors save button row */}
       <div className="flex w-full flex-col px-4 pt-2">
-        <Skeleton className="h-11 w-full" /> {/* size="lg" button */}
+        <Skeleton className="h-(--control-size-lg) w-full" />{" "}
+        {/* size="lg" button */}
       </div>
     </>
   );

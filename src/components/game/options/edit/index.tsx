@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEditingGuard } from "@/hooks/use-editing-guard";
-import { RiArrowLeftWideLine } from "react-icons/ri";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 export const EntriesEdit = ({ gameId }: { gameId: string }) => {
   const { writing, leaveEditing } = useEditingGuard();
@@ -19,12 +19,12 @@ export const EntriesEdit = ({ gameId }: { gameId: string }) => {
       <DialogHeader>
         <DialogTitle>
           <Button
-            variant="ghost"
-            className="size-5 p-0 [&>svg]:size-5"
+            variant="glass"
+            size="icon"
             disabled={writing}
             onClick={leaveEditing}
           >
-            <RiArrowLeftWideLine />
+            <RiArrowLeftSLine />
             <span className="sr-only">back</span>
           </Button>
           編輯逐球紀錄

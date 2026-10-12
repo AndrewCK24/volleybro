@@ -202,7 +202,7 @@ function EditTeamWorkspaceSkeleton() {
         <Skeleton className="h-4 w-12" />
         <Skeleton className="h-9 w-full" />
       </div>
-      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-(--control-size-lg) w-full" />
     </Card>
   );
 }

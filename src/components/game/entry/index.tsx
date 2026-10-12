@@ -119,7 +119,7 @@ const EntryRowActions = ({
           else if (action === "delete") onDelete?.();
           else onRollbackToHere?.();
         }}
-        className="shrink-0 rounded px-2 py-1 text-sm text-muted-foreground"
+        className="touch-target shrink-0 rounded px-2 py-1 text-sm text-muted-foreground"
       >
         {actionLabel[action]}
       </button>
@@ -221,7 +221,10 @@ export const EntryRow = ({
           <Entry
             entry={entry}
             players={players}
-            className={cn(failed && "ring-1 ring-error")}
+            className={cn(
+              failed &&
+                "ring-1 ring-error pointer-coarse:min-h-(--control-size)",
+            )}
           />
           {failed && (
             <FailedWriteRetry

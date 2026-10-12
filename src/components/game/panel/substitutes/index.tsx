@@ -1,4 +1,5 @@
 "use client";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -11,7 +12,7 @@ import { useSubstitutes } from "@/lib/features/game/hooks/use-substitutes";
 import type { ReduxGameState } from "@/lib/features/game/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { cn } from "@/lib/utils";
-import { RiArrowLeftWideLine, RiCheckLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiCheckLine } from "react-icons/ri";
 
 export const Substitutes = ({
   gameId,
@@ -72,11 +73,11 @@ export const Substitutes = ({
       <CardHeader>
         <CardTitle>
           <Button
-            variant="ghost"
+            variant="glass"
             size="icon"
             onClick={() => dispatch(gameActions.resetEntryDraftSubstitution())}
           >
-            <RiArrowLeftWideLine />
+            <RiArrowLeftSLine />
           </Button>
           選擇替補球員
         </CardTitle>
@@ -85,11 +86,11 @@ export const Substitutes = ({
         {substitutes.map((substitute) => {
           const toggled = draft?.substitution?.players?.in === substitute.id;
           return (
-            <Button
+            <PickerRow
               key={substitute.id}
-              variant={toggled ? "default" : "outline"}
-              size="wide"
-              className="text-xl"
+              code={substitute.number}
+              label={substitute.name}
+              pressed={toggled}
               onClick={() =>
                 toggled
                   ? dispatch(gameActions.resetEntryDraftSubstitution())
@@ -97,12 +98,7 @@ export const Substitutes = ({
                       gameActions.setEntryDraftSubstitution(substitute.id),
                     )
               }
-            >
-              <span className="flex basis-8 justify-end font-semibold">
-                {substitute.number}
-              </span>
-              {substitute.name}
-            </Button>
+            />
           );
         })}
       </CardContent>

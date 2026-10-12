@@ -6,6 +6,9 @@ import { RiLoader4Line } from "react-icons/ri";
 
 import { cn } from "@/lib/utils";
 
+const SECONDARY =
+  "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80";
+
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-[color,box-shadow,background-color] focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50",
   {
@@ -19,18 +22,17 @@ const buttonVariants = cva(
           "bg-court text-court-foreground shadow-sm ring-1 ring-transparent hover:bg-court/90",
         outline:
           "bg-background text-foreground shadow-sm ring-1 ring-gray-950/10 hover:bg-muted/50 dark:ring-white/10",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80",
+        secondary: SECONDARY,
         ghost: "hover:bg-muted/50",
+        segmented: `${SECONDARY} has-checked:bg-primary has-checked:text-primary-foreground has-checked:hover:bg-primary/90 aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary/90`,
         link: "text-primary-text underline-offset-4 hover:underline",
+        glass:
+          "rounded-full bg-white/60 text-foreground shadow-lg inset-ring inset-ring-black/5 backdrop-blur-md backdrop-saturate-150 hover:bg-white/75 dark:bg-white/10 dark:inset-ring-white/20 dark:hover:bg-white/20 opaque:bg-background opaque:inset-ring-foreground/40 opaque:backdrop-blur-none opaque:hover:bg-muted dark:opaque:bg-background dark:opaque:inset-ring-foreground/40 dark:opaque:hover:bg-muted",
       },
       size: {
-        default: "h-9 px-3.5 py-2 [&>svg]:size-5",
-        xs: "h-6 px-2 py-1 text-xs [&>svg]:size-4",
-        sm: "h-8 px-3 py-1.5 text-xs [&>svg]:size-4",
-        lg: "h-10 px-8 py-2 text-lg [&>svg]:size-6",
-        wide: "h-10 w-full justify-start px-3 py-2 text-lg [&>svg]:size-6",
-        icon: "size-8 [&>svg]:size-7",
+        default: "h-(--control-size) px-3.5 py-2 [&>svg]:size-5",
+        lg: "h-(--control-size-lg) px-8 py-2 text-lg [&>svg]:size-6",
+        icon: "size-(--control-size) [&>svg]:size-7",
       },
     },
     defaultVariants: {

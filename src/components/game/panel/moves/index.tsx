@@ -81,9 +81,9 @@ export const Container = ({
 };
 
 const WIN_STYLE =
-  "bg-primary/30 text-foreground [&>svg]:text-primary-text shadow-sm hover:bg-primary/80";
+  "bg-primary/30 text-foreground [&_svg]:text-primary-text shadow-sm hover:bg-primary/80";
 const LOSE_STYLE =
-  "bg-away/30 text-foreground [&>svg]:text-away-text shadow-sm hover:bg-away/80";
+  "bg-away/30 text-foreground [&_svg]:text-away-text shadow-sm hover:bg-away/80";
 
 const moveLook = (
   win: boolean,
@@ -95,17 +95,24 @@ const moveLook = (
     : { variant: "secondary", tint: LOSE_STYLE };
 };
 
+// See ADR-0122: cells fill their grid row, so `h-full` replaces the size height.
+export const MOVE_CELL_CLASS =
+  "h-full pr-1 text-[clamp(0.75rem,6.667vw,1.5rem)] leading-7";
+
 export const MoveButton = ({
   move,
   toggled,
   onClick,
+  className,
   children,
+  ...props
 }: {
   move: ScoringMove;
   toggled: boolean;
   onClick: (move: ScoringMove) => void;
+  className?: string;
   children?: React.ReactNode;
-}) => {
+} & Pick<React.ComponentProps<"button">, "aria-label">) => {
   const look = moveLook(move.win, toggled);
 
   return (
@@ -114,13 +121,13 @@ export const MoveButton = ({
       variant={look.variant}
       size="lg"
       className={cn(
-        // min-h-0 lets the button shrink below its content height so an
-        // auto-rows-fr grid (opponent errors) can fit every row with no scroll;
-        // a grid/flex item defaults to min-height:auto and would overflow.
-        "h-full min-h-0 pr-1 text-[1.5rem] transition-colors duration-200",
+        MOVE_CELL_CLASS,
+        "transition-colors duration-200",
         look.tint,
+        className,
       )}
       onClick={() => onClick(move)}
+      {...props}
     >
       {children}
     </Button>

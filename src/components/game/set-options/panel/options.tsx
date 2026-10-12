@@ -143,12 +143,8 @@ const ServingTeam = ({
           <FormItem className="w-full">
             <FormControl>
               <FormRadioGroup className="grid-cols-2" {...field}>
-                <FormRadioItem value="home" className="h-10">
-                  我方先發
-                </FormRadioItem>
-                <FormRadioItem value="away" className="h-10">
-                  對方先發
-                </FormRadioItem>
+                <FormRadioItem value="home">我方先發</FormRadioItem>
+                <FormRadioItem value="away">對方先發</FormRadioItem>
               </FormRadioGroup>
             </FormControl>
           </FormItem>

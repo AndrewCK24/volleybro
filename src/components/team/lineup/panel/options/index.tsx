@@ -53,16 +53,17 @@ export const LineupOptions = ({
 
   return (
     <PanelContent>
-      <CardHeader className="h-9 w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row items-center justify-start">
         <CardTitle>陣容配置 {status.lineupIndex + 1}</CardTitle>
         <div className="flex flex-1 flex-row items-center justify-end gap-2">
           {lineups.map((_, index) => (
             <Button
               key={index}
-              variant={status.lineupIndex === index ? "default" : "outline"}
+              variant="segmented"
               size="icon"
+              aria-pressed={status.lineupIndex === index}
               onClick={() => handlelineupIndexClick(index)}
-              className="size-7 text-lg"
+              className="text-lg"
             >
               {index + 1}
             </Button>
@@ -84,7 +85,6 @@ export const LineupOptions = ({
                 </span>
                 <Button
                   variant="link"
-                  size="lg"
                   className="w-fit px-0"
                   onClick={() =>
                     dispatch(
@@ -124,7 +124,6 @@ export const LineupOptions = ({
                 <span className="flex-1">未入選名單 ({othersCount})</span>
                 <Button
                   variant="link"
-                  size="lg"
                   className="w-fit px-0"
                   onClick={() =>
                     dispatch(

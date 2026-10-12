@@ -124,4 +124,9 @@ export const backMoves: ScoringMove[] = scoringMoves
   .slice(0, 2)
   .concat(scoringMoves.slice(4, 9));
 
-export const errorMoves: ScoringMove[] = scoringMoves.slice(9);
+// Rotation (num 12) goes last so it sits bottom-right in the two-column panel.
+export const errorMoves: ScoringMove[] = [
+  ...scoringMoves.slice(9, 12),
+  ...scoringMoves.slice(13),
+  ...scoringMoves.slice(12, 13),
+];

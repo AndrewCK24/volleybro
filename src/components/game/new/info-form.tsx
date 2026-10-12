@@ -17,6 +17,7 @@ import {
   FormRadioGroup,
   FormRadioItem,
 } from "@/components/ui/form";
+import { Item, ItemActions, ItemContent } from "@/components/ui/item";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -133,21 +134,20 @@ const BasicInfoFields = ({ form }: { form: UseFormReturn<TMatchInfoForm> }) => {
             <Popover>
               <PopoverTrigger asChild>
                 <FormControl>
-                  <Button
-                    size="wide"
-                    variant="outline"
-                    className={cn(
-                      "bg-transparent pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground",
-                    )}
-                  >
-                    {field.value ? (
-                      format(field.value, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                    <RiCalendarLine className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
+                  <Item asChild variant="outline">
+                    <button type="button">
+                      <ItemContent
+                        className={cn(!field.value && "text-muted-foreground")}
+                      >
+                        {field.value
+                          ? format(field.value, "PPP")
+                          : "Pick a date"}
+                      </ItemContent>
+                      <ItemActions>
+                        <RiCalendarLine className="size-4 opacity-50" />
+                      </ItemActions>
+                    </button>
+                  </Item>
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">

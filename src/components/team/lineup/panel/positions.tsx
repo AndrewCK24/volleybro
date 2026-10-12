@@ -2,11 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { PanelContent } from "@/components/custom/panel";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Position } from "@/entities/team";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { RiArrowLeftWideLine } from "react-icons/ri";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 export const positions = [
   {
@@ -45,42 +46,35 @@ export const Positions = () => {
 
   return (
     <PanelContent>
-      <CardHeader className="h-9 w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row items-center justify-start">
         <Button
-          variant="ghost"
+          variant="glass"
           size="icon"
-          className="size-7 [&>svg]:size-5"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
           }
         >
-          <RiArrowLeftWideLine />
+          <RiArrowLeftSLine />
         </Button>
         <CardTitle>選擇位置</CardTitle>
       </CardHeader>
-      {positions.map((position) => (
-        <Button
-          key={position.value}
-          variant={
-            toggledPosition != null && toggledPosition === position.value
-              ? "default"
-              : "outline"
-          }
-          size="wide"
-          onClick={() =>
-            dispatch(lineupActions.setPlayerPosition(position.value))
-          }
-          disabled={
-            position.value === "L" ? !isEditingLiberos : isEditingLiberos
-          }
-          className="text-xl"
-        >
-          <span className="flex basis-8 justify-end font-semibold">
-            {position.value}
-          </span>
-          <span className="flex flex-1 justify-start">{position.text}</span>
-        </Button>
-      ))}
+      {positions.map((position) => {
+        const toggled = toggledPosition === position.value;
+        return (
+          <PickerRow
+            key={position.value}
+            code={position.value}
+            label={position.text}
+            pressed={toggled}
+            disabled={
+              position.value === "L" ? !isEditingLiberos : isEditingLiberos
+            }
+            onClick={() =>
+              dispatch(lineupActions.setPlayerPosition(position.value))
+            }
+          />
+        );
+      })}
     </PanelContent>
   );
 };

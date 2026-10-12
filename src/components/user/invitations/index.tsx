@@ -133,7 +133,6 @@ function InvitationItem({
         <ItemTitle className="h-8">{player.teamName}</ItemTitle>
         <ItemFooter className="relative z-10 flex w-fit items-center gap-2">
           <Button
-            size="sm"
             className="pr-3 pl-2"
             onClick={() => handleInvitation(player.id, "accept")}
             aria-label="接受邀請"
@@ -146,7 +145,6 @@ function InvitationItem({
           <Button
             variant="secondary"
             className="pr-3 pl-2"
-            size="sm"
             onClick={() => handleInvitation(player.id, "reject")}
             aria-label="拒絕邀請"
             loading={processingId === player.id}

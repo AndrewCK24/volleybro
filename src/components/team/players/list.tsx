@@ -49,8 +49,8 @@ export function PlayersList({ teamId }: PlayersListProps) {
               <ItemAvatar alt={player.name} fallback={<FiUser />} />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle className="h-5 text-base">{player.name}</ItemTitle>
-              <ItemDescription className="h-5">
+              <ItemTitle className="h-6">{player.name}</ItemTitle>
+              <ItemDescription className="h-6">
                 {player.number != null && `#${player.number}`}
               </ItemDescription>
             </ItemContent>
@@ -70,8 +70,8 @@ export function PlayersListSkeleton() {
             <Skeleton className="h-full w-full rounded-full" />
           </ItemMedia>
           <ItemContent>
-            <Skeleton className="my-0.5 h-4 w-24" />
-            <Skeleton className="my-0.5 h-4 w-20" />
+            <Skeleton className="my-1 h-4 w-24" />
+            <Skeleton className="my-1 h-4 w-20" />
           </ItemContent>
         </Item>
       ))}

@@ -31,7 +31,7 @@ import type {
 import type { LineupList } from "@/lib/features/team/types";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { RiArrowLeftWideLine, RiArrowRightLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiArrowRightLine } from "react-icons/ri";
 import { useSWRConfig } from "swr";
 
 export const NewGameForm = ({
@@ -154,10 +154,11 @@ export const NewGameForm = ({
                       <Button
                         key={index}
                         type="button"
-                        variant={lineupIndex === index ? "default" : "outline"}
+                        variant="segmented"
                         size="icon"
+                        aria-pressed={lineupIndex === index}
                         onClick={() => setLineupIndex(index)}
-                        className="h-8 w-8 text-[1.25rem]"
+                        className="text-[1.25rem]"
                       >
                         {index + 1}
                       </Button>
@@ -186,11 +187,11 @@ export const NewGameForm = ({
             <DialogTitle>
               <Button
                 type="button"
-                variant="ghost"
-                className="size-5 p-0 [&>svg]:size-5"
+                variant="glass"
+                size="icon"
                 onClick={() => handleViewChange("")}
               >
-                <RiArrowLeftWideLine />
+                <RiArrowLeftSLine />
               </Button>
               編輯賽事資訊
             </DialogTitle>

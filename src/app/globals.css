@@ -2,6 +2,15 @@
 
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
+/* Reduced transparency or more contrast: translucent materials fall back to an opaque fill. */
+@custom-variant opaque {
+  @media (prefers-reduced-transparency: reduce) {
+    @slot;
+  }
+  @media (prefers-contrast: more) {
+    @slot;
+  }
+}
 
 :root,
 .light {
@@ -88,14 +97,33 @@
 }
 
 :root {
+  /* Height of Button `default`/`icon` and every control that mirrors it; the
+     coarse-pointer value below is the HIG 44pt minimum touch target. */
+  --control-size: 2.25rem;
+  --control-size-lg: 2.5rem;
+  /* Page header height, including the game overview header; not the recording page header. */
+  --header-height: calc(var(--control-size) + 1rem);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-right: env(safe-area-inset-right);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   --safe-area-inset-left: env(safe-area-inset-left);
 }
 
+@media (pointer: coarse) {
+  :root {
+    --control-size: 2.75rem;
+    --control-size-lg: 2.75rem;
+  }
+}
+
 @theme inline {
   --font-sans: var(--font-saira), var(--font-noto-sans-tc), sans-serif;
+
+  /* Item row type (DESIGN.md body-list / subheadline). */
+  --text-body-list: 1.0625rem;
+  --text-body-list--line-height: 1.375;
+  --text-subheadline: 0.9375rem;
+  --text-subheadline--line-height: 1.5;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -302,6 +330,25 @@
 }
 
 @layer utilities {
+  /* Grows the tap area to --control-size on touch without changing the visual size. */
+  .touch-target {
+    position: relative;
+  }
+
+  @media (pointer: coarse) {
+    .touch-target::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: var(--control-size);
+      min-height: var(--control-size);
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
   .animate-volleyball-bounce {
     animation: volleyball-bounce 0.4s ease-in-out alternate infinite;
   }

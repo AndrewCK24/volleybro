@@ -1,16 +1,13 @@
 "use client";
 import { PanelContent } from "@/components/custom/panel";
+import { PickerRow } from "@/components/custom/picker-row";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { lineupActions } from "@/lib/features/team/lineup-slice";
 import { LineupOptionMode, type PlayerView } from "@/lib/features/team/types";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import {
-  RiArrowLeftWideLine,
-  RiUserFollowLine,
-  RiUserLine,
-} from "react-icons/ri";
+import { RiArrowLeftSLine, RiUserFollowLine, RiUserLine } from "react-icons/ri";
 
 interface SubstitutesProps {
   players: PlayerView[];
@@ -57,16 +54,15 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
 
   return (
     <PanelContent>
-      <CardHeader className="h-9 w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row items-center justify-start">
         <Button
-          variant="ghost"
+          variant="glass"
           size="icon"
-          className="size-7 [&>svg]:size-5"
           onClick={() =>
             dispatch(lineupActions.setOptionMode(LineupOptionMode.PLAYERINFO))
           }
         >
-          <RiArrowLeftWideLine />
+          <RiArrowLeftSLine />
         </Button>
         <CardTitle>{`替補名單 (${substituteCount}/${substituteLimit})`}</CardTitle>
       </CardHeader>
@@ -74,37 +70,25 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
         const player = players.find((p) => p.id === lineupPlayer.id);
         if (!player) return null;
         return (
-          <Button
+          <PickerRow
             key={player.id}
-            variant={isEditingStarting ? "outline" : "default"}
-            size="wide"
+            icon={<RiUserFollowLine className="size-6" />}
+            code={player.number}
+            label={player.name}
             onClick={() => handleSubstituteClick(player, index)}
-            className="text-xl"
-          >
-            <RiUserFollowLine />
-            <span className="flex basis-8 justify-end font-semibold">
-              {player?.number || " "}
-            </span>
-            {player?.name}
-          </Button>
+          />
         );
       })}
       <Separator content="以上為正式比賽 12 + 2 人名單" />
       {others.map((player, index) => {
         return (
-          <Button
+          <PickerRow
             key={player.id}
-            variant="outline"
-            size="wide"
+            icon={<RiUserLine className="size-6" />}
+            code={player.number}
+            label={player.name}
             onClick={() => handleOtherClick(player, index)}
-            className="text-xl"
-          >
-            <RiUserLine />
-            <span className="flex basis-8 justify-end font-semibold">
-              {player?.number}
-            </span>
-            {player?.name}
-          </Button>
+          />
         );
       })}
     </PanelContent>
