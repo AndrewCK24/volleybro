@@ -154,10 +154,11 @@ export const NewGameForm = ({
                       <Button
                         key={index}
                         type="button"
-                        variant={lineupIndex === index ? "default" : "outline"}
+                        variant="segmented"
                         size="icon"
+                        aria-pressed={lineupIndex === index}
                         onClick={() => setLineupIndex(index)}
-                        className="h-8 w-8 text-[1.25rem]"
+                        className="text-[1.25rem]"
                       >
                         {index + 1}
                       </Button>
