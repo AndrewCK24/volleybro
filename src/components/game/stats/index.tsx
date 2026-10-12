@@ -84,6 +84,7 @@ const SetSwitch = ({
     <CardBtnGroup>
       <Button
         variant="segmented"
+        size="icon"
         aria-pressed={setIndex === -1}
         onClick={() => setSetIndex(-1)}
       >
@@ -93,6 +94,7 @@ const SetSwitch = ({
         <Button
           key={index}
           variant="segmented"
+          size="icon"
           aria-pressed={setIndex === index}
           onClick={() => setSetIndex(index)}
         >

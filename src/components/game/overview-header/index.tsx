@@ -7,7 +7,7 @@ export const Header = ({ title, url }: { title: string; url: string }) => {
   const router = useRouter();
 
   return (
-    <header className="fixed top-0 left-0 z-10 flex h-[calc(env(safe-area-inset-top)+3rem)] w-full flex-row items-center justify-center gap-4 overscroll-none border-b-2 border-accent bg-card px-[5%] pt-[env(safe-area-inset-top)]">
+    <header className="fixed top-0 left-0 z-10 flex h-[calc(env(safe-area-inset-top)+var(--header-height))] w-full flex-row items-center justify-center gap-4 overscroll-none border-b-2 border-accent bg-card px-[5%] pt-[env(safe-area-inset-top)]">
       <Button onClick={() => router.push(url)} variant="glass" size="icon">
         <RiArrowLeftSLine />
       </Button>

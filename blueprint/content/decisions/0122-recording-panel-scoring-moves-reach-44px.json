@@ -4,7 +4,7 @@
   "title": "Recording-panel scoring-move buttons reach 44px with two-column opponent errors",
   "capabilities": ["game-recording/rally-recording"],
   "context": "The opponent-error column stacked six rows that measured 16 to 36px tall on most iPhones; only Pro Max and Plus models reached 44px, so scoring moves fell below the touch target and short screens risked scrolling mid-rally.",
-  "decision": "Opponent-error reasons render in two columns of three rows. Each label stacks on two left-aligned lines at line-height 1.25, \"對方\" over the reason, with the +/- icon vertically centred on the right, in `px-3` cells so nothing clips. Below 360px viewport width the label font scales down from 24px. Front and back zones keep `leading-7` so their natural height is 44px, and rows use `minmax(44px, 1fr)` so they grow on taller screens. Zone 0 rows may scroll slightly on iPhone SE 2/3 and non-iPhone screens up to 360px wide; every other listed iPhone needs no scroll. Phone landscape and desktop recording layout are handled separately.",
+  "decision": "Opponent-error reasons render in two columns of three rows. Each label stacks on two left-aligned lines at line-height 1.25, \"對方\" over the reason, with the +/- icon vertically centred on the right, in `px-3` cells so nothing clips. Below 360px viewport width the label font scales down from 24px. Front and back zones keep `leading-7` so their natural height is 44px, and rows use `minmax(44px, 1fr)` so they grow on taller screens. Zone 0 rows may scroll slightly on iPhone SE 2/3 and non-iPhone screens up to 360px wide; every other iPhone needs no scroll. Phone landscape and desktop recording layout are handled separately.",
   "alternatives": [
     {
       "option": "Keep one column and scroll",

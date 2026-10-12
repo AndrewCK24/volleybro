@@ -101,7 +101,7 @@
      coarse-pointer value below is the HIG 44pt minimum touch target. */
   --control-size: 2.25rem;
   --control-size-lg: 2.5rem;
-  /* General page header content height: a control plus 8px above and below. */
+  /* Page header height, including the game overview header; not the recording page header. */
   --header-height: calc(var(--control-size) + 1rem);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-right: env(safe-area-inset-right);

@@ -25,8 +25,8 @@ export function GameOverviewSkeleton() {
   return (
     <>
       {/* mirrors Header: fixed top bar with back button + title */}
-      <div className="flex h-[calc(env(safe-area-inset-top)+3rem)] w-full items-center gap-4 border-b-2 border-accent bg-card px-[5%] pt-[env(safe-area-inset-top)]">
-        <Skeleton className="size-(--control-size) rounded-md" />{" "}
+      <div className="flex h-[calc(env(safe-area-inset-top)+var(--header-height))] w-full items-center gap-4 border-b-2 border-accent bg-card px-[5%] pt-[env(safe-area-inset-top)]">
+        <Skeleton className="size-(--control-size) rounded-full" />{" "}
         {/* back button */}
         <Skeleton className="my-0.5 h-5 w-24 flex-1" /> {/* title */}
       </div>
