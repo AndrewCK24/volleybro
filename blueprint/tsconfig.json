@@ -13,6 +13,10 @@
     "jsx": "react-jsx",
     "incremental": true,
     "paths": {
+      "@/components/AnnotatedDiff": ["./src/components/annotated-diff.tsx"],
+      "@/components/InteractiveFlowchart": ["./src/components/interactive-flowchart.tsx"],
+      "@/components/RiskTable": ["./src/components/risk-table.tsx"],
+      "@/components/Scenario": ["./src/components/scenario.tsx"],
       "@/*": ["./src/*"]
     },
     "target": "ES2022"
