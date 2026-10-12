@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
-import { FigureBadges } from "./FigureBadges";
+import { FigureBadges } from "./figure-badges";
 
 describe("FigureBadges", () => {
   it("shows insertions and deletions as separate badges, named for screen readers", () => {

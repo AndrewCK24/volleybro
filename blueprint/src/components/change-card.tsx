@@ -1,4 +1,4 @@
-import { FigureBadges } from "@/components/FigureBadges";
+import { FigureBadges } from "@/components/figure-badges";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,

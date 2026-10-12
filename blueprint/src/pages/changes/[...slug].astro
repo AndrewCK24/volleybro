@@ -1,11 +1,12 @@
 ---
 import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import { FigureBadges } from "../../components/FigureBadges";
-import { ChangeHeader } from "../../components/ChangeHeader";
+import { FigureBadges } from "../../components/figure-badges";
+import { ChangeHeader } from "../../components/change-header";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
 import FlowchartIsland from "../../components/interactive-flowchart-island.astro";
+import DecisionCardsIsland from "../../components/decision-cards-island.astro";
 import MockupIsland from "../../components/mockup-island.astro";
 import AnnotatedDiffHtml from "../../components/annotated-diff.astro";
 import { changeMdxComponents } from "../../lib/mdx-components";
@@ -57,7 +58,7 @@ const { Proposal, reviews } = (() => {
 const facts = readFacts(slug);
 const shardFacts = new Map((facts.shards?.items ?? []).map((item) => [item.shard, item]));
 const mdxComponents = {
-  ...changeMdxComponents(),
+  ...changeMdxComponents(DecisionCardsIsland),
   AnnotatedDiff: AnnotatedDiffHtml,
   InteractiveFlowchart: FlowchartIsland,
   DesignMockup: MockupIsland,

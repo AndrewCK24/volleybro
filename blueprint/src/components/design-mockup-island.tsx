@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { MockupFrame } from "./MockupFrame";
+import { MockupFrame } from "./mockup-frame";
 
 type DesignModule = { default: ComponentType };
 

@@ -1,4 +1,4 @@
-import { MockupFrame } from "./MockupFrame";
+import { MockupFrame } from "./mockup-frame";
 import LogoRedesign from "../../content/changes/logo-v-splash-redesign/design";
 import {
   // @ts-expect-error injected by retainedDesignExports

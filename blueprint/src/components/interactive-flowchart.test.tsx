@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { InteractiveFlowchart } from "./InteractiveFlowchart";
+import { InteractiveFlowchart } from "./interactive-flowchart";
 
 const nodes = [
   { id: "a", label: "Node A", x: 50, y: 50 },

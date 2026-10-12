@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 
-import { ChangeTabs } from "./ChangeTabs";
-import { ActionItems, ReviewDetails, ReviewFocus } from "./ReviewSections";
-import { ScenarioResults, TestPlan } from "./ScenarioCards";
+import { ChangeTabs } from "./change-tabs";
+import { ActionItems, ReviewDetails, ReviewFocus } from "./review-sections";
+import { ScenarioResults, TestPlan } from "./scenario-cards";
 
 // fumadocs-ui ships ESM that jest does not transform; the stub renders the
 // props ChangeTabs decides, which is what these tests are about. Hash sync
