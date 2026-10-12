@@ -17,8 +17,7 @@ import { FiMinus, FiPlus } from "react-icons/fi";
 import { RiRepeat2Line } from "react-icons/ri";
 
 // px-3 replaces `lg`'s px-8, which clipped the icon in a half-width cell. See ADR-0122.
-const ERROR_CELL_CLASS =
-  "flex-col items-start justify-center gap-0 px-3 py-0.5 leading-none";
+const ERROR_CELL_CLASS = "justify-between gap-1 px-3 py-0.5 leading-tight";
 
 export const OursMoves = () => {
   const dispatch = useAppDispatch();
@@ -54,11 +53,11 @@ export const OursMoves = () => {
           >
             {zone === 0 ? (
               <>
-                <span className="flex w-full items-center justify-between">
-                  對方
-                  <Icon className="size-6" />
+                <span className="flex flex-col items-start text-left">
+                  <span>對方</span>
+                  <span>{move.text}失誤</span>
                 </span>
-                {move.text}失誤
+                <Icon className="size-6" />
               </>
             ) : (
               <>
