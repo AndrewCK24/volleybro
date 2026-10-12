@@ -287,24 +287,24 @@ Incumbent Landing examples: header shell 16/6/10, theme switcher 10/4/6, entry c
 
 Actions use medium radius (`rounded-md`) and a clear label. The current default visual height is `h-9` (36px), within the existing 36–38px baseline. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.
 
-**Adopted sizing rules; implementation is pending the button-size delivery shard:**
+Button sizes are `default`, `lg` and `icon`. Under `pointer: coarse` all three are 44px tall; under `pointer: fine` they are 36, 40 and 36×36. Buttons are for actions only; list rows use Item.
 
-| Context                              | Size / rule                                                             |
-| ------------------------------------ | ----------------------------------------------------------------------- |
-| Page primary action and form submit  | lg                                                                      |
-| In-section action and dialog footer  | default                                                                 |
-| List-row action                      | wide                                                                    |
-| Header/back/close icon control       | 44×44 CSS px for touch; 36 under pointer: fine; no outline, glass shell |
-| Back / close glyph                   | RiArrowLeftSLine / RiCloseLine                                          |
-| Chips                                | Segmented chip treatment with a 44px hit area                           |
-| Recording move buttons               | Known exception; measure before deciding                                |
-| Navigation FAB and Landing CTAButton | Own their sizes                                                         |
+| Context                                   | Size / rule                                                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Page primary action and every form submit | lg, including submits inside dialogs                                                                          |
+| In-section action and AlertDialog actions | default                                                                                                       |
+| Buttons side by side                      | Same size; variant shows importance (default/destructive over outline/secondary)                              |
+| Header/back/close icon control            | icon with the `glass` variant: 44×44 CSS px for touch, 36 under pointer: fine, no outline                     |
+| Back / close glyph                        | RiArrowLeftSLine / RiCloseLine                                                                                |
+| Segmented choice                          | `buttonVariants`: unselected secondary, selected default, 44px under touch, `aria-pressed` or radio semantics |
+| Recording scoring-move buttons            | At least 44px tall; opponent errors use two columns                                                           |
+| Navigation FAB and Landing CTAButton      | Own their sizes                                                                                               |
 
-Frontmatter component samples describe the shipped default primitives, not the pending icon/chip changes. Glass belongs to floating controls; this does not require a whole-app glass redesign. HIG motivates the touch-target rule; CSS px are the web project's units, not native points. SwiftUI correspondence: primary actions, toolbar controls, dismiss actions and segmented selection.
+Glass belongs only to floating header, back and close controls; other icon actions keep their semantic fills and keyboard focus. This does not require a whole-app glass redesign. HIG motivates the touch-target rule; CSS px are the web project's units, not native points. SwiftUI correspondence: primary actions, toolbar controls, dismiss actions and segmented selection.
 
 ### Item-first data surfaces
 
-Prefer Item composition for scannable data rows: `bg-card + shadow-sm + ring-1 ring-transparent`. Use semantic Separator elements between content. Small ItemMedia blocks may use an inset ring to define their edges. Keep fetching and loading ownership in the component that owns the data; the [Components Feature](blueprint/content/features/platform/design-system/components/index.mdx) documents behavioral composition.
+Prefer Item composition for scannable data rows and for tappable list rows such as menu, setting and picker rows (`asChild` over a button or link, `min-h-11`; a selected row uses Item `primary` with `aria-pressed`): `bg-card + shadow-sm + ring-1 ring-transparent`. Use semantic Separator elements between content. Small ItemMedia blocks may use an inset ring to define their edges. Keep fetching and loading ownership in the component that owns the data; the [Components Feature](blueprint/content/features/platform/design-system/components/index.mdx) documents behavioral composition.
 
 ### Hover and states
 
@@ -338,7 +338,7 @@ Follow Apple HIG for hierarchy, feedback and accessibility when applying these r
 - Don't reuse the `destructive` token family for opponent data or errors; this does not prohibit red error feedback.
 - Don't add a decorative container ring to express elevation; preserve functional accessibility edges and keyboard focus.
 - Don't use `accent` as a page or resting surface background.
-- Don't present the pending button-size rules as already implemented.
+- Don't use a full-width Button as a list row; use Item.
 
 ### Motion extensions
 

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "id": "0122",
+  "title": "Recording-panel scoring-move buttons reach 44px with two-column opponent errors",
+  "capabilities": ["game-recording/rally-recording"],
+  "context": "The opponent-error column stacked six rows that measured 16 to 36px tall on most iPhones; only Pro Max and Plus models reached 44px, so scoring moves fell below the touch target and short screens risked scrolling mid-rally.",
+  "decision": "Opponent-error reasons render in two columns of three rows, keeping the label text and the trailing +/- icon. Below 360px viewport width the label font scales down from 24px so labels neither overflow nor wrap. `MoveButton` adds `leading-7` so its natural height is 44px, and rows use `minmax(44px, 1fr)` so they grow on taller screens. Phone landscape and desktop recording layout are handled separately.",
+  "alternatives": [
+    {
+      "option": "Keep one column and scroll",
+      "reason": "Scrolling during a live rally costs more time than a denser grid."
+    },
+    {
+      "option": "Compress rows or shorten labels to fit",
+      "reason": "Rows would stay under 44px on most iPhones, or the labels would lose meaning."
+    },
+    {
+      "option": "Shrink the court to make room",
+      "reason": "The court is the main context for the scorer and shrinking it reduces its legibility."
+    }
+  ],
+  "consequences": [
+    "The landing record demo renders the real GamePanel and also changes to two columns.",
+    "A measurement fixture over iPhone viewports guards the geometry."
+  ],
+  "revisitTriggers": [
+    "A supported device cannot fit the two-column layout without scrolling or label overflow."
+  ],
+  "originChange": "design-authority"
+}

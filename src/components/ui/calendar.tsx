@@ -407,9 +407,8 @@ const CaptionLabel = ({
   if (!showYearSwitcher) return <span {...props}>{children}</span>;
   return (
     <Button
-      className="h-7 w-full truncate text-sm font-medium"
+      className="w-full truncate text-sm font-medium"
       variant="ghost"
-      size="sm"
       onClick={() => setNavView((prev) => (prev === "days" ? "years" : "days"))}
     >
       {navView === "days"

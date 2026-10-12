@@ -117,15 +117,10 @@ export const InvitationOverlayPattern: Story = {
       <ItemContent>
         <ItemTitle className="h-8">Thunder</ItemTitle>
         <ItemFooter className="relative z-10 w-fit">
-          <Button size="sm" className="pr-3 pl-2" onClick={() => {}}>
+          <Button className="pr-3 pl-2" onClick={() => {}}>
             接受邀請
           </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="pr-3 pl-2"
-            onClick={() => {}}
-          >
+          <Button variant="secondary" className="pr-3 pl-2" onClick={() => {}}>
             拒絕邀請
           </Button>
         </ItemFooter>

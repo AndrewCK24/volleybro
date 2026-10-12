@@ -23,14 +23,14 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm ring-1 ring-transparent hover:bg-secondary/80",
         ghost: "hover:bg-muted/50",
         link: "text-primary-text underline-offset-4 hover:underline",
+        glass:
+          "bg-background/94 text-foreground shadow-lg backdrop-blur-sm hover:bg-background",
       },
       size: {
-        default: "h-9 px-3.5 py-2 [&>svg]:size-5",
-        xs: "h-6 px-2 py-1 text-xs [&>svg]:size-4",
-        sm: "h-8 px-3 py-1.5 text-xs [&>svg]:size-4",
-        lg: "h-10 px-8 py-2 text-lg [&>svg]:size-6",
+        default: "h-9 px-3.5 py-2 pointer-coarse:h-11 [&>svg]:size-5",
+        lg: "h-10 px-8 py-2 text-lg pointer-coarse:h-11 [&>svg]:size-6",
         wide: "h-10 w-full justify-start px-3 py-2 text-lg [&>svg]:size-6",
-        icon: "size-8 [&>svg]:size-7",
+        icon: "size-9 pointer-coarse:size-11 [&>svg]:size-7",
       },
     },
     defaultVariants: {

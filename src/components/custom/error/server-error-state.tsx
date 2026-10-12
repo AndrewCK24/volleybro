@@ -20,7 +20,7 @@ export function ServerErrorState({
         {ERROR_MESSAGES.SERVER_ERROR.description}
       </AlertDescription>
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry}>
+        <Button variant="outline" onClick={onRetry}>
           <RiRefreshLine />
           再試一次
         </Button>

@@ -32,11 +32,12 @@ const meta = {
         "secondary",
         "ghost",
         "link",
+        "glass",
       ],
       control: { type: "select" },
     },
     size: {
-      options: ["default", "xs", "sm", "lg", "wide", "icon"],
+      options: ["default", "lg", "wide", "icon"],
       control: { type: "select" },
     },
   },
