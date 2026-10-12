@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 
 import type { DecisionRecord } from "@/lib/decision-record";
 
-import { DecisionTimeline } from "./DecisionTimeline";
+import { DecisionTimeline } from "./decision-timeline";
 
 const decision = {
   schemaVersion: 2 as const,
