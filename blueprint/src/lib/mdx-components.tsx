@@ -1,27 +1,26 @@
 import defaultMdxComponents from "fumadocs-ui/mdx";
 
-import { AnnotatedDiff } from "@/components/AnnotatedDiff";
-import { CardList } from "@/components/CardList";
-import { DecisionCard } from "@/components/decision-card";
-import { StatusBadge } from "@/components/StatusBadge";
+import { AnnotatedDiff } from "@/components/annotated-diff";
+import { StatusBadge } from "@/components/status-badge";
 import {
   ActionItems,
   AfterRelease,
   Deviations,
   ReviewDetails,
   ReviewFocus,
-} from "@/components/ReviewSections";
-import { RiskTable } from "@/components/RiskTable";
-import { Scenario } from "@/components/Scenario";
+} from "@/components/review-sections";
+import { RiskTable } from "@/components/risk-table";
+import { Scenario } from "@/components/scenario";
 import {
   ScenarioResults,
   Scenarios,
   TestPlan,
-} from "@/components/ScenarioCards";
-import { TLDR } from "@/components/TLDR";
-import { decisionsById } from "@/lib/decisions-index";
+} from "@/components/scenario-cards";
+import { TLDR } from "@/components/tldr";
 
-export function changeMdxComponents() {
+export function changeMdxComponents<TDecisionCards>(
+  decisionCardsAdapter: TDecisionCards,
+) {
   return {
     ...defaultMdxComponents,
     TLDR,
@@ -43,38 +42,7 @@ export function changeMdxComponents() {
     Deviations,
     AfterRelease,
     ReviewDetails,
-    DecisionCards: ({ ids: decisionIds = [] }: { ids?: string[] }) => {
-      const onPage = new Set(decisionIds);
-      const cards = decisionsById(decisionIds).map((record) => {
-        const replacement = record.supersededBy;
-        if (!replacement) return { record };
-        if (onPage.has(replacement)) {
-          return { record, supersededHref: `#adr-${replacement}` };
-        }
-        const [capability] =
-          decisionsById([replacement])[0]?.capabilities ?? [];
-        return {
-          record,
-          supersededHref: capability
-            ? `/features/${capability}#adr-${replacement}`
-            : undefined,
-        };
-      });
-      if (cards.length === 0) return null;
-
-      return (
-        <CardList>
-          {cards.map(({ record, supersededHref }) => (
-            <DecisionCard
-              key={record.id}
-              record={record}
-              mode="compact"
-              supersededHref={supersededHref}
-            />
-          ))}
-        </CardList>
-      );
-    },
+    DecisionCards: decisionCardsAdapter,
   };
 }
 

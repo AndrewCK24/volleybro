@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { CardList } from "@/components/CardList";
+import { CardList } from "@/components/card-list";
 import { DecisionCard } from "@/components/decision-card";
 import { Accordion } from "@/components/ui/accordion";
 import type { DecisionRecord } from "@/lib/decision-record";

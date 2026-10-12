@@ -1,6 +1,6 @@
 "use client";
 
-import { CardItem } from "@/components/CardList";
+import { CardItem } from "@/components/card-list";
 import {
   AccordionContent,
   AccordionItem,

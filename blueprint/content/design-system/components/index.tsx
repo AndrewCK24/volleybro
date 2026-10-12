@@ -1,8 +1,8 @@
-import { AnnotatedDiff } from "@/components/AnnotatedDiff";
-import { InteractiveFlowchart } from "@/components/InteractiveFlowchart";
-import { RiskTable } from "@/components/RiskTable";
-import { Scenario } from "@/components/Scenario";
-import { TLDR } from "@/components/TLDR";
+import { AnnotatedDiff } from "@/components/annotated-diff";
+import { InteractiveFlowchart } from "@/components/interactive-flowchart";
+import { RiskTable } from "@/components/risk-table";
+import { Scenario } from "@/components/scenario";
+import { TLDR } from "@/components/tldr";
 
 const flowchartNodes = [
   { id: "propose", label: "Propose", x: 90, y: 60 },

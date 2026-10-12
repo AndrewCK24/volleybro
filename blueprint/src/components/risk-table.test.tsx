@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { RiskTable } from "./RiskTable";
+import { RiskTable } from "./risk-table";
 
 describe("RiskTable", () => {
   const risks = [

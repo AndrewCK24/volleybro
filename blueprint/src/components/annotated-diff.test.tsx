@@ -4,7 +4,7 @@ jest.mock("fumadocs-ui/components/codeblock", () =>
   jest.requireActual("@test/support/fumadocs-codeblock"),
 );
 
-import { AnnotatedDiff } from "./AnnotatedDiff";
+import { AnnotatedDiff } from "./annotated-diff";
 
 describe("AnnotatedDiff", () => {
   it("renders unified additions and removals without the marker column", () => {

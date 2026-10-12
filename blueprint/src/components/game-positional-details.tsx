@@ -1,4 +1,4 @@
-import { AnnotatedDiff } from "@/components/AnnotatedDiff";
+import { AnnotatedDiff } from "@/components/annotated-diff";
 import type { DecisionRecord } from "@/lib/decision-record";
 
 import entriesAsSourceOfTruth from "../../content/decisions/0004-entries-as-source-of-truth.json";

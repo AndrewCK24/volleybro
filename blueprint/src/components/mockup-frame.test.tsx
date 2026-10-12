@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { renderToStaticMarkup as staticMarkup } from "react-dom/server";
 
-import { MockupFrame } from "./MockupFrame";
+import { MockupFrame } from "./mockup-frame";
 
 function Broken(): never {
   throw new Error("stale component");

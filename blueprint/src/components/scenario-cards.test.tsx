@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { ScenarioResults, TestPlan } from "./ScenarioCards";
+import { ScenarioResults, TestPlan } from "./scenario-cards";
 
 const scenarios = [
   { id: "S1", given: "a page", when: "it opens", then: "Proposal shows" },

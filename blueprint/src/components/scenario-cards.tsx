@@ -1,7 +1,7 @@
 "use client";
 
-import { CardItem, CardList } from "@/components/CardList";
-import { Scenario } from "@/components/Scenario";
+import { CardItem, CardList } from "@/components/card-list";
+import { Scenario } from "@/components/scenario";
 import { Badge } from "@/components/ui/badge";
 import { renderInline } from "@/lib/render-inline";
 import { cn } from "@/lib/utils";

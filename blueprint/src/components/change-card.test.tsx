@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
-import { ChangeCard } from "./ChangeCard";
+import { ChangeCard } from "./change-card";
 
 describe("ChangeCard", () => {
   it("shows state, date, and folds capabilities past two into a count", () => {
