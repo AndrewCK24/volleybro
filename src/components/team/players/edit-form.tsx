@@ -272,6 +272,7 @@ function InfoSection({
       )}
       <Button
         type="submit"
+        size="lg"
         className="w-full"
         loading={form.formState.isSubmitting}
         loadingText="儲存中"

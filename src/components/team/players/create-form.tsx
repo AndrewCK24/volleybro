@@ -224,6 +224,7 @@ export function CreateForm({ teamId, onStateChange }: CreateFormProps) {
       <DialogFooter>
         <Button
           type="submit"
+          size="lg"
           loading={form.formState.isSubmitting}
           loadingText="提交中"
           className="w-full"

@@ -40,6 +40,7 @@ export const DarkMode = () => {
           <DialogClose asChild>
             <Button
               variant={theme === "system" ? "default" : "secondary"}
+              aria-pressed={theme === "system"}
               onClick={() => setTheme("system")}
             >
               {theme === "system" ? <RiDeviceFill /> : <RiDeviceLine />}
@@ -49,6 +50,7 @@ export const DarkMode = () => {
           <DialogClose asChild>
             <Button
               variant={theme === "light" ? "default" : "secondary"}
+              aria-pressed={theme === "light"}
               onClick={() => setTheme("light")}
             >
               {theme === "light" ? <RiSunFill /> : <RiSunLine />}
@@ -58,6 +60,7 @@ export const DarkMode = () => {
           <DialogClose asChild>
             <Button
               variant={theme === "dark" ? "default" : "secondary"}
+              aria-pressed={theme === "dark"}
               onClick={() => setTheme("dark")}
             >
               {theme === "dark" ? <RiMoonFill /> : <RiMoonLine />}

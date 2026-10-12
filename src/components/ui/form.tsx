@@ -15,6 +15,7 @@ import {
 } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 interface FormProps<TFieldValues extends FieldValues> {
@@ -226,7 +227,8 @@ const FormRadioItem = ({
     <Label
       htmlFor={id}
       className={cn(
-        "flex h-9 flex-row items-center justify-center rounded-md border-2 border-primary text-lg font-medium transition-colors has-checked:bg-primary has-checked:text-primary-foreground",
+        buttonVariants({ variant: "secondary" }),
+        "has-checked:bg-primary has-checked:text-primary-foreground has-checked:hover:bg-primary/90 has-focus-visible:ring-ring",
         className,
       )}
     >

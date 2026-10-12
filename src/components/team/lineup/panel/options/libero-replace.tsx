@@ -197,7 +197,7 @@ export const LiberoReplaceDialog = ({
           />
         </DialogBody>
         <DialogFooter>
-          <Button type="submit">
+          <Button type="submit" size="lg">
             <RiCheckLine />
             確定
           </Button>

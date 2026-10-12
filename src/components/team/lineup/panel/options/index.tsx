@@ -84,7 +84,6 @@ export const LineupOptions = ({
                 </span>
                 <Button
                   variant="link"
-                  size="lg"
                   className="w-fit px-0"
                   onClick={() =>
                     dispatch(
@@ -124,7 +123,6 @@ export const LineupOptions = ({
                 <span className="flex-1">未入選名單 ({othersCount})</span>
                 <Button
                   variant="link"
-                  size="lg"
                   className="w-fit px-0"
                   onClick={() =>
                     dispatch(

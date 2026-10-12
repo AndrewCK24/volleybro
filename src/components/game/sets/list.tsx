@@ -102,22 +102,17 @@ const SetItem = ({
       </AccordionTrigger>
       <AccordionContent className="p-2">
         <div className="grid w-full grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => handleOptionsOpen(setIndex)}
-          >
+          <Button variant="outline" onClick={() => handleOptionsOpen(setIndex)}>
             <RiMoreLine className="size-6" />
             檢視設定
           </Button>
           {isFinished ? (
-            <Button size="lg" onClick={() => handleEditOpen(setIndex)}>
+            <Button onClick={() => handleEditOpen(setIndex)}>
               <RiListCheck className="size-6" />
               查看紀錄
             </Button>
           ) : (
             <Button
-              size="lg"
               onClick={() =>
                 router.push(`/game/${gameId}/sets/${setIndex}/entry`)
               }

@@ -82,6 +82,7 @@ export function PlayerInfo({ teamId, playerId }: PlayerInfoProps) {
 
       <Link
         variant="outline"
+        size="lg"
         className="w-full"
         href={`/team/${teamId}/players/${player.id}/edit`}
       >
