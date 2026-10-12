@@ -31,7 +31,7 @@ export const OursMoves = () => {
   return (
     <Container
       className={
-        // ADR-0122: rows share a tall panel but never drop below 44px.
+        // See ADR-0122.
         zone === 0 ? "auto-rows-[minmax(44px,1fr)]" : undefined
       }
     >
