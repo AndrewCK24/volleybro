@@ -30,7 +30,7 @@ Promote verified knowledge through `docs/agents/artifact-lifecycle.md` before th
 
 - Use an existing component only when it helps readers understand structure, comparison or interaction. Full skill outputs retain their relevant content without old Blueprint length caps.
 - Correct affected visual meaning with the spec; a substantive contract change follows Ingest. Meaning-preserving presentation edits to a new visual supplement do not themselves require G1 again. Accepted historical page contents stay unchanged.
-- Keep component string props plain, apart from supported backtick inline code; SVG flowchart labels remain plain text. Put SVG `<text>` content on the opening tag's line.
+- Component string props use `renderInline`: backtick-quoted spans render as code and single-level matched `**...**` spans render as semantic strong text. Unmarked text stays plain, unmatched `**` remains literal, and code spans take precedence over markers. SVG flowchart labels remain plain text. Put SVG `<text>` content on the opening tag's line.
 - Put MDX block component opening/closing tags on their own lines.
 - Write Change prose in zh-tw with English technical terms; Features/Design System, scenario strings, ADRs and agent-facing documents use English.
 - Titles name the Change, not a tab. Derive figures from generated facts rather than copying counts. Other-Change references and prose wrapping follow `CONTRIBUTING.md`.
