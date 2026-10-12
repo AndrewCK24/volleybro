@@ -36,7 +36,7 @@ const dialogContentVariants = cva(
     variants: {
       size: {
         default: "top-[50%] max-h-[85svh] max-w-[90vw]",
-        lg: "top-[calc(50%+(var(--safe-area-inset-top)+3rem)/2)] h-[calc(100%-var(--safe-area-inset-top)-3rem)] w-full sm:max-w-196",
+        lg: "top-[calc(50%+(var(--safe-area-inset-top)+var(--header-height))/2)] h-[calc(100%-var(--safe-area-inset-top)-var(--header-height))] w-full sm:max-w-196",
       },
     },
     defaultVariants: { size: "default" },
