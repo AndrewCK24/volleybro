@@ -88,7 +88,7 @@ export const Substitutes = ({
           return (
             <PickerRow
               key={substitute.id}
-              number={substitute.number}
+              code={substitute.number}
               label={substitute.name}
               pressed={toggled}
               onClick={() =>

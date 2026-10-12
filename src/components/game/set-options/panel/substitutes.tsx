@@ -37,7 +37,7 @@ export const Substitutes = ({ gameId }: { gameId: string }) => {
             <PickerRow
               key={member.id}
               icon={<RiUserFollowLine className="size-6" />}
-              number={member.number}
+              code={member.number}
               label={member.name}
               onClick={() =>
                 dispatch(

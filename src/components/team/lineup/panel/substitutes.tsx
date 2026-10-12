@@ -73,7 +73,7 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
           <PickerRow
             key={player.id}
             icon={<RiUserFollowLine className="size-6" />}
-            number={player.number}
+            code={player.number}
             label={player.name}
             onClick={() => handleSubstituteClick(player, index)}
           />
@@ -85,7 +85,7 @@ export const Substitutes = ({ players, others }: SubstitutesProps) => {
           <PickerRow
             key={player.id}
             icon={<RiUserLine className="size-6" />}
-            number={player.number}
+            code={player.number}
             label={player.name}
             onClick={() => handleOtherClick(player, index)}
           />

@@ -63,7 +63,7 @@ export const Positions = () => {
         return (
           <PickerRow
             key={position.value}
-            number={position.value}
+            code={position.value}
             label={position.text}
             pressed={toggled}
             disabled={

@@ -2,14 +2,15 @@ import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 /** A tappable list row in a player or position picker. */
 export const PickerRow = ({
-  number,
+  code,
   label,
   icon,
   pressed,
   disabled,
   onClick,
 }: {
-  number?: React.ReactNode;
+  /** Jersey number or position code, e.g. "7" or "OH". */
+  code?: React.ReactNode;
   label: React.ReactNode;
   icon?: React.ReactNode;
   /** Set only for rows that show a current selection. */
@@ -26,7 +27,7 @@ export const PickerRow = ({
     >
       {icon && <ItemMedia>{icon}</ItemMedia>}
       <ItemMedia className="basis-8 justify-end text-xl font-semibold">
-        {number || " "}
+        {code || " "}
       </ItemMedia>
       <ItemContent>
         <ItemTitle className="text-xl">{label}</ItemTitle>
