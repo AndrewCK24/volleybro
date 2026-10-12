@@ -76,6 +76,20 @@ describe("DecisionCard compact mode", () => {
     );
   });
 
+  it("renders authored strong text when expanded", () => {
+    const withStrongText = {
+      ...record,
+      decision: "Use **one shared renderer** across fields.",
+    };
+    renderCompact(withStrongText);
+    fireEvent.click(screen.getByRole("button", { name: /ADR-0045/ }));
+
+    expect(screen.getByText("one shared renderer")).toHaveProperty(
+      "tagName",
+      "STRONG",
+    );
+  });
+
   it("marks a superseded record and links to its replacement when expanded", () => {
     renderCompact(
       { ...record, supersededBy: "0061" },
@@ -165,5 +179,17 @@ describe("DecisionCard full mode", () => {
     renderFull({ ...fullRecord, supersededBy: "0045" });
 
     expect(screen.getByText("Superseded by 0045")).toBeInTheDocument();
+  });
+
+  it("renders authored strong text in full mode", () => {
+    renderFull({
+      ...fullRecord,
+      decision: "Use **one canonical** input.",
+    });
+
+    expect(screen.getByText("one canonical")).toHaveProperty(
+      "tagName",
+      "STRONG",
+    );
   });
 });

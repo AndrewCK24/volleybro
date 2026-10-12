@@ -24,4 +24,33 @@ describe("renderInline", () => {
     render(<div>{renderInline("a stray ` backtick")}</div>);
     expect(screen.getByText("a stray ` backtick")).toBeInTheDocument();
   });
+
+  it("renders a matched strong span with semantic markup", () => {
+    render(
+      <div>{renderInline("A **critical** result with **two spans**.")}</div>,
+    );
+
+    expect(screen.getByText("critical")).toHaveProperty("tagName", "STRONG");
+    expect(screen.getByText("two spans")).toHaveProperty("tagName", "STRONG");
+  });
+
+  it("leaves unmatched strong markers literal", () => {
+    render(<div>{renderInline("An unmatched ** marker")}</div>);
+
+    expect(screen.getByText("An unmatched ** marker")).toBeInTheDocument();
+  });
+
+  it("keeps complete code spans atomic while allowing code inside strong text", () => {
+    render(
+      <div role="group" aria-label="rendered inline text">
+        {renderInline("`**literal**` and **bold `code`**")}
+      </div>,
+    );
+
+    expect(screen.getByText("**literal**")).toHaveProperty("tagName", "CODE");
+    expect(
+      screen.getByRole("group", { name: "rendered inline text" }),
+    ).toContainHTML("<strong>bold <code>code</code></strong>");
+    expect(screen.getByText("code")).toHaveProperty("tagName", "CODE");
+  });
 });

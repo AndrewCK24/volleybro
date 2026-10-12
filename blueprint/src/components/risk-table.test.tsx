@@ -35,4 +35,22 @@ describe("RiskTable", () => {
 
     expect(screen.getByText("cache.ts").tagName).toBe("CODE");
   });
+
+  it("renders strong text in the name and mitigation fields", () => {
+    render(
+      <RiskTable
+        risks={[
+          {
+            name: "Blocked **write** path",
+            severity: "critical",
+            mitigation: "Rebuild **stale** data via `reindex`.",
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("write")).toHaveProperty("tagName", "STRONG");
+    expect(screen.getByText("stale")).toHaveProperty("tagName", "STRONG");
+    expect(screen.getByText("reindex")).toHaveProperty("tagName", "CODE");
+  });
 });
