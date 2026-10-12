@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
-import { ChangeHeader } from "./ChangeHeader";
+import { ChangeHeader } from "./change-header";
 
 describe("ChangeHeader", () => {
   it("links each capability to its Feature page and shows the gate", () => {

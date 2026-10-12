@@ -194,7 +194,7 @@ Test thoroughly across contexts:
 - **Scroll across it**: A swipe along the page's scroll axis across the control scrolls the page or container without activating it; a drag that starts on the control along its axis moves the control, not the page. Neither failure throws an error, so try both
 - **Evidence**: Say what produced the evidence: an emulated viewport, synthesized touch input through a browser tool, which engine ran it (Chromium is not Safari), or a physical device. Screenshots and resized viewports verify layout, never a gesture. Name what stayed untested and move on; unreachable hardware is a reported gap, not a blocker
 
-When the adaptation feels native to each context, hand off to `/impeccable polish` for the final pass.
+When the adaptation feels native to each context, hand off to `$impeccable polish` for the final pass.
 
 ---
 

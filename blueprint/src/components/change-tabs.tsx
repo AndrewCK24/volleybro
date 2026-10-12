@@ -8,15 +8,15 @@ import {
 } from "react";
 import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 
-import { FigureBadges } from "@/components/FigureBadges";
+import { FigureBadges } from "@/components/figure-badges";
 import {
   ActionItems,
   AfterRelease,
   Deviations,
   ReviewDetails,
   ReviewFocus,
-} from "@/components/ReviewSections";
-import { ScenarioResults, TestPlan } from "@/components/ScenarioCards";
+} from "@/components/review-sections";
+import { ScenarioResults, TestPlan } from "@/components/scenario-cards";
 import type { ChangeFacts } from "@/lib/change-meta";
 
 const REVIEW_ORDER: unknown[] = [
