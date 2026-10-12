@@ -1,7 +1,8 @@
 import defaultMdxComponents from "fumadocs-ui/mdx";
 
 import { AnnotatedDiff } from "@/components/AnnotatedDiff";
-import { DecisionCards } from "@/components/DecisionCards";
+import { CardList } from "@/components/CardList";
+import { DecisionCard } from "@/components/decision-card";
 import { StatusBadge } from "@/components/StatusBadge";
 import {
   ActionItems,
@@ -59,7 +60,20 @@ export function changeMdxComponents() {
             : undefined,
         };
       });
-      return <DecisionCards cards={cards} />;
+      if (cards.length === 0) return null;
+
+      return (
+        <CardList>
+          {cards.map(({ record, supersededHref }) => (
+            <DecisionCard
+              key={record.id}
+              record={record}
+              mode="compact"
+              supersededHref={supersededHref}
+            />
+          ))}
+        </CardList>
+      );
     },
   };
 }

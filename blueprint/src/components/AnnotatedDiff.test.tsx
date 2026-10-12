@@ -1,16 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import type { ReactNode } from "react";
-
-jest.mock("fumadocs-ui/components/codeblock", () => {
-  const { createElement } = jest.requireActual<typeof import("react")>("react");
-  return {
-    CodeBlock: ({ children }: { children: ReactNode }) =>
-      createElement("figure", null, children),
-    Pre: ({ children }: { children: ReactNode }) =>
-      createElement("pre", null, children),
-  };
-});
+jest.mock("fumadocs-ui/components/codeblock", () =>
+  jest.requireActual("@test/support/fumadocs-codeblock"),
+);
 
 import { AnnotatedDiff } from "./AnnotatedDiff";
 
