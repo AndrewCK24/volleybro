@@ -98,7 +98,7 @@ export const StatsCarousel = () => {
             <Icon />
           </Button>
         ))}
-        <div className="absolute top-full left-1/2 mt-1 flex -translate-x-1/2 items-center">
+        <div className="absolute top-full left-1/2 mt-1 flex -translate-x-1/2 items-center pointer-coarse:gap-3">
           {SLIDES.map((slide, index) => (
             <button
               key={slide.title}

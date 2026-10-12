@@ -19,7 +19,7 @@ export const ThemeSwitch = () => {
       role="group"
       aria-label="色彩主題"
       className={cn(
-        "flex items-center gap-1 rounded-2xl p-1.5 ring-1",
+        "flex items-center gap-1 rounded-2xl p-1.5 ring-1 pointer-coarse:gap-2",
         GLASS_PILL,
       )}
     >

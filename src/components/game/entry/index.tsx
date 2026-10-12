@@ -221,7 +221,10 @@ export const EntryRow = ({
           <Entry
             entry={entry}
             players={players}
-            className={cn(failed && "ring-1 ring-error")}
+            className={cn(
+              failed &&
+                "ring-1 ring-error pointer-coarse:min-h-(--control-size)",
+            )}
           />
           {failed && (
             <FailedWriteRetry
