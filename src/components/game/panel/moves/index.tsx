@@ -81,9 +81,9 @@ export const Container = ({
 };
 
 const WIN_STYLE =
-  "bg-primary/30 text-foreground [&>svg]:text-primary-text shadow-sm hover:bg-primary/80";
+  "bg-primary/30 text-foreground [&_svg]:text-primary-text shadow-sm hover:bg-primary/80";
 const LOSE_STYLE =
-  "bg-away/30 text-foreground [&>svg]:text-away-text shadow-sm hover:bg-away/80";
+  "bg-away/30 text-foreground [&_svg]:text-away-text shadow-sm hover:bg-away/80";
 
 const moveLook = (
   win: boolean,
@@ -103,13 +103,16 @@ export const MoveButton = ({
   move,
   toggled,
   onClick,
+  className,
   children,
+  ...props
 }: {
   move: ScoringMove;
   toggled: boolean;
   onClick: (move: ScoringMove) => void;
+  className?: string;
   children?: React.ReactNode;
-}) => {
+} & Pick<React.ComponentProps<"button">, "aria-label">) => {
   const look = moveLook(move.win, toggled);
 
   return (
@@ -121,8 +124,10 @@ export const MoveButton = ({
         MOVE_CELL_CLASS,
         "transition-colors duration-200",
         look.tint,
+        className,
       )}
       onClick={() => onClick(move)}
+      {...props}
     >
       {children}
     </Button>

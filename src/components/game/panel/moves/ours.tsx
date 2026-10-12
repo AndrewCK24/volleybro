@@ -16,6 +16,11 @@ import {
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { RiRepeat2Line } from "react-icons/ri";
 
+// Zone 0 stacks "對方" (with the +/- icon) over the reason on two tight lines so the label
+// fits a half-width cell; the shorter padding replaces `lg`'s px-8. See ADR-0122.
+const ERROR_CELL_CLASS =
+  "flex-col items-start justify-center gap-0 px-3 py-0.5 leading-none";
+
 export const OursMoves = () => {
   const dispatch = useAppDispatch();
   const gameState = useAppSelector((state) => state.game);
@@ -35,17 +40,36 @@ export const OursMoves = () => {
         zone === 0 ? "auto-rows-[minmax(44px,1fr)]" : undefined
       }
     >
-      {oursMoves.map((move) => (
-        <MoveButton
-          key={`${move.type}-${move.num}`}
-          move={move}
-          toggled={draft.home.num === move.num}
-          onClick={() => onOursClick(move)}
-        >
-          {zone === 0 ? `對方${move.text}失誤` : move.text}
-          {move.win ? <FiPlus /> : <FiMinus />}
-        </MoveButton>
-      ))}
+      {oursMoves.map((move) => {
+        const Icon = move.win ? FiPlus : FiMinus;
+        return (
+          <MoveButton
+            key={`${move.type}-${move.num}`}
+            move={move}
+            toggled={draft.home.num === move.num}
+            onClick={() => onOursClick(move)}
+            {...(zone === 0 && {
+              "aria-label": `對方${move.text}失誤`,
+              className: ERROR_CELL_CLASS,
+            })}
+          >
+            {zone === 0 ? (
+              <>
+                <span className="flex w-full items-center justify-between">
+                  對方
+                  <Icon className="size-6" />
+                </span>
+                {move.text}失誤
+              </>
+            ) : (
+              <>
+                {move.text}
+                <Icon />
+              </>
+            )}
+          </MoveButton>
+        );
+      })}
       {!!zone && (
         <Button
           variant="secondary"
