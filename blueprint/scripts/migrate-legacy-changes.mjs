@@ -321,6 +321,10 @@ function verifyManifest(manifest, slugs, prRows, storeRoot) {
       !/^[A-Z][A-Z0-9]*-[1-9]\d*$/u.test(entry.linearIssue)
     )
       throw new Error(`${entry.slug}: invalid Linear issue key.`);
+    if (!entry.linearIssue && entry.issueMapping !== "unresolved")
+      throw new Error(
+        `${entry.slug}: a missing source issue must remain explicitly unresolved.`,
+      );
     if (
       !Array.isArray(entry.pullRequests) ||
       new Set(entry.pullRequests.map((pr) => pr.number)).size !==
@@ -809,7 +813,7 @@ async function run(options) {
     const mapping = mappings.get(slug);
     const data = {
       ...titleAndDescription,
-      ...(mapping.linearIssue ? { linear_issue: mapping.linearIssue } : {}),
+      linear_issue: mapping.linearIssue ?? projectSpec.linearIssue,
       pull_requests: mapping.pullRequests.map(({ url }) => ({ url })),
       blocks: stableBlocks,
     };
@@ -841,6 +845,17 @@ async function run(options) {
       title: titleAndDescription.title,
       description: titleAndDescription.description ?? null,
       linearIssue: mapping.linearIssue ?? null,
+      acceptanceSource: mapping.linearIssue
+        ? {
+            type: "source-issue",
+            issue: mapping.linearIssue,
+          }
+        : {
+            type: "migration-acceptance",
+            issue: projectSpec.linearIssue,
+            reason:
+              "No trusted source issue mapping; this G1 accepts preservation and migration only, not the legacy product change.",
+          },
       issueMapping: mapping.issueMapping ?? "unresolved",
       evidence: mapping.evidence,
       pullRequests: mapping.pullRequests.map(
