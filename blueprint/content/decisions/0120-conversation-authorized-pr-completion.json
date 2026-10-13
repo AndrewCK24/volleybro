@@ -22,5 +22,5 @@
     "G1 snapshot authority, optional Proposal/history preservation and same-branch knowledge remain unchanged."
   ],
   "originChange": "pr-based-blueprint-workflow",
-  "supersededBy": "0124"
+  "supersededBy": "0126"
 }

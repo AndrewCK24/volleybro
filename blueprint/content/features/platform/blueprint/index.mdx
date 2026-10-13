@@ -3,7 +3,7 @@ title: Blueprint
 description: EmDash-published Change pages, GitHub-derived delivery status and repository-owned renderers.
 ---
 
-Blueprint presents current capability knowledge, the Design System and published Change pages. Git owns the renderer, block schemas, tests and workflow code. EmDash owns Change articles and their publication lifecycle.
+Blueprint presents current capability knowledge, the Design System and published Change pages. Git owns the renderer, block schemas, tests and workflow code. EmDash owns Change articles and their publication lifecycle. Authors and Agents write Portable Text and versioned Blueprint typed blocks directly through EmDash MCP.
 
 ## Change lifecycle
 
@@ -32,14 +32,14 @@ flowchart LR
 - Unmerged PR data is cached for at most five minutes. Merged results are cached by merge commit SHA. If GitHub is unavailable, a still-valid cache may be shown; with no verified result, the page remains **進行中** and omits PR metrics. Articles sort by `mergedAt ?? publishedAt`, newest first.
 - EmDash content publication changes the page on the next request without a Git build or deployment. Changes to renderers, schemas, Features or the Design System go through code PRs and deploy the Blueprint Worker. The VolleyBro app stays on Vercel.
 - Cloudflare use is limited to Free quotas: Workers Free, D1 Free and R2 Standard's included allowance. No Workers Paid plan or paid overage is enabled. R2 uploads stop at the implementation's conservative 8 GB storage and 100,000 monthly upload-request caps; a failed or unverifiable quota check blocks uploads. Recheck account-wide usage and the current limits before activation. If the Free limits cannot serve the workload, stop for a developer decision.
-- The legacy `blueprint-changes` snapshot contains 45 pages. Its page trees, proposal/review history, shard details, anchors and media migrate into EmDash, and only the latest effective accepted G1 specification is included for each matching Change. The current EmDash workflow specification is included in its own article. `record-flows` and `sync-recording` remain public historical pages marked **進行中**, with no invented PRs or PR-derived metrics; that migration exception does not accept or implement either Change.
+- The legacy `blueprint-changes` snapshot contains 45 pages. Convert it completely on the local machine and import it into an isolated EmDash environment. Every page must pass read-back, semantic and visual review, with archive and rollback evidence, before G2. Preserve page trees, proposal/review history, shard details, anchors, links, media bytes and alt text, and include only the latest effective accepted G1 specification for each matching Change. Formal production import reuses the same verified artifact without reconversion; environment-specific media references may be rebound and verified. `record-flows` and `sync-recording` remain public historical pages marked **進行中**, with no invented PRs or PR-derived metrics; that migration exception does not accept or implement either Change.
 - A protected archive tag preserves every commit reachable from the fixed legacy snapshot. Older commits already unreachable at that snapshot are not guaranteed. The store branch remains until migrated pages, media, PR mappings, read-back, tag and rollback evidence pass; deleting the remote branch is a later authorized retirement action.
 - Features and Design System pages remain repository content and continue to describe implemented capability and reusable UI rules. Do not place operational state or a duplicate Change specification in them.
 
 ## Constraints
 
 - Code and tests define runtime behavior. EmDash defines accepted Change specifications and public article content; Linear holds operational status and the accepted revision/hash; GitHub PRs prove G2 and provide merge status and metrics.
-- Block schemas are versioned, strict and allowlisted. `legacy_html` is limited to migration output and sanitized at render time. Never evaluate legacy `design.tsx` files during migration.
+- Portable Text and allowlisted, versioned typed blocks are the only content path. Reject raw HTML and executable content; retain no Markdown converter, Markdown/Rich Text renderer, legacy runtime block or sanitizer. Never evaluate legacy `design.tsx` files during migration. Keep one-time conversion/import tools until production import, read-back, cutover and rollback evidence are accepted, then remove them. Production activation is separately approved after G2.
 - Derivable values are not manually duplicated. A missing or unavailable source must not be replaced by a guess.
 - Decision records remain flat, repository-wide files at `blueprint/content/decisions/NNNN-<slug>.json`, with one schema definition. A record is adopted when written and is never copied, promoted or renumbered.
 - Blueprint Change prose uses zh-TW with English technical terms. Feature and Design System prose, scenario strings, decision records and agent-facing documents use English.

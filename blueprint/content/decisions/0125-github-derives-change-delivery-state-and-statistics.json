@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "id": "0125",
+  "title": "GitHub derives Change delivery state and statistics",
+  "capabilities": ["platform/blueprint"],
+  "context": "Published Change pages duplicated delivery status, merge dates and code measurements that GitHub already owns. A missing PR mapping or unavailable API result must not become invented completion evidence.",
+  "decision": "Treat EmDash PR URLs as a lookup index only. Derive Change status, mergedAt and PR statistics from the required GitHub PRs; a page with no PR URLs is valid and remains 進行中 without PR-derived metrics. A Change is 已合併 only when every required PR is merged, using the last required merge time. Derive scenario counts from typed scenario blocks. Store no manual status, merge date, metrics or facts.json copy in EmDash. Use only verified unexpired cache data; without a usable result, keep the page 進行中 and omit metrics.",
+  "alternatives": [
+    {
+      "option": "Store status and metrics in EmDash",
+      "reason": "Duplicates GitHub data and requires synchronization after every PR change."
+    },
+    {
+      "option": "Treat missing GitHub data as completion",
+      "reason": "Turns unavailable evidence into a false claim of delivery."
+    }
+  ],
+  "consequences": [
+    "Newly published Changes can appear before their first PR exists.",
+    "All required PRs must be mapped before a Change can become 已合併.",
+    "GitHub API failures do not block article rendering or fabricate metrics."
+  ],
+  "revisitTriggers": [
+    "GitHub API availability or rate limits make the accepted cache policy inadequate."
+  ],
+  "originChange": "emdash-blueprint-change-pages"
+}

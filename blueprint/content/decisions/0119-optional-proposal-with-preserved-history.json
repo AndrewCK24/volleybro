@@ -19,6 +19,5 @@
     "The complete accepted spec remains independent of visual presentation.",
     "Shared renderer changes are validated against published historical pages without rewriting them."
   ],
-  "originChange": "pr-based-blueprint-workflow",
-  "supersededBy": "0124"
+  "originChange": "pr-based-blueprint-workflow"
 }

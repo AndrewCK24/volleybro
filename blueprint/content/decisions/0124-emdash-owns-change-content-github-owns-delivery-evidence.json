@@ -1,39 +1,33 @@
 {
   "schemaVersion": 2,
   "id": "0124",
-  "title": "EmDash owns Change content and GitHub owns delivery evidence",
+  "title": "EmDash publication retires the Change store with a protected archive",
   "capabilities": ["platform/blueprint", "platform/delivery-workflow"],
-  "context": "Change pages and accepted specifications were stored in a separate Git branch or independent Team Docs. Every content publication required a Git build, while status and metrics duplicated values that GitHub already owns. The Blueprint needs live Change pages without weakening the human G1 and G2 gates or running executable content from the CMS.",
-  "decision": "Store each Blueprint Change as one EmDash entry at its stable slug. Before G1, keep the entry as a draft and render it only through EmDash's signed private preview. Linear records the accepted draft revision and content hash; publication verifies both before making the entry public. Versioned declarative blocks are rendered only through the allowlisted Blueprint Astro registry; executable TSX, JavaScript and arbitrary component names are never loaded from EmDash. GitHub PRs remain the G2 code-review surface, and the developer explicitly authorizes merge and owned cleanup after reviewing the exact PR revision. Required PR URLs are an index; GitHub derives public merge state, dates and code metrics, while structured content derives scenario counts. EmDash does not store manual status, merge dates, statistics or `facts.json` copies. Migrate the fixed legacy store snapshot into EmDash and retain a protected archive tag for its reachable commit graph. Retire the remote store only after migration, read-back, rollback and archive evidence pass and the retirement step is separately authorized.",
+  "context": "Blueprint Change pages lived on a dedicated Git branch. Moving publication to EmDash removes Git deployment from content updates, while the old store remains evidence that must be preserved and recoverable during migration.",
+  "decision": "Store each Blueprint Change as one EmDash entry at its stable slug. Retire the remote blueprint-changes store only after the fixed snapshot has been completely converted, all 45 pages have passed isolated import, read-back and per-page semantic and visual review, and archive plus rollback evidence is accepted before G2. Preserve every commit reachable from the fixed snapshot in a protected archive tag; earlier unreachable commits are not guaranteed. Formal production import reuses the same verified artifact without reconversion, with environment-specific media references rebound and verified. Keep one-time conversion and import tools until production import, read-back, formal cutover and rollback evidence are accepted, then remove them. Production activation is a separate post-G2 approval.",
   "alternatives": [
     {
-      "option": "Keep Change pages on the Git store branch",
-      "reason": "Content publication would continue to require the store push and a complete Blueprint deployment."
+      "option": "Retire the store before the EmDash migration is proven",
+      "reason": "Would discard the only complete source before content fidelity and recovery have been established."
     },
     {
-      "option": "Keep Team Docs as the accepted specification and duplicate page content in EmDash",
-      "reason": "Maintains two editable specification sources and makes the displayed page depend on a separate document."
+      "option": "Repeat conversion for production",
+      "reason": "Creates a second transformation with a different result from the artifact reviewed before G2."
     },
     {
-      "option": "Store status and PR measurements in EmDash",
-      "reason": "Duplicates GitHub data and requires a publisher or webhook to keep each manual field synchronized."
-    },
-    {
-      "option": "Evaluate CMS-provided JavaScript or TSX blocks",
-      "reason": "Turns author content into executable code and bypasses the repository's reviewed renderer and component registry."
+      "option": "Keep one-time tooling indefinitely",
+      "reason": "Leaves migration-only code and inputs as permanent maintenance surface after production acceptance."
     }
   ],
   "consequences": [
-    "A published G1 Change page becomes public without a Git build; renderer and schema changes still require a code PR and Worker deployment.",
-    "The public page has only `進行中` and `已合併` states, derived from all required GitHub PRs. G1/G2 acceptance remains in Linear and GitHub rather than public badges.",
-    "An unavailable GitHub result uses only an unexpired verified cache; otherwise the page stays `進行中` and omits PR metrics.",
-    "Migration preserves old page text, review history, anchors and media while removing `facts.json` from current status and statistics.",
-    "Cloudflare deployment and storage use Free quotas only. R2 migration uploads stop at conservative storage and operation reservations; resource creation, production activation and remote branch deletion remain separately authorized."
+    "EmDash publication changes a page without a Git commit, build or deployment.",
+    "The fixed snapshot remains recoverable through its protected reachable commit graph and retained final receipts.",
+    "The production import is reproducible from the exact artifact reviewed before G2; media references can be rebound for the target environment.",
+    "Production activation and remote store retirement remain explicitly authorized steps."
   ],
   "revisitTriggers": [
-    "EmDash cannot preserve or securely preview the accepted block schema and revision required by G1.",
-    "GitHub rate limits or the verified cache prevent public status from being useful within the accepted five-minute open-PR window.",
-    "Cloudflare Free quotas or account-wide usage cannot support the site without paid overage."
+    "The fixed snapshot cannot be fully represented by Portable Text and typed blocks without losing meaning.",
+    "The archive tag or rollback evidence cannot recover the verified migration source."
   ],
   "originChange": "emdash-blueprint-change-pages"
 }

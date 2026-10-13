@@ -4,7 +4,7 @@ Linear owns intake, execution status, dependencies, milestones and dispatch elig
 
 ## EmDash Change specification
 
-Each Blueprint Change has one EmDash entry at its stable kebab-case slug. The entry is the complete G1 specification and the page shown after acceptance; do not create a parallel Team Doc specification. Use a private EmDash preview at the same Blueprint route for G1 review. G1 acceptance authorizes ticket decomposition and implementation through G2; it does not authorize production resource setup or platform activation.
+Each Blueprint Change has one EmDash entry at its stable kebab-case slug. The entry is the complete G1 specification and the page shown after acceptance; do not create a parallel Team Doc specification. Authors and Agents write Portable Text and versioned typed blocks directly through EmDash MCP. Use a signed private EmDash preview at the same Blueprint route for G1 review. G1 acceptance authorizes ticket decomposition and implementation through G2; it does not authorize production resource setup or platform activation.
 
 The preview is bound to EmDash's exact draft revision and a canonical SHA-256 of the accepted fields: `title`, `description`, `linear_issue`, and versioned `blocks`. The `pull_requests` list is a lookup index and is excluded from that content hash. Before publishing, record this marker in the owning Linear issue description and read it back:
 
@@ -14,9 +14,9 @@ The preview is bound to EmDash's exact draft revision and a canonical SHA-256 of
 
 The EmDash publication policy fetches the issue from Linear and checks the marker against the saved revision and canonical hash. Missing, unreachable, malformed or mismatched evidence blocks publishing. If accepted content changes after review, create a new draft, preview it, and renew G1; do not overwrite the prior accepted specification. Updating only the PR URL index does not change the accepted hash.
 
-The execution issue holds the working state and accepted EmDash revision/hash. A newly accepted Change may publish immediately after G1 with an empty `pull_requests` list; it appears as **進行中** without PR-derived metrics until its PR URLs are added. G2 evidence belongs to the GitHub PR and names the G1 EmDash revision/hash. The PR does not copy the full specification. G2 reviews code only; it does not require a new EmDash publication. See `docs/agents/blueprint.md` for private preview and publication behavior.
+The execution issue holds the working state and accepted EmDash revision/hash. A newly accepted Change may publish immediately after G1 with an empty `pull_requests` list; it appears as **進行中** without PR-derived metrics until its PR URLs are added. GitHub is the source for status, merge dates and PR statistics; EmDash stores no manual copies. G2 evidence belongs to the GitHub PR and names the G1 EmDash revision/hash. The PR does not copy the full specification. G2 reviews code only; it does not require a new EmDash publication. See `docs/agents/blueprint.md` for private preview and publication behavior.
 
-Historical Team Docs remain in Linear as records. During migration, merge the latest effective accepted G1 specification into a matching Change entry, or create a standalone entry when the accepted Change has no legacy page. Keep superseded snapshots, research documents, and specs explicitly exempt from Blueprint Change pages in Linear.
+Historical Team Docs remain in Linear as records. During migration, merge the latest effective accepted G1 specification into a matching Change entry, or create a standalone entry when the accepted Change has no legacy page. Keep superseded snapshots, research documents, and specs explicitly exempt from Blueprint Change pages in Linear. For the 45-page legacy-store migration, G1 requires a complete local conversion and isolated EmDash import/read-back, per-page semantic and visual review, plus archive and rollback evidence before G2. Seal that verified artifact for formal production import without reconversion; target-environment media references may be rebound and verified. Production activation is separately approved after G2.
 
 ## Tickets and execution
 
