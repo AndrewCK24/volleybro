@@ -202,6 +202,7 @@ const changeDataBaseSchema = z.strictObject({
     .default([]),
   blocks: z.array(blockSchema),
   id: z.string().optional(),
+  slug: z.string().optional(),
   status: z.string().optional(),
   authorId: z.string().nullable().optional(),
   primaryBylineId: z.string().nullable().optional(),
@@ -209,10 +210,19 @@ const changeDataBaseSchema = z.strictObject({
   updatedAt: z.date().or(z.string()).optional(),
   publishedAt: z.date().or(z.string()).nullable().optional(),
   scheduledAt: z.date().or(z.string()).nullable().optional(),
-  draftRevisionId: z.string().optional(),
-  liveRevisionId: z.string().optional(),
+  draftRevisionId: z.string().nullable().optional(),
+  liveRevisionId: z.string().nullable().optional(),
   locale: z.string().optional(),
   translationGroup: z.string().nullable().optional(),
+  seo: z
+    .strictObject({
+      title: z.string().nullable(),
+      description: z.string().nullable(),
+      image: z.string().nullable(),
+      canonical: z.string().nullable(),
+      noIndex: z.boolean(),
+    })
+    .optional(),
 });
 
 function requireIssueForAuthoredContent(

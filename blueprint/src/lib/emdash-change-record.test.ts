@@ -123,6 +123,34 @@ describe("EmDash Change schema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts the native EmDash revision entry envelope", () => {
+    const result = changeDataSchema.safeParse({
+      ...content,
+      id: "01JREVISIONENTRY",
+      slug: "canonical-local-smoke",
+      status: "draft",
+      authorId: "author-1",
+      primaryBylineId: null,
+      createdAt: new Date("2026-10-14T00:00:00.000Z"),
+      updatedAt: new Date("2026-10-14T00:00:00.000Z"),
+      publishedAt: null,
+      scheduledAt: null,
+      draftRevisionId: null,
+      liveRevisionId: null,
+      locale: "en",
+      translationGroup: null,
+      seo: {
+        title: null,
+        description: null,
+        image: null,
+        canonical: null,
+        noIndex: false,
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects unsafe links and unapproved HTML blocks", () => {
     expect(
       blockSchema.safeParse({
