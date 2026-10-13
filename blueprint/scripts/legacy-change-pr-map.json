@@ -1,0 +1,715 @@
+{
+  "snapshot": "f010a9e020be8a342a7c7bafc31e2a361565135d",
+  "mappingEvidenceSource": "GitHub PR export plus fixed blueprint-changes snapshot; any agent judgment is identified per row.",
+  "entries": [
+    {
+      "slug": "api-objectid-guards",
+      "linearIssue": "ATE-22",
+      "issueMapping": "inferred",
+      "evidence": "PR #321 release table maps this slug to #304; #304 adds the shared ObjectId guard.",
+      "pullRequests": [
+        {
+          "number": 304,
+          "url": "https://github.com/andrewck24/volleybro/pull/304",
+          "method": "release-list",
+          "viaPr": 321,
+          "matchText": "api-objectid-guards",
+          "evidence": "PR #321 release table maps api-objectid-guards directly to https://github.com/andrewck24/volleybro/pull/304."
+        }
+      ]
+    },
+    {
+      "slug": "apple-splash-dynamic",
+      "issueMapping": "unresolved",
+      "evidence": "PR #321 maps this slug to #305; #306 explicitly archives the page after #305 delivered it.",
+      "pullRequests": [
+        {
+          "number": 305,
+          "url": "https://github.com/andrewck24/volleybro/pull/305",
+          "method": "release-list",
+          "viaPr": 321,
+          "matchText": "apple-splash-dynamic",
+          "evidence": "PR #321 release table maps apple-splash-dynamic directly to https://github.com/andrewck24/volleybro/pull/305."
+        },
+        {
+          "number": 306,
+          "url": "https://github.com/andrewck24/volleybro/pull/306",
+          "method": "review-link",
+          "sourceFile": "apple-splash-dynamic/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/306 link."
+        }
+      ]
+    },
+    {
+      "slug": "blueprint-build-archive",
+      "linearIssue": "ATE-211",
+      "issueMapping": "direct",
+      "evidence": "PR body names ATE-211 and the branch/title match this Change.",
+      "pullRequests": [
+        {
+          "number": 516,
+          "url": "https://github.com/andrewck24/volleybro/pull/516",
+          "method": "branch-title",
+          "matchText": "blueprint-build-archive",
+          "evidence": "PR branch/title contains the exact Change slug blueprint-build-archive."
+        }
+      ]
+    },
+    {
+      "slug": "blueprint-contract-guardrails",
+      "linearIssue": "ATE-167",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue scope match the contract guardrails Change.",
+      "pullRequests": [
+        {
+          "number": 448,
+          "url": "https://github.com/andrewck24/volleybro/pull/448",
+          "method": "branch-title",
+          "matchText": "blueprint-contract-guardrails",
+          "evidence": "PR branch/title contains the exact Change slug blueprint-contract-guardrails."
+        }
+      ]
+    },
+    {
+      "slug": "changes-index-cards",
+      "linearIssue": "ATE-181",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue description match the /changes card behavior.",
+      "pullRequests": [
+        {
+          "number": 440,
+          "url": "https://github.com/andrewck24/volleybro/pull/440",
+          "method": "branch-title",
+          "matchText": "changes-index-cards",
+          "evidence": "PR branch/title contains the exact Change slug changes-index-cards."
+        }
+      ]
+    },
+    {
+      "slug": "cold-start-team-snapshot",
+      "linearIssue": "ATE-243",
+      "issueMapping": "direct",
+      "evidence": "PR body links ATE-243 and describes the cold-start team snapshot.",
+      "pullRequests": [
+        {
+          "number": 479,
+          "url": "https://github.com/andrewck24/volleybro/pull/479",
+          "method": "branch-title",
+          "matchText": "cold-start-team-snapshot",
+          "evidence": "PR branch/title contains the exact Change slug cold-start-team-snapshot."
+        }
+      ]
+    },
+    {
+      "slug": "commit-guardrails",
+      "linearIssue": "ATE-184",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match the commit guardrails Change.",
+      "pullRequests": [
+        {
+          "number": 422,
+          "url": "https://github.com/andrewck24/volleybro/pull/422",
+          "method": "branch-title",
+          "matchText": "commit-guardrails",
+          "evidence": "PR branch/title contains the exact Change slug commit-guardrails."
+        }
+      ]
+    },
+    {
+      "slug": "contextual-edit-pages",
+      "linearIssue": "ATE-24",
+      "issueMapping": "inferred",
+      "evidence": "PR #321 maps the slug to #303; its review links #304 as a related API guard delivery.",
+      "pullRequests": [
+        {
+          "number": 303,
+          "url": "https://github.com/andrewck24/volleybro/pull/303",
+          "method": "release-list",
+          "viaPr": 321,
+          "matchText": "contextual-edit-pages",
+          "evidence": "PR #321 release table maps contextual-edit-pages directly to https://github.com/andrewck24/volleybro/pull/303."
+        },
+        {
+          "number": 304,
+          "url": "https://github.com/andrewck24/volleybro/pull/304",
+          "method": "review-link",
+          "sourceFile": "contextual-edit-pages/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/304 link."
+        }
+      ]
+    },
+    {
+      "slug": "dialog-close-ownership",
+      "linearIssue": "ATE-43",
+      "issueMapping": "direct",
+      "evidence": "Legacy Review links #409 and the PR body names ATE-43.",
+      "pullRequests": [
+        {
+          "number": 409,
+          "url": "https://github.com/andrewck24/volleybro/pull/409",
+          "method": "review-link",
+          "sourceFile": "dialog-close-ownership/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/409 link."
+        }
+      ]
+    },
+    {
+      "slug": "elevation-depth-system",
+      "issueMapping": "unresolved",
+      "evidence": "Legacy Review links #318; no unique canonical Linear issue was found.",
+      "pullRequests": [
+        {
+          "number": 318,
+          "url": "https://github.com/andrewck24/volleybro/pull/318",
+          "method": "review-link",
+          "sourceFile": "elevation-depth-system/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/318 link."
+        }
+      ]
+    },
+    {
+      "slug": "entry-ui",
+      "issueMapping": "unresolved",
+      "evidence": "PR #321 lists #310 as design discussion and #311 as entry UI implementation; use #311 only.",
+      "pullRequests": [
+        {
+          "number": 311,
+          "url": "https://github.com/andrewck24/volleybro/pull/311",
+          "method": "release-list",
+          "viaPr": 321,
+          "matchText": "entry-ui",
+          "evidence": "PR #321 release table maps entry-ui directly to https://github.com/andrewck24/volleybro/pull/311."
+        }
+      ]
+    },
+    {
+      "slug": "error-display-boundary",
+      "linearIssue": "ATE-149",
+      "issueMapping": "direct",
+      "evidence": "Legacy Review links #406 and the PR body names ATE-149.",
+      "pullRequests": [
+        {
+          "number": 406,
+          "url": "https://github.com/andrewck24/volleybro/pull/406",
+          "method": "review-link",
+          "sourceFile": "error-display-boundary/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/406 link."
+        }
+      ]
+    },
+    {
+      "slug": "game-positional-writes",
+      "linearIssue": "ATE-105",
+      "issueMapping": "inferred",
+      "evidence": "Legacy Review links #375; Linear issue scope describes positional game writes.",
+      "pullRequests": [
+        {
+          "number": 375,
+          "url": "https://github.com/andrewck24/volleybro/pull/375",
+          "method": "review-link",
+          "sourceFile": "game-positional-writes/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/375 link."
+        }
+      ]
+    },
+    {
+      "slug": "gate-consolidation",
+      "linearIssue": "ATE-215",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue description match gate consolidation.",
+      "pullRequests": [
+        {
+          "number": 458,
+          "url": "https://github.com/andrewck24/volleybro/pull/458",
+          "method": "branch-title",
+          "matchText": "gate-consolidation",
+          "evidence": "PR branch/title contains the exact Change slug gate-consolidation."
+        }
+      ]
+    },
+    {
+      "slug": "honest-sync-status",
+      "linearIssue": "ATE-131",
+      "issueMapping": "inferred",
+      "evidence": "Legacy Review links #397; Linear issue scope describes the sync indicator behavior.",
+      "pullRequests": [
+        {
+          "number": 397,
+          "url": "https://github.com/andrewck24/volleybro/pull/397",
+          "method": "review-link",
+          "sourceFile": "honest-sync-status/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/397 link."
+        }
+      ]
+    },
+    {
+      "slug": "legacy-change-conversion",
+      "linearIssue": "ATE-165",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue description match conversion of legacy Change pages.",
+      "pullRequests": [
+        {
+          "number": 445,
+          "url": "https://github.com/andrewck24/volleybro/pull/445",
+          "method": "branch-title",
+          "matchText": "legacy-change-conversion",
+          "evidence": "PR branch/title contains the exact Change slug legacy-change-conversion."
+        }
+      ]
+    },
+    {
+      "slug": "lifecycle-owned-status",
+      "issueMapping": "unresolved",
+      "evidence": "Legacy Review links #377; PR references multiple lifecycle issues and does not establish one canonical issue.",
+      "pullRequests": [
+        {
+          "number": 377,
+          "url": "https://github.com/andrewck24/volleybro/pull/377",
+          "method": "review-link",
+          "sourceFile": "lifecycle-owned-status/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/377 link."
+        }
+      ]
+    },
+    {
+      "slug": "logo-v-splash-redesign",
+      "issueMapping": "unresolved",
+      "evidence": "Legacy Review links #339; no unique Linear issue was established.",
+      "pullRequests": [
+        {
+          "number": 339,
+          "url": "https://github.com/andrewck24/volleybro/pull/339",
+          "method": "review-link",
+          "sourceFile": "logo-v-splash-redesign/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/339 link."
+        }
+      ]
+    },
+    {
+      "slug": "migration-single-page",
+      "linearIssue": "ATE-227",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match the single-page migration.",
+      "pullRequests": [
+        {
+          "number": 464,
+          "url": "https://github.com/andrewck24/volleybro/pull/464",
+          "method": "branch-title",
+          "matchText": "migration-single-page",
+          "evidence": "PR branch/title contains the exact Change slug migration-single-page."
+        }
+      ]
+    },
+    {
+      "slug": "opaque-status-bar",
+      "linearIssue": "ATE-190",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue description match the opaque status bar Change.",
+      "pullRequests": [
+        {
+          "number": 427,
+          "url": "https://github.com/andrewck24/volleybro/pull/427",
+          "method": "branch-title",
+          "matchText": "opaque-status-bar",
+          "evidence": "PR branch/title contains the exact Change slug opaque-status-bar."
+        }
+      ]
+    },
+    {
+      "slug": "outbox-read-projection",
+      "linearIssue": "ATE-127",
+      "issueMapping": "inferred",
+      "evidence": "Legacy Review links #402; Linear issue description matches queued-rally read projection.",
+      "pullRequests": [
+        {
+          "number": 402,
+          "url": "https://github.com/andrewck24/volleybro/pull/402",
+          "method": "review-link",
+          "sourceFile": "outbox-read-projection/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/402 link."
+        }
+      ]
+    },
+    {
+      "slug": "pnpm12-toolchain",
+      "linearIssue": "ATE-189",
+      "issueMapping": "related-prerequisite",
+      "evidence": "Agent judgment: #484 is the approved pnpm 12 prerequisite of ATE-189, not a separate G1 Change.",
+      "pullRequests": [
+        {
+          "number": 484,
+          "url": "https://github.com/andrewck24/volleybro/pull/484",
+          "method": "agent-judgment",
+          "evidence": "Agent judgment: branch fast/pnpm12-upgrade, title, and body identify the ATE-189 prerequisite; no separate Change/G1."
+        }
+      ]
+    },
+    {
+      "slug": "rally-entry-validation",
+      "issueMapping": "unresolved",
+      "evidence": "Legacy Review links #403; ATE-140 is a follow-up, not this Change’s canonical issue.",
+      "pullRequests": [
+        {
+          "number": 403,
+          "url": "https://github.com/andrewck24/volleybro/pull/403",
+          "method": "review-link",
+          "sourceFile": "rally-entry-validation/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/403 link."
+        }
+      ]
+    },
+    {
+      "slug": "reconnect-without-reload",
+      "linearIssue": "ATE-135",
+      "issueMapping": "direct",
+      "evidence": "Legacy Review links #398; PR and ATE-135 describe the reconnect reload defect.",
+      "pullRequests": [
+        {
+          "number": 398,
+          "url": "https://github.com/andrewck24/volleybro/pull/398",
+          "method": "review-link",
+          "sourceFile": "reconnect-without-reload/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/398 link."
+        }
+      ]
+    },
+    {
+      "slug": "record-flows",
+      "linearIssue": "ATE-116",
+      "issueMapping": "direct",
+      "evidence": "ATE-116 names this Change; #377 only proposes it and does not deliver it.",
+      "pullRequests": []
+    },
+    {
+      "slug": "release-evidence-policy",
+      "linearIssue": "ATE-277",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match recovery evidence policy.",
+      "pullRequests": [
+        {
+          "number": 539,
+          "url": "https://github.com/andrewck24/volleybro/pull/539",
+          "method": "branch-title",
+          "matchText": "release-evidence-policy",
+          "evidence": "PR branch/title contains the exact Change slug release-evidence-policy."
+        }
+      ]
+    },
+    {
+      "slug": "release-owner-hotfix",
+      "linearIssue": "ATE-189",
+      "issueMapping": "related-parent",
+      "evidence": "PR branch/title match this delivery; ATE-189 is the release-train parent, not a separate canonical issue.",
+      "pullRequests": [
+        {
+          "number": 489,
+          "url": "https://github.com/andrewck24/volleybro/pull/489",
+          "method": "branch-title",
+          "matchText": "release-owner-hotfix",
+          "evidence": "PR branch/title contains the exact Change slug release-owner-hotfix."
+        }
+      ]
+    },
+    {
+      "slug": "release-qa-layers",
+      "linearIssue": "ATE-265",
+      "issueMapping": "direct",
+      "evidence": "PR body identifies the ATE-265/266/267 slices for the layered QA change.",
+      "pullRequests": [
+        {
+          "number": 514,
+          "url": "https://github.com/andrewck24/volleybro/pull/514",
+          "method": "branch-title",
+          "matchText": "release-qa-layers",
+          "evidence": "PR branch/title contains the exact Change slug release-qa-layers."
+        }
+      ]
+    },
+    {
+      "slug": "release-train",
+      "linearIssue": "ATE-189",
+      "issueMapping": "direct",
+      "evidence": "The four shard PR branches and bodies identify release-train and its delivery slices.",
+      "pullRequests": [
+        {
+          "number": 482,
+          "url": "https://github.com/andrewck24/volleybro/pull/482",
+          "method": "branch-title",
+          "matchText": "release-train",
+          "evidence": "PR branch/title contains the exact Change slug release-train."
+        },
+        {
+          "number": 483,
+          "url": "https://github.com/andrewck24/volleybro/pull/483",
+          "method": "branch-title",
+          "matchText": "release-train",
+          "evidence": "PR branch/title contains the exact Change slug release-train."
+        },
+        {
+          "number": 485,
+          "url": "https://github.com/andrewck24/volleybro/pull/485",
+          "method": "branch-title",
+          "matchText": "release-train",
+          "evidence": "PR branch/title contains the exact Change slug release-train."
+        },
+        {
+          "number": 486,
+          "url": "https://github.com/andrewck24/volleybro/pull/486",
+          "method": "branch-title",
+          "matchText": "release-train",
+          "evidence": "PR branch/title contains the exact Change slug release-train."
+        }
+      ]
+    },
+    {
+      "slug": "replace-agent-visual-review",
+      "linearIssue": "ATE-274",
+      "issueMapping": "direct",
+      "evidence": "PR branch/title and body name the Change and ATE-274.",
+      "pullRequests": [
+        {
+          "number": 542,
+          "url": "https://github.com/andrewck24/volleybro/pull/542",
+          "method": "branch-title",
+          "matchText": "replace-agent-visual-review",
+          "evidence": "PR branch/title contains the exact Change slug replace-agent-visual-review."
+        }
+      ]
+    },
+    {
+      "slug": "request-schema-boundary",
+      "linearIssue": "ATE-104",
+      "issueMapping": "direct",
+      "evidence": "Legacy Review links #404 and the PR body closes ATE-104.",
+      "pullRequests": [
+        {
+          "number": 404,
+          "url": "https://github.com/andrewck24/volleybro/pull/404",
+          "method": "review-link",
+          "sourceFile": "request-schema-boundary/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/404 link."
+        }
+      ]
+    },
+    {
+      "slug": "retryable-entry-writes",
+      "linearIssue": "ATE-113",
+      "issueMapping": "inferred",
+      "evidence": "Legacy Review links #378; Linear issue scope matches retryable entry writes.",
+      "pullRequests": [
+        {
+          "number": 378,
+          "url": "https://github.com/andrewck24/volleybro/pull/378",
+          "method": "review-link",
+          "sourceFile": "retryable-entry-writes/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/378 link."
+        }
+      ]
+    },
+    {
+      "slug": "retryable-queue-persistence",
+      "linearIssue": "ATE-121",
+      "issueMapping": "direct",
+      "evidence": "Legacy Review links #390 and PR body closes ATE-121.",
+      "pullRequests": [
+        {
+          "number": 390,
+          "url": "https://github.com/andrewck24/volleybro/pull/390",
+          "method": "review-link",
+          "sourceFile": "retryable-queue-persistence/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/390 link."
+        }
+      ]
+    },
+    {
+      "slug": "review-round-economy",
+      "linearIssue": "ATE-203",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match review-round economy.",
+      "pullRequests": [
+        {
+          "number": 436,
+          "url": "https://github.com/andrewck24/volleybro/pull/436",
+          "method": "branch-title",
+          "matchText": "review-round-economy",
+          "evidence": "PR branch/title contains the exact Change slug review-round-economy."
+        }
+      ]
+    },
+    {
+      "slug": "reviewer-standards-split",
+      "linearIssue": "ATE-185",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match the reviewer standards split.",
+      "pullRequests": [
+        {
+          "number": 426,
+          "url": "https://github.com/andrewck24/volleybro/pull/426",
+          "method": "branch-title",
+          "matchText": "reviewer-standards-split",
+          "evidence": "PR branch/title contains the exact Change slug reviewer-standards-split."
+        }
+      ]
+    },
+    {
+      "slug": "single-page-change",
+      "linearIssue": "ATE-180",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match the single-page Change rollout.",
+      "pullRequests": [
+        {
+          "number": 434,
+          "url": "https://github.com/andrewck24/volleybro/pull/434",
+          "method": "branch-title",
+          "matchText": "single-page-change",
+          "evidence": "PR branch/title contains the exact Change slug single-page-change."
+        }
+      ]
+    },
+    {
+      "slug": "single-page-rollout",
+      "linearIssue": "ATE-196",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match the single-page rollout.",
+      "pullRequests": [
+        {
+          "number": 438,
+          "url": "https://github.com/andrewck24/volleybro/pull/438",
+          "method": "branch-title",
+          "matchText": "single-page-rollout",
+          "evidence": "PR branch/title contains the exact Change slug single-page-rollout."
+        }
+      ]
+    },
+    {
+      "slug": "standalone-decision-records",
+      "linearIssue": "ATE-174",
+      "issueMapping": "inferred",
+      "evidence": "Legacy Review links #421; Linear issue title matches standalone decision records.",
+      "pullRequests": [
+        {
+          "number": 421,
+          "url": "https://github.com/andrewck24/volleybro/pull/421",
+          "method": "branch-title",
+          "matchText": "standalone-decision-records",
+          "evidence": "PR branch/title contains the exact Change slug standalone-decision-records."
+        }
+      ]
+    },
+    {
+      "slug": "sync-recording",
+      "linearIssue": "ATE-17",
+      "issueMapping": "related-parent",
+      "evidence": "ATE-35/37 identify sync-recording under ATE-17; #310 is discussion and #311 entry-ui delivery, not this Change.",
+      "pullRequests": []
+    },
+    {
+      "slug": "team-membership-authorization",
+      "linearIssue": "ATE-159",
+      "issueMapping": "direct",
+      "evidence": "Legacy Review links #410 and the PR body names ATE-159.",
+      "pullRequests": [
+        {
+          "number": 410,
+          "url": "https://github.com/andrewck24/volleybro/pull/410",
+          "method": "review-link",
+          "sourceFile": "team-membership-authorization/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/410 link."
+        }
+      ]
+    },
+    {
+      "slug": "team-routes-clean-architecture",
+      "issueMapping": "unresolved",
+      "evidence": "PR #303 title/body describes the playerId clean-architecture refactor; no unique Linear issue was established.",
+      "pullRequests": [
+        {
+          "number": 303,
+          "url": "https://github.com/andrewck24/volleybro/pull/303",
+          "method": "pr-body",
+          "matchText": "team-routes-clean-architecture",
+          "evidence": "PR body names the exact Change slug team-routes-clean-architecture."
+        }
+      ]
+    },
+    {
+      "slug": "testing-tiers",
+      "linearIssue": "ATE-219",
+      "issueMapping": "direct",
+      "evidence": "Four PR branches identify testing-tiers shards; ATE-223/224/225 are child slices.",
+      "pullRequests": [
+        {
+          "number": 466,
+          "url": "https://github.com/andrewck24/volleybro/pull/466",
+          "method": "branch-title",
+          "matchText": "testing-tiers",
+          "evidence": "PR branch/title contains the exact Change slug testing-tiers."
+        },
+        {
+          "number": 469,
+          "url": "https://github.com/andrewck24/volleybro/pull/469",
+          "method": "branch-title",
+          "matchText": "testing-tiers",
+          "evidence": "PR branch/title contains the exact Change slug testing-tiers."
+        },
+        {
+          "number": 470,
+          "url": "https://github.com/andrewck24/volleybro/pull/470",
+          "method": "branch-title",
+          "matchText": "testing-tiers",
+          "evidence": "PR branch/title contains the exact Change slug testing-tiers."
+        },
+        {
+          "number": 471,
+          "url": "https://github.com/andrewck24/volleybro/pull/471",
+          "method": "branch-title",
+          "matchText": "testing-tiers",
+          "evidence": "PR branch/title contains the exact Change slug testing-tiers."
+        }
+      ]
+    },
+    {
+      "slug": "triage-state-mapping",
+      "linearIssue": "ATE-186",
+      "issueMapping": "inferred",
+      "evidence": "PR branch/title and Linear issue title match triage state mapping.",
+      "pullRequests": [
+        {
+          "number": 432,
+          "url": "https://github.com/andrewck24/volleybro/pull/432",
+          "method": "branch-title",
+          "matchText": "triage-state-mapping",
+          "evidence": "PR branch/title contains the exact Change slug triage-state-mapping."
+        }
+      ]
+    },
+    {
+      "slug": "two-gate-workflow",
+      "issueMapping": "unresolved",
+      "evidence": "PR branch/title describes the two-gate store workflow; no unique Linear issue was established.",
+      "pullRequests": [
+        {
+          "number": 415,
+          "url": "https://github.com/andrewck24/volleybro/pull/415",
+          "method": "branch-title",
+          "matchText": "two-gate-workflow",
+          "evidence": "PR branch/title contains the exact Change slug two-gate-workflow."
+        }
+      ]
+    },
+    {
+      "slug": "unified-software-delivery-workflow",
+      "issueMapping": "unresolved",
+      "evidence": "Legacy Review links #364; ATE-10 and ATE-57 are related contract/rollout issues without one canonical issue.",
+      "pullRequests": [
+        {
+          "number": 364,
+          "url": "https://github.com/andrewck24/volleybro/pull/364",
+          "method": "review-link",
+          "sourceFile": "unified-software-delivery-workflow/review.mdx",
+          "evidence": "Legacy review.mdx contains the exact https://github.com/andrewck24/volleybro/pull/364 link."
+        }
+      ]
+    }
+  ]
+}
