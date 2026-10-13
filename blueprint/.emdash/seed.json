@@ -12,7 +12,7 @@
       "description": "Accepted and published Blueprint Change pages",
       "icon": "arrows-left-right",
       "supports": ["drafts", "revisions", "preview", "search"],
-      "urlPattern": "/changes/:slug",
+      "urlPattern": "/changes/{slug}",
       "titleField": "title",
       "fields": [
         {
