@@ -121,6 +121,41 @@ test("converts an accessible SVG flowchart to typed graph data", () => {
   );
 });
 
+test("reconstructs accessible rect and line diagrams with every text label", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<svg role="img"><title>Build path</title><desc>Credential boundary</desc><rect x="16" y="16" width="192" height="48"></rect><text><tspan x="112" y="32">Native build</tspan></text><text><tspan x="112" y="50">No credential</tspan></text><rect x="16" y="100" width="192" height="48"></rect><text><tspan x="112" y="116">Static export</tspan></text><text><tspan x="112" y="134">Upload artifact</tspan></text><line x1="112" y1="64" x2="112" y2="100" marker-end="url(#arrow)"></line></svg>',
+    "build-path",
+  );
+  assert.equal(result[0]._type, "interactive_flowchart");
+  assert.deepEqual(
+    JSON.parse(result[0].nodes).map(({ label, sublabel }) => [label, sublabel]),
+    [
+      ["Native build", "No credential"],
+      ["Static export", "Upload artifact"],
+    ],
+  );
+  assert.deepEqual(
+    JSON.parse(result[0].edges).map(({ from, to }) => [from, to]),
+    [["build-path-flow-node-1", "build-path-flow-node-2"]],
+  );
+  assert.equal(JSON.parse(result[0].details).__diagram.title, "Build path");
+  assert.equal(
+    JSON.parse(result[0].details).__diagram.body,
+    "Credential boundary",
+  );
+});
+
+test("fails closed when accessible SVG diagram geometry is not mapped", () => {
+  assert.throws(
+    () =>
+      convertRenderedHtmlToPortableText(
+        '<svg role="img"><circle cx="10" cy="10" r="8"></circle><text><tspan x="10" y="10">Visible</tspan></text></svg>',
+        "unmapped-diagram",
+      ),
+    /unsupported flowchart geometry/u,
+  );
+});
+
 test("converts accepted Markdown structure and fails closed on raw HTML", () => {
   const result = convertMarkdownToPortableText(
     "## Scope\n\nKeep **all** [links](https://example.test).\n\n1. First\n2. Second\n\n```ts\nconst x = 1;\n```",

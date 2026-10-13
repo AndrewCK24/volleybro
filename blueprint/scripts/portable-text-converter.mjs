@@ -36,6 +36,20 @@ function stableKey(prefix, index) {
   return `${prefix}-${index + 1}`;
 }
 
+function renderedNodePath(node) {
+  const path = [];
+  for (
+    let current = node;
+    current && path.length < 6;
+    current = current.parentNode
+  ) {
+    const name = current.tagName ?? current.nodeName ?? "unknown";
+    const id = attr(current, "id");
+    path.unshift(`${name}${id ? `#${id}` : ""}`);
+  }
+  return path.join(" > ");
+}
+
 function makeBlock(style, children, id, index, markDefs) {
   const block = {
     _type: "block",
@@ -575,6 +589,160 @@ function isScenario(node) {
   return ["GIVEN", "WHEN", "THEN"].every((label) => content.includes(label));
 }
 
+function accessibleSvgFlowchart(svg, descendants, index, slug) {
+  const under = (node, ancestor) => {
+    for (let current = node; current; current = current.parentNode)
+      if (current === ancestor) return true;
+    return false;
+  };
+  const inDefs = (node) =>
+    descendants.some(
+      (candidate) => candidate.tagName === "defs" && under(node, candidate),
+    );
+  const rects = descendants.filter(
+    (node) => node.tagName === "rect" && !inDefs(node),
+  );
+  const lines = descendants.filter(
+    (node) => node.tagName === "line" && !inDefs(node),
+  );
+  if (
+    !rects.length ||
+    !lines.length ||
+    descendants.some(
+      (node) =>
+        ["polygon", "ellipse", "circle", "polyline", "path"].includes(
+          node.tagName,
+        ) && !inDefs(node),
+    )
+  )
+    throw new Error(
+      `${slug}: accessible SVG diagram uses unsupported flowchart geometry.`,
+    );
+
+  const numberAttr = (node, name) => {
+    const value = Number(attr(node, name));
+    return Number.isFinite(value) ? value : null;
+  };
+  const nested = (node) =>
+    (node.childNodes ?? []).flatMap((child) => [child, ...nested(child)]);
+  const labels = descendants
+    .filter((node) => node.tagName === "text")
+    .map((node, labelIndex) => {
+      const positioned = [node, ...nested(node)];
+      return {
+        text: text(node).replace(/\s+/gu, " ").trim(),
+        x: positioned
+          .map((part) => numberAttr(part, "x"))
+          .find(Number.isFinite),
+        y: positioned
+          .map((part) => numberAttr(part, "y"))
+          .find(Number.isFinite),
+        labelIndex,
+      };
+    })
+    .filter((label) => label.text);
+  const nodes = rects.map((rect, nodeIndex) => {
+    const x = numberAttr(rect, "x");
+    const y = numberAttr(rect, "y");
+    const w = numberAttr(rect, "width");
+    const h = numberAttr(rect, "height");
+    if ([x, y, w, h].some((value) => value === null))
+      throw new Error(
+        `${slug}: accessible SVG flowchart node has incomplete geometry.`,
+      );
+    const contained = labels
+      .filter(
+        (label) =>
+          Number.isFinite(label.x) &&
+          Number.isFinite(label.y) &&
+          label.x >= x &&
+          label.x <= x + w &&
+          label.y >= y &&
+          label.y <= y + h,
+      )
+      .sort(
+        (left, right) => left.y - right.y || left.labelIndex - right.labelIndex,
+      );
+    if (!contained.length)
+      throw new Error(
+        `${slug}: accessible SVG flowchart node has no mapped visible label.`,
+      );
+    return {
+      id: `${slug}-flow-node-${nodeIndex + 1}`,
+      label: contained[0].text,
+      ...(contained.length > 1
+        ? {
+            sublabel: contained
+              .slice(1)
+              .map((label) => label.text)
+              .join(" "),
+          }
+        : {}),
+      x,
+      y,
+      w,
+      h,
+      shape: "box",
+      labelIndexes: contained.map((label) => label.labelIndex),
+    };
+  });
+  const usedLabels = new Set(nodes.flatMap((node) => node.labelIndexes));
+  if (labels.some((label) => !usedLabels.has(label.labelIndex)))
+    throw new Error(
+      `${slug}: accessible SVG has visible text outside mapped flowchart nodes.`,
+    );
+  const nearestNode = (x, y) =>
+    nodes
+      .map((node) => ({
+        node,
+        distance: Math.hypot(node.x + node.w / 2 - x, node.y + node.h / 2 - y),
+      }))
+      .sort((left, right) => left.distance - right.distance)[0]?.node;
+  const edges = lines.map((line) => {
+    const coordinates = ["x1", "y1", "x2", "y2"].map((name) =>
+      numberAttr(line, name),
+    );
+    if (coordinates.some((value) => value === null))
+      throw new Error(
+        `${slug}: accessible SVG flowchart edge has incomplete geometry.`,
+      );
+    const [x1, y1, x2, y2] = coordinates;
+    const from = nearestNode(x1, y1);
+    const to = nearestNode(x2, y2);
+    if (!from || !to || from === to)
+      throw new Error(
+        `${slug}: accessible SVG flowchart edge cannot be mapped to nodes.`,
+      );
+    return { from: from.id, to: to.id };
+  });
+  const title = descendants.find((node) => node.tagName === "title");
+  const description = descendants.find((node) => node.tagName === "desc");
+  const details = Object.fromEntries(
+    nodes.map((node) => [
+      node.id,
+      { title: node.label, body: node.sublabel ?? "" },
+    ]),
+  );
+  details.__diagram = {
+    title: text(title ?? { childNodes: [] }).trim(),
+    body: text(description ?? { childNodes: [] }).trim(),
+  };
+  return {
+    _type: "interactive_flowchart",
+    _version: 1,
+    _key: stableKey("flowchart", index),
+    nodes: JSON.stringify(
+      nodes.map((node) => {
+        const output = { ...node };
+        delete output.labelIndexes;
+        return output;
+      }),
+    ),
+    edges: JSON.stringify(edges),
+    details: JSON.stringify(details),
+  };
+}
+
 function diagramBlock(svg, index, slug, source) {
   const descendants = [];
   const visit = (node) => {
@@ -617,6 +785,13 @@ function diagramBlock(svg, index, slug, source) {
       details: JSON.stringify(source.details),
     };
   }
+  if (
+    attr(svg, "role") === "img" &&
+    !descendants.some((node) =>
+      /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? ""),
+    )
+  )
+    return accessibleSvgFlowchart(svg, descendants, index, slug);
   const attrNumber = (node, name) => {
     const value = Number(attr(node, name));
     return Number.isFinite(value) ? value : null;
@@ -778,7 +953,12 @@ export function convertRenderedHtmlToPortableText(
       return;
     }
     const tag = node.tagName;
-    if (!tag) throw new Error(`${slug}: unsupported rendered node.`);
+    if (!tag) {
+      const nodeName = node.nodeName ?? "unknown";
+      throw new Error(
+        `${slug}: unsupported rendered node nodeName=${nodeName} tagName=${String(tag)} path=${renderedNodePath(node)}.`,
+      );
+    }
     if (tag === "svg") {
       if (attr(node, "aria-hidden") === "true") return;
       const flowchart = structured.flowcharts[flowchartIndex.value];

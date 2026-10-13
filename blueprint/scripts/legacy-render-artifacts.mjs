@@ -39,15 +39,32 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
   const normalizedSource = normalizeCss(sourceMdx);
   const artifacts = walk(
     fragment,
-    (node) => node.tagName === "style" || node.tagName === "script",
+    (node) =>
+      node.nodeName === "#comment" ||
+      node.tagName === "style" ||
+      node.tagName === "script",
   );
 
   for (const node of artifacts) {
     const tag = node.tagName;
-    const body = rawText(node);
+    const kind = node.nodeName === "#comment" ? "comment" : "element";
+    const body = kind === "comment" ? node.data : rawText(node);
     const hash = sha256(body);
     let provenance;
-    if (tag === "style") {
+    if (kind === "comment") {
+      if (body === "astro:end" && node.parentNode?.tagName === "astro-island")
+        provenance = "renderer-island-boundary";
+      else if (
+        body.trim() === "" &&
+        node.parentNode?.tagName === "span" &&
+        node.parentNode.parentNode?.tagName === "span"
+      )
+        provenance = "renderer-inline-separator";
+      else
+        throw new Error(
+          `${slug}: rendered comment has no verified renderer provenance (${hash}).`,
+        );
+    } else if (tag === "style") {
       if (hash === ASTRO_ISLAND_STYLE_SHA256)
         provenance = "renderer-island-presentation";
       else if (body.trim() && normalizedSource.includes(normalizeCss(body)))
@@ -70,7 +87,12 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
     const index = parent.childNodes.indexOf(node);
     if (index < 0) throw new Error(`${slug}: render artifact is detached.`);
     parent.childNodes.splice(index, 1);
-    removed.push({ sha256: hash, bytes: Buffer.byteLength(body), provenance });
+    removed.push({
+      kind: kind === "comment" ? "comment" : tag,
+      sha256: hash,
+      bytes: Buffer.byteLength(body),
+      provenance,
+    });
   }
 
   return { html: serialize(fragment), removed };
