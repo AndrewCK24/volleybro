@@ -1,4 +1,4 @@
-import { definePlugin } from "emdash";
+import { ContentSaveRejectedError, definePlugin } from "emdash";
 import type { PluginDescriptor } from "emdash";
 import { z } from "astro/zod";
 import { acceptedContentHash, changeDataSchema } from "./emdash-change-record";
@@ -22,6 +22,7 @@ export function createPlugin() {
     id: PLUGIN_ID,
     version: PLUGIN_VERSION,
     capabilities: [
+      "content:write",
       "hooks.content-policy:register",
       "network:request",
       "media:read",
@@ -44,6 +45,16 @@ export function createPlugin() {
       },
     },
     hooks: {
+      "content:beforeSave": async (event) => {
+        if (event.collection !== "blueprint_changes") return;
+
+        const parsed = changeDataSchema.safeParse(event.content);
+        if (!parsed.success) {
+          throw new ContentSaveRejectedError(
+            "Change content does not match the canonical Blueprint schema.",
+          );
+        }
+      },
       "media:beforeUpload": async (event, context) => {
         if (!context.media)
           throw new Error("Media access is unavailable; uploads are blocked.");
