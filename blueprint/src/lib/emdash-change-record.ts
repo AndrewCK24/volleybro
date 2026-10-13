@@ -113,7 +113,7 @@ const changeDataBaseSchema = z.strictObject({
   description: z.string().optional(),
   linear_issue: z
     .string()
-    .regex(/^ATE-[1-9]\d*$/u)
+    .regex(/^[A-Z][A-Z0-9]*-[1-9]\d*$/u)
     .optional(),
   pull_requests: z
     .array(
@@ -172,7 +172,7 @@ const acceptedContentBaseSchema = z.strictObject({
   description: z.string().optional(),
   linear_issue: z
     .string()
-    .regex(/^ATE-[1-9]\d*$/u)
+    .regex(/^[A-Z][A-Z0-9]*-[1-9]\d*$/u)
     .optional(),
   blocks: z.array(blockSchema),
 });
@@ -194,18 +194,7 @@ function omitCmsKeys(value: unknown): unknown {
 function acceptedHashProjection(value: z.infer<typeof acceptedContentSchema>) {
   return {
     ...value,
-    blocks: value.blocks.map((block) => {
-      if (block._type === "legacy_media") {
-        return {
-          _type: block._type,
-          _version: block._version,
-          key: block.key,
-          sha256: block.sha256,
-          alt: block.alt,
-        };
-      }
-      return omitCmsKeys(block);
-    }),
+    blocks: value.blocks.map(omitCmsKeys),
   };
 }
 

@@ -8,7 +8,7 @@ import {
 
 const content = {
   title: "Example Change",
-  linear_issue: "ATE-294",
+  linear_issue: "TEST-123",
   pull_requests: [{ url: "https://github.com/andrewck24/volleybro/pull/552" }],
   blocks: [
     {
@@ -103,5 +103,55 @@ describe("EmDash Change schema", () => {
       ],
     });
     expect(after).toBe(before);
+  });
+
+  it("binds migrated image identity and storage location to the accepted hash", async () => {
+    const mediaContent = {
+      title: "Historical Change",
+      linear_issue: "TEST-123",
+      blocks: [
+        {
+          _type: "legacy_media",
+          _version: 1,
+          key: "legacy-image-alpha-abc123",
+          sha256: "a".repeat(64),
+          alt: "Diagram",
+          asset: {
+            id: "media-alpha",
+            provider: "local",
+            filename: "alpha.png",
+            mimeType: "image/png",
+            meta: { storageKey: "accepted-object.png" },
+          },
+        },
+      ],
+    };
+    const acceptedHash = await acceptedContentHash(mediaContent);
+
+    await expect(
+      acceptedContentHash({
+        ...mediaContent,
+        blocks: [
+          {
+            ...mediaContent.blocks[0],
+            asset: {
+              ...mediaContent.blocks[0].asset,
+              meta: { storageKey: "different-object.png" },
+            },
+          },
+        ],
+      }),
+    ).resolves.not.toBe(acceptedHash);
+    await expect(
+      acceptedContentHash({
+        ...mediaContent,
+        blocks: [
+          {
+            ...mediaContent.blocks[0],
+            asset: { ...mediaContent.blocks[0].asset, id: "media-other" },
+          },
+        ],
+      }),
+    ).resolves.not.toBe(acceptedHash);
   });
 });
