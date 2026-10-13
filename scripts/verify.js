@@ -25,10 +25,10 @@ export const LANE_COMMANDS = {
 };
 
 export const LANE_NAMES = Object.keys(LANE_COMMANDS);
-// The component tests wait on real timers with Jest's five-second timeout, so a
-// CPU shared with any other lane times them out; CI gives them a runner of
-// their own.
-const SOLO_LANE = "app-test";
+// The component tests wait on real timers with Jest's five-second timeout, and
+// Blueprint Jest workers can segfault while competing with build lanes. Run
+// both suites after the parallel lanes; CI gives them their own runners.
+const SOLO_LANES = ["blueprint", "app-test"];
 
 const EVERY_LANE_EXACT = new Set([
   "package.json",
@@ -140,9 +140,12 @@ export function planLanes(changedPaths, { all = false, full = false } = {}) {
 
 export function laneStages(plan) {
   const running = LANE_NAMES.filter((lane) => plan[lane].run);
-  const together = running.filter((lane) => lane !== SOLO_LANE);
-  const alone = running.filter((lane) => lane === SOLO_LANE);
-  return [together, alone].filter((stage) => stage.length > 0);
+  const together = running.filter((lane) => !SOLO_LANES.includes(lane));
+  const serialized = SOLO_LANES.filter((lane) => running.includes(lane));
+  return [
+    ...(together.length > 0 ? [together] : []),
+    ...serialized.map((lane) => [lane]),
+  ];
 }
 
 function git(args) {

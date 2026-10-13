@@ -86,10 +86,11 @@ test("root config patterns widen to every lane", () => {
   );
 });
 
-test("app-test runs alone, after every other lane", () => {
+test("Blueprint and app-test run alone after the parallel lanes", () => {
   const full = planLanes(["package.json"], { all: true });
   assert.deepEqual(laneStages(full), [
-    ["static", "workflow", "integration", "app-build", "blueprint"],
+    ["static", "workflow", "integration", "app-build"],
+    ["blueprint"],
     ["app-test"],
   ]);
 
@@ -97,7 +98,7 @@ test("app-test runs alone, after every other lane", () => {
   assert.deepEqual(laneStages(byDefault), [["static"], ["app-test"]]);
 
   const docsOnly = planLanes(["blueprint/x.mdx"], { all: true });
-  assert.deepEqual(laneStages(docsOnly), [["static", "blueprint"]]);
+  assert.deepEqual(laneStages(docsOnly), [["static"], ["blueprint"]]);
 });
 
 test("a decision record change runs Blueprint verification, not application or integration builds", () => {
