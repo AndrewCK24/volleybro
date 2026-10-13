@@ -1,71 +1,28 @@
 ---
-import { DecisionCardsList } from "./decision-cards";
-import { InteractiveFlowchart } from "./interactive-flowchart";
-import { RiskTable } from "./risk-table";
-import { Scenario } from "./scenario";
-import { Scenarios } from "./scenario-cards";
-import { EmDashRichText } from "./emdash-rich-text";
-import EmDashMarkdown from "./emdash-markdown.astro";
-import { blockSchema, parseJsonField } from "../lib/emdash-change-record";
-import { decisionCardsForIds } from "../lib/decision-cards";
-import { sanitizeLegacyHtml } from "../lib/sanitize-legacy-html";
-import { rewriteLegacyMediaImages } from "../lib/legacy-media";
+import { PortableText } from "emdash/ui";
 import { z } from "zod";
-
-const riskSchema = z.array(z.strictObject({
-  name: z.string(),
-  severity: z.enum(["critical", "warning", "info", "ok"]),
-  mitigation: z.string(),
-}));
-const scenarioSchema = z.array(z.strictObject({ id: z.string().min(1), given: z.string(), when: z.string(), then: z.string() }));
-const nodeSchema = z.array(z.strictObject({
-  id: z.string(), label: z.string(), x: z.number(), y: z.number(), sublabel: z.string().optional(),
-  w: z.number().optional(), h: z.number().optional(), shape: z.enum(["box", "diamond"]).optional(),
-}));
-const edgeSchema = z.array(z.strictObject({ from: z.string(), to: z.string(), label: z.string().optional(), dashed: z.boolean().optional(), route: z.enum(["curve"]).optional() }));
-const detailsSchema = z.record(z.string(), z.strictObject({ title: z.string(), body: z.string() }));
+import { blockSchema } from "../lib/emdash-change-record";
+import EmDashTypedBlock from "./emdash-typed-block.astro";
 
 const { blocks } = Astro.props as { blocks: unknown };
-if (!Array.isArray(blocks)) throw new Error("EmDash Change blocks must be an array.");
-const safeBlocks = blocks.map((block, index) => {
-  const parsed = blockSchema.safeParse(block);
-  if (!parsed.success) throw new Error(`Unsupported EmDash Change block at position ${index + 1}.`);
-  return parsed.data;
-});
+const parsedBlocks = z.array(blockSchema).safeParse(blocks);
+if (!parsedBlocks.success) {
+  throw new Error("EmDash Change content contains an unsupported Portable Text block.");
+}
+const value = parsedBlocks.data;
 ---
 
-<div class="prose flex-1" data-emdash-block-renderer="v1">
-  {safeBlocks.map((block) => {
-    if (block._type === "markdown") return <EmDashMarkdown markdown={block.markdown} />;
-    if (block._type === "prose") return <EmDashRichText value={block.value} />;
-    if (block._type === "legacy_html") {
-      const html = rewriteLegacyMediaImages(
-        sanitizeLegacyHtml(block.html),
-        safeBlocks.filter((candidate) => candidate._type === "legacy_media"),
-      );
-      return <div set:html={html} />;
-    }
-    if (block._type === "legacy_media") return null;
-    if (block._type === "decision_cards") {
-      const ids = parseJsonField(block.records, z.array(z.string()), "decision_cards.records");
-      return <DecisionCardsList cards={decisionCardsForIds(ids)} client:load />;
-    }
-    if (block._type === "risk_table") {
-      const risks = parseJsonField(block.risks, riskSchema, "risk_table.risks");
-      return <RiskTable risks={risks} />;
-    }
-    if (block._type === "scenario") return block.rendered_in_legacy_html ? null : <Scenario given={block.given} when={block.when} then={block.then} />;
-    if (block._type === "scenario_cards") {
-      if (block.rendered_in_legacy_html) return null;
-      const items = parseJsonField(block.items, scenarioSchema, "scenario_cards.items");
-      return <Scenarios items={items} client:load />;
-    }
-    if (block._type === "interactive_flowchart") {
-      const nodes = parseJsonField(block.nodes, nodeSchema, "interactive_flowchart.nodes");
-      const edges = parseJsonField(block.edges, edgeSchema, "interactive_flowchart.edges");
-      const details = parseJsonField(block.details, detailsSchema, "interactive_flowchart.details");
-      return <InteractiveFlowchart nodes={nodes} edges={edges} details={details} client:load />;
-    }
-    return null;
-  })}
+<div class="prose flex-1" data-emdash-block-renderer="v2">
+  <PortableText
+    value={value}
+    components={{
+      type: {
+        decision_cards: EmDashTypedBlock,
+        risk_table: EmDashTypedBlock,
+        scenario: EmDashTypedBlock,
+        scenario_cards: EmDashTypedBlock,
+        interactive_flowchart: EmDashTypedBlock,
+      },
+    }}
+  />
 </div>

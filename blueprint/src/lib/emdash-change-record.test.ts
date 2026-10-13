@@ -64,6 +64,84 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
+  it("accepts canonical Portable Text and typed blocks in one ordered stream", () => {
+    const result = changeDataSchema.safeParse({
+      ...content,
+      blocks: [
+        {
+          _type: "block",
+          _key: "heading-key",
+          id: "portable-text-heading",
+          style: "h2",
+          children: [{ _type: "span", text: "History", marks: ["strong"] }],
+        },
+        {
+          _type: "block",
+          _key: "list-key",
+          listItem: "bullet",
+          level: 1,
+          children: [{ _type: "span", text: "Preserved list item" }],
+        },
+        { _type: "code", code: "const answer = 42;", language: "ts" },
+        {
+          _type: "table",
+          rows: [
+            {
+              _type: "tableRow",
+              _key: "row-1",
+              cells: [
+                {
+                  _type: "tableCell",
+                  _key: "cell-1",
+                  content: [{ _type: "span", _key: "span-1", text: "cell" }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          _type: "image",
+          asset: { _ref: "media-1", provider: "local" },
+          alt: "Diagram",
+        },
+        {
+          _type: "scenario",
+          _version: 1,
+          id: "S2",
+          given: "A",
+          when: "B",
+          then: "C",
+        },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects unsafe links and unapproved HTML blocks", () => {
+    expect(
+      blockSchema.safeParse({
+        _type: "htmlBlock",
+        html: "<script>alert(1)</script>",
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        _type: "block",
+        children: [{ _type: "span", text: "unsafe", marks: ["missing-link"] }],
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        _type: "block",
+        children: [{ _type: "span", text: "unsafe", marks: ["link-1"] }],
+        markDefs: [
+          { _key: "link-1", _type: "link", href: "javascript:alert(1)" },
+        ],
+      }).success,
+    ).toBe(false);
+  });
+
   it("rejects unknown content fields instead of dropping them before hashing", async () => {
     const unsafe = {
       ...content,
@@ -105,23 +183,18 @@ describe("EmDash Change schema", () => {
     expect(after).toBe(before);
   });
 
-  it("binds migrated image identity and storage location to the accepted hash", async () => {
+  it("binds canonical EmDash media identity to the accepted hash", async () => {
     const mediaContent = {
       title: "Historical Change",
       linear_issue: "TEST-123",
       blocks: [
         {
-          _type: "legacy_media",
-          _version: 1,
-          key: "legacy-image-alpha-abc123",
-          sha256: "a".repeat(64),
+          _type: "image",
+          _key: "image-key",
           alt: "Diagram",
           asset: {
-            id: "media-alpha",
+            _ref: "media-alpha",
             provider: "local",
-            filename: "alpha.png",
-            mimeType: "image/png",
-            meta: { storageKey: "accepted-object.png" },
           },
         },
       ],
@@ -136,7 +209,7 @@ describe("EmDash Change schema", () => {
             ...mediaContent.blocks[0],
             asset: {
               ...mediaContent.blocks[0].asset,
-              meta: { storageKey: "different-object.png" },
+              url: "/media/different-object.png",
             },
           },
         ],
@@ -148,7 +221,7 @@ describe("EmDash Change schema", () => {
         blocks: [
           {
             ...mediaContent.blocks[0],
-            asset: { ...mediaContent.blocks[0].asset, id: "media-other" },
+            asset: { ...mediaContent.blocks[0].asset, _ref: "media-other" },
           },
         ],
       }),

@@ -3,77 +3,160 @@ import { z } from "zod";
 const portableSpanSchema = z.strictObject({
   _key: z.string().optional(),
   _type: z.literal("span"),
-  marks: z.array(z.string()).optional(),
+  marks: z.array(z.string().min(1)).optional(),
   text: z.string(),
 });
 
-const portableTextBlockSchema = z.strictObject({
-  _key: z.string().optional(),
-  _type: z.literal("block"),
-  children: z.array(portableSpanSchema),
-  markDefs: z
-    .array(
-      z.strictObject({
-        _key: z.string(),
-        _type: z.string(),
-        href: z.string().optional(),
-      }),
-    )
-    .optional(),
-  style: z.enum(["normal", "h2", "h3", "blockquote"]).optional(),
+const safeHrefSchema = z.string().refine((value) => {
+  if (/^(?:\/|#)/u.test(value)) return true;
+  try {
+    return ["https:", "http:", "mailto:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}, "Expected a safe link URL.");
+
+const markDefinitionSchema = z.strictObject({
+  _key: z.string().min(1),
+  _type: z.literal("link"),
+  href: safeHrefSchema,
+  blank: z.boolean().optional(),
 });
 
-const legacyMediaAssetSchema = z.strictObject({
-  key: z.string().regex(/^legacy-image-[a-z0-9-]+$/u),
-  sha256: z.string().regex(/^[a-f0-9]{64}$/u),
-  alt: z.string(),
-  asset: z.union([
-    z.strictObject({
-      $media: z.strictObject({
-        url: z.url(),
-        alt: z.string().optional(),
-        filename: z.string().optional(),
+const textBlockSchema = z
+  .strictObject({
+    _key: z.string().optional(),
+    id: z
+      .string()
+      .regex(/^[A-Za-z][A-Za-z0-9_:.-]*$/u)
+      .optional(),
+    _type: z.literal("block"),
+    children: z.array(portableSpanSchema),
+    markDefs: z.array(markDefinitionSchema).optional(),
+    style: z
+      .enum(["normal", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"])
+      .optional(),
+    listItem: z.enum(["bullet", "number"]).optional(),
+    level: z.number().int().min(1).optional(),
+  })
+  .superRefine((block, context) => {
+    const linkKeys = new Set(
+      (block.markDefs ?? []).map((definition) => definition._key),
+    );
+    for (const [spanIndex, span] of block.children.entries()) {
+      for (const mark of span.marks ?? []) {
+        if (
+          [
+            "strong",
+            "em",
+            "code",
+            "underline",
+            "strike-through",
+            "superscript",
+            "subscript",
+          ].includes(mark)
+        )
+          continue;
+        if (!linkKeys.has(mark)) {
+          context.addIssue({
+            code: "custom",
+            path: ["children", spanIndex, "marks"],
+            message: "Unknown Portable Text mark.",
+          });
+        }
+      }
+    }
+  });
+
+const safeMediaUrlSchema = z.string().refine((value) => {
+  if (value.startsWith("/")) return true;
+  try {
+    return ["https:", "http:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}, "Expected a safe media URL.");
+
+const imageBlockSchema = z.strictObject({
+  _key: z.string().min(1).optional(),
+  _type: z.literal("image"),
+  asset: z.strictObject({
+    _ref: z.string().min(1),
+    url: safeMediaUrlSchema.optional(),
+    provider: z.string().min(1).optional(),
+    meta: z.record(z.string(), z.unknown()).optional(),
+  }),
+  alt: z.string().optional(),
+  caption: z.string().optional(),
+  title: z.string().optional(),
+  width: z.number().positive().optional(),
+  height: z.number().positive().optional(),
+  displayWidth: z.number().positive().optional(),
+  displayHeight: z.number().positive().optional(),
+  alignment: z.enum(["left", "center", "right", "wide", "full"]).optional(),
+  link: z
+    .union([
+      safeHrefSchema,
+      z.strictObject({
+        href: safeHrefSchema,
+        blank: z.boolean().optional(),
       }),
-    }),
-    z.strictObject({
-      id: z.string().min(1),
-      provider: z.literal("local").optional(),
-      alt: z.string().optional(),
-      filename: z.string().optional(),
-      mimeType: z.string().optional(),
-      width: z.number().optional(),
-      height: z.number().optional(),
-      meta: z.strictObject({
-        storageKey: z.string().regex(/^[A-Za-z0-9._-]+$/u),
-      }),
-    }),
-  ]),
+    ])
+    .optional(),
 });
+
+const codeBlockSchema = z.strictObject({
+  _key: z.string().min(1).optional(),
+  _type: z.literal("code"),
+  code: z.string(),
+  language: z.string().optional(),
+  filename: z.string().optional(),
+});
+
+const tableMarkDefinitionSchema = z.looseObject({
+  _key: z.string().min(1),
+  _type: z.string().min(1),
+  href: safeHrefSchema.optional(),
+});
+
+const tableCellSchema = z.strictObject({
+  _type: z.literal("tableCell"),
+  _key: z.string().min(1),
+  content: z.array(portableSpanSchema),
+  markDefs: z.array(tableMarkDefinitionSchema).optional(),
+  isHeader: z.boolean().optional(),
+  colspan: z.number().int().min(1).optional(),
+  rowspan: z.number().int().min(1).optional(),
+  colwidth: z.array(z.number().positive()).optional(),
+  textAlign: z.enum(["left", "center", "right", "justify"]).optional(),
+});
+
+const tableBlockSchema = z.strictObject({
+  _key: z.string().min(1).optional(),
+  _type: z.literal("table"),
+  rows: z.array(
+    z.strictObject({
+      _type: z.literal("tableRow"),
+      _key: z.string().min(1),
+      cells: z.array(tableCellSchema),
+    }),
+  ),
+  hasHeaderRow: z.boolean().optional(),
+  markDefs: z.array(tableMarkDefinitionSchema).optional(),
+});
+
+const standardBlockSchema = z.discriminatedUnion("_type", [
+  textBlockSchema,
+  imageBlockSchema,
+  codeBlockSchema,
+  tableBlockSchema,
+]);
 
 const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
   z.strictObject({ ...shape, _key: z.string().min(1).optional() });
 
-export const blockSchema = z.discriminatedUnion("_type", [
-  versionedBlock({
-    _type: z.literal("markdown"),
-    _version: z.literal(1),
-    markdown: z.string(),
-  }),
-  versionedBlock({
-    _type: z.literal("prose"),
-    _version: z.literal(1),
-    value: z.array(portableTextBlockSchema),
-  }),
-  versionedBlock({
-    _type: z.literal("legacy_html"),
-    _version: z.literal(1),
-    html: z.string(),
-  }),
-  versionedBlock({
-    _type: z.literal("legacy_media"),
-    _version: z.literal(1),
-    ...legacyMediaAssetSchema.shape,
-  }),
+export const blockSchema = z.union([
+  standardBlockSchema,
   versionedBlock({
     _type: z.literal("decision_cards"),
     _version: z.literal(1),
@@ -91,13 +174,11 @@ export const blockSchema = z.discriminatedUnion("_type", [
     given: z.string(),
     when: z.string(),
     then: z.string(),
-    rendered_in_legacy_html: z.boolean().optional(),
   }),
   versionedBlock({
     _type: z.literal("scenario_cards"),
     _version: z.literal(1),
     items: z.string(),
-    rendered_in_legacy_html: z.boolean().optional(),
   }),
   versionedBlock({
     _type: z.literal("interactive_flowchart"),
@@ -142,15 +223,11 @@ const changeDataBaseSchema = z.strictObject({
   translationGroup: z.string().nullable().optional(),
 });
 
-function isLegacyContent(blocks: ChangeBlock[]) {
-  return blocks.some((block) => block._type === "legacy_html");
-}
-
 function requireIssueForAuthoredContent(
   value: { linear_issue?: string; blocks: ChangeBlock[] },
   context: z.RefinementCtx,
 ) {
-  if (!isLegacyContent(value.blocks) && !value.linear_issue) {
+  if (!value.linear_issue) {
     context.addIssue({
       code: "custom",
       path: ["linear_issue"],
