@@ -14,9 +14,9 @@ The preview is bound to EmDash's exact draft revision and a canonical SHA-256 of
 
 The EmDash publication policy fetches the issue from Linear and checks the marker against the saved revision and canonical hash. Missing, unreachable, malformed or mismatched evidence blocks publishing. If accepted content changes after review, create a new draft, preview it, and renew G1; do not overwrite the prior accepted specification. Updating only the PR URL index does not change the accepted hash.
 
-The execution issue holds the working state and accepted EmDash revision/hash. G2 evidence belongs to the GitHub PR and names the G1 EmDash revision/hash. The PR does not copy the full specification. G2 reviews code only; it does not require a new EmDash publication. See `docs/agents/blueprint.md` for private preview and publication behavior.
+The execution issue holds the working state and accepted EmDash revision/hash. A newly accepted Change may publish immediately after G1 with an empty `pull_requests` list; it appears as **進行中** without PR-derived metrics until its PR URLs are added. G2 evidence belongs to the GitHub PR and names the G1 EmDash revision/hash. The PR does not copy the full specification. G2 reviews code only; it does not require a new EmDash publication. See `docs/agents/blueprint.md` for private preview and publication behavior.
 
-Historical Team Docs remain in Linear as records. During migration, include only the latest effective accepted G1 specification for a matching Change slug in its EmDash entry; keep superseded snapshots and research documents in Linear.
+Historical Team Docs remain in Linear as records. During migration, merge the latest effective accepted G1 specification into a matching Change entry, or create a standalone entry when the accepted Change has no legacy page. Keep superseded snapshots, research documents, and specs explicitly exempt from Blueprint Change pages in Linear.
 
 ## Tickets and execution
 
