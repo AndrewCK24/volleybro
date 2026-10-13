@@ -41,7 +41,8 @@ This file is VolleyBro's canonical provider-neutral delivery contract. A develop
 | Section gate                           | `pnpm verify` — format, lint, type checks, unit tests, workflow conformance                                                                               |
 | Final gate                             | `pnpm verify:all` — static checks and the lanes reached by the diff against the remote default integration branch; `--full` runs all; CI runs every check |
 | Intake and active work                 | Linear issues, statuses, relations, dependencies, priority, milestones                                                                                    |
-| Change review surface                  | GitHub PR at G2; optional Blueprint Proposal for a needed UI mockup or complex process flowchart                                                          |
+| Change content and G1 review           | One EmDash entry per Blueprint Change; signed private Blueprint preview before G1, public page after acceptance                                           |
+| Code review surface                    | GitHub PR at G2; G2 reviews code and does not republish the EmDash Change page                                                                            |
 | Canonical current capability knowledge | `blueprint/content/features/`                                                                                                                             |
 | Execution plan                         | `to-tickets` after G1; Linear slice sub-issues under the Change's issue                                                                                   |
 | Version and changelog evidence         | `.changeset/` through Changesets                                                                                                                          |
@@ -118,8 +119,8 @@ Installed Matt skills and their `skills-lock.json` entries are vendor-managed. D
 ## Authority and retention
 
 - Linear owns intake and current operational state. Issues may be archived or deleted after the development lifecycle, so durable repository knowledge must not depend on Linear URLs or IDs. Name other work by its Change slug, or by a short description of it when it has no slug yet.
-- Linear issue bodies own working specifications. Independent Team Docs preserve complete accepted G1 specifications and JSON receipts; the accepted snapshot governs implementation and Spec review. Research uses separate Team Docs. Read `docs/agents/issue-tracker.md` before producing or consuming these artifacts.
-- GitHub PRs own G2 review and acceptance evidence. Optional Blueprint Proposals provide visual supplements; historical Reviews remain read-only. The existing `blueprint-changes` store remains in use, with no retirement in this delivery. Blueprint does not know which issue tracker is configured.
+- Linear owns execution state and the accepted EmDash revision/hash receipt. The EmDash entry is the complete G1 specification and Change page; do not create a parallel Team Doc spec. Research uses separate Team Docs. Read `docs/agents/issue-tracker.md` before producing or consuming these artifacts.
+- GitHub PRs own G2 code review and acceptance evidence. EmDash holds the G1 specification and published page; the page reads GitHub PR status and statistics. Historical store pages are migrated to EmDash, then the protected archive tag preserves the reachable source history.
 - Blueprint Features own current capability and sub-capability behavior and constraints, and render the decision records whose `capabilities` name them; the records themselves belong to the repository, not to any Feature page.
 - Code and tests own actual system behavior.
 - Changesets own semantic version and changelog evidence.
@@ -170,15 +171,15 @@ Every Change has a stable kebab-case slug and each batch has one integration bra
 1. Compare existing work and owners during intake. Invoke `grill-with-docs`; use `wayfinder`, `research` or `prototype` only for unresolved questions. Evaluate `improve-codebase-architecture` before `to-spec` when evidence reveals architectural uncertainty or costly coupling, rather than as a routine G2 check.
 2. Invoke `domain-modeling` through `docs/agents/domain.md` for resolved vocabulary and adopted decisions. Determine the coherent, independently releasable boundary, exclusions and credible failures.
 3. Invoke `to-spec` through `docs/agents/issue-tracker.md`. Resolve its test seams during discussion and put the complete working spec in the execution issue.
-4. Create an independent Team Doc snapshot and read it back before presenting G1. If a UI mockup or a complex change to an app/user/other process requires an interactive flowchart, create the optional Proposal through `docs/agents/blueprint.md` and verify its hosted evidence. Other Changes need no Change page.
-5. Obtain explicit human acceptance of that complete snapshot, append its JSON receipt, read it back and validate the canonical hash. Record the snapshot URL and hash on the execution issue. Passing a tool check, answering individual questions or saving a Doc is not G1 acceptance.
+4. Create one EmDash Change entry as a draft and read it back through the signed private preview at the same Blueprint route. Bind the preview to its exact draft revision and canonical accepted-content hash. Do not create a parallel Team Doc specification or Git content copy.
+5. Obtain explicit human acceptance of that complete EmDash revision. Record the exact revision/hash on the execution issue; the publication policy reads it back and blocks publication on mismatch. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance.
 
 G1 accepts the design, scope, batch boundaries and acceptance criteria. It authorizes ticket decomposition and implementation through the next G2; it does not arm unattended execution or authorize platform activation.
 
 ### 2. Apply
 
-1. Read and validate the accepted snapshot, applicable ADRs and git state, plus the unattended workpad when present. Invoke `to-tickets` through the issue-tracker adapter for every Change, including Sharded Changes; Fast path remains exempt. G1 covers decomposition without the skill's additional approval stop.
-2. Explicitly invoke `implement` against the snapshot and ticket graph. Assess credible failures and existing evidence before adding tests. Read `docs/testing-strategy.md` and invoke `test-audit` for changed tests; use pre-agreed seams, actual owning boundaries and bug regressions that fail before the repair and pass after it.
+1. Read and validate the accepted EmDash revision/hash, applicable ADRs and git state, plus the unattended workpad when present. Invoke `to-tickets` through the issue-tracker adapter for every Change, including Sharded Changes; Fast path remains exempt. G1 covers decomposition without the skill's additional approval stop.
+2. Explicitly invoke `implement` against the accepted EmDash revision and ticket graph. Assess credible failures and existing evidence before adding tests. Read `docs/testing-strategy.md` and invoke `test-audit` for changed tests; use pre-agreed seams, actual owning boundaries and bug regressions that fail before the repair and pass after it.
 3. Complete and verify eligible slices, committing each slice's code and tests together under the branch/commit contract below. Run the whole-batch independent review at the Pre-PR gate, rather than adding a full gate per slice.
 
 Commit bodies own the slice-to-commit mapping and retain it through rebases. For work committed before this contract existed, preserve valid history and explain bootstrap deviations and slice evidence in the PR; do not rewrite history solely to manufacture compliance.
@@ -187,13 +188,13 @@ Fix implementation defects inside Apply. Sweep all affected identifiers, prose, 
 
 #### Optional Ingest action
 
-A material change to accepted scope, behavior, acceptance criteria or architecture pauses Apply for developer-authorized Ingest and renewed G1. Clarify the change, replace adopted decisions with successor ADRs, preserve completed slices and evidence, and create a new complete Team Doc snapshot; never overwrite the accepted one. Update optional visual evidence when affected, then resume from the new accepted snapshot. Progress, verification evidence and meaning-preserving wording edits to the working issue keep the existing snapshot and receipt.
+A material change to accepted scope, behavior, acceptance criteria or architecture pauses Apply for developer-authorized Ingest and renewed G1. Clarify the change, replace adopted decisions with successor ADRs, preserve completed slices and evidence, and create a new EmDash draft and private preview; never overwrite the accepted revision. Progress, verification evidence, PR URL updates and meaning-preserving wording edits to the working issue keep the existing revision and receipt.
 
 ### 3. Pre-PR gate
 
 1. Assess and promote verified Features and Design System knowledge on the delivery branch through `docs/agents/artifact-lifecycle.md`; reconcile settled glossary and ADRs. Record why any assessed page needs no change.
 2. Run `pnpm verify:all`, including applicable documentation checks, and assess Changeset applicability for the complete batch.
-3. Invoke `code-review` in independent contexts for both Standards and Spec. Supply `CODING_STANDARDS.md` verbatim and the accepted snapshot with its validated hash. The Standards axis applies the actual test-audit rules and documented judgement that tooling cannot enforce.
+3. Invoke `code-review` in independent contexts for both Standards and Spec. Supply `CODING_STANDARDS.md` verbatim and the accepted EmDash revision with its validated hash. The Standards axis applies the actual test-audit rules and documented judgement that tooling cannot enforce.
 4. Fix accepted findings, rerun affected checks and `pnpm verify:all`, and repeat both axes to a fixed point. A fix merely requested by a reviewer needs review; only review-report prose or a change specified verbatim by the round may remain unreviewed. Use the last reviewed commit for later rounds, carrying all earlier reports and dispositions if context cannot resume (ADR-0076).
 5. Group findings by root cause. The same cause in two consecutive rounds requires an approach switch (ADR-0077); review the whole diff against the verified integration base after that switch. A technique-only deviation belongs in the PR. A material contract change goes through Ingest.
 
@@ -201,9 +202,9 @@ All same-branch knowledge edits participate in this gate before opening the PR. 
 
 ### 4. Open PR and accept (G2)
 
-The GitHub PR is the primary and complete G2 entry point, including when an optional Proposal exists. Its body links the accepted snapshot and hash, any relevant visual proof, and reports acceptance results, verification, review findings/fixes, deviations, residual risks, developer actions and review focus. Use the complete relevant skill output without the old Blueprint length limits. Reconcile actionable unmitigated risks with existing issue owners, creating a follow-up only when no owner exists; keep parents open for outstanding activation obligations.
+The GitHub PR is the primary and complete G2 entry point. Its body links the accepted EmDash revision and hash, the public Change page, and reports G1 acceptance, verification, review findings/fixes, deviations, residual risks, developer actions and review focus. Use the complete relevant skill output without Blueprint length limits. Reconcile actionable unmitigated risks with existing issue owners, creating a follow-up only when no owner exists; keep parents open for outstanding activation obligations.
 
-Record the PR identity, reviewed head SHA, accepted snapshot URL/hash and verification evidence in the PR and execution issue. Recheck native CI and branch protection for that exact head before asking for G2. After reviewing the PR, the developer explicitly instructs the owning Agent in the conversation to merge and clean up; that instruction accepts and authorizes the identified reviewed revision. A direct human GitHub Merge also constitutes acceptance. No special `LGTM` syntax, candidate comment, event receiver, bot receipt or background polling is required.
+Record the PR identity, reviewed head SHA, accepted EmDash revision/hash and verification evidence in the PR and execution issue. Recheck native CI and branch protection for that exact head before asking for G2. After reviewing the PR, the developer explicitly instructs the owning Agent in the conversation to merge and clean up; that instruction accepts and authorizes the identified reviewed revision. A direct human GitHub Merge also constitutes acceptance. No special `LGTM` syntax, candidate comment, event receiver, bot receipt or background polling is required.
 
 Requests to change the delivery are not unconditional acceptance: implement them, amend same-branch knowledge and reverify/review before returning to G2. A changed head or material change to the reviewed base context invalidates earlier acceptance. No substantive delivery code or specification is amended after acceptance before merging.
 
@@ -227,7 +228,7 @@ The root agent owns ticket granularity and may merge, split or reorder slices du
 
 A slice handed to a subagent travels through context pointers to its ticket, accepted specification and relevant commits, plus the applicable rules from `CONTRIBUTING.md` and `CODING_STANDARDS.md`, the exclusions and the report format. Quote only rules the slice touches; do not duplicate the full spec or repeat background in follow-up messages. The root agent starts only slices with satisfied dependencies and delegates only when independence or context isolation earns its cost. A fresh context must be able to resolve every pointer.
 
-Optional visual supplements remain gitignored on the delivery branch and use the existing store. Read `docs/agents/blueprint.md` for their file contract and historical compatibility. Accepted specifications and receipts are Team Docs, not repository files. Decision records remain flat repository-wide files at `blueprint/content/decisions/<nnnn>-<slug>.json`.
+Every Change uses one EmDash entry for its G1 specification and reader-facing page. Read `docs/agents/blueprint.md` for the block, publication and historical migration contracts. Accepted specifications remain in EmDash, not Git or a parallel Team Doc. Decision records remain flat repository-wide files at `blueprint/content/decisions/<nnnn>-<slug>.json`.
 
 ### Change scope
 
@@ -245,7 +246,7 @@ Fast path sits beside Change and Sharded Change for work with bounded scope and 
 2. Fast-path work happens on a `fast/<slug>` branch, whatever the commit type. It never uses `feat/`, `fix/`, or `refactor/`, which are Change branch prefixes.
 3. The agent proposes Fast path during intake; the developer confirms it once — on the tracker issue when the work came from one, or in the session when it did not.
 4. Kept: `pnpm verify:all`, independent two-axis code review with the issue as the spec, Changeset when applicable, and migration verification when applicable. Bug work also keeps a regression demonstrating failure before repair and success after it.
-5. Skipped: G1 snapshot, Proposal publication and slices. Assess and update affected current knowledge on the same branch before review; unchanged pages need no edit.
+5. Skipped: EmDash Change draft, G1 and slice decomposition. Assess and update affected current knowledge on the same branch before review; unchanged pages need no edit.
 6. The only human gate is the pull request: its body names Fast path and carries a short verification summary; the developer explicitly authorizes exact-revision merge and cleanup in the conversation after reviewing the PR; direct human merging is acceptance.
 7. Escalate to a normal Change — write the complete specification and pass G1 — when scope or risk is no longer bounded, new architecture or a product decision is required, or the result cannot be independently accepted in one pull request. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
 8. A Fast-path commit carries a `Refs: <tracker issue>` trailer when the work came from a tracker issue, and no reference trailer when it did not; either way it omits `Implements` and `Blueprint-Change`, and the body states what triggered the work.
@@ -261,7 +262,7 @@ One delivery batch uses one integration branch from the first slice commit throu
 
 Every commit on a Change branch carries a `Blueprint-Change: <slug>` trailer naming that Change; a slice commit also carries `Implements: S0X`, the stable slice ID recorded on its Linear sub-issue. A Sharded Change's commits use the shared slug and add `Shard: <N>` (see Change scope), and a Fast-path commit carries its own trailers instead (see Fast path). `CONTRIBUTING.md` covers how to write a trailer so git parses it.
 
-Change-page content never enters the Change branch — it lives only in the regenerated, gitignored Change directory and is published to the `blueprint-changes` store branch when visual evidence changes. Push the Change branch when another session or Symphony must resume it.
+Change-page content lives in EmDash, not the Change branch. Git contains the Astro renderer, block schemas, publication policy, tests and migration tooling. A successful EmDash publication updates the Blueprint page without a Git commit, build or deploy. Push the Change branch when another session or Symphony must resume it.
 
 Merge a Change into `main` with a merge commit. Squashing collapses the per-slice commits and discards the `Implements` and `Blueprint-Change` trailers that make delivery traceable, which is exactly the evidence Pre-PR code review and Archive depend on. Squash only work that carries no slice history — a single-commit fix or a tooling change — and say so in the pull request.
 
@@ -269,7 +270,7 @@ Merge a Change into `main` with a merge commit. Squashing collapses the per-slic
 
 ### Manual workflow
 
-The developer invokes Apply directly after accepting the complete snapshot at G1. Resume from repository artifacts, git state, and verification evidence. No Symphony process, claim, dashboard, or workspace manager is required.
+The developer invokes Apply directly after accepting the complete EmDash revision at G1. Resume from the entry, Linear state, repository artifacts, git state and verification evidence. No Symphony process, claim, dashboard or workspace manager is required.
 
 Before Manual Apply starts for an issue that may be visible to Symphony:
 
@@ -301,29 +302,19 @@ blockers: []
 next_action: "smallest concrete continuation step"
 ```
 
-The workpad may include tracker, run, workspace, commit, and pull-request references while they are active. Blueprint must not copy those tracker-specific references into its durable content.
+The workpad may include tracker, run, workspace, commit and pull-request references while they are active. The EmDash `linear_issue` and `pull_requests` fields are intentional lookup indexes; do not copy other tracker/runtime references into page prose.
 
 A manual run keeps a lighter workpad: every field above except `blockers` and `next_action` is already recorded in the repository — slice status on the Linear sub-issues, validation in commit bodies — and a copy kept by hand drifts from them. A multi-session manual run hands off through the pushed branch and its commits plus the sub-issues, so another agent, worktree, or machine can pick up where the run stopped without a separate handoff file.
 
 ## Blueprint knowledge contract
 
-Optional Proposal visuals and historical Reviews remain under gitignored `blueprint/content/changes/<slug>/`, published to the existing `blueprint-changes` store. Store retirement is separate work. `pnpm --filter blueprint dev` and `build` first pull published pages, so deployments include that history and branch-local Features/Design System. A normal Change without visual evidence has no page or store publication obligation.
+Every Change has one EmDash entry. New content is a draft before G1 and the published public page afterward. The CMS query path reads published content at request time; publishing content does not invoke Git, Astro build or deployment. The EmDash entry contains the accepted specification, page blocks, Linear issue key and required GitHub PR URL list. Linear records the accepted draft revision/hash; GitHub PRs record G2 code review.
 
-The published `facts.json` remains the gate snapshot. After pulling the store, build preparation pins the verified remote default branch in an isolated, complete Git history and derives only archive dates and shard landing state into a disposable overlay. Readers apply it only to matching page inputs; converted history and unpublished edits retain their snapshots. Merge needs no follow-up publication to record its date.
+`blueprint_changes` blocks use versioned, allowlisted schemas and existing Astro components. Arbitrary TSX/JavaScript is never executed from CMS content. New components and schema versions go through code PRs. GitHub API data derives public status, merge date and statistics; structured scenario blocks derive scenario count. No `facts.json`, manual status or manual metrics remain in the current page path.
 
-Optional visual review uses the Blueprint main URL by default. `blueprint:gate <slug> --preview` explicitly requests a branch build when review needs unmerged components, decisions or Features. Before handing over either URL, require the deployed build receipt to match the published page's full content hash and require the page to load; a successful hook is not review evidence. Keep one publisher per slug. Concurrent publications of different slugs preserve the full store through fast-forward retry, not force push.
+Blueprint uses Astro server output on the Cloudflare Worker with EmDash, D1 and R2. Restrict all Cloudflare services to Free quotas; do not enable paid overage or a paid plan. A code merge to `main` deploys the renderer. Content publication and GitHub status changes do not deploy it. Local development and preview use the pinned project Wrangler CLI and local bindings; production secrets and resource IDs are configured only during separately authorized activation.
 
-The Blueprint deployment workflow serializes store publication and every main push, waits for hosted completion, and checks source/store receipts before accepting freshness. It drains builds left by interrupted jobs and rebuilds if newer input arrived while running. Enable `BLUEPRINT_REBUILD_COORDINATOR_ENABLED` only after its read-only Workers CI token, account/worker/production-trigger variables and manual-build behavior are verified, native automatic push builds are disabled, and older production builds have drained. Keep the existing store hook active until that cutover; the disabled coordinator is not freshness proof. A deployment consumes the already-built export and validates its receipt, does not build during upload. Local manual deploys must first run `pnpm --filter blueprint build`.
-
-On-demand Preview uses the trusted `main` revision of `blueprint-preview.yml`. Build requested public source/store/integration snapshots without Cloudflare credentials; upload only the validated static artifact with isolated configuration and the Worker-restricted `CLOUDFLARE_BLUEPRINT_PREVIEW_DEPLOY_TOKEN`. Before enabling this path, register the trusted workflow, disable native automatic Preview publication, and drain older Preview builds so only one controller writes branch aliases. Record the unchanged production deployment before and after activation. The gate accepts a page only when its rendered identity and hosted receipt agree on source, store, integration and complete Change input hash.
-
-Before the workflow is registered on `main`, rehearse the same jobs on an isolated, owner-authorized test branch with an exact event/ref/actor guard. Keep its credentials confined to the static upload job. This bootstrap is activation evidence, not a successful dispatch of the unregistered workflow: the PR must distinguish the two. After registration, verify the normal gate dispatch before declaring activation complete. Remove temporary hooks, secrets and trigger overrides after rehearsals; keep production configuration unchanged unless its separate cutover is authorized.
-
-- **Proposal:** an optional mockup or complex-process flowchart supplement; the PR links it with the accepted specification, while durable page text stays tracker-neutral. Historical accepted Proposal text remains intact.
-- **Historical Review:** read-only content in collapsed footer disclosures, retaining review, shard and inner anchors. New Changes create none.
-- **Features / Design System:** verified current knowledge promoted and reviewed on the same branch before opening its PR.
-
-Read `docs/agents/blueprint.md` before editing a page or a shared rendering contract. Optional `design.tsx` retains the conditional trusted Preview render-mode proof before visual handoff; routine Agent page-by-page browser review is not required. A browser inspection is appropriate for a developer-identified diagram/screen comprehension problem.
+Legacy pages are imported from a fixed store snapshot into EmDash as one page per slug. Preserve complete rendered content, sections, anchors, shard/review history and media; incorporate only the latest effective accepted G1 spec for each slug. `record-flows` and `sync-recording` are public historical exceptions marked **進行中**. The archive tag preserves every commit reachable from the frozen store snapshot; earlier unreachable history is not guaranteed. Retire the remote branch only after page, PR, media, archive-tag, read-back and rollback evidence pass and the retirement step is authorized.
 
 Provider-native subagents remain within one root session and Change workspace. They never poll or claim the external queue, arm unattended execution, reprioritize intake, or create a parallel lifecycle authority.
 

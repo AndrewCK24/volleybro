@@ -100,7 +100,7 @@ test("app-test runs alone, after every other lane", () => {
   assert.deepEqual(laneStages(docsOnly), [["static", "blueprint"]]);
 });
 
-test("a diff touching only a decision record plans no integration tests and no Blueprint build", () => {
+test("a decision record change runs Blueprint verification, not application or integration builds", () => {
   const plan = planLanes(
     ["blueprint/content/decisions/0092-ci-runs-everything.json"],
     { all: true },
@@ -112,7 +112,7 @@ test("a diff touching only a decision record plans no integration tests and no B
   assert.equal(plan.blueprint.run, true);
   assert.equal(
     LANE_COMMANDS.blueprint.some((command) => command.includes("build")),
-    false,
+    true,
   );
 });
 

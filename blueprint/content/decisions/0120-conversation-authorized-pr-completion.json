@@ -21,5 +21,6 @@
     "GitHub's remote branch deletion is expected; local cleanup independently verifies ownership, clean state and ancestry using retained native SHAs.",
     "G1 snapshot authority, optional Proposal/history preservation and same-branch knowledge remain unchanged."
   ],
-  "originChange": "pr-based-blueprint-workflow"
+  "originChange": "pr-based-blueprint-workflow",
+  "supersededBy": "0124"
 }

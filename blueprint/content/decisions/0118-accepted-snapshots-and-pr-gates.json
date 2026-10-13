@@ -25,5 +25,5 @@
     "No post-merge knowledge sync PR or new Blueprint Review is required."
   ],
   "originChange": "pr-based-blueprint-workflow",
-  "supersededBy": "0120"
+  "supersededBy": "0124"
 }

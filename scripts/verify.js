@@ -3,7 +3,7 @@
 // all of them.
 import { execFileSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { resolveScopeBase } from "./change-page.js";
+import { resolveScopeBase } from "./git-scope.js";
 
 export const LANE_COMMANDS = {
   static: [
@@ -17,9 +17,7 @@ export const LANE_COMMANDS = {
   integration: ["pnpm test:integration --coverage=false"],
   "app-build": ["pnpm build", "node scripts/assert-sw.js"],
   "app-test": ["pnpm test --coverage=false"],
-  // No local gate builds the Blueprint site: CI and the branch-preview build
-  // do (ADR-0092).
-  blueprint: ["pnpm --filter blueprint test"],
+  blueprint: ["pnpm --filter blueprint test", "pnpm --filter blueprint build"],
 };
 
 export const LANE_NAMES = Object.keys(LANE_COMMANDS);

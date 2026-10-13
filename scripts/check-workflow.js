@@ -4,30 +4,7 @@ import { lstat, readFile, readdir, readlink, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import {
-  fetchChanges,
-  hashDir,
-  isConverted,
-  readStore,
-  REMOTE_REF,
-  resolveRemote,
-} from "./blueprint-changes.js";
-import {
-  assertValidMdx,
-  frontmatterOf,
-  git,
-  inlineReviewSections,
-  readChangeDir,
-  REQUIRED_REVIEW_SECTIONS,
-  resolveScopeBase,
-  resultIds,
-  reviewFile,
-  reviewSections,
-  scenarioIds,
-  scenarios,
-  shardCount,
-} from "./change-page.js";
-import { changeSlugOf, parseChangeBranch } from "./commitlint/plugin.js";
+import { git, resolveScopeBase } from "./git-scope.js";
 
 const REQUIRED_BINDINGS = {
   sdd: { adapter: "repository-workflow" },
@@ -51,9 +28,9 @@ const REQUIRED_FILES = [
   "docs/agents/blueprint.md",
   "docs/agents/artifact-lifecycle.md",
 ];
-const BLUEPRINT_CHANGES = "blueprint/content/changes";
+const FEATURE_CONTENT = "blueprint/content/features";
 const CHANGE_SCOPE_SOFT_LIMIT = 30;
-const SCENARIO_COUNT_SOFT_LIMIT = 8;
+const DECISION_LENGTH_SOFT_LIMIT = 1000;
 
 async function validateGuidanceImport(root) {
   const filePath = path.join(root, "CLAUDE.md");
@@ -278,124 +255,18 @@ async function listFiles(directory) {
   return nested.flat();
 }
 
-async function changeDirectories(root) {
-  const changesRoot = path.join(root, BLUEPRINT_CHANGES);
-  if (!(await exists(changesRoot))) return [];
-
-  // Pages converted from an earlier format (ADR-0079) never pass a gate and
-  // predate every page rule below; their facts.json marks them, and
-  // republishing one keeps the mark.
-  const entries = await readdir(changesRoot, { withFileTypes: true });
-  const directories = entries
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => path.join(changesRoot, entry.name));
-  const current = [];
-  for (const directory of directories) {
-    if (!(await isConverted(directory))) current.push(directory);
-  }
-  return current;
-}
-
-// A page that is not valid MDX fails the gate with the parser's message;
-// outside the gate it only fails the rules that need its structure.
-function orUndefined(read) {
-  try {
-    return read();
-  } catch {
-    return undefined;
-  }
-}
-
-function scenarioCount(proposal) {
-  return orUndefined(() => scenarioIds(proposal ?? "").length) ?? 0;
-}
-
-function isVisualOnly(index) {
-  return /^visualOnly:\s*true\s*$/m.test(frontmatterOf(index ?? ""));
-}
-
-async function validateVisualOnlyPage(
-  directory,
-  page,
-  where,
-  rule = "blueprint-visual-only",
-) {
-  const diagnostics = [];
-  if (page.reviews.length > 0) {
-    diagnostics.push(
-      `${where} [${rule}]: a visual-only Change page cannot contain Review files`,
-    );
-  }
-  if (!page.proposal?.trim()) {
-    diagnostics.push(
-      `${where} [${rule}]: the visual Proposal is missing or empty`,
-    );
-  }
-  const mockupPath = path.join(directory, "design.tsx");
-  let hasMockup = false;
-  try {
-    const info = await lstat(mockupPath);
-    hasMockup = info.isFile() && !info.isSymbolicLink();
-  } catch (error) {
-    if (error.code !== "ENOENT") throw error;
-  }
-  if (!page.proposal?.includes("<InteractiveFlowchart") && !hasMockup) {
-    diagnostics.push(
-      `${where} [${rule}]: include an InteractiveFlowchart or regular design.tsx mockup`,
-    );
-  }
-  return diagnostics;
-}
-
-async function validateChangePages(directories) {
-  const diagnostics = [];
-
-  for (const directory of directories) {
-    const page = await readChangeDir(directory);
-    if (page.index === undefined) continue;
-
-    if (isVisualOnly(page.index)) {
-      diagnostics.push(
-        ...(await validateVisualOnlyPage(
-          directory,
-          page,
-          `${BLUEPRINT_CHANGES}/${path.basename(directory)}`,
-        )),
-      );
-      continue;
-    }
-
-    const isComplete =
-      page.proposal?.includes("<TLDR") && scenarioCount(page.proposal) > 0;
-    if (!isComplete) {
-      diagnostics.push(
-        `${BLUEPRINT_CHANGES}/${path.basename(directory)}/proposal.mdx [blueprint-proposal]: the Proposal must contain a TLDR and export at least one scenario`,
-      );
-    }
-  }
-
-  return diagnostics;
-}
-
-// Two ways a snippet prop loses its shape. MDX strips the leading whitespace
-// from every continuation line of a multi-line template literal, so the code
-// renders flush left; and a bare JSX string attribute is a literal, so its
-// escapes render as the characters "\\n". An escaped string inside braces is
-// the only form that survives.
 const SNIPPET_FORMS = [
   [/=\{`[^`]*\n/, "a multi-line template literal"],
   [/\n\s*code="/, "a bare string attribute"],
 ];
-// MDX trims the leading whitespace after an opening SVG <text> on the next
-// line; browsers then treat the first rendered line as empty.
 const SVG_TEXT_OPEN_ON_OWN_LINE = /<text\b[^>]*>[ \t]*\r?\n/;
 
 function withoutFencedCode(content) {
   let fence;
   return content
-    .split(/\r?\n/u)
+    .split(/\r?\n/)
     .map((line) => {
-      const marker = line.match(/^ {0,3}(`{3,}|~{3,})/u)?.[1];
+      const marker = line.match(/^ {0,3}(`{3,}|~{3,})/)?.[1];
       if (!fence && marker) {
         fence = { character: marker[0], length: marker.length };
         return "";
@@ -413,23 +284,22 @@ function withoutFencedCode(content) {
     .join("\n");
 }
 
-async function validateMdxSource(root, directories) {
+async function validateMdxSource(root) {
   const diagnostics = [];
-  for (const directory of directories) {
-    for (const filePath of await listFiles(directory)) {
-      if (!filePath.endsWith(".mdx")) continue;
-      const content = await readFile(filePath, "utf8");
-      for (const [form, label] of SNIPPET_FORMS) {
-        if (!form.test(content)) continue;
-        diagnostics.push(
-          `${path.relative(root, filePath)} [blueprint-snippet]: a snippet prop is ${label}, not an escaped string in braces`,
-        );
-      }
-      if (SVG_TEXT_OPEN_ON_OWN_LINE.test(withoutFencedCode(content))) {
-        diagnostics.push(
-          `${path.relative(root, filePath)} [blueprint-svg-text]: an SVG <text> opening tag must be followed by content on the same line`,
-        );
-      }
+  const directory = path.join(root, FEATURE_CONTENT);
+  for (const filePath of await listFiles(directory)) {
+    if (!filePath.endsWith(".mdx")) continue;
+    const content = await readFile(filePath, "utf8");
+    for (const [form, label] of SNIPPET_FORMS) {
+      if (!form.test(content)) continue;
+      diagnostics.push(
+        `${path.relative(root, filePath)} [blueprint-snippet]: a snippet prop is ${label}, not an escaped string in braces`,
+      );
+    }
+    if (SVG_TEXT_OPEN_ON_OWN_LINE.test(withoutFencedCode(content))) {
+      diagnostics.push(
+        `${path.relative(root, filePath)} [blueprint-svg-text]: an SVG <text> opening tag must be followed by content on the same line`,
+      );
     }
   }
 
@@ -449,8 +319,6 @@ async function hasShardTrailer(root, base) {
   }
 }
 
-// ADR-0065: soft target, never a hard failure -- a Sharded Change (its
-// Shard trailer, ADR-0093, or --sharded-change) is the only escape hatch.
 async function checkFileCountScope(root, options) {
   const base = await resolveScopeBase(root);
 
@@ -477,39 +345,10 @@ async function checkFileCountScope(root, options) {
   ];
 }
 
-// Proposal scenarios are the other ADR-0065 soft target. Only the Change in
-// hand is measured: every other page is already past its gates, and warning on
-// it again on every run teaches people to ignore the warning.
-async function checkChangeSizeWarnings(root, slug) {
-  if (!slug) return [];
-  const page = await readChangeDir(path.join(root, BLUEPRINT_CHANGES, slug));
-  if (page.index === undefined) return [];
-  if (isVisualOnly(page.index)) return [];
-  const count = scenarioCount(page.proposal);
-  if (count <= SCENARIO_COUNT_SOFT_LIMIT) return [];
-  return [
-    `${BLUEPRINT_CHANGES}/${slug}/proposal.mdx [change-scope]: ${count} acceptance scenarios exceeds the soft target of ${SCENARIO_COUNT_SOFT_LIMIT}; split the Change`,
-  ];
-}
-
-// ADR-0057: a Change branch is known by its name.
-async function changeSlugFromBranch(root) {
-  try {
-    return changeSlugOf(await git(root, ["rev-parse", "--abbrev-ref", "HEAD"]));
-  } catch {
-    return undefined;
-  }
-}
-
 export async function checkChangeScope(root = process.cwd(), options = {}) {
-  const slug = options.gateSlug ?? (await changeSlugFromBranch(root));
-  return [
-    ...(await checkFileCountScope(root, options)),
-    ...(await checkChangeSizeWarnings(root, slug)),
-  ];
+  return checkFileCountScope(root, options);
 }
 
-// See ADR-0091.
 const TEST_TIER_SUFFIX = /\.(test|spec|itest|e2e)\.[cm]?[jt]sx?$/;
 const TEST_TIER_HOMES = {
   itest: {
@@ -581,16 +420,12 @@ export async function checkWorkflow(root = process.cwd()) {
   }
 
   diagnostics.push(...(await validateTestTiers(root)));
-  const directories = await changeDirectories(root);
-  diagnostics.push(...(await validateChangePages(directories)));
-  diagnostics.push(...(await validateMdxSource(root, directories)));
+  diagnostics.push(...(await validateMdxSource(root)));
   diagnostics.push(...(await validateSharedSkills(root)));
 
   return diagnostics.sort();
 }
 
-// A flag whose value is missing is a typo, not an absent flag: returning
-// undefined there would skip the check the caller asked for.
 function flagValue(argv, name) {
   const index = argv.indexOf(name);
   if (index === -1) return undefined;
@@ -600,301 +435,6 @@ function flagValue(argv, name) {
   }
   return value;
 }
-
-// A gate stops for the developer on a page they read from the store branch, so
-// an unpublished edit would show them something other than what the agent
-// means them to accept. `publish` records the hash it pushed, so anything else
-// on disk is unpublished.
-export async function checkPublished(root, slug) {
-  const changesDir = path.join(root, BLUEPRINT_CHANGES);
-  const slugDir = path.join(changesDir, slug);
-  if (!(await exists(slugDir))) {
-    return `${BLUEPRINT_CHANGES}/${slug} [blueprint-gate]: no Change directory to publish`;
-  }
-
-  const published = (await readStore(changesDir))[slug];
-  const current = await hashDir(slugDir);
-  if (published === current) return undefined;
-
-  return `${BLUEPRINT_CHANGES}/${slug} [blueprint-gate]: ${
-    published ? "edited since it was published" : "never published"
-  } — run \`pnpm blueprint:changes:publish ${slug}\` before the gate`;
-}
-
-const TAB_NAMES = new Set(["Proposal", "Review"]);
-
-function frontmatterTitle(content) {
-  const titleMatch = content.match(/^title:\s*(.*)$/m);
-  const title = titleMatch ? titleMatch[1].trim() : "";
-  const quoted = title.match(/^(["'])(.*)\1$/);
-  return quoted ? quoted[2] : title;
-}
-
-// Searched by directory, not facts.json: a conversion rewrites a page's files
-// without its facts (ADR-0095).
-async function acceptedFiles(root, slug, isAccepted, files) {
-  let shas;
-  try {
-    const output = await git(root, [
-      "log",
-      "--format=%H",
-      REMOTE_REF,
-      "--",
-      `${slug}/`,
-    ]);
-    shas = output ? output.split("\n") : [];
-  } catch {
-    return undefined;
-  }
-  for (const sha of shas) {
-    let facts;
-    try {
-      facts = JSON.parse(
-        await git(root, ["show", `${sha}:${slug}/facts.json`]),
-      );
-    } catch {
-      continue;
-    }
-    if (!isAccepted(facts)) continue;
-    const accepted = {};
-    for (const file of files) {
-      try {
-        accepted[file] = await git(root, ["show", `${sha}:${slug}/${file}`]);
-      } catch {
-        return { predatesSplit: true };
-      }
-    }
-    return accepted;
-  }
-  return undefined;
-}
-
-const PREDATES_SPLIT =
-  "was accepted before pages were split into a file per tab, so there is nothing to compare; publish it again at its gate to record a comparable version";
-
-async function refreshStore(root) {
-  await fetchChanges(await resolveRemote(root), root);
-}
-
-async function currentBranch(root) {
-  return git(root, ["rev-parse", "--abbrev-ref", "HEAD"]).catch(() => "");
-}
-
-export async function checkChangePageGate(
-  root,
-  slug,
-  { refresh = refreshStore, branch } = {},
-) {
-  const page = await readChangeDir(path.join(root, BLUEPRINT_CHANGES, slug));
-  if (page.index === undefined) return [];
-
-  const where = (file) => `${BLUEPRINT_CHANGES}/${slug}/${file}`;
-  const diagnostics = [];
-
-  const title = frontmatterTitle(page.index);
-  if (!title || TAB_NAMES.has(title)) {
-    diagnostics.push(
-      `${where("index.mdx")} [gate-title]: title must be the Change's name, not empty or a tab name`,
-    );
-  }
-
-  const files = [
-    ["proposal.mdx", page.proposal],
-    ...page.reviews.map((review) => [review.file, review.content]),
-  ];
-  for (const [file, content] of files) {
-    if (content === undefined) continue;
-    try {
-      assertValidMdx(content);
-    } catch (error) {
-      diagnostics.push(
-        `${where(file)} [gate-mdx]: the file is not valid MDX — ${error.message.split("\n")[0]}`,
-      );
-    }
-  }
-  if (diagnostics.some((diagnostic) => diagnostic.includes("[gate-mdx]"))) {
-    return diagnostics;
-  }
-  if (page.proposal === undefined) {
-    diagnostics.push(
-      `${where("proposal.mdx")} [gate-proposal]: file is missing`,
-    );
-    return diagnostics;
-  }
-
-  if (isVisualOnly(page.index)) {
-    diagnostics.push(
-      ...(await validateVisualOnlyPage(
-        path.join(root, BLUEPRINT_CHANGES, slug),
-        page,
-        where("proposal.mdx"),
-        "gate-visual-only",
-      )),
-    );
-    return diagnostics;
-  }
-
-  const count = shardCount(page.index);
-  const entries = scenarios(page.proposal);
-  if (entries.some((entry) => !entry.id)) {
-    diagnostics.push(
-      `${where("proposal.mdx")} [gate-scenario-shape]: every entry in scenarios needs an id`,
-    );
-  }
-  if (count !== undefined) {
-    for (const entry of entries) {
-      if (
-        Number.isInteger(entry.shard) &&
-        entry.shard >= 1 &&
-        entry.shard <= count
-      ) {
-        continue;
-      }
-      diagnostics.push(
-        `${where("proposal.mdx")} [gate-scenario-shape]: scenario ${entry.id} needs a shard from 1 to ${count}`,
-      );
-    }
-  }
-
-  const onBranch = parseChangeBranch(branch ?? (await currentBranch(root)));
-  const shard =
-    count !== undefined && onBranch?.slug === slug ? onBranch.shard : undefined;
-  if (count !== undefined && shard === undefined) {
-    diagnostics.push(
-      `${where("index.mdx")} [gate-branch-state]: a Sharded Change gate runs on a shard branch, <prefix>/${slug}-s<N>`,
-    );
-    return diagnostics;
-  }
-  for (const review of page.reviews) {
-    if ((review.shard === undefined) === (count === undefined)) continue;
-    diagnostics.push(
-      `${where(review.file)} [gate-review-file]: ${count === undefined ? "an ordinary Change's Review is review.mdx" : "a Sharded Change's Reviews are review-s<N>.mdx"}`,
-    );
-  }
-
-  const review = page.reviews.find((candidate) => candidate.shard === shard);
-  if (!review) return diagnostics;
-
-  const results = new Set(resultIds(review.content));
-  for (const entry of entries) {
-    if (count !== undefined && entry.shard !== shard) continue;
-    if (results.has(entry.id)) continue;
-    diagnostics.push(
-      `${where(review.file)} [gate-scenario-results]: scenario ${entry.id} has no result in ScenarioResults`,
-    );
-  }
-
-  const sections = reviewSections(review.content);
-  const missing = REQUIRED_REVIEW_SECTIONS.filter(
-    (section) => !sections.includes(section),
-  );
-  if (missing.length > 0) {
-    diagnostics.push(
-      `${where(review.file)} [gate-review-sections]: the Review is missing ${missing.join(", ")}`,
-    );
-  }
-  const inline = inlineReviewSections(review.content);
-  if (inline.length > 0) {
-    diagnostics.push(
-      `${where(review.file)} [gate-review-sections]: write ${inline.join(", ")} with the opening and closing tags on their own lines`,
-    );
-  }
-
-  try {
-    await refresh(root);
-  } catch (error) {
-    diagnostics.push(
-      `${where(review.file)} [gate-frozen]: could not fetch the store branch to compare accepted files with their publishes — ${error.message.split("\n")[0]}`,
-    );
-    return diagnostics;
-  }
-
-  const atG1 = await acceptedFiles(root, slug, (facts) => facts.gate === "G1", [
-    "index.mdx",
-    "proposal.mdx",
-  ]);
-  if (atG1?.predatesSplit) {
-    diagnostics.push(
-      `${where("proposal.mdx")} [gate-frozen]: ${PREDATES_SPLIT}`,
-    );
-  } else if (atG1 && atG1["proposal.mdx"].trim() !== page.proposal.trim()) {
-    diagnostics.push(
-      `${where("proposal.mdx")} [gate-frozen]: differs from the version published at G1; change it only by passing G1 again`,
-    );
-  }
-  if (
-    atG1 &&
-    !atG1.predatesSplit &&
-    frontmatterOf(atG1["index.mdx"]).trim() !== frontmatterOf(page.index).trim()
-  ) {
-    diagnostics.push(
-      `${where("index.mdx")} [gate-frozen]: the frontmatter differs from the version published at G1; change it only by passing G1 again`,
-    );
-  }
-  for (let earlier = 1; earlier <= (count ?? 0); earlier += 1) {
-    if (earlier === shard) continue;
-    const file = reviewFile(earlier);
-    const accepted = await acceptedFiles(
-      root,
-      slug,
-      (facts) => facts.gate === "G2" && facts.shards?.current === earlier,
-      [file],
-    );
-    if (!accepted || accepted.predatesSplit) continue;
-    const local = page.reviews.find((review) => review.shard === earlier);
-    if (!local) {
-      diagnostics.push(
-        `${where(file)} [gate-frozen]: shard ${earlier} passed G2 with this file, which is now missing; restore it`,
-      );
-    } else if (accepted[file].trim() !== local.content.trim()) {
-      diagnostics.push(
-        `${where(file)} [gate-frozen]: differs from the version shard ${earlier} passed G2 with; change it only by passing that G2 again`,
-      );
-    }
-  }
-
-  return diagnostics;
-}
-
-const GATE_BRANCH_STATE_ACTION =
-  "commit and push the Change branch before publishing";
-
-// The reason lives in WORKFLOW.md's G1 exit steps.
-export async function checkGateBranchState(root) {
-  const diagnostics = [];
-
-  const status = await git(root, [
-    "status",
-    "--porcelain",
-    "--",
-    "blueprint/content/decisions",
-  ]).catch(() => "");
-  if (status) {
-    diagnostics.push(
-      `blueprint/content/decisions [gate-branch-state]: ${GATE_BRANCH_STATE_ACTION} — decision records have uncommitted or untracked changes`,
-    );
-  }
-
-  try {
-    await git(root, ["rev-parse", "--verify", "@{u}"]);
-  } catch {
-    diagnostics.push(
-      `[gate-branch-state]: ${GATE_BRANCH_STATE_ACTION} — the current branch has no upstream`,
-    );
-    return diagnostics;
-  }
-
-  const ahead = await git(root, ["rev-list", "--count", "@{u}..HEAD"]);
-  if (Number(ahead) > 0) {
-    diagnostics.push(
-      `[gate-branch-state]: ${GATE_BRANCH_STATE_ACTION} — the branch is ahead of its upstream`,
-    );
-  }
-
-  return diagnostics;
-}
-
-const DECISION_LENGTH_SOFT_LIMIT = 1000;
 
 export async function checkDecisionRecordLength(root) {
   const base = await resolveScopeBase(root);
@@ -936,53 +476,16 @@ export async function checkDecisionRecordLength(root) {
   return diagnostics;
 }
 
-// WORKFLOW's Pre-PR step 2 settles the Changeset before code review; a
-// Changeset written after review reopens the review loop.
-export async function checkChangesetAtG2(root, slug) {
-  const page = await readChangeDir(path.join(root, BLUEPRINT_CHANGES, slug));
-  if (page.reviews.length === 0) return [];
-
-  const base = await resolveScopeBase(root);
-  let changed;
-  try {
-    changed = await git(root, [
-      "diff",
-      "--name-only",
-      "--diff-filter=A",
-      `${base}...HEAD`,
-      "--",
-      ".changeset",
-    ]);
-  } catch {
-    return [];
-  }
-  const hasChangeset = changed
-    .split("\n")
-    .some((file) => file.endsWith(".md") && !file.endsWith("README.md"));
-  return hasChangeset
-    ? []
-    : [
-        `${slug} [changeset]: the branch has no Changeset at G2; write one before code review, or state in the Review tab why none applies`,
-      ];
-}
-
 async function main() {
+  const argv = process.argv.slice(2);
   const diagnostics = await checkWorkflow();
-  const gateSlug = flagValue(process.argv.slice(2), "--gate");
-  const warnings = await checkChangeScope(process.cwd(), {
-    shardedChangeSlug:
-      flagValue(process.argv.slice(2), "--sharded-change") ??
-      flagValue(process.argv.slice(2), "--migration"),
-    gateSlug,
-  });
-  if (gateSlug) {
-    const unpublished = await checkPublished(process.cwd(), gateSlug);
-    if (unpublished) diagnostics.push(unpublished);
-    diagnostics.push(...(await checkChangePageGate(process.cwd(), gateSlug)));
-    diagnostics.push(...(await checkGateBranchState(process.cwd())));
-    warnings.push(...(await checkDecisionRecordLength(process.cwd())));
-    warnings.push(...(await checkChangesetAtG2(process.cwd(), gateSlug)));
-  }
+  const warnings = [
+    ...(await checkChangeScope(process.cwd(), {
+      shardedChangeSlug:
+        flagValue(argv, "--sharded-change") ?? flagValue(argv, "--migration"),
+    })),
+    ...(await checkDecisionRecordLength(process.cwd())),
+  ];
 
   for (const warning of warnings) console.warn(`Warning: ${warning}`);
 
