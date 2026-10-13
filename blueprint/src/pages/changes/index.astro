@@ -1,14 +1,14 @@
 ---
+import { createBlueprintSources } from "../../lib/source";
+import { listPublishedChangeSummaries } from "../../lib/github-change-data";
 import { createChangesTree } from "../../lib/changes-tree";
+import { ChangeCardList } from "../../components/change-card";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
-import { createBlueprintSources } from "../../lib/source";
 
 const source = await createBlueprintSources();
-const tree = createChangesTree(
-  source.changes.pageTree,
-  source.changeEntries.map((change) => `/changes/${change.id}`),
-);
+const summaries = await listPublishedChangeSummaries(source.changeEntries);
+const tree = createChangesTree(source.changes.pageTree, summaries.map((change) => change.href));
 ---
 
 <Layout>
@@ -23,16 +23,10 @@ const tree = createChangesTree(
   >
     <main>
       <h1>Changes</h1>
-      {source.changeEntries.length === 0 ? (
+      {summaries.length === 0 ? (
         <p>目前沒有已發布的 Change。</p>
       ) : (
-        <ul>
-          {source.changeEntries.map((change) => (
-            <li>
-              <a href={`/changes/${change.id}`}>{change.data.title}</a>
-            </li>
-          ))}
-        </ul>
+        <ChangeCardList changes={summaries} />
       )}
     </main>
   </Docs>

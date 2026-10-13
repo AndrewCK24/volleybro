@@ -2,12 +2,11 @@
 import { getEmDashEntry } from "emdash";
 import { Docs } from "../../components/docs";
 import EmDashChangeBlocks from "../../components/emdash-change-blocks.astro";
+import { ChangeHeader } from "../../components/change-header";
 import Layout from "../../components/layout.astro";
-import {
-  acceptedContentHash,
-  changeDataSchema,
-} from "../../lib/emdash-change-record";
+import { acceptedContentHash, changeDataSchema } from "../../lib/emdash-change-record";
 import { createChangesBreadcrumbTree, createChangesTree } from "../../lib/changes-tree";
+import { listPublishedChangeSummaries, summarizeChange } from "../../lib/github-change-data";
 import { createBlueprintSources } from "../../lib/source";
 
 const slug = Astro.params.slug ?? "";
@@ -26,15 +25,22 @@ if (result.isPreview) {
 }
 if (!entry) Astro.response.status = 404;
 
-const visibleHrefs = source.changeEntries.map((item) => `/changes/${item.id}`);
+const summaries = entry && !result.isPreview
+  ? await listPublishedChangeSummaries(source.changeEntries)
+  : [];
+const summary = entry && change
+  ? result.isPreview
+    ? summarizeChange({ id: entry.id, data: change }, [])
+    : summaries.find((candidate) => candidate.slug === slug) ?? summarizeChange({ id: entry.id, data: change }, [])
+  : undefined;
+const visibleHrefs = summaries.map((item) => item.href);
 if (result.isPreview) visibleHrefs.unshift(`/changes/${slug}`);
-const tree = createChangesBreadcrumbTree(createChangesTree(source.changes.pageTree, visibleHrefs));
+const changesTree = createChangesTree(source.changes.pageTree, visibleHrefs);
+const tree = createChangesBreadcrumbTree(changesTree);
 const revision = result.isPreview && typeof entry?.data.draftRevisionId === "string"
   ? entry.data.draftRevisionId
   : undefined;
-const contentHash = result.isPreview && change
-  ? await acceptedContentHash(change)
-  : undefined;
+const contentHash = result.isPreview && change ? await acceptedContentHash(change) : undefined;
 ---
 
 <Layout>
@@ -51,17 +57,17 @@ const contentHash = result.isPreview && change
       breadcrumb: { includeRoot: { url: "/changes" }, includePage: true },
     }}
   >
-    <main
-      data-emdash-change={slug}
-      data-emdash-preview={result.isPreview ? "true" : undefined}
-      data-emdash-revision={revision}
-      data-emdash-content-sha256={contentHash}
-    >
+    <main data-emdash-change={slug} data-emdash-preview={result.isPreview ? "true" : undefined} data-emdash-revision={revision} data-emdash-content-sha256={contentHash}>
       {result.isPreview && <p class="mb-4 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">私密預覽 · 尚未發布</p>}
-      {change ? (
+      {change && summary ? (
         <>
-          <h1>{change.title}</h1>
-          {change.description && <p>{change.description}</p>}
+          <ChangeHeader
+            title={change.title}
+            status={summary.status}
+            mergedAt={summary.mergedAt}
+            metrics={summary.metrics}
+            scenarioCount={summary.scenarioCount}
+          />
           <EmDashChangeBlocks blocks={change.blocks} />
         </>
       ) : (

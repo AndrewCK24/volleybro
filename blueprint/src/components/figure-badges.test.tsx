@@ -1,19 +1,19 @@
 import { render, screen } from "@testing-library/react";
 
-import { FigureBadges } from "./figure-badges";
+import { ChangeMetricsBadges } from "./figure-badges";
 
-describe("FigureBadges", () => {
+describe("ChangeMetricsBadges", () => {
   it("shows insertions and deletions as separate badges, named for screen readers", () => {
     render(
-      <FigureBadges
-        facts={{
+      <ChangeMetricsBadges
+        metrics={{
           commits: 43,
           filesChanged: 422,
-          insertions: 2893,
+          additions: 2893,
           deletions: 25197,
-          srcFilesChanged: 4,
-          scenarios: 8,
+          srcFiles: 4,
         }}
+        scenarioCount={8}
       />,
     );
 
@@ -30,7 +30,18 @@ describe("FigureBadges", () => {
   });
 
   it("renders nothing when every figure is empty", () => {
-    render(<FigureBadges facts={{ commits: 0, filesChanged: null }} />);
+    render(
+      <ChangeMetricsBadges
+        metrics={{
+          commits: 0,
+          filesChanged: 0,
+          additions: 0,
+          deletions: 0,
+          srcFiles: 0,
+        }}
+        scenarioCount={0}
+      />,
+    );
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 });

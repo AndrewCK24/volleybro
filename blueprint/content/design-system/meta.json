@@ -108,7 +108,7 @@
         "AnnotatedDiff",
         "InteractiveFlowchart",
         "DecisionTimeline",
-        "FigureBadges"
+        "ChangeMetricsBadges"
       ]
     }
   ]
