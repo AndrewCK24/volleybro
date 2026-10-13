@@ -101,7 +101,7 @@ describe("EmDash Change schema", () => {
         },
         {
           _type: "image",
-          asset: { _ref: "media-1", provider: "local" },
+          asset: { _ref: "media-1" },
           alt: "Diagram",
         },
         {
@@ -192,29 +192,23 @@ describe("EmDash Change schema", () => {
           _type: "image",
           _key: "image-key",
           alt: "Diagram",
-          asset: {
-            _ref: "media-alpha",
-            provider: "local",
-          },
+          asset: { _ref: "media-alpha" },
         },
       ],
     };
     const acceptedHash = await acceptedContentHash(mediaContent);
 
-    await expect(
-      acceptedContentHash({
+    expect(
+      changeDataSchema.safeParse({
         ...mediaContent,
         blocks: [
           {
             ...mediaContent.blocks[0],
-            asset: {
-              ...mediaContent.blocks[0].asset,
-              url: "/media/different-object.png",
-            },
+            asset: { ...mediaContent.blocks[0].asset, url: "/media/image.png" },
           },
         ],
-      }),
-    ).resolves.not.toBe(acceptedHash);
+      }).success,
+    ).toBe(false);
     await expect(
       acceptedContentHash({
         ...mediaContent,

@@ -1,0 +1,11 @@
+---
+import { Block as EmDashPortableTextBlock } from "emdash/ui";
+
+const props = Astro.props as {
+  node: { id?: string };
+  index: number;
+  isInline: boolean;
+};
+---
+
+<EmDashPortableTextBlock {...props} id={props.node.id} />

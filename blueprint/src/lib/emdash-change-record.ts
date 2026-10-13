@@ -36,6 +36,7 @@ const textBlockSchema = z
     style: z
       .enum(["normal", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"])
       .optional(),
+    textAlign: z.enum(["left", "center", "right", "justify"]).optional(),
     listItem: z.enum(["bullet", "number"]).optional(),
     level: z.number().int().min(1).optional(),
   })
@@ -68,23 +69,11 @@ const textBlockSchema = z
     }
   });
 
-const safeMediaUrlSchema = z.string().refine((value) => {
-  if (value.startsWith("/")) return true;
-  try {
-    return ["https:", "http:"].includes(new URL(value).protocol);
-  } catch {
-    return false;
-  }
-}, "Expected a safe media URL.");
-
 const imageBlockSchema = z.strictObject({
   _key: z.string().min(1).optional(),
   _type: z.literal("image"),
   asset: z.strictObject({
     _ref: z.string().min(1),
-    url: safeMediaUrlSchema.optional(),
-    provider: z.string().min(1).optional(),
-    meta: z.record(z.string(), z.unknown()).optional(),
   }),
   alt: z.string().optional(),
   caption: z.string().optional(),
