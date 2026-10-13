@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { finalizeLegacyMigrationReceipts } from "../src/lib/legacy-migration-receipts.ts";
+import { finalizeLegacyMigrationReceipts } from "./legacy-migration-receipts.ts";
 import { parseCliArgs } from "./parse-cli-args.ts";
 
 function printHelp() {

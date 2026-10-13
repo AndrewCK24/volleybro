@@ -11,13 +11,18 @@ import {
   acceptedContentHash,
   changeDataSchema,
 } from "../src/lib/emdash-change-record.ts";
-import { sanitizeLegacyHtml } from "../src/lib/sanitize-legacy-html.ts";
 import {
   parseAllowedPullRequestUrl,
   scenarioCount,
 } from "../src/lib/github-change-data.ts";
-import { prepareLinearG1Markdown } from "../src/lib/linear-g1-markdown.ts";
+import { prepareLinearG1Markdown } from "./linear-g1-markdown.ts";
 import { parseCliArgs } from "./parse-cli-args.ts";
+import {
+  convertMarkdownToPortableText,
+  convertRenderedHtmlToPortableText,
+  extractMdxStructuredData,
+  serializeTransferMediaPlaceholders,
+} from "./portable-text-converter.mjs";
 
 const SNAPSHOT = "f010a9e020be8a342a7c7bafc31e2a361565135d";
 const REQUIRED_NO_PR_SLUGS = ["record-flows", "sync-recording"];
@@ -40,11 +45,6 @@ function printHelp() {
   --git-root <repository containing snapshot commit> --renderer-root <pinned legacy renderer checkout> \\
   --project-spec <accepted project G1 Team Doc export> --out <disposable transfer directory> \\
   [--g1-specs <accepted G1 documents JSON; matching slugs merge, other slugs create pages>]`);
-}
-
-function textContent(node) {
-  if (node.nodeName === "#text") return node.value;
-  return (node.childNodes ?? []).map(textContent).join("");
 }
 
 function attr(node, name) {
@@ -209,7 +209,7 @@ function localImageSources(proposal) {
 }
 
 function attachMediaMarkers(html, slug, sourceImages, storeRoot, snapshot) {
-  if (sourceImages.length === 0) return { html, blocks: [], sourceFiles: [] };
+  if (sourceImages.length === 0) return { html, sourceFiles: [] };
   const fragment = parseFragment(html);
   const images = walk(fragment, (node) => node.tagName === "img");
   if (images.length !== sourceImages.length) {
@@ -218,7 +218,6 @@ function attachMediaMarkers(html, slug, sourceImages, storeRoot, snapshot) {
     );
   }
   const unused = [...sourceImages];
-  const mediaBlocks = [];
   const sourceFiles = [];
   for (const image of images) {
     const alt = attr(image, "alt") ?? "";
@@ -242,27 +241,18 @@ function attachMediaMarkers(html, slug, sourceImages, storeRoot, snapshot) {
     );
     image.attrs.push({ name: "data-emdash-media-key", value: key });
     const rawUrl = `https://raw.githubusercontent.com/andrewck24/volleybro/${snapshot}/${slug}/${source.filename}`;
-    mediaBlocks.push({
-      _type: "legacy_media",
-      _version: 1,
-      key,
-      sha256: digest,
-      alt,
-      asset: {
-        $media: { url: rawUrl, alt, filename: `${slug}-${source.filename}` },
-      },
-    });
-    sourceFiles.push({
-      filename: source.filename,
-      key,
-      sha256: digest,
-      size: bytes.byteLength,
-      sourceUrl: rawUrl,
-    });
+    if (!sourceFiles.some((file) => file.key === key))
+      sourceFiles.push({
+        filename: source.filename,
+        key,
+        sha256: digest,
+        size: bytes.byteLength,
+        sourceUrl: rawUrl,
+      });
   }
   if (unused.length > 0)
     throw new Error(`${slug}: not all source images were rendered.`);
-  return { html: serialize(fragment), blocks: mediaBlocks, sourceFiles };
+  return { html: serialize(fragment), sourceFiles };
 }
 
 function readContainedImage(proposalPath, filename, storeRoot, slug) {
@@ -271,67 +261,6 @@ function readContainedImage(proposalPath, filename, storeRoot, slug) {
   if (!assetPath.startsWith(`${pageRoot}${path.sep}`))
     throw new Error(`${slug}: image path escapes the page directory.`);
   return readFileSync(assetPath);
-}
-
-function scenarioRecords(html, slug) {
-  const fragment = parseFragment(html);
-  const labels = ["GIVEN", "WHEN", "THEN"];
-  const cards = walk(fragment, (node) => {
-    if (node.tagName !== "div" || attr(node, "data-slot") !== "card")
-      return false;
-    const found = walk(
-      node,
-      (child) =>
-        child.tagName === "span" && labels.includes(textContent(child).trim()),
-    );
-    return labels.every(
-      (label) =>
-        found.filter((span) => textContent(span).trim() === label).length === 1,
-    );
-  });
-  const counts = Object.fromEntries(
-    labels.map((label) => [
-      label,
-      walk(
-        fragment,
-        (node) => node.tagName === "span" && textContent(node).trim() === label,
-      ).length,
-    ]),
-  );
-  if (!Object.values(counts).every((count) => count === counts.GIVEN)) {
-    throw new Error(
-      `${slug}: rendered scenario labels are not balanced (${counts.GIVEN}/${counts.WHEN}/${counts.THEN}).`,
-    );
-  }
-  const items = cards.map((card, index) => {
-    const values = {};
-    for (const label of labels) {
-      const labelNode = walk(
-        card,
-        (node) => node.tagName === "span" && textContent(node).trim() === label,
-      )[0];
-      const row = labelNode?.parentNode;
-      const value = row?.childNodes?.filter(
-        (node) => node.tagName === "span",
-      )?.[1];
-      if (!value)
-        throw new Error(
-          `${slug}: scenario ${index + 1} has no ${label} value.`,
-        );
-      values[label.toLowerCase()] = textContent(value).trim();
-    }
-    return {
-      id: `${slug}-scenario-${index + 1}`,
-      given: values.given,
-      when: values.when,
-      then: values.then,
-    };
-  });
-  if (items.length !== counts.GIVEN)
-    throw new Error(
-      `${slug}: some rendered scenario cards could not be extracted.`,
-    );
-  return items;
 }
 
 function anchorAudit(html) {
@@ -633,26 +562,41 @@ function validateProjectSpec(spec) {
       "The project G1 document does not match its accepted G1 SHA-256.",
     );
   }
-  const obsoleteAuthorization =
-    "本接受固定規格，不授權開始實作、不切換正式服務、不建立或刪除 Cloudflare 資源。";
-  const currentAuthorization =
-    "本規格已通過 G1；依 WORKFLOW.md，接受 G1 後授權實作至 G2。不授權切換正式服務或建立、刪除 Cloudflare 資源。";
+  const receiptMatch = content.match(
+    /## G1 acceptance receipt\s*\n\s*```json\s*\n([\s\S]*?)\n```/u,
+  );
+  let receipt;
+  try {
+    receipt = JSON.parse(receiptMatch?.[1] ?? "");
+  } catch {
+    throw new Error("The project G1 receipt is missing or invalid JSON.");
+  }
+  let receiptSource;
+  try {
+    receiptSource = new URL(receipt.source);
+  } catch {
+    receiptSource = null;
+  }
   if (
-    !acceptedSpec.includes(obsoleteAuthorization) &&
-    !acceptedSpec.includes("授權 ticket decomposition 與實作至 G2")
+    receipt.schemaVersion !== 1 ||
+    receipt.change !== spec.change ||
+    receipt.specHash !== spec.sha256 ||
+    receipt.acceptedAt !== spec.acceptedAt ||
+    !receiptSource ||
+    receiptSource.protocol !== "https:" ||
+    receiptSource.hostname !== "linear.app" ||
+    !new RegExp(`^/asatelier/issue/${spec.linearIssue}/`, "iu").test(
+      receiptSource.pathname,
+    )
   ) {
     throw new Error(
-      "The accepted project G1 source must record authorization through G2.",
+      "The project G1 receipt metadata does not match the accepted export.",
     );
   }
-  const pageContent = acceptedSpec.replace(
-    obsoleteAuthorization,
-    currentAuthorization,
-  );
   return {
     ...spec,
     sourceContent: acceptedSpec,
-    pageContent,
+    pageContent: acceptedSpec,
     sourceSha256: spec.sha256,
   };
 }
@@ -816,8 +760,13 @@ async function run(options) {
       readFile(htmlPath, "utf8"),
     ]);
     const titleAndDescription = readFrontmatter(indexMdx, slug);
+    const structured = extractMdxStructuredData(
+      `${indexMdx}\n${proposal}`,
+      slug,
+    );
     let legacyHtml = extractRenderedContent(renderedHtml, slug);
     const sourceAudit = anchorAudit(legacyHtml);
+    const anchors = sourceAudit;
     const attached = attachMediaMarkers(
       legacyHtml,
       slug,
@@ -825,39 +774,34 @@ async function run(options) {
       storeRoot,
       SNAPSHOT,
     );
-    legacyHtml = sanitizeLegacyHtml(attached.html);
-    const mediaBlocks = attached.blocks;
-    const scenarios = scenarioRecords(legacyHtml, slug);
-    const anchors = anchorAudit(legacyHtml);
-    if (JSON.stringify(anchors) !== JSON.stringify(sourceAudit)) {
+    legacyHtml = attached.html;
+    const blocks = convertRenderedHtmlToPortableText(
+      legacyHtml,
+      slug,
+      attached.sourceFiles,
+      structured,
+    );
+    const scenarios = structured.scenarios;
+    const importedAnchors = blocks
+      .filter((block) => block._type === "block" && block.id)
+      .map((block) => block.id)
+      .sort();
+    const sourceAnchors = [
+      ...new Set(sourceAudit.ids.filter((id) => !id.startsWith("sn-"))),
+    ].sort();
+    if (JSON.stringify(importedAnchors) !== JSON.stringify(sourceAnchors)) {
       throw new Error(
-        `${slug}: sanitization changed the page audit: source=${JSON.stringify(sourceAudit)} migrated=${JSON.stringify(anchors)}.`,
+        `${slug}: canonical Portable Text anchors differ from source: source=${JSON.stringify(sourceAnchors)} imported=${JSON.stringify(importedAnchors)}.`,
       );
     }
-    const blocks = [
-      { _type: "legacy_html", _version: 1, html: legacyHtml },
-      ...mediaBlocks,
-      ...(scenarios.length
-        ? [
-            {
-              _type: "scenario_cards",
-              _version: 1,
-              items: JSON.stringify(scenarios),
-              rendered_in_legacy_html: true,
-            },
-          ]
-        : []),
-    ];
     const acceptedSpec = acceptedSpecs.get(slug);
     const renderedG1Spec = acceptedSpec
       ? prepareLinearG1Markdown(acceptedSpec.content)
       : undefined;
     if (acceptedSpec)
-      blocks.push({
-        _type: "markdown",
-        _version: 1,
-        markdown: renderedG1Spec.markdown,
-      });
+      blocks.push(
+        ...convertMarkdownToPortableText(renderedG1Spec.markdown, `${slug}-g1`),
+      );
     const stableBlocks = blocks.map((block, index) => ({
       ...block,
       _key: `${slug}-${index + 1}`,
@@ -880,15 +824,12 @@ async function run(options) {
       throw new Error(
         `${slug}: structured scenario count does not match rendered legacy content.`,
       );
-    const imageMarkers = walk(
-      parseFragment(legacyHtml),
-      (node) =>
-        node.tagName === "img" &&
-        typeof attr(node, "data-emdash-media-key") === "string",
-    );
-    if (imageMarkers.length !== mediaBlocks.length)
+    const importedMediaCount = blocks.filter(
+      (block) => block._type === "image",
+    ).length;
+    if (importedMediaCount !== attached.sourceFiles.length)
       throw new Error(
-        `${slug}: sanitized HTML and EmDash media blocks do not match.`,
+        `${slug}: native image blocks and source media manifest do not match.`,
       );
 
     content.push({ id: `legacy-${slug}`, slug, status: "draft", data });
@@ -935,7 +876,7 @@ async function run(options) {
       reviewSections: anchors.reviewCount,
       anchors,
       renderedHtmlSha256: sha256(renderedHtml),
-      sanitizedHtmlSha256: sha256(legacyHtml),
+      portableTextSha256: sha256(JSON.stringify(blocks)),
       seedContentSha256: seedContentHash,
       media: attached.sourceFiles.map(
         ({ filename, key, sha256: imageHash, size }) => ({
@@ -996,14 +937,7 @@ async function run(options) {
         : {}),
       linear_issue: acceptedSpec.linearIssue,
       pull_requests: pullRequests.map(({ url }) => ({ url })),
-      blocks: [
-        {
-          _type: "markdown",
-          _version: 1,
-          markdown: renderedG1Spec.markdown,
-          _key: `${slug}-1`,
-        },
-      ],
+      blocks: convertMarkdownToPortableText(renderedG1Spec.markdown, slug),
     };
     const valid = changeDataSchema.safeParse(data);
     if (!valid.success)
@@ -1039,14 +973,10 @@ async function run(options) {
       : {}),
     linear_issue: projectSpec.linearIssue,
     pull_requests: [],
-    blocks: [
-      {
-        _type: "markdown",
-        _version: 1,
-        markdown: renderedProjectSpec.markdown,
-        _key: `${projectSpec.slug}-1`,
-      },
-    ],
+    blocks: convertMarkdownToPortableText(
+      renderedProjectSpec.markdown,
+      projectSpec.slug,
+    ),
   };
   const validProject = changeDataSchema.safeParse(projectData);
   if (!validProject.success)
@@ -1072,8 +1002,6 @@ async function run(options) {
       sha256: projectSpec.sourceSha256,
     },
     contentSha256: await acceptedContentHash(projectData),
-    sourceAuthorizationCorrection:
-      "WORKFLOW.md authorizes implementation through G2; production switch and Cloudflare resource creation/deletion remain excluded.",
   });
 
   const seed = {
@@ -1083,7 +1011,12 @@ async function run(options) {
       name: "Blueprint legacy Change transfer",
       description: `Disposable draft import from blueprint-changes snapshot ${SNAPSHOT}`,
     },
-    content: { blueprint_changes: content },
+    content: {
+      blueprint_changes: serializeTransferMediaPlaceholders(
+        content,
+        mediaManifest,
+      ),
+    },
   };
   const seedJson = `${JSON.stringify(seed, null, 2)}\n`;
   const audit = {
@@ -1104,7 +1037,6 @@ async function run(options) {
       acceptedAt: projectSpec.acceptedAt,
       sourceSha256: projectSpec.sourceSha256,
       migratedContentSha256: pages.at(-1).contentSha256,
-      authorizationCorrection: true,
       renderTransformations: renderedProjectSpec.transformations,
     },
     githubPrExportSha256: prExportHash,
