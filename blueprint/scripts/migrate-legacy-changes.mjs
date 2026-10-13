@@ -270,7 +270,7 @@ function readContainedImage(proposalPath, filename, storeRoot, slug) {
   const pageRoot = path.resolve(storeRoot, slug);
   if (!assetPath.startsWith(`${pageRoot}${path.sep}`))
     throw new Error(`${slug}: image path escapes the page directory.`);
-  return execFileSync("cat", [assetPath], { encoding: null });
+  return readFileSync(assetPath);
 }
 
 function scenarioRecords(html, slug) {
