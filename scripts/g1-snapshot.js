@@ -6,8 +6,6 @@ const RECEIPT_MARKER = "\n\n## G1 acceptance receipt\n\n";
 const SHA256 = /^[a-f0-9]{64}$/;
 const LINEAR_ISSUE_URL =
   /^https:\/\/linear\.app\/[a-z0-9-]+\/issue\/[A-Z]+-\d+(?:\/[^\s]*)?$/i;
-const LINEAR_DOCUMENT_URL =
-  /^https:\/\/linear\.app\/[a-z0-9-]+\/document\/[a-z0-9-]+$/i;
 const NORMALIZATION =
   "LF line endings; trim trailing document whitespace; one final LF";
 
@@ -22,6 +20,36 @@ function hashSpec(content) {
   return createHash("sha256")
     .update(normalizeSpec(content), "utf8")
     .digest("hex");
+}
+
+function isLinearDocumentUrl(value) {
+  if (typeof value !== "string" || value.trim() !== value) return false;
+
+  try {
+    const url = new URL(value);
+    const segments = url.pathname.split("/");
+    const [workspace, resource, slug] = segments.slice(1);
+    if (
+      url.protocol !== "https:" ||
+      url.hostname !== "linear.app" ||
+      url.port ||
+      url.username ||
+      url.password ||
+      url.search ||
+      url.hash ||
+      segments.length !== 4 ||
+      !/^[a-z0-9-]+$/i.test(workspace ?? "") ||
+      resource !== "document" ||
+      !slug
+    ) {
+      return false;
+    }
+
+    const decodedSlug = decodeURIComponent(slug);
+    return !decodedSlug.includes("/") && !decodedSlug.includes("\\");
+  } catch {
+    return false;
+  }
 }
 
 function parseReceipt(content) {
@@ -69,7 +97,7 @@ export function validateSnapshot(document, { teamId, change } = {}) {
     diagnostics.push("Linear document ID is missing");
   if (document.team?.id !== teamId)
     diagnostics.push("Linear document belongs to a different or missing Team");
-  if (!LINEAR_DOCUMENT_URL.test(document.url ?? ""))
+  if (!isLinearDocumentUrl(document.url))
     diagnostics.push("Linear document URL is missing or invalid");
   if (typeof document.content !== "string" || !document.content.trim()) {
     diagnostics.push("Linear document content is missing");

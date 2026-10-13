@@ -49,6 +49,32 @@ test("validates normalized Linear readback and returns only pointer metadata", (
   assert.equal("spec" in result, false);
 });
 
+test("accepts the canonical Linear document URL with a Unicode title slug", () => {
+  const input = document({
+    url: "https://linear.app/asatelier/document/ate-294-g1-候選規格以-emdash-管理-blueprint-change-頁面與歷史-5340beb556e6",
+  });
+  const result = validation(input);
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.diagnostics, []);
+  assert.equal(result.metadata.documentUrl, input.url);
+});
+
+test("rejects non-canonical Linear document URLs", () => {
+  for (const url of [
+    "https://example.com/asatelier/document/valid-slug",
+    "https://linear.app/asatelier/issues/valid-slug",
+    "https://linear.app/asatelier/document/valid-slug?draft=true",
+    "https://linear.app/asatelier/document/valid-slug#section",
+  ]) {
+    const result = validation(document({ url }));
+    assert.equal(result.valid, false, url);
+    assert.match(
+      result.diagnostics.join("\n"),
+      /document URL is missing or invalid/,
+    );
+  }
+});
+
 test("fails closed when the Doc is not attached to the expected Team", () => {
   const result = validation(document({ team: { id: "other-team" } }));
   assert.equal(result.valid, false);
