@@ -3,6 +3,7 @@ import { render } from "astro:content";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
 import { createBlueprintSources } from "../../lib/source";
+import { flattenIndexOnlyFolders } from "../../lib/page-tree";
 import { listChanges } from "../../lib/changes-index";
 import DesignSystemOverview, { toc as overviewToc } from "../../../content/design-system/index";
 import BrandPage, { toc as brandToc } from "../../../content/design-system/brand/index";
@@ -68,7 +69,7 @@ const pageToc = [...documentToc, ...showcaseToc];
   </Fragment>
   <Docs
     client:load
-    tree={sources.designSystem.pageTree}
+    tree={flattenIndexOnlyFolders(sources.designSystem.pageTree)}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
     hasChanges={hasChanges}
