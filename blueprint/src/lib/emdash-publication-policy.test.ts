@@ -1,10 +1,6 @@
 /** @jest-environment node */
 
-import {
-  LEGACY_STORE_SNAPSHOT,
-  legacyImportReceiptProblem,
-  publicationReceiptProblem,
-} from "./publication-receipt";
+import { publicationReceiptProblem } from "./publication-receipt";
 
 const hash = "a".repeat(64);
 const receipt = (revision: string, acceptedHash = hash) =>
@@ -28,23 +24,21 @@ describe("publicationReceiptProblem", () => {
         draftRevisionId: "revision-2",
         actualContentHash: hash,
       }),
-    ).toBe(
-      "Linear's accepted G1 revision does not match this unpublished draft.",
-    );
+    ).toBe("Linear's accepted G1 revision does not match this draft.");
   });
 
-  it("blocks a changed accepted specification even when the entry was already published", () => {
+  it("requires a newly accepted revision after a published draft changes", () => {
     expect(
       publicationReceiptProblem({
         issueDescription: receipt("revision-1"),
         draftRevisionId: "revision-2",
         liveRevisionId: "live-revision",
-        actualContentHash: "b".repeat(64),
+        actualContentHash: hash,
       }),
-    ).toBe("Linear's accepted G1 content hash does not match this draft.");
+    ).toBe("Linear's accepted G1 revision does not match this draft.");
   });
 
-  it("allows a published entry's PR-index-only revision update when the accepted content hash is unchanged", () => {
+  it("rejects a published entry's PR-index-only revision update without new acceptance", () => {
     expect(
       publicationReceiptProblem({
         issueDescription: receipt("accepted-revision"),
@@ -52,7 +46,18 @@ describe("publicationReceiptProblem", () => {
         liveRevisionId: "live-revision",
         actualContentHash: hash,
       }),
-    ).toBeUndefined();
+    ).toBe("Linear's accepted G1 revision does not match this draft.");
+  });
+
+  it("blocks changed content even when the accepted draft revision matches", () => {
+    expect(
+      publicationReceiptProblem({
+        issueDescription: receipt("revision-1"),
+        draftRevisionId: "revision-1",
+        liveRevisionId: "live-revision",
+        actualContentHash: "b".repeat(64),
+      }),
+    ).toBe("Linear's accepted G1 content hash does not match this draft.");
   });
 
   it("allows the exact revision and hash accepted for initial publication", () => {
@@ -64,59 +69,24 @@ describe("publicationReceiptProblem", () => {
       }),
     ).toBeUndefined();
   });
-});
 
-describe("legacyImportReceiptProblem", () => {
-  const legacyReceipt = (slug: string, acceptedHash = hash) =>
-    `<!-- emdash-legacy-entry:v1 snapshot=${LEGACY_STORE_SNAPSHOT} slug=${slug} sha256=${acceptedHash} -->`;
-  const input = (
-    overrides: Partial<Parameters<typeof legacyImportReceiptProblem>[0]> = {},
-  ) => ({
-    migrationIssueDescription: legacyReceipt("record-flows"),
-    actualContentHash: hash,
-    slug: "record-flows",
-    hasLegacyHtml: true,
-    ...overrides,
-  });
-
-  it("allows a verified page in the fixed snapshot, including the two no-G1 history pages", () => {
-    expect(legacyImportReceiptProblem(input())).toBeUndefined();
+  it("matches one ordinary receipt for this revision among receipts for other drafts", () => {
     expect(
-      legacyImportReceiptProblem(
-        input({
-          migrationIssueDescription: legacyReceipt("blueprint-build-archive"),
-          slug: "blueprint-build-archive",
-        }),
-      ),
+      publicationReceiptProblem({
+        issueDescription: `${receipt("earlier-revision")}\n${receipt("revision-1")}`,
+        draftRevisionId: "revision-1",
+        actualContentHash: hash,
+      }),
     ).toBeUndefined();
   });
 
-  it("requires the fixed store snapshot, matching slug, a unique receipt, and the full content hash", () => {
+  it("rejects duplicate receipts for the same draft revision", () => {
     expect(
-      legacyImportReceiptProblem(
-        input({
-          migrationIssueDescription: legacyReceipt(
-            "record-flows",
-            "b".repeat(64),
-          ),
-        }),
-      ),
-    ).toContain("hash");
-    expect(
-      legacyImportReceiptProblem(input({ actualContentHash: "b".repeat(64) })),
-    ).toContain("hash");
-    expect(
-      legacyImportReceiptProblem(input({ slug: "some-new-change" })),
-    ).toContain("no unique");
-    expect(
-      legacyImportReceiptProblem(input({ hasLegacyHtml: false })),
-    ).toContain("legacy_html");
-    expect(
-      legacyImportReceiptProblem(
-        input({
-          migrationIssueDescription: `${legacyReceipt("record-flows")}\n${legacyReceipt("record-flows")}`,
-        }),
-      ),
-    ).toContain("no unique");
+      publicationReceiptProblem({
+        issueDescription: `${receipt("revision-1")}\n${receipt("revision-1")}`,
+        draftRevisionId: "revision-1",
+        actualContentHash: hash,
+      }),
+    ).toBe("Linear has duplicate G1 receipts for this draft revision.");
   });
 });

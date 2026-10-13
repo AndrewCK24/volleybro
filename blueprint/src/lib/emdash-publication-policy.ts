@@ -2,10 +2,7 @@ import { definePlugin } from "emdash";
 import type { PluginDescriptor } from "emdash";
 import { z } from "astro/zod";
 import { acceptedContentHash, changeDataSchema } from "./emdash-change-record";
-import {
-  legacyImportReceiptProblem,
-  publicationReceiptProblem,
-} from "./publication-receipt";
+import { publicationReceiptProblem } from "./publication-receipt";
 import { reserveBlueprintMediaUpload } from "./media-upload-budget";
 
 const PLUGIN_ID = "volleybro-blueprint-publication-policy";
@@ -38,12 +35,6 @@ export function createPlugin() {
           label: "Linear API key",
           description:
             "Used only to verify the accepted EmDash revision before publish.",
-        },
-        legacyMigrationIssueKey: {
-          type: "string",
-          label: "Legacy migration issue key",
-          description:
-            "Linear issue containing the verified receipts for imported legacy Change entries.",
         },
       },
     },
@@ -145,62 +136,25 @@ export function createPlugin() {
             blocks: parsed.data.blocks,
           };
           const contentHash = await acceptedContentHash(acceptedContent);
-          const slug =
-            typeof event.content.slug === "string" ? event.content.slug : "";
-          const hasLegacyHtml = parsed.data.blocks.some(
-            (block) => block._type === "legacy_html",
+          const issueDescription = await readIssueDescription(
+            parsed.data.linear_issue!,
           );
-          let policyProblem: string | undefined;
-          if (hasLegacyHtml) {
-            const migrationIssueKey = await context.settings.get<string>(
-              "legacyMigrationIssueKey",
-            );
-            if (
-              typeof migrationIssueKey !== "string" ||
-              !/^[A-Z][A-Z0-9]*-[1-9]\d*$/u.test(migrationIssueKey)
-            ) {
-              return {
-                cancel: true,
-                reason:
-                  "Legacy migration issue key is not configured; publishing is blocked.",
-              };
-            }
-            const migrationIssueDescription =
-              await readIssueDescription(migrationIssueKey);
-            if (migrationIssueDescription === undefined) {
-              return {
-                cancel: true,
-                reason:
-                  "Linear could not verify the legacy migration; publishing is blocked.",
-              };
-            }
-            policyProblem = legacyImportReceiptProblem({
-              migrationIssueDescription,
-              actualContentHash: contentHash,
-              slug,
-              hasLegacyHtml: true,
-            });
-          } else {
-            const issueDescription = await readIssueDescription(
-              parsed.data.linear_issue!,
-            );
-            if (issueDescription === undefined) {
-              return {
-                cancel: true,
-                reason:
-                  "Linear could not verify the accepted revision; publishing is blocked.",
-              };
-            }
-            policyProblem = publicationReceiptProblem({
-              issueDescription,
-              draftRevisionId: revision,
-              liveRevisionId:
-                typeof event.content.liveRevisionId === "string"
-                  ? event.content.liveRevisionId
-                  : null,
-              actualContentHash: contentHash,
-            });
+          if (issueDescription === undefined) {
+            return {
+              cancel: true,
+              reason:
+                "Linear could not verify the accepted revision; publishing is blocked.",
+            };
           }
+          const policyProblem = publicationReceiptProblem({
+            issueDescription,
+            draftRevisionId: revision,
+            liveRevisionId:
+              typeof event.content.liveRevisionId === "string"
+                ? event.content.liveRevisionId
+                : null,
+            actualContentHash: contentHash,
+          });
           if (policyProblem) return { cancel: true, reason: policyProblem };
         } catch (error) {
           context.log.warn("Linear G1 publication verification failed", {
