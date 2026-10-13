@@ -37,8 +37,8 @@ const visibleHrefs = summaries.map((item) => item.href);
 if (result.isPreview) visibleHrefs.unshift(`/changes/${slug}`);
 const changesTree = createChangesTree(source.changes.pageTree, visibleHrefs);
 const tree = createChangesBreadcrumbTree(changesTree);
-const revision = result.isPreview && typeof entry?.data.draftRevisionId === "string"
-  ? entry.data.draftRevisionId
+const revision = result.isPreview && typeof change?.draftRevisionId === "string"
+  ? change.draftRevisionId
   : undefined;
 const contentHash = result.isPreview && change ? await acceptedContentHash(change) : undefined;
 ---
