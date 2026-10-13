@@ -17,7 +17,11 @@ export const LANE_COMMANDS = {
   integration: ["pnpm test:integration --coverage=false"],
   "app-build": ["pnpm build", "node scripts/assert-sw.js"],
   "app-test": ["pnpm test --coverage=false"],
-  blueprint: ["pnpm --filter blueprint test", "pnpm --filter blueprint build"],
+  blueprint: [
+    "pnpm --filter blueprint test",
+    "pnpm --filter blueprint test:persistence",
+    "pnpm --filter blueprint build",
+  ],
 };
 
 export const LANE_NAMES = Object.keys(LANE_COMMANDS);

@@ -221,17 +221,35 @@ describe("GitHub derived Change status and metrics", () => {
     expect(result[0]).toMatchObject({ number: 552, filesChanged: 4 });
   });
 
-  it("uses the paged PR listing to avoid one metadata request per Change on a cold index", async () => {
+  it("derives complete metrics for a cold index with five PRs", async () => {
     const prs = Array.from({ length: 5 }, (_, index) => ({
       ...openPullRequest,
       number: 552 + index,
       changed_files: index + 1,
+      commits: index + 2,
+      additions: (index + 1) * 10,
+      deletions: index + 3,
     }));
     const fetchMock = jest.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.includes("/pulls?state=all")) return response(prs);
+      const detailMatch = url.match(/\/pulls\/(\d+)$/u);
+      if (detailMatch) {
+        const pr = prs.find(({ number }) => number === Number(detailMatch[1]));
+        if (pr) return response(pr);
+      }
       const match = url.match(/\/pulls\/(\d+)\/files/u);
-      if (match) return response([{ filename: `src/change-${match[1]}.ts` }]);
+      if (match) {
+        const pr = prs.find(({ number }) => number === Number(match[1]));
+        if (pr)
+          return response(
+            Array.from({ length: pr.changed_files }, (_, index) => ({
+              filename:
+                index === 0
+                  ? `src/change-${match[1]}.ts`
+                  : `docs/change-${match[1]}-${index}.md`,
+            })),
+          );
+      }
       throw new Error(`Unexpected GitHub request: ${url}`);
     });
     Object.defineProperty(globalThis, "fetch", {
@@ -248,15 +266,29 @@ describe("GitHub derived Change status and metrics", () => {
     });
 
     expect(result).toHaveLength(5);
-    expect(result.map(({ filesChanged }) => filesChanged)).toEqual([
-      1, 2, 3, 4, 5,
-    ]);
-    expect(
-      fetchMock.mock.calls.filter(([input]) =>
-        String(input).includes("/pulls?state=all"),
-      ),
-    ).toHaveLength(1);
-    expect(fetchMock).toHaveBeenCalledTimes(6);
+    expect(result).toEqual(
+      prs.map((pr) => ({
+        number: pr.number,
+        state: pr.state,
+        mergedAt: pr.merged_at,
+        mergeCommitSha: pr.merge_commit_sha,
+        commits: pr.commits,
+        filesChanged: pr.changed_files,
+        additions: pr.additions,
+        deletions: pr.deletions,
+        srcFiles: 1,
+      })),
+    );
+    for (const { number } of prs) {
+      expect(fetchMock).toHaveBeenCalledWith(
+        `https://api.github.com/repos/andrewck24/volleybro/pulls/${number}`,
+        expect.anything(),
+      );
+      expect(fetchMock).toHaveBeenCalledWith(
+        `https://api.github.com/repos/andrewck24/volleybro/pulls/${number}/files?per_page=100&page=1`,
+        expect.anything(),
+      );
+    }
   });
 
   it("does not report a partial src-file count when GitHub caps the PR file list", async () => {
@@ -351,12 +383,13 @@ describe("GitHub derived Change status and metrics", () => {
     ).toEqual(["new", "old"]);
   });
 
-  it("keeps published historical Changes without a verified PR in progress and without metrics", () => {
+  it("keeps a newly published Change with no PR in progress and without metrics", () => {
     const summary = summarizeChange(
       {
-        id: "record-flows",
+        id: "new-change",
         data: {
-          title: "Record Flows",
+          title: "New Change",
+          pull_requests: [],
           publishedAt: "2026-10-12T08:00:00Z",
           blocks: [{ _type: "scenario", _version: 1 }],
         },
@@ -365,7 +398,7 @@ describe("GitHub derived Change status and metrics", () => {
     );
 
     expect(summary).toMatchObject({
-      slug: "record-flows",
+      slug: "new-change",
       status: "in-progress",
       publishedAt: "2026-10-12T08:00:00Z",
       scenarioCount: 1,

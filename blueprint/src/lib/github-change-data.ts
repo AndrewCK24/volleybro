@@ -203,20 +203,6 @@ async function getPullRequest(
   return getJson(`${API_BASE}/pulls/${number}`, env, pullRequestSchema);
 }
 
-async function listPullRequests(env: GithubEnv): Promise<PullRequest[]> {
-  const all: PullRequest[] = [];
-  for (let page = 1; page <= 50; page += 1) {
-    const current = await getJson(
-      `${API_BASE}/pulls?state=all&sort=created&direction=desc&per_page=100&page=${page}`,
-      env,
-      z.array(pullRequestSchema),
-    );
-    all.push(...current);
-    if (current.length < 100) return all;
-  }
-  throw new Error("GitHub PR listing exceeded the supported pagination limit.");
-}
-
 async function countSourceFiles(
   pr: PullRequest,
   env: GithubEnv,
@@ -328,29 +314,18 @@ export async function readPullRequestSummaries(
     value: PullRequestSummary;
     expiresAt: number | null;
   }> = [];
-  let metadata = new Map<number, PullRequest>();
-  if (missing.length >= 5) {
+  const rows = await mapConcurrent(missing, 4, async (id) => {
     try {
-      metadata = new Map(
-        (await listPullRequests(options.env)).map((pr) => [pr.number, pr]),
-      );
+      return await getPullRequest(options.env, id);
     } catch {
-      // Only an unexpired verified response is retained when GitHub is unavailable.
+      return undefined;
     }
-  } else {
-    const rows = await mapConcurrent(missing, 4, async (id) => {
-      try {
-        return await getPullRequest(options.env, id);
-      } catch {
-        return undefined;
-      }
-    });
-    metadata = new Map(
-      rows
-        .filter((row): row is PullRequest => !!row)
-        .map((pr) => [pr.number, pr]),
-    );
-  }
+  });
+  const metadata = new Map(
+    rows
+      .filter((row): row is PullRequest => !!row)
+      .map((pr) => [pr.number, pr]),
+  );
 
   const knownMissing = missing.flatMap((id) => {
     const pr = metadata.get(id);
