@@ -151,6 +151,24 @@ describe("EmDash Change schema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("preserves Unicode source anchors while rejecting unsafe IDs", () => {
+    expect(
+      blockSchema.safeParse({
+        _type: "block",
+        id: "archive-assessment-與殘留工作",
+        style: "h2",
+        children: [{ _type: "span", text: "評估" }],
+      }).success,
+    ).toBe(true);
+    expect(
+      blockSchema.safeParse({
+        _type: "block",
+        id: "heading id",
+        children: [{ _type: "span", text: "Unsafe" }],
+      }).success,
+    ).toBe(false);
+  });
+
   it("rejects unsafe links and unapproved HTML blocks", () => {
     expect(
       blockSchema.safeParse({
