@@ -3,7 +3,10 @@ import { getEmDashEntry } from "emdash";
 import { Docs } from "../../components/docs";
 import EmDashChangeBlocks from "../../components/emdash-change-blocks.astro";
 import Layout from "../../components/layout.astro";
-import { changeDataSchema } from "../../lib/emdash-change-record";
+import {
+  acceptedContentHash,
+  changeDataSchema,
+} from "../../lib/emdash-change-record";
 import { createChangesBreadcrumbTree, createChangesTree } from "../../lib/changes-tree";
 import { createBlueprintSources } from "../../lib/source";
 
@@ -17,14 +20,26 @@ const entry = result.entry;
 const parsed = entry ? changeDataSchema.safeParse(entry.data) : undefined;
 if (entry && !parsed?.success) throw new Error(`Published Change "${slug}" has invalid content.`);
 const change = parsed?.success ? parsed.data : undefined;
+if (result.isPreview) {
+  Astro.response.headers.set("Cache-Control", "private, no-store, max-age=0");
+  Astro.response.headers.set("Vary", "Cookie");
+}
 if (!entry) Astro.response.status = 404;
 
 const visibleHrefs = source.changeEntries.map((item) => `/changes/${item.id}`);
+if (result.isPreview) visibleHrefs.unshift(`/changes/${slug}`);
 const tree = createChangesBreadcrumbTree(createChangesTree(source.changes.pageTree, visibleHrefs));
+const revision = result.isPreview && typeof entry?.data.draftRevisionId === "string"
+  ? entry.data.draftRevisionId
+  : undefined;
+const contentHash = result.isPreview && change
+  ? await acceptedContentHash(change)
+  : undefined;
 ---
 
 <Layout>
   <title>{change?.title ?? "找不到 Change"} · Blueprint</title>
+  {result.isPreview && <meta name="robots" content="noindex, nofollow" />}
   <Docs
     client:load
     tree={tree}
@@ -36,7 +51,13 @@ const tree = createChangesBreadcrumbTree(createChangesTree(source.changes.pageTr
       breadcrumb: { includeRoot: { url: "/changes" }, includePage: true },
     }}
   >
-    <main data-emdash-change={slug}>
+    <main
+      data-emdash-change={slug}
+      data-emdash-preview={result.isPreview ? "true" : undefined}
+      data-emdash-revision={revision}
+      data-emdash-content-sha256={contentHash}
+    >
+      {result.isPreview && <p class="mb-4 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">私密預覽 · 尚未發布</p>}
       {change ? (
         <>
           <h1>{change.title}</h1>

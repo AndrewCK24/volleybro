@@ -5,7 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import { d1, r2 } from "@emdash-cms/cloudflare";
 import { unified } from "@astrojs/markdown-remark";
+import { fileURLToPath } from "node:url";
 import { designSections } from "./src/lib/design-sections.mjs";
+import { emdashPublicationPolicy } from "./src/lib/emdash-publication-policy.ts";
 import {
   rehypeCode,
   remarkCodeTab,
@@ -45,6 +47,13 @@ const astroConfig = {
     emdash({
       database: d1({ binding: "BLUEPRINT_DB" }),
       storage: r2({ binding: "BLUEPRINT_MEDIA" }),
+      plugins: [
+        emdashPublicationPolicy(
+          fileURLToPath(
+            new URL("./src/lib/emdash-publication-policy.ts", import.meta.url),
+          ),
+        ),
+      ],
     }),
   ],
   vite: {
