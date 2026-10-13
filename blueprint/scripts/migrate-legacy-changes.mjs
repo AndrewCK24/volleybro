@@ -16,6 +16,7 @@ import {
   scenarioCount,
 } from "../src/lib/github-change-data.ts";
 import { prepareLinearG1Markdown } from "./linear-g1-markdown.ts";
+import { removeLegacyPresentationArtifacts } from "./legacy-render-artifacts.mjs";
 import { parseCliArgs } from "./parse-cli-args.ts";
 import {
   convertMarkdownToPortableText,
@@ -753,22 +754,33 @@ async function run(options) {
   for (const slug of slugs) {
     const sourceDirectory = path.join(storeRoot, slug);
     const htmlPath = path.join(renderedRoot, `${slug}.html`);
-    const [indexMdx, proposal, facts, renderedHtml] = await Promise.all([
-      readFile(path.join(sourceDirectory, "index.mdx"), "utf8"),
-      readFile(path.join(sourceDirectory, "proposal.mdx"), "utf8").catch(
-        () => "",
-      ),
-      readFile(path.join(sourceDirectory, "facts.json"), "utf8").then(
-        JSON.parse,
-      ),
-      readFile(htmlPath, "utf8"),
-    ]);
+    const [indexMdx, proposal, review, facts, renderedHtml] = await Promise.all(
+      [
+        readFile(path.join(sourceDirectory, "index.mdx"), "utf8"),
+        readFile(path.join(sourceDirectory, "proposal.mdx"), "utf8").catch(
+          () => "",
+        ),
+        readFile(path.join(sourceDirectory, "review.mdx"), "utf8").catch(
+          () => "",
+        ),
+        readFile(path.join(sourceDirectory, "facts.json"), "utf8").then(
+          JSON.parse,
+        ),
+        readFile(htmlPath, "utf8"),
+      ],
+    );
     const titleAndDescription = readFrontmatter(indexMdx, slug);
     const structured = extractMdxStructuredData(
       `${indexMdx}\n${proposal}`,
       slug,
     );
-    let legacyHtml = extractRenderedContent(renderedHtml, slug);
+    const extractedHtml = extractRenderedContent(renderedHtml, slug);
+    const renderArtifacts = removeLegacyPresentationArtifacts(
+      extractedHtml,
+      slug,
+      `${indexMdx}\n${proposal}\n${review}`,
+    );
+    let legacyHtml = renderArtifacts.html;
     const sourceAudit = anchorAudit(legacyHtml);
     const anchors = sourceAudit;
     const attached = attachMediaMarkers(
@@ -891,6 +903,7 @@ async function run(options) {
       reviewSections: anchors.reviewCount,
       anchors,
       renderedHtmlSha256: sha256(renderedHtml),
+      removedPresentationArtifacts: renderArtifacts.removed,
       portableTextSha256: sha256(JSON.stringify(blocks)),
       seedContentSha256: seedContentHash,
       media: attached.sourceFiles.map(

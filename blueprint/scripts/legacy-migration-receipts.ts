@@ -68,6 +68,35 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+function canonicalReadbackInput(value: unknown): unknown {
+  const data = record(value);
+  if (!Array.isArray(data.blocks))
+    throw new Error("EmDash read-back has no Portable Text blocks array.");
+  return {
+    ...data,
+    blocks: data.blocks.map((value: unknown) => {
+      const block = record(value);
+      if (block._type !== "image") return block;
+      const asset = record(block.asset);
+      const allowedKeys = new Set(["_ref", "_type", "url", "provider"]);
+      if (Object.keys(asset).some((key) => !allowedKeys.has(key)))
+        throw new Error("Read-back image contains unsupported media fields.");
+      if (
+        typeof asset._ref !== "string" ||
+        (asset._type !== undefined && asset._type !== "reference") ||
+        (asset.url !== undefined && typeof asset.url !== "string") ||
+        (asset.provider !== undefined && typeof asset.provider !== "string")
+      )
+        throw new Error("Read-back image has malformed EmDash media metadata.");
+      // EmDash enriches the native reference with its local file URL. Keep the
+      // validated canonical envelope for schema parsing and the accepted hash;
+      // stableProjection below replaces environment-specific identity only
+      // for comparison with the transfer seed.
+      return block;
+    }),
+  };
+}
+
 function stableProjection(
   dataValue: unknown,
   side: "seed" | "readback",
@@ -81,7 +110,7 @@ function stableProjection(
   const mediaKeys: string[] = [];
   const blocks = data.blocks.map((value: unknown) => {
     const block = record(value);
-    if (block._type !== "image") return omitCmsKeys(block);
+    if (block._type !== "image") return record(omitCmsKeys(block));
     const key =
       side === "seed"
         ? (() => {
@@ -113,7 +142,7 @@ function stableProjection(
     imageIndex += 1;
     mediaKeys.push(key);
     return {
-      ...omitCmsKeys(block),
+      ...record(omitCmsKeys(block)),
       asset: { verifiedMigrationMediaKey: key },
     };
   });
@@ -212,7 +241,10 @@ export async function finalizeLegacyMigrationReceipts(input: {
       throw new Error(`${slug}: expected one imported EmDash draft.`);
     const expected = stableProjection(entry.data, "seed", manifestByUrl);
     const expectedMediaKeys = expected.mediaKeys;
-    const actualData = changeDataSchema.parse(actualRecord.data);
+    const rawReadbackData = record(actualRecord.data);
+    const actualData = changeDataSchema.parse(
+      canonicalReadbackInput(rawReadbackData),
+    );
     const actual = stableProjection(
       actualData,
       "readback",
@@ -239,12 +271,19 @@ export async function finalizeLegacyMigrationReceipts(input: {
       throw new Error(
         `${slug}: imported native image blocks differ from the seed.`,
       );
+    const readbackBlocks = rawReadbackData.blocks as unknown[];
+    const readbackImages = readbackBlocks.filter(
+      (block) => record(block)._type === "image",
+    );
     for (let index = 0; index < seedImages.length; index += 1) {
       const seedImage = record(seedImages[index]);
       const source = record(record(seedImage.asset).$media);
-      const manifest = manifestByUrl.get(source.url)!;
-      const image = record(actualImages[index]);
-      const localAsset = record(image.asset);
+      const sourceUrl = typeof source.url === "string" ? source.url : "";
+      const manifest = manifestByUrl.get(sourceUrl);
+      if (!manifest)
+        throw new Error(`${slug}: seed image has no media manifest row.`);
+      const readbackImage = record(readbackImages[index]);
+      const localAsset = record(readbackImage.asset);
       const filePrefix = "/_emdash/api/media/file/";
       const localUrl = typeof localAsset.url === "string" ? localAsset.url : "";
       const storageKey = localUrl.startsWith(filePrefix)
@@ -252,7 +291,7 @@ export async function finalizeLegacyMigrationReceipts(input: {
         : "";
       if (
         manifest.slug !== slug ||
-        source.url !== manifest.sourceUrl ||
+        sourceUrl !== manifest.sourceUrl ||
         source.filename !== `${slug}-${manifest.filename}` ||
         (source.alt ?? "") !== (seedImage.alt ?? "") ||
         !/^[A-Za-z0-9._-]+$/u.test(storageKey)

@@ -182,6 +182,14 @@ describe("finalizeLegacyMigrationReceipts", () => {
       "uploaded media bytes do not match",
     );
 
+    const unknownMediaMetadata = input();
+    const unknownMediaBlock = unknownMediaMetadata.readback.items[0].data
+      .blocks[1] as { asset: Record<string, unknown> };
+    unknownMediaBlock.asset.unreviewed = "must not be discarded";
+    await expect(
+      finalizeLegacyMigrationReceipts(unknownMediaMetadata),
+    ).rejects.toThrow("unsupported media fields");
+
     const pagedReadback = input();
     Object.assign(pagedReadback.readback, { nextCursor: "next-page" });
     await expect(
