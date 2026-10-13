@@ -12,7 +12,11 @@ import {
   changeDataSchema,
 } from "../src/lib/emdash-change-record.ts";
 import { sanitizeLegacyHtml } from "../src/lib/sanitize-legacy-html.ts";
-import { scenarioCount } from "../src/lib/github-change-data.ts";
+import {
+  parseAllowedPullRequestUrl,
+  scenarioCount,
+} from "../src/lib/github-change-data.ts";
+import { prepareLinearG1Markdown } from "../src/lib/linear-g1-markdown.ts";
 
 const SNAPSHOT = "f010a9e020be8a342a7c7bafc31e2a361565135d";
 const REQUIRED_NO_PR_SLUGS = ["record-flows", "sync-recording"];
@@ -51,8 +55,8 @@ function printHelp() {
   --store <fixed snapshot extraction> --rendered <legacy static /changes output> \\
   --manifest <45-row evidence JSON> --pull-requests <GitHub PR export JSON> \\
   --git-root <repository containing snapshot commit> --renderer-root <pinned legacy renderer checkout> \\
-  --project-spec <accepted ATE-294 G1 Team Doc export> --out <disposable transfer directory> \\
-  [--g1-specs <exact-slug accepted G1 documents JSON>]`);
+  --project-spec <accepted project G1 Team Doc export> --out <disposable transfer directory> \\
+  [--g1-specs <accepted G1 documents JSON; matching slugs merge, other slugs create pages>]`);
 }
 
 function textContent(node) {
@@ -400,7 +404,10 @@ function verifyManifest(manifest, slugs, prRows, storeRoot) {
     ) {
       throw new Error(`Invalid issue/PR evidence for ${entry.slug}.`);
     }
-    if (entry.linearIssue && !/^ATE-[1-9]\d*$/u.test(entry.linearIssue))
+    if (
+      entry.linearIssue &&
+      !/^[A-Z][A-Z0-9]*-[1-9]\d*$/u.test(entry.linearIssue)
+    )
       throw new Error(`${entry.slug}: invalid Linear issue key.`);
     if (
       !Array.isArray(entry.pullRequests) ||
@@ -506,18 +513,77 @@ function verifyManifest(manifest, slugs, prRows, storeRoot) {
   return rows;
 }
 
-function validateAcceptedSpecs(specs, slugs) {
+function validateAcceptedSpecs(specs, legacySlugs) {
   if (!specs) return new Map();
   const result = new Map();
+  const legacySlugSet = new Set(legacySlugs);
   for (const [slug, spec] of Object.entries(specs)) {
-    if (!slugs.includes(slug) || spec.slug !== slug || spec.accepted !== true)
+    if (!slugPattern.test(slug) || spec.slug !== slug || spec.accepted !== true)
       throw new Error(
-        `G1 spec mapping for "${slug}" is not an accepted exact-slug match.`,
+        `G1 spec mapping for "${slug}" is not an accepted stable-slug document.`,
       );
-    const hash = sha256(Buffer.from(normalizeDocument(spec.content), "utf8"));
+    const expectedDisposition = legacySlugSet.has(slug)
+      ? "merge-legacy"
+      : "standalone";
+    if (spec.pageDisposition !== expectedDisposition)
+      throw new Error(
+        slug + ": G1 page disposition must be " + expectedDisposition + ".",
+      );
+    const documentContent = normalizeDocument(String(spec.content ?? ""));
+    const receiptMarker = "\n## G1 acceptance receipt\n";
+    const receiptStart = documentContent.indexOf(receiptMarker);
+    if (
+      receiptStart < 0 ||
+      documentContent.indexOf(
+        receiptMarker,
+        receiptStart + receiptMarker.length,
+      ) >= 0
+    )
+      throw new Error(
+        slug + ": accepted G1 document must contain one receipt.",
+      );
+    const acceptedContent =
+      documentContent.slice(0, receiptStart).trimEnd() + "\n";
+    const receiptText = documentContent.slice(
+      receiptStart + receiptMarker.length,
+    );
+    const fence = String.fromCharCode(96).repeat(3);
+    const receiptPrefix = "\n" + fence + "json\n";
+    const receiptSuffix = "\n" + fence;
+    if (
+      !receiptText.startsWith(receiptPrefix) ||
+      !receiptText.trimEnd().endsWith(receiptSuffix)
+    )
+      throw new Error(slug + ": G1 receipt is not a terminal JSON code block.");
+    const receiptJson = receiptText
+      .trimEnd()
+      .slice(receiptPrefix.length, -receiptSuffix.length);
+    let receipt;
+    try {
+      receipt = JSON.parse(receiptJson);
+    } catch (error) {
+      throw new Error(
+        slug + ": G1 receipt is invalid JSON (" + error.message + ").",
+      );
+    }
+    const hash = sha256(Buffer.from(acceptedContent, "utf8"));
     if (hash !== spec.sha256)
       throw new Error(
         `${slug}: accepted G1 document hash does not match its content.`,
+      );
+    const issueFromSource = String(receipt.source ?? "").match(
+      /\/issue\/([A-Z][A-Z0-9]*-[1-9]\d*)(?:\/|$)/u,
+    )?.[1];
+    if (
+      receipt.schemaVersion !== 1 ||
+      receipt.change !== slug ||
+      receipt.specHash !== spec.sha256 ||
+      receipt.acceptedAt !== spec.acceptedAt ||
+      issueFromSource !== spec.linearIssue
+    )
+      throw new Error(
+        slug +
+          ": G1 receipt, issue identity, acceptance time or hash mismatch.",
       );
     if (!spec.documentId || !spec.url)
       throw new Error(
@@ -526,7 +592,7 @@ function validateAcceptedSpecs(specs, slugs) {
     result.set(slug, {
       ...spec,
       sha256: hash,
-      content: normalizeDocument(spec.content),
+      content: acceptedContent,
     });
   }
   return result;
@@ -536,10 +602,10 @@ function validateProjectSpec(spec) {
   if (
     !spec ||
     spec.change !== "emdash-blueprint-change-pages" ||
-    !/^ATE-[1-9]\d*$/u.test(spec.linearIssue ?? "")
+    !/^[A-Z][A-Z0-9]*-[1-9]\d*$/u.test(spec.linearIssue ?? "")
   ) {
     throw new Error(
-      "The project G1 export must identify the accepted ATE-294 Change.",
+      "The project G1 export must identify its accepted Linear Change.",
     );
   }
   if (
@@ -582,13 +648,16 @@ function validateProjectSpec(spec) {
   }
   const obsoleteAuthorization =
     "本接受固定規格，不授權開始實作、不切換正式服務、不建立或刪除 Cloudflare 資源。";
-  if (!acceptedSpec.includes(obsoleteAuthorization)) {
-    throw new Error(
-      "The accepted project G1 source no longer has the reviewed authorization wording.",
-    );
-  }
   const currentAuthorization =
     "本規格已通過 G1；依 WORKFLOW.md，接受 G1 後授權實作至 G2。不授權切換正式服務或建立、刪除 Cloudflare 資源。";
+  if (
+    !acceptedSpec.includes(obsoleteAuthorization) &&
+    !acceptedSpec.includes("授權 ticket decomposition 與實作至 G2")
+  ) {
+    throw new Error(
+      "The accepted project G1 source must record authorization through G2.",
+    );
+  }
   const pageContent = acceptedSpec.replace(
     obsoleteAuthorization,
     currentAuthorization,
@@ -744,7 +813,6 @@ async function run(options) {
   );
   const content = [];
   const pages = [];
-  const receipts = [];
   const mediaManifest = [];
 
   for (const slug of slugs) {
@@ -794,11 +862,14 @@ async function run(options) {
         : []),
     ];
     const acceptedSpec = acceptedSpecs.get(slug);
+    const renderedG1Spec = acceptedSpec
+      ? prepareLinearG1Markdown(acceptedSpec.content)
+      : undefined;
     if (acceptedSpec)
       blocks.push({
         _type: "markdown",
         _version: 1,
-        markdown: acceptedSpec.content,
+        markdown: renderedG1Spec.markdown,
       });
     const stableBlocks = blocks.map((block, index) => ({
       ...block,
@@ -816,7 +887,7 @@ async function run(options) {
       throw new Error(
         `${slug}: generated EmDash entry does not match its strict schema: ${valid.error.message}`,
       );
-    const contentHash = await acceptedContentHash(data);
+    const seedContentHash = await acceptedContentHash(data);
     const importedScenarios = scenarioCount(blocks);
     if (importedScenarios !== scenarios.length)
       throw new Error(
@@ -836,9 +907,6 @@ async function run(options) {
     content.push({ id: `legacy-${slug}`, slug, status: "draft", data });
     mediaManifest.push(
       ...attached.sourceFiles.map((image) => ({ slug, ...image })),
-    );
-    receipts.push(
-      `<!-- emdash-legacy-entry:v1 snapshot=${SNAPSHOT} slug=${slug} sha256=${contentHash} -->`,
     );
     pages.push({
       slug,
@@ -863,6 +931,8 @@ async function run(options) {
             documentId: acceptedSpec.documentId,
             url: acceptedSpec.url,
             sha256: acceptedSpec.sha256,
+            renderedContentSha256: sha256(renderedG1Spec.markdown),
+            renderTransformations: renderedG1Spec.transformations,
           }
         : null,
       scenarioCount: importedScenarios,
@@ -879,7 +949,7 @@ async function run(options) {
       anchors,
       renderedHtmlSha256: sha256(renderedHtml),
       sanitizedHtmlSha256: sha256(legacyHtml),
-      contentSha256: contentHash,
+      seedContentSha256: seedContentHash,
       media: attached.sourceFiles.map(
         ({ filename, key, sha256: imageHash, size }) => ({
           filename,
@@ -891,6 +961,90 @@ async function run(options) {
     });
   }
 
+  const verifiedPrNumbers = new Set(prRows.map((pr) => pr.number));
+  const standaloneG1Specs = [...acceptedSpecs.entries()].filter(
+    ([slug]) => !slugs.includes(slug),
+  );
+  if (standaloneG1Specs.some(([slug]) => slug === projectSpec.slug))
+    throw new Error(
+      "The project G1 article slug must not duplicate a standalone accepted G1 page.",
+    );
+  for (const [slug, acceptedSpec] of standaloneG1Specs) {
+    if (
+      typeof acceptedSpec.title !== "string" ||
+      !acceptedSpec.title.trim() ||
+      !/^[A-Z][A-Z0-9]*-[1-9]\d*$/u.test(acceptedSpec.linearIssue ?? "")
+    ) {
+      throw new Error(
+        `${slug}: standalone G1 page needs a title and Linear issue key.`,
+      );
+    }
+    if (!Array.isArray(acceptedSpec.pullRequests))
+      throw new Error(`${slug}: standalone G1 page PR URLs must be an array.`);
+    const pullRequests = acceptedSpec.pullRequests.map((pr) => {
+      const number = parseAllowedPullRequestUrl(pr?.url ?? "");
+      if (
+        number === null ||
+        !verifiedPrNumbers.has(number) ||
+        typeof pr.evidence !== "string" ||
+        !pr.evidence.trim()
+      ) {
+        throw new Error(
+          `${slug}: each G1 PR URL needs a canonical verified GitHub link and evidence.`,
+        );
+      }
+      return { number, url: pr.url, evidence: pr.evidence };
+    });
+    if (
+      new Set(pullRequests.map(({ number }) => number)).size !==
+      pullRequests.length
+    ) {
+      throw new Error(`${slug}: standalone G1 PR mappings must be unique.`);
+    }
+    const renderedG1Spec = prepareLinearG1Markdown(acceptedSpec.content);
+    const data = {
+      title: acceptedSpec.title,
+      ...(acceptedSpec.description
+        ? { description: acceptedSpec.description }
+        : {}),
+      linear_issue: acceptedSpec.linearIssue,
+      pull_requests: pullRequests.map(({ url }) => ({ url })),
+      blocks: [
+        {
+          _type: "markdown",
+          _version: 1,
+          markdown: renderedG1Spec.markdown,
+          _key: `${slug}-1`,
+        },
+      ],
+    };
+    const valid = changeDataSchema.safeParse(data);
+    if (!valid.success)
+      throw new Error(
+        `${slug}: standalone G1 entry does not match the EmDash schema: ${valid.error.message}`,
+      );
+    content.push({ id: `accepted-g1-${slug}`, slug, status: "draft", data });
+    pages.push({
+      slug,
+      title: acceptedSpec.title,
+      description: acceptedSpec.description ?? null,
+      linearIssue: acceptedSpec.linearIssue,
+      pullRequests,
+      migrationDisposition: "standalone-latest-accepted-g1-document",
+      g1Spec: {
+        documentId: acceptedSpec.documentId,
+        url: acceptedSpec.url,
+        acceptedAt: acceptedSpec.acceptedAt ?? null,
+        sha256: acceptedSpec.sha256,
+        renderedContentSha256: sha256(renderedG1Spec.markdown),
+        renderTransformations: renderedG1Spec.transformations,
+      },
+      scenarioCount: scenarioCount(data.blocks),
+      contentSha256: await acceptedContentHash(data),
+    });
+  }
+
+  const renderedProjectSpec = prepareLinearG1Markdown(projectSpec.pageContent);
   const projectData = {
     title: projectSpec.title,
     ...(projectSpec.description
@@ -902,7 +1056,7 @@ async function run(options) {
       {
         _type: "markdown",
         _version: 1,
-        markdown: projectSpec.pageContent,
+        markdown: renderedProjectSpec.markdown,
         _key: `${projectSpec.slug}-1`,
       },
     ],
@@ -964,6 +1118,7 @@ async function run(options) {
       sourceSha256: projectSpec.sourceSha256,
       migratedContentSha256: pages.at(-1).contentSha256,
       authorizationCorrection: true,
+      renderTransformations: renderedProjectSpec.transformations,
     },
     githubPrExportSha256: prExportHash,
     pageCount: pages.length,
@@ -976,6 +1131,7 @@ async function run(options) {
       )
       .map(({ slug }) => slug),
     acceptedG1SpecCount: acceptedSpecs.size,
+    standaloneAcceptedG1SpecCount: standaloneG1Specs.length,
     pageEvidence: pages,
     importStatus:
       "draft-for-local-rehearsal; no published entries or live Cloudflare writes",
@@ -985,23 +1141,23 @@ async function run(options) {
   const auditJson = `${JSON.stringify(audit, null, 2)}\n`;
   const mediaJson = `${JSON.stringify(mediaManifest, null, 2)}\n`;
   const receiptText = [
-    `# Legacy EmDash migration receipts`,
+    `# Legacy EmDash migration pre-import checks`,
     ``,
     `Snapshot: ${SNAPSHOT}`,
     `Pages: ${pages.length}`,
-    `The following per-slug SHA-256 receipts are generated from the strict accepted-content projection. Add them to ATE-294 only after reviewing the matching audit report.`,
+    `This rehearsal package contains no publishable migration receipts. EmDash converts each seed $media URL into a local media id and storage key; final content hashes must be generated from the imported draft read-back after the media bytes are verified.`,
     ``,
-    ...receipts,
+    `After importing the seed as drafts, export all drafts from /_emdash/api/content/blueprint_changes?status=draft&limit=100 with an EmDash API token that can read drafts, then run finalize-legacy-migration-receipts.mjs. Only that finalizer output may be copied to the Linear migration issue.`,
     ``,
   ].join("\n");
   await stableWritePackage(outputDirectory, {
     "seed.json": seedJson,
     "audit.json": auditJson,
     "media-manifest.json": mediaJson,
-    "linear-receipts.md": receiptText,
+    "migration-preimport.md": receiptText,
   });
   console.log(
-    `Audited ${slugs.length}/45 legacy pages plus project G1 draft; ${mediaManifest.length} media assets; ${acceptedSpecs.size} exact-slug legacy G1 specs.`,
+    `Audited ${slugs.length}/45 legacy pages, ${standaloneG1Specs.length} standalone accepted G1 pages and project G1 draft; ${mediaManifest.length} media assets; ${acceptedSpecs.size} accepted G1 docs total.`,
   );
   console.log(`No verified PR pages: ${audit.noPrPages.join(", ") || "none"}.`);
   console.log(

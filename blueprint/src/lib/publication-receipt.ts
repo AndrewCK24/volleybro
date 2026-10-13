@@ -4,7 +4,6 @@ const legacyReceiptPattern =
   /<!-- emdash-legacy-entry:v1\s+snapshot=([a-f0-9]{40})\s+slug=([a-z0-9]+(?:-[a-z0-9]+)*)\s+sha256=([a-f0-9]{64})\s*-->/gu;
 
 export const LEGACY_STORE_SNAPSHOT = "f010a9e020be8a342a7c7bafc31e2a361565135d";
-export const LEGACY_MIGRATION_ISSUE = "ATE-294";
 
 export function publicationReceiptProblem(input: {
   issueDescription: string;

@@ -2,12 +2,15 @@
   "name": "blueprint",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
     "start": "astro preview",
     "type-check": "astro check",
-    "test": "jest"
+    "test": "jest",
+    "test:persistence": "node --test test/integration/persistence/github-change-data.itest.mjs",
+    "migration:finalize": "node scripts/finalize-legacy-migration-receipts.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.3.4",

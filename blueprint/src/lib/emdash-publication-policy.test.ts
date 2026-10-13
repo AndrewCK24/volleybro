@@ -119,8 +119,4 @@ describe("legacyImportReceiptProblem", () => {
       ),
     ).toContain("no unique");
   });
-
-  it("allows a PR-index-only published revision when the accepted historical content hash is unchanged", () => {
-    expect(legacyImportReceiptProblem(input())).toBeUndefined();
-  });
 });

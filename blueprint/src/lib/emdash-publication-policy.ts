@@ -3,7 +3,6 @@ import type { PluginDescriptor } from "emdash";
 import { z } from "astro/zod";
 import { acceptedContentHash, changeDataSchema } from "./emdash-change-record";
 import {
-  LEGACY_MIGRATION_ISSUE,
   legacyImportReceiptProblem,
   publicationReceiptProblem,
 } from "./publication-receipt";
@@ -39,6 +38,12 @@ export function createPlugin() {
           label: "Linear API key",
           description:
             "Used only to verify the accepted EmDash revision before publish.",
+        },
+        legacyMigrationIssueKey: {
+          type: "string",
+          label: "Legacy migration issue key",
+          description:
+            "Linear issue containing the verified receipts for imported legacy Change entries.",
         },
       },
     },
@@ -147,9 +152,21 @@ export function createPlugin() {
           );
           let policyProblem: string | undefined;
           if (hasLegacyHtml) {
-            const migrationIssueDescription = await readIssueDescription(
-              LEGACY_MIGRATION_ISSUE,
+            const migrationIssueKey = await context.settings.get<string>(
+              "legacyMigrationIssueKey",
             );
+            if (
+              typeof migrationIssueKey !== "string" ||
+              !/^[A-Z][A-Z0-9]*-[1-9]\d*$/u.test(migrationIssueKey)
+            ) {
+              return {
+                cancel: true,
+                reason:
+                  "Legacy migration issue key is not configured; publishing is blocked.",
+              };
+            }
+            const migrationIssueDescription =
+              await readIssueDescription(migrationIssueKey);
             if (migrationIssueDescription === undefined) {
               return {
                 cancel: true,
