@@ -5,25 +5,7 @@ import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { finalizeLegacyMigrationReceipts } from "../src/lib/legacy-migration-receipts.ts";
-
-function parseArgs(args) {
-  const values = {};
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
-    if (arg === "--") continue;
-    if (!arg.startsWith("--")) throw new Error(`Unexpected argument: ${arg}`);
-    const key = arg.slice(2);
-    if (key === "help") values.help = true;
-    else {
-      const value = args[index + 1];
-      if (!value || value.startsWith("--"))
-        throw new Error(`Missing value for --${key}`);
-      values[key] = value;
-      index += 1;
-    }
-  }
-  return values;
-}
+import { parseCliArgs } from "./parse-cli-args.ts";
 
 function printHelp() {
   console.log(`Usage: node blueprint/scripts/finalize-legacy-migration-receipts.mjs \\
@@ -43,8 +25,13 @@ async function readJson(filename) {
 
 function validatedBaseUrl(value) {
   const url = new URL(value);
-  const local = ["localhost", "127.0.0.1", "::1"].includes(url.hostname);
-  if (url.protocol !== "https:" && !(local && url.protocol === "http:"))
+  const isLoopbackHost = ["localhost", "127.0.0.1", "::1"].includes(
+    url.hostname,
+  );
+  if (
+    url.protocol !== "https:" &&
+    !(isLoopbackHost && url.protocol === "http:")
+  )
     throw new Error(
       "EmDash base URL must use HTTPS, except for loopback rehearsal.",
     );
@@ -158,7 +145,9 @@ if (
   process.argv[1] &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-  const args = parseArgs(process.argv.slice(2));
+  const args = parseCliArgs(process.argv.slice(2), {
+    separatorPolicy: "ignore",
+  });
   if (args.help) printHelp();
   else
     run(args).catch((error) => {

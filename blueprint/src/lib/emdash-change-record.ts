@@ -181,7 +181,7 @@ export const acceptedContentSchema = acceptedContentBaseSchema.superRefine(
   requireIssueForAuthoredContent,
 );
 
-function omitCmsKeys(value: unknown): unknown {
+export function omitCmsKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(omitCmsKeys);
   if (!value || typeof value !== "object") return value;
   return Object.fromEntries(
@@ -198,13 +198,17 @@ function acceptedHashProjection(value: z.infer<typeof acceptedContentSchema>) {
   };
 }
 
-function canonicalize(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalize).join(",")}]`;
+export function canonicalizeContentValue(value: unknown): string {
+  if (Array.isArray(value))
+    return `[${value.map(canonicalizeContentValue).join(",")}]`;
   if (value && typeof value === "object") {
     const record = value as Record<string, unknown>;
     return `{${Object.keys(record)
       .sort()
-      .map((key) => `${JSON.stringify(key)}:${canonicalize(record[key])}`)
+      .map(
+        (key) =>
+          `${JSON.stringify(key)}:${canonicalizeContentValue(record[key])}`,
+      )
       .join(",")}}`;
   }
   return JSON.stringify(value) ?? "null";
@@ -227,7 +231,7 @@ export async function acceptedContentHash(value: unknown): Promise<string> {
       "Change content does not match the accepted EmDash schema.",
     );
   const content = acceptedHashProjection(parsed.data);
-  const bytes = new TextEncoder().encode(canonicalize(content));
+  const bytes = new TextEncoder().encode(canonicalizeContentValue(content));
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))

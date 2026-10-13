@@ -1,7 +1,9 @@
 import { z } from "zod";
 import {
   acceptedContentHash,
+  canonicalizeContentValue,
   changeDataSchema,
+  omitCmsKeys,
 } from "./emdash-change-record.ts";
 
 const mediaManifestSchema = z.array(
@@ -57,28 +59,6 @@ const readbackSchema = z.looseObject({
 type Data = z.infer<typeof changeDataSchema>;
 type LegacyMedia = Extract<Data["blocks"][number], { _type: "legacy_media" }>;
 
-function canonicalize(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalize).join(",")}]`;
-  if (value && typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    return `{${Object.keys(record)
-      .sort()
-      .map((key) => `${JSON.stringify(key)}:${canonicalize(record[key])}`)
-      .join(",")}}`;
-  }
-  return JSON.stringify(value) ?? "null";
-}
-
-function withoutCmsKeys(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(withoutCmsKeys);
-  if (!value || typeof value !== "object") return value;
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>)
-      .filter(([key]) => key !== "_key")
-      .map(([key, child]) => [key, withoutCmsKeys(child)]),
-  );
-}
-
 function migrationProjection(data: Data): unknown {
   return {
     title: data.title,
@@ -86,7 +66,7 @@ function migrationProjection(data: Data): unknown {
     linear_issue: data.linear_issue,
     pull_requests: data.pull_requests,
     blocks: data.blocks.map((block) => {
-      if (block._type !== "legacy_media") return withoutCmsKeys(block);
+      if (block._type !== "legacy_media") return omitCmsKeys(block);
       const { asset: _asset, _key: _cmsKey, ...stableFields } = block;
       return {
         ...stableFields,
@@ -170,8 +150,8 @@ export async function finalizeLegacyMigrationReceipts(input: {
     const expectedData = changeDataSchema.parse(entry.data);
     const actualData = changeDataSchema.parse(actual.data);
     if (
-      canonicalize(migrationProjection(expectedData)) !==
-      canonicalize(migrationProjection(actualData))
+      canonicalizeContentValue(migrationProjection(expectedData)) !==
+      canonicalizeContentValue(migrationProjection(actualData))
     )
       throw new Error(
         `${entry.slug}: imported content differs from its transfer seed.`,

@@ -394,7 +394,7 @@ export function summarizeChange(
   const matches = requiredIds
     .map((id) => byId.get(id))
     .filter((pr): pr is PullRequestSummary => !!pr);
-  const allMerged =
+  const isAllMerged =
     requiredIds.length > 0 &&
     matches.length === requiredIds.length &&
     matches.every((pr) => !!pr.mergedAt && !!pr.mergeCommitSha);
@@ -420,7 +420,7 @@ export function summarizeChange(
           },
         )
       : undefined;
-  const mergedAt = allMerged
+  const mergedAt = isAllMerged
     ? matches
         .map((pr) => pr.mergedAt!)
         .sort()
@@ -435,7 +435,7 @@ export function summarizeChange(
     title: input.data.title ?? input.id,
     href: `/changes/${input.id}`,
     description: input.data.description,
-    status: allMerged ? "merged" : "in-progress",
+    status: isAllMerged ? "merged" : "in-progress",
     publishedAt: publishedAt ?? undefined,
     mergedAt,
     metrics,

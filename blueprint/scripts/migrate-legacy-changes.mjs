@@ -17,12 +17,13 @@ import {
   scenarioCount,
 } from "../src/lib/github-change-data.ts";
 import { prepareLinearG1Markdown } from "../src/lib/linear-g1-markdown.ts";
+import { parseCliArgs } from "./parse-cli-args.ts";
 
 const SNAPSHOT = "f010a9e020be8a342a7c7bafc31e2a361565135d";
 const REQUIRED_NO_PR_SLUGS = ["record-flows", "sync-recording"];
 const PR_URL = (number) =>
   `https://github.com/andrewck24/volleybro/pull/${number}`;
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -30,24 +31,6 @@ function sha256(value) {
 
 function normalizeDocument(content) {
   return `${content.replace(/\r\n?/gu, "\n").trimEnd()}\n`;
-}
-
-function parseArgs(args) {
-  const values = {};
-  for (let i = 0; i < args.length; i += 1) {
-    const arg = args[i];
-    if (!arg.startsWith("--")) throw new Error(`Unexpected argument: ${arg}`);
-    const key = arg.slice(2);
-    if (key === "help") values.help = true;
-    else {
-      const value = args[i + 1];
-      if (!value || value.startsWith("--"))
-        throw new Error(`Missing value for --${key}`);
-      values[key] = value;
-      i += 1;
-    }
-  }
-  return values;
 }
 
 function printHelp() {
@@ -398,7 +381,7 @@ function verifyManifest(manifest, slugs, prRows, storeRoot) {
   const pullRequests = new Map(prRows.map((pr) => [pr.number, pr]));
   for (const entry of manifest.entries) {
     if (
-      !slugPattern.test(entry.slug) ||
+      !SLUG_PATTERN.test(entry.slug) ||
       typeof entry.evidence !== "string" ||
       !entry.evidence.trim()
     ) {
@@ -518,7 +501,11 @@ function validateAcceptedSpecs(specs, legacySlugs) {
   const result = new Map();
   const legacySlugSet = new Set(legacySlugs);
   for (const [slug, spec] of Object.entries(specs)) {
-    if (!slugPattern.test(slug) || spec.slug !== slug || spec.accepted !== true)
+    if (
+      !SLUG_PATTERN.test(slug) ||
+      spec.slug !== slug ||
+      spec.accepted !== true
+    )
       throw new Error(
         `G1 spec mapping for "${slug}" is not an accepted stable-slug document.`,
       );
@@ -1166,7 +1153,7 @@ async function run(options) {
   console.log(`Transfer package: ${outputDirectory}`);
 }
 
-const args = parseArgs(process.argv.slice(2));
+const args = parseCliArgs(process.argv.slice(2));
 if (args.help) printHelp();
 else
   run(args).catch((error) => {

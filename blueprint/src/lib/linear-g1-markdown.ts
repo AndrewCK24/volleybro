@@ -26,7 +26,7 @@ export function prepareLinearG1Markdown(content: string) {
   if (markdown !== beforeMergeStatus)
     transformations.push("replace-stale-pr-merge-metadata");
 
-  let convertedReference = false;
+  let hasConvertedReference = false;
   markdown = markdown.replace(
     linearReferencePattern,
     (_element, _kind: string, attributes: string, label: string) => {
@@ -40,12 +40,12 @@ export function prepareLinearG1Markdown(content: string) {
       ) {
         return label;
       }
-      convertedReference = true;
+      hasConvertedReference = true;
       const safeLabel = label.trim().replace(/[\\[\]]/gu, "\\$&");
       return `[${safeLabel}](<${href}>)`;
     },
   );
-  if (convertedReference)
+  if (hasConvertedReference)
     transformations.push("convert-linear-reference-elements-to-markdown-links");
 
   return { markdown, transformations };
