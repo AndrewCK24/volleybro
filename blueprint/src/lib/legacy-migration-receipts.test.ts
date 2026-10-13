@@ -57,6 +57,20 @@ const readbackData = {
   ],
 };
 
+const standaloneData = {
+  title: "Accepted G1 without a legacy page",
+  linear_issue: "TEST-456",
+  pull_requests: [],
+  blocks: [
+    {
+      _type: "markdown",
+      _version: 1,
+      markdown: "Standalone accepted specification.",
+      _key: "standalone-1",
+    },
+  ],
+};
+
 const input = () => ({
   audit: {
     schemaVersion: 1,
@@ -77,6 +91,12 @@ const input = () => ({
     content: {
       blueprint_changes: [
         { id: "legacy-alpha", slug: "alpha", status: "draft", data: seedData },
+        {
+          id: "accepted-standalone",
+          slug: "accepted-standalone",
+          status: "draft",
+          data: standaloneData,
+        },
       ],
     },
   },
@@ -101,8 +121,16 @@ const input = () => ({
         draftRevisionId: "draft-revision-1",
         data: readbackData,
       },
+      {
+        id: "actual-standalone-id",
+        type: "blueprint_changes",
+        slug: "accepted-standalone",
+        status: "draft",
+        draftRevisionId: "draft-revision-standalone",
+        data: standaloneData,
+      },
     ],
-    total: 1,
+    total: 2,
   },
   readMediaSha256: jest.fn(async (storageKey: string, expectedSize: number) => {
     expect(storageKey).toBe("cms-generated-object-key.png");
@@ -185,5 +213,19 @@ describe("finalizeLegacyMigrationReceipts", () => {
     await expect(
       finalizeLegacyMigrationReceipts(pagedReadback),
     ).rejects.toThrow("read-back is paginated");
+  });
+
+  it("rejects changed content in an accepted G1 page without a legacy slug", async () => {
+    const changedStandalone = input();
+    changedStandalone.readback.items[1].data = {
+      ...standaloneData,
+      title: "Changed standalone specification",
+    };
+
+    await expect(
+      finalizeLegacyMigrationReceipts(changedStandalone),
+    ).rejects.toThrow(
+      "accepted-standalone: imported content differs from its transfer seed",
+    );
   });
 });

@@ -151,6 +151,14 @@ export async function finalizeLegacyMigrationReceipts(input: {
   const actualBySlug = new Map(readback.items.map((item) => [item.slug, item]));
   if (actualBySlug.size !== readback.items.length)
     throw new Error("EmDash read-back contains duplicate slugs.");
+  const importedBySlug = new Map<
+    string,
+    {
+      expected: Data;
+      actual: Data;
+      record: z.infer<typeof readbackSchema>["items"][number];
+    }
+  >();
   for (const entry of seed.content.blueprint_changes) {
     const actual = actualBySlug.get(entry.slug);
     if (
@@ -159,6 +167,20 @@ export async function finalizeLegacyMigrationReceipts(input: {
       actual.status !== "draft"
     )
       throw new Error(`${entry.slug}: expected one imported EmDash draft.`);
+    const expectedData = changeDataSchema.parse(entry.data);
+    const actualData = changeDataSchema.parse(actual.data);
+    if (
+      canonicalize(migrationProjection(expectedData)) !==
+      canonicalize(migrationProjection(actualData))
+    )
+      throw new Error(
+        `${entry.slug}: imported content differs from its transfer seed.`,
+      );
+    importedBySlug.set(entry.slug, {
+      expected: expectedData,
+      actual: actualData,
+      record: actual,
+    });
   }
   if (actualBySlug.size !== expectedBySlug.size)
     throw new Error(
@@ -173,20 +195,11 @@ export async function finalizeLegacyMigrationReceipts(input: {
   const usedManifestKeys = new Set<string>();
 
   for (const slug of legacySlugs) {
-    const expected = changeDataSchema.parse(expectedBySlug.get(slug)!.data);
-    const actualRecord = actualBySlug.get(slug)!;
-    if (actualRecord.status !== "draft")
-      throw new Error(
-        `${slug}: import must remain draft until receipts are finalized.`,
-      );
-    const actual = changeDataSchema.parse(actualRecord.data);
-    if (
-      canonicalize(migrationProjection(expected)) !==
-      canonicalize(migrationProjection(actual))
-    )
-      throw new Error(
-        `${slug}: imported content differs from its transfer seed.`,
-      );
+    const {
+      expected,
+      actual,
+      record: actualRecord,
+    } = importedBySlug.get(slug)!;
 
     const expectedMedia = expected.blocks.filter(
       (block): block is LegacyMedia => block._type === "legacy_media",
