@@ -42,7 +42,7 @@ class SQLiteD1 {
   }
 }
 
-function stubGitHubFetch(t, { merged = false } = {}) {
+function stubGitHubFetch(t, { isMerged = false } = {}) {
   const originalFetch = globalThis.fetch;
   let requests = 0;
   globalThis.fetch = async (input) => {
@@ -51,9 +51,9 @@ function stubGitHubFetch(t, { merged = false } = {}) {
     if (url.pathname.endsWith("/pulls/552")) {
       return Response.json({
         number: 552,
-        state: merged ? "closed" : "open",
-        merged_at: merged ? "2026-10-12T08:00:00Z" : null,
-        merge_commit_sha: merged ? "a".repeat(40) : null,
+        state: isMerged ? "closed" : "open",
+        merged_at: isMerged ? "2026-10-12T08:00:00Z" : null,
+        merge_commit_sha: isMerged ? "a".repeat(40) : null,
         commits: 3,
         changed_files: 1,
         additions: 20,
@@ -115,7 +115,7 @@ test("D1 SQL persists open-cache expiry and refreshes expired rows", async (t) =
 test("D1 SQL retains merged metrics permanently under the merge SHA", async (t) => {
   const database = new SQLiteD1();
   t.after(() => database.close());
-  const requestCount = stubGitHubFetch(t, { merged: true });
+  const requestCount = stubGitHubFetch(t, { isMerged: true });
   const first = await readPullRequestSummaries([pullRequestUrl], {
     env: { BLUEPRINT_DB: database },
     now: 1_000,

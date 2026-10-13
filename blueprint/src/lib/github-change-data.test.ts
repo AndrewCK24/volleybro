@@ -9,8 +9,8 @@ import {
 
 class MemoryD1 {
   rows = new Map<string, { payload: string; expires_at: number | null }>();
-  failWrites = false;
-  failReads = false;
+  hasWriteFailure = false;
+  hasReadFailure = false;
 
   prepare(query: string) {
     let values: unknown[] = [];
@@ -34,12 +34,12 @@ class MemoryD1 {
         return this.prepareBound(query, values, setValues);
       },
       first: async <T>() => {
-        if (this.failReads) throw new Error("D1 read unavailable");
+        if (this.hasReadFailure) throw new Error("D1 read unavailable");
         const [key] = values() as [string];
         return (this.rows.get(key) ?? null) as T | null;
       },
       all: async <T>() => {
-        if (this.failReads) throw new Error("D1 read unavailable");
+        if (this.hasReadFailure) throw new Error("D1 read unavailable");
         return {
           results: (values() as string[]).flatMap((key) => {
             const row = this.rows.get(key);
@@ -48,7 +48,7 @@ class MemoryD1 {
         };
       },
       run: async () => {
-        if (this.failWrites) throw new Error("D1 write unavailable");
+        if (this.hasWriteFailure) throw new Error("D1 write unavailable");
         if (query.startsWith("INSERT")) {
           const bound = values();
           for (let index = 0; index < bound.length; index += 3) {
@@ -191,7 +191,7 @@ describe("GitHub derived Change status and metrics", () => {
 
   it("does not fail public Change status when the cache database is unavailable", async () => {
     const db = new MemoryD1();
-    db.failReads = true;
+    db.hasReadFailure = true;
     await expect(
       readPullRequestSummaries(
         ["https://github.com/andrewck24/volleybro/pull/552"],
@@ -202,7 +202,7 @@ describe("GitHub derived Change status and metrics", () => {
 
   it("serves verified GitHub data even when writing the cache fails", async () => {
     const db = new MemoryD1();
-    db.failWrites = true;
+    db.hasWriteFailure = true;
     const fetchMock = jest.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
       if (url.endsWith("/pulls/552")) return response(openPullRequest);

@@ -1,4 +1,4 @@
-const linearReferencePattern =
+const LINEAR_REFERENCE_PATTERN =
   /<(issue|pull-request)\b([^>]*)>([\s\S]*?)<\/\1>/gu;
 
 export function prepareLinearG1Markdown(content: string) {
@@ -28,7 +28,7 @@ export function prepareLinearG1Markdown(content: string) {
 
   let hasConvertedReference = false;
   markdown = markdown.replace(
-    linearReferencePattern,
+    LINEAR_REFERENCE_PATTERN,
     (_element, _kind: string, attributes: string, label: string) => {
       const href = attributes.match(/\bhref="(https:\/\/[^"]+)"/u)?.[1];
       if (
