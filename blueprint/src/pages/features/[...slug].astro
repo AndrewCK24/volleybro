@@ -7,6 +7,7 @@ import DecisionTimelineIsland from "../../components/decision-timeline-island.as
 import Layout from "../../components/layout.astro";
 import { listChanges } from "../../lib/changes-index";
 import { featureMdxComponents } from "../../lib/mdx-components";
+import { flattenIndexOnlyFolders } from "../../lib/page-tree";
 import { createBlueprintSources } from "../../lib/source";
 
 export async function getStaticPaths() {
@@ -48,7 +49,7 @@ const components = {
   <meta name="description" content={entry.data.description ?? "VolleyBro feature documentation."} />
   <Docs
     client:load
-    tree={features.pageTree}
+    tree={flattenIndexOnlyFolders(features.pageTree)}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
     hasChanges={hasChanges}
