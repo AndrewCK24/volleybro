@@ -1,6 +1,6 @@
-import "./change-tabs";
+import "./change-disclosure";
 
-describe("Change disclosure hash navigation", () => {
+describe("migrated Change disclosure hash navigation", () => {
   afterEach(() => {
     document.body.replaceChildren();
     history.replaceState(null, "", window.location.pathname);

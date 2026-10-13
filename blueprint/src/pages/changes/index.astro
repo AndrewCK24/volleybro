@@ -1,16 +1,13 @@
 ---
-import { listChanges } from "../../lib/changes-index";
 import { createChangesTree } from "../../lib/changes-tree";
-import { createBlueprintSources } from "../../lib/source";
-import { ChangeCardList } from "../../components/change-card";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
+import { createBlueprintSources } from "../../lib/source";
 
-const sources = await createBlueprintSources();
-const summaries = listChanges(sources.changes.getPages());
+const source = await createBlueprintSources();
 const tree = createChangesTree(
-  sources.changes.pageTree,
-  summaries.map((change) => change.href),
+  source.changes.pageTree,
+  source.changeEntries.map((change) => `/changes/${change.id}`),
 );
 ---
 
@@ -21,18 +18,21 @@ const tree = createChangesTree(
     tree={tree}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
-    hasChanges={summaries.length > 0}
+    hasChanges={true}
     page={{ breadcrumb: { includePage: false } }}
   >
     <main>
       <h1>Changes</h1>
-      {summaries.length === 0 ? (
-        <p>
-          No Change pages right now — none are published or pulled yet. Run{" "}
-          <code>pnpm blueprint:changes:pull</code>.
-        </p>
+      {source.changeEntries.length === 0 ? (
+        <p>目前沒有已發布的 Change。</p>
       ) : (
-        <ChangeCardList changes={summaries} />
+        <ul>
+          {source.changeEntries.map((change) => (
+            <li>
+              <a href={`/changes/${change.id}`}>{change.data.title}</a>
+            </li>
+          ))}
+        </ul>
       )}
     </main>
   </Docs>

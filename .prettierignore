@@ -10,6 +10,10 @@ pnpm-lock.yaml
 CHANGELOG.md
 .source/
 .astro/
+blueprint/dist/
+blueprint/.astro/
+blueprint/.wrangler/
+blueprint/.emdash/migrations.json
 
 # Agent config, skills, and worktrees
 .agents/

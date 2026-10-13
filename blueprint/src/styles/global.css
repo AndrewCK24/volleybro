@@ -1,8 +1,6 @@
 @import "@fontsource-variable/saira";
 @import "@fontsource-variable/noto-sans-tc/wght.css";
 @import "tailwindcss";
-/* Change pages are pulled from a gitignored store but include retained Tailwind designs. */
-@source "../../content/changes";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 @import "tw-animate-css";

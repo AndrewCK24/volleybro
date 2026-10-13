@@ -1,12 +1,9 @@
 ---
 import { Layers, ListTree, Palette } from "lucide-react";
-import { ChangeCardList } from "../components/change-card";
 import Layout from "../components/layout.astro";
-import { listChanges } from "../lib/changes-index";
 import { createBlueprintSources } from "../lib/source";
 
-const { changes, features } = await createBlueprintSources();
-const summaries = listChanges(changes.getPages());
+const { features, changeEntries } = await createBlueprintSources();
 const capabilities = features.getPages().filter((page) => page.slugs.length > 0).length;
 const sections = [
   {
@@ -20,7 +17,7 @@ const sections = [
     href: "/changes",
     title: "Changes",
     description: "每一次交付的 Proposal 與 Review：做了什麼、為什麼、怎麼驗證。",
-    figure: `${summaries.length} changes`,
+    figure: `${changeEntries.length} changes`,
     Icon: Layers,
   },
   {
@@ -66,7 +63,7 @@ const sections = [
       </ul>
     </nav>
 
-    {summaries.length > 0 && (
+    {changeEntries.length > 0 && (
       <section aria-labelledby="latest-changes" class="flex flex-col">
         <div class="flex items-baseline justify-between gap-4">
           <h2 id="latest-changes" class="m-0 text-lg font-semibold">最近的 Change</h2>
@@ -74,7 +71,15 @@ const sections = [
             全部 Change
           </a>
         </div>
-        <ChangeCardList changes={summaries.slice(0, 3)} />
+        <ul class="m-0 list-none space-y-2 p-0">
+          {changeEntries.slice(0, 3).map((change) => (
+            <li>
+              <a href={`/changes/${change.id}`} class="text-primary-text underline-offset-4 hover:underline">
+                {change.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
     )}
   </main>

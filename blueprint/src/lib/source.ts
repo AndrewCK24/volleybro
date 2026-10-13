@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
+import { getEmDashCollection, type ContentEntry } from "emdash";
 import { structure, type StructuredData } from "fumadocs-core/mdx-plugins";
 import {
   loader,
@@ -7,24 +8,21 @@ import {
   type StaticSource,
 } from "fumadocs-core/source";
 import path from "node:path";
+import { changeDataSchema, type ChangeData } from "./emdash-change-record";
 
-type PageEntry =
-  CollectionEntry<"changePage"> | CollectionEntry<"featurePages">;
-
+type FeaturePage = CollectionEntry<"featurePages">;
 type MetaEntry = CollectionEntry<"featureMeta">;
+type EmDashPage = ContentEntry<ChangeData>;
 type DesignPage = CollectionEntry<"designMeta">["data"]["pages"][number];
-type SourceRaw = PageEntry | DesignPage;
+type SourceRaw = FeaturePage | EmDashPage | DesignPage;
 
 type SourceConfig = {
   pageData: PageData & { structuredData: StructuredData; _raw: SourceRaw };
   metaData: MetaData;
 };
 
-// Keep the published history in the store, but retire its public route.
-const RETIRED_CHANGE_SLUGS = new Set(["pnpm12-toolchain"]);
-
 function buildContentSource(
-  pages: PageEntry[],
+  pages: FeaturePage[],
   metas: MetaEntry[],
   contentRoot: string,
 ): StaticSource<SourceConfig> {
@@ -54,6 +52,47 @@ function buildContentSource(
   return { files };
 }
 
+function buildChangeSource(entries: EmDashPage[]): StaticSource<SourceConfig> {
+  return {
+    files: entries.map((entry) => ({
+      type: "page" as const,
+      path: `${entry.id}/index.mdx`,
+      absolutePath: `emdash://${entry.id}`,
+      data: {
+        title: entry.data.title,
+        description: entry.data.description,
+        structuredData: { headings: [], contents: [] },
+        _raw: entry,
+      },
+    })),
+  };
+}
+
+async function readPublishedChanges(): Promise<EmDashPage[]> {
+  const entries: EmDashPage[] = [];
+  let cursor: string | undefined;
+  do {
+    const result = await getEmDashCollection("blueprint_changes", {
+      limit: 100,
+      status: "published",
+      ...(cursor ? { cursor } : {}),
+      orderBy: { published_at: "desc" },
+    });
+    if (result.error)
+      throw new Error(
+        `Could not read published Blueprint Changes: ${result.error.message}`,
+      );
+    for (const entry of result.entries) {
+      const parsed = changeDataSchema.safeParse(entry.data);
+      if (!parsed.success)
+        throw new Error(`Published Change "${entry.id}" has invalid content.`);
+      entries.push({ id: entry.id, data: parsed.data, edit: entry.edit });
+    }
+    cursor = result.nextCursor;
+  } while (cursor);
+  return entries;
+}
+
 function buildDesignSource(pages: DesignPage[]): StaticSource<SourceConfig> {
   const ordered = pages.map((page) => page.slug || "index");
   const files: StaticSource<SourceConfig>["files"] = [
@@ -76,44 +115,38 @@ function buildDesignSource(pages: DesignPage[]): StaticSource<SourceConfig> {
   return { files };
 }
 
-export async function createBlueprintSources() {
+export async function createBlueprintSources(
+  options: { includeChanges?: boolean } = {},
+) {
   const [changes, features, featureMetas, designMetas] = await Promise.all([
-    getCollection("changePage"),
+    options.includeChanges === false
+      ? Promise.resolve([])
+      : readPublishedChanges(),
     getCollection("featurePages"),
     getCollection("featureMeta"),
     getCollection("designMeta"),
   ]);
   const designDocument = (await getCollection("designDocument"))[0];
   if (!designDocument) throw new Error("DESIGN.md is required by Blueprint");
-  const designPages = designMetas.flatMap((entry) => entry.data.pages);
-  const changesRoot = path.resolve("content/changes");
+
   const featuresRoot = path.resolve("content/features");
-  const migratedChanges = changes.filter((entry) => {
-    const relativePath = entry.filePath
-      ? path.relative(changesRoot, entry.filePath)
-      : entry.id;
-    const slug = relativePath.split(path.sep)[0];
-    return !RETIRED_CHANGE_SLUGS.has(slug);
-  });
-
-  const changesSource = loader({
-    baseUrl: "/changes",
-    source: buildContentSource(migratedChanges, [], changesRoot),
-  });
-  const featuresSource = loader({
-    baseUrl: "/features",
-    source: buildContentSource(features, featureMetas, featuresRoot),
-  });
-  const designSystemSource = loader({
-    baseUrl: "/design-system",
-    source: buildDesignSource(designPages),
-  });
-
   return {
-    changes: changesSource,
-    features: featuresSource,
-    designSystem: designSystemSource,
-    designPages,
+    changes: loader({
+      baseUrl: "/changes",
+      source: buildChangeSource(changes),
+    }),
+    features: loader({
+      baseUrl: "/features",
+      source: buildContentSource(features, featureMetas, featuresRoot),
+    }),
+    designSystem: loader({
+      baseUrl: "/design-system",
+      source: buildDesignSource(
+        designMetas.flatMap((entry) => entry.data.pages),
+      ),
+    }),
+    changeEntries: changes,
+    designPages: designMetas.flatMap((entry) => entry.data.pages),
     designDocument,
   };
 }

@@ -21,7 +21,7 @@ import { allDecisions } from "../../lib/decisions-index";
 import { visibleShowcaseText } from "../../lib/design-system-search";
 import { createBlueprintSources } from "../../lib/source";
 
-export const prerender = true;
+export const prerender = false;
 
 const designShowcases = {
   index: DesignSystemOverview,
@@ -36,13 +36,13 @@ const designShowcases = {
 
 export async function GET() {
   const sources = await createBlueprintSources();
-  const changes: AdvancedIndex[] = sources.changes.getPages().map((page) => ({
-    id: page.url,
-    title: page.data.title ?? "",
-    description: page.data.description,
-    url: page.url,
+  const changes: AdvancedIndex[] = sources.changeEntries.map((entry) => ({
+    id: `/changes/${entry.id}`,
+    title: entry.data.title,
+    description: entry.data.description,
+    url: `/changes/${entry.id}`,
     structuredData: {
-      headings: page.data.structuredData?.headings ?? [],
+      headings: [],
       contents: [],
     },
   }));

@@ -1,0 +1,9 @@
+---
+import { renderBlueprintMarkdown } from "../lib/markdown-renderer";
+import { sanitizeLegacyHtml } from "../lib/sanitize-legacy-html";
+
+const { markdown } = Astro.props as { markdown: string };
+const html = sanitizeLegacyHtml(await renderBlueprintMarkdown(markdown));
+---
+
+<section class="emdash-markdown-block" data-emdash-markdown="v1" set:html={html} />

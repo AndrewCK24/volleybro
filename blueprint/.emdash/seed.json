@@ -1,0 +1,303 @@
+{
+  "version": "1",
+  "meta": {
+    "name": "VolleyBro Blueprint",
+    "description": "Developer documentation and Change pages"
+  },
+  "collections": [
+    {
+      "slug": "blueprint_changes",
+      "label": "Blueprint Changes",
+      "labelSingular": "Blueprint Change",
+      "description": "Accepted and published Blueprint Change pages",
+      "icon": "arrows-left-right",
+      "supports": ["drafts", "revisions", "preview", "search"],
+      "urlPattern": "/changes/:slug",
+      "titleField": "title",
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "description",
+          "label": "Description",
+          "type": "text",
+          "searchable": true
+        },
+        {
+          "slug": "linear_issue",
+          "label": "Linear issue",
+          "type": "string",
+          "indexed": true
+        },
+        {
+          "slug": "pull_requests",
+          "label": "Required pull requests",
+          "type": "repeater",
+          "validation": {
+            "subFields": [
+              {
+                "slug": "url",
+                "label": "GitHub PR URL",
+                "type": "url",
+                "required": true
+              }
+            ],
+            "maxItems": 12
+          }
+        },
+        {
+          "slug": "blocks",
+          "label": "Page content",
+          "type": "blocks",
+          "validation": {
+            "allowedTypes": [
+              "markdown",
+              "prose",
+              "legacy_html",
+              "legacy_media",
+              "decision_cards",
+              "risk_table",
+              "scenario",
+              "scenario_cards",
+              "interactive_flowchart"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "blockTypes": [
+    {
+      "slug": "markdown",
+      "label": "Markdown",
+      "description": "Safe Markdown rendered by Blueprint's versioned renderer",
+      "category": "Content",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "markdown",
+              "label": "Markdown",
+              "type": "text",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "prose",
+      "label": "Rich text",
+      "category": "Content",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "value",
+              "label": "Content",
+              "type": "portableText",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "legacy_html",
+      "label": "Migrated historical content",
+      "description": "Sanitized static HTML migrated from the retired Change store",
+      "category": "History",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "html",
+              "label": "Sanitized HTML",
+              "type": "text",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "legacy_media",
+      "label": "Migrated historical image",
+      "description": "Integrity-bound media reference used by migrated legacy_html blocks",
+      "category": "History",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "key",
+              "label": "Stable key",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "sha256",
+              "label": "Source SHA-256",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "alt",
+              "label": "Alternative text",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "asset",
+              "label": "Image asset",
+              "type": "image",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "decision_cards",
+      "label": "Decision cards",
+      "category": "Blueprint",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "records",
+              "label": "Decision records (JSON)",
+              "type": "text",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "risk_table",
+      "label": "Risk table",
+      "category": "Blueprint",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "risks",
+              "label": "Risks (JSON)",
+              "type": "text",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "scenario",
+      "label": "Scenario",
+      "category": "Blueprint",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            { "slug": "id", "label": "ID", "type": "string", "required": true },
+            {
+              "slug": "given",
+              "label": "Given",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "when",
+              "label": "When",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "then",
+              "label": "Then",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "rendered_in_legacy_html",
+              "label": "Already rendered in migrated history",
+              "type": "boolean"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "scenario_cards",
+      "label": "Scenario cards",
+      "category": "Blueprint",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "items",
+              "label": "Scenarios (JSON)",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "rendered_in_legacy_html",
+              "label": "Already rendered in migrated history",
+              "type": "boolean"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "interactive_flowchart",
+      "label": "Interactive flowchart",
+      "category": "Blueprint",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "nodes",
+              "label": "Nodes (JSON)",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "edges",
+              "label": "Edges (JSON)",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "details",
+              "label": "Details (JSON)",
+              "type": "text",
+              "required": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
