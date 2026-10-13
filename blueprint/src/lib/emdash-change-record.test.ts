@@ -101,7 +101,12 @@ describe("EmDash Change schema", () => {
         },
         {
           _type: "image",
-          asset: { _ref: "media-1" },
+          asset: {
+            _type: "reference",
+            _ref: "media-1",
+            url: "/_emdash/api/media/file/media-1.png",
+            provider: "local",
+          },
           alt: "Diagram",
         },
         {
@@ -192,7 +197,12 @@ describe("EmDash Change schema", () => {
           _type: "image",
           _key: "image-key",
           alt: "Diagram",
-          asset: { _ref: "media-alpha" },
+          asset: {
+            _type: "reference",
+            _ref: "media-alpha",
+            url: "/_emdash/api/media/file/media-alpha.png",
+            provider: "local",
+          },
         },
       ],
     };
@@ -204,7 +214,21 @@ describe("EmDash Change schema", () => {
         blocks: [
           {
             ...mediaContent.blocks[0],
-            asset: { ...mediaContent.blocks[0].asset, url: "/media/image.png" },
+            asset: {
+              ...mediaContent.blocks[0].asset,
+              url: "https://other.example/image.png",
+            },
+          },
+        ],
+      }).success,
+    ).toBe(false);
+    expect(
+      changeDataSchema.safeParse({
+        ...mediaContent,
+        blocks: [
+          {
+            ...mediaContent.blocks[0],
+            asset: { ...mediaContent.blocks[0].asset, legacyId: "old-id" },
           },
         ],
       }).success,

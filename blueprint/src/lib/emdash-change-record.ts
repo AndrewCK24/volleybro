@@ -73,7 +73,10 @@ const imageBlockSchema = z.strictObject({
   _key: z.string().min(1).optional(),
   _type: z.literal("image"),
   asset: z.strictObject({
+    _type: z.literal("reference"),
     _ref: z.string().min(1),
+    url: z.string().regex(/^\/_emdash\/api\/media\/file\/[A-Za-z0-9._-]+$/u),
+    provider: z.literal("local").optional(),
   }),
   alt: z.string().optional(),
   caption: z.string().optional(),
