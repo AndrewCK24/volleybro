@@ -1,9 +1,8 @@
 name: Production release
 
+# A merge-triggered run fails the main-only production QA environment after promoting,
+# so the release owner dispatches every release on main.
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
   workflow_dispatch:
     inputs:
       mode:
@@ -36,12 +35,7 @@ jobs:
   candidate:
     if: >-
       vars.RELEASE_AUTOMATION_ENABLED == 'true' &&
-      ((github.event_name == 'pull_request' &&
-        github.event.pull_request.merged == true &&
-        github.event.pull_request.head.ref == 'changeset-release/main' &&
-        github.event.pull_request.title == 'release: update versions') ||
-       (github.event_name == 'workflow_dispatch' &&
-        github.ref == 'refs/heads/main' && inputs.mode != 'recover'))
+      github.ref == 'refs/heads/main' && inputs.mode != 'recover'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
