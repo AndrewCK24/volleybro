@@ -246,6 +246,30 @@ describe("a verified preference when its team is revalidated", () => {
     expect(storedActiveTeamPreference()).toMatchObject({ teamId: "team-1" });
   });
 
+  it("S3 (revalidation): does not store a refused team again while the players list still lists it first", async () => {
+    seedActiveTeamPreference("user-1", "team-1");
+    answerTeamRequests({
+      teams: [createTeam({ id: "team-1" }), createTeam({ id: "team-2" })],
+    });
+    renderColdStart(<RevalidateTeam teamId="team-1" />);
+    await waitFor(() => expect(activeTeam()).toHaveTextContent("team-1"));
+    server.use(
+      http.get("/api/teams/team-1", () =>
+        HttpResponse.json(
+          { code: "AUTHORIZATION", reason: "NOT_A_MEMBER" },
+          { status: 403 },
+        ),
+      ),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "revalidate" }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("team error")).toHaveTextContent("failed"),
+    );
+    expect(storedActiveTeamPreference()).toBeNull();
+  });
+
   it("S3 (revalidation): discards the preference when the revalidation is refused", async () => {
     await verifyPreferredTeam();
     server.use(
