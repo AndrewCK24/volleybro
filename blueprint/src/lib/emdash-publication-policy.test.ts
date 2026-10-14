@@ -13,7 +13,11 @@ jest.mock(
   }),
   { virtual: true },
 );
-jest.mock("astro/zod", () => ({ z: require("zod") }), { virtual: true });
+jest.mock(
+  "astro/zod",
+  () => ({ z: jest.requireActual<typeof import("zod")>("zod").z }),
+  { virtual: true },
+);
 
 import { publicationReceiptProblem } from "./publication-receipt";
 import { createPlugin } from "./emdash-publication-policy";
