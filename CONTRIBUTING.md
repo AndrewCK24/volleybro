@@ -73,6 +73,11 @@ The gates that must pass before a pull request are listed in `WORKFLOW.md`'s Rep
 
 A worktree starts without `node_modules`. Run `pnpm install --frozen-lockfile --prefer-offline` in it rather than symlinking the main checkout's `node_modules`, which pnpm's dependency check and Turbopack both reject.
 
+Until it is installed, the worktree also has no git hooks: husky's `prepare` script creates them, so commits skip commitlint and lint-staged without a warning and only CI catches the message. `scripts/worktree-setup.sh` installs when `node_modules` is missing and does nothing otherwise; have agent tools run it whenever they create a worktree:
+
+- **Claude Code** (desktop worktree sessions): a `SessionStart` hook (matcher `startup`) in the main checkout's `.claude/settings.json`. Those sessions read hooks from the main checkout and run them there, so the hook passes the worktree path from its input's `cwd` field: `sh "$D/scripts/worktree-setup.sh" "$D"`. Subagents with `isolation: "worktree"` start no session, so their brief includes the install.
+- **Codex app**: set the local environment's setup script to `sh scripts/worktree-setup.sh`.
+
 `.worktreeinclude` lists `.env.local`, so agent tooling that reads that file copies it into each worktree it creates. A worktree made with plain `git worktree add`, or by a tool that ignores the file, gets no copy: copy `.env.local` yourself before running `pnpm build` or `pnpm dev`.
 
 Remove a worktree that still holds symlinks with `git worktree remove --force <path>`.

@@ -1,4 +1,3 @@
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import {
   getUserByIdController,
   searchUserController,
@@ -11,8 +10,6 @@ export const dynamic = "force-dynamic";
 export const GET = withAuth(async (request: NextRequest, { userId }) => {
   const { searchParams } = request.nextUrl;
   const email = searchParams.get("email");
-
-  await connectToMongoDB();
 
   const result = email
     ? await searchUserController({ email })

@@ -1,4 +1,3 @@
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { recordRalliesController } from "@/interface/controllers/game/rally.controller";
 import { RecordRalliesSchema } from "@/interface/validations/game";
 import { assertObjectId } from "@/lib/api/guards";
@@ -12,7 +11,6 @@ export const PUT = (
   withErrorHandler(async (req) => {
     const { gameId } = await props.params;
     assertObjectId(gameId, "gameId");
-    await connectToMongoDB();
     const rallies = RecordRalliesSchema.parse(await req.json());
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);

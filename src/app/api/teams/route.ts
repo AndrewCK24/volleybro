@@ -1,5 +1,4 @@
 import { AuthenticationError, AuthReason } from "@/entities/errors";
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { createTeamController } from "@/interface/controllers/team/team.controller";
 import { CreateTeamSchema } from "@/interface/validations/team";
 import { withErrorHandler } from "@/lib/api/wrappers";
@@ -18,8 +17,6 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   const body = await request.json();
   const { name, nickname } = CreateTeamSchema.parse(body);
-
-  await connectToMongoDB();
 
   const team = await createTeamController({
     name,

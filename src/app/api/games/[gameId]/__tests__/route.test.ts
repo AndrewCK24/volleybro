@@ -4,12 +4,7 @@ import {
 } from "@test/support/http/route-request";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockFindGameController = jest.fn<(input: unknown) => Promise<unknown>>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock("@/interface/controllers/game/game.controller", () => ({
   findGameController: mockFindGameController,
@@ -36,7 +31,6 @@ describe("GET /api/games/[gameId]", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     ({ GET } = await import("../route"));
     ({ NotFoundError } = await import("@/entities/errors"));
   });

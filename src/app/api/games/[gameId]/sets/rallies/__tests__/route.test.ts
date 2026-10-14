@@ -6,13 +6,8 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 import { MoveType } from "@/entities/game";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockRecordRalliesController =
   jest.fn<(input: unknown) => Promise<unknown>>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock("@/interface/controllers/game/rally.controller", () => ({
   recordRalliesController: mockRecordRalliesController,
@@ -35,7 +30,6 @@ describe("PUT /api/games/[gameId]/sets/rallies", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     ({ PUT } = await import("../route"));
   });
 

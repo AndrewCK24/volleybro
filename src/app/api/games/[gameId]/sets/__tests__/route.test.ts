@@ -4,13 +4,8 @@ import {
 } from "@test/support/http/route-request";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockCreateSetController = jest.fn<(input: unknown) => Promise<unknown>>();
 const mockUpdateSetController = jest.fn<(input: unknown) => Promise<unknown>>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock("@/interface/controllers/game/set.controller", () => ({
   createSetController: mockCreateSetController,
@@ -44,7 +39,6 @@ describe("POST /api/games/[gameId]/sets", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     ({ POST } = await import("../route"));
   });
 
@@ -97,7 +91,6 @@ describe("PUT /api/games/[gameId]/sets", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     ({ PUT } = await import("../route"));
   });
 

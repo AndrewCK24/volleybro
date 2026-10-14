@@ -11,7 +11,6 @@ import {
   jest,
 } from "@jest/globals";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockGetTeamController =
   jest.fn<(input: unknown) => Promise<Record<string, unknown> | null>>();
 const mockUpdateTeamController =
@@ -20,10 +19,6 @@ const mockUpdateTeamController =
   >();
 const mockGetSession = jest.fn<() => Promise<unknown>>();
 const mockContainerGet = jest.fn<() => unknown>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock("@/interface/controllers/team/get-team.controller", () => ({
   getTeamController: mockGetTeamController,
@@ -68,7 +63,6 @@ describe("GET /api/teams/[teamId]", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     mockGetSession.mockResolvedValue(SESSION);
   });
 
@@ -158,7 +152,6 @@ describe("PATCH /api/teams/[teamId]", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     mockGetSession.mockResolvedValue(SESSION);
     mockContainerGet.mockReturnValue({
       verifyIsTeamAdmin: jest

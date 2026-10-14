@@ -1,7 +1,8 @@
-import mongoose, { type Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 declare global {
-  var _mongooseInstance: Mongoose | undefined;
+  // On global so dev HMR module reloads share one in-flight connect.
+  var _mongooseConnecting: Promise<unknown> | undefined;
 }
 
 const options = {};
@@ -14,16 +15,11 @@ export const connectToMongoDB = async () => {
     return mongoose.connection;
   }
 
-  if (process.env.NODE_ENV === "development") {
-    // In development mode, use a global variable so that the value
-    // is preserved across module reloads caused by HMR (Hot Module Replacement).
-    if (!global._mongooseInstance) {
-      global._mongooseInstance = await mongoose.connect(uri, options);
-    }
-    return global._mongooseInstance.connection;
-  }
-
-  // In production mode, it's best to not use a global variable.
-  await mongoose.connect(uri, options);
+  // A second mongoose.connect while connecting returns before the connection
+  // is ready, so concurrent cold-start requests share one in-flight connect.
+  global._mongooseConnecting ??= mongoose.connect(uri, options).finally(() => {
+    global._mongooseConnecting = undefined;
+  });
+  await global._mongooseConnecting;
   return mongoose.connection;
 };
