@@ -14,6 +14,7 @@ import SpacingPage, { toc as spacingToc } from "../../../content/design-system/s
 import RadiusPage, { toc as radiusToc } from "../../../content/design-system/radius/index";
 import ElevationDepthPage, { toc as elevationDepthToc } from "../../../content/design-system/elevation-depth/index";
 import ComponentLibraryShowcase, { annotatedDiffCode, toc as componentsToc } from "../../../content/design-system/components/index";
+import DiagramShowcase, { toc as diagramsToc } from "../../../content/design-system/diagrams/index";
 import { renderAnnotatedDiffHtml } from "../../lib/annotated-diff-html";
 
 const sources = await createBlueprintSources({ includeChanges: false });
@@ -39,6 +40,7 @@ const showcaseToc = {
   radius: radiusToc,
   "elevation-depth": elevationDepthToc,
   components: componentsToc,
+  diagrams: diagramsToc,
 }[designPage.showcase];
 if (!showcaseToc) throw new Error(`Design System showcase not found: ${designPage.showcase}`);
 let isInSelectedSection = false;
@@ -86,6 +88,7 @@ const pageToc = [...documentToc, ...showcaseToc];
       {designPage.showcase === "radius" && <RadiusPage />}
       {designPage.showcase === "elevation-depth" && <ElevationDepthPage />}
       {designPage.showcase === "components" && <ComponentLibraryShowcase client:load annotatedDiffHtml={annotatedDiffHtml} />}
+      {designPage.showcase === "diagrams" && <DiagramShowcase />}
     </main>
   </Docs>
 </Layout>

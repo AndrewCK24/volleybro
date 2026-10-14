@@ -13,6 +13,7 @@ import ColorPage from "../../../content/design-system/color/index";
 import ComponentLibraryShowcase, {
   flowchartDetails,
 } from "../../../content/design-system/components/index";
+import DiagramShowcase from "../../../content/design-system/diagrams/index";
 import ElevationDepthPage from "../../../content/design-system/elevation-depth/index";
 import RadiusPage from "../../../content/design-system/radius/index";
 import SpacingPage from "../../../content/design-system/spacing/index";
@@ -28,6 +29,7 @@ const designShowcases = {
   brand: BrandPage,
   color: ColorPage,
   components: ComponentLibraryShowcase,
+  diagrams: DiagramShowcase,
   "elevation-depth": ElevationDepthPage,
   radius: RadiusPage,
   spacing: SpacingPage,
