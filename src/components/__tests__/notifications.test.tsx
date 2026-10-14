@@ -27,7 +27,6 @@ const renderNotifications = () =>
 const serve = (players: { teamId: string; status: PlayerStatus }[]) =>
   server.use(
     http.get("/api/users", () => HttpResponse.json({ id: "u1" })),
-    http.get("/api/profiles", () => HttpResponse.json({})),
     http.get("/api/users/u1/players", () => HttpResponse.json(players)),
   );
 

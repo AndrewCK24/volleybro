@@ -36,7 +36,6 @@ describe("PATCH /api/profiles", () => {
   it("returns 400 for a body with an undeclared field", async () => {
     const consoleSpy = silenceConsoleError();
     const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: TEAM_ID,
       isAdmin: true,
     });
 
@@ -49,24 +48,9 @@ describe("PATCH /api/profiles", () => {
     consoleSpy.mockRestore();
   });
 
-  it("returns 400 for an activeTeamId that is not an ObjectId", async () => {
-    const consoleSpy = silenceConsoleError();
-    const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: "team-1",
-    });
-
-    const res = await PATCH(req as never);
-    const body = (await res.json()) as { code: string };
-
-    expect(res.status).toBe(400);
-    expect(body.code).toBe("VALIDATION");
-    expect(mockUpdateProfileController).not.toHaveBeenCalled();
-    consoleSpy.mockRestore();
-  });
-
-  // The exact body team-switcher sends (src/components/team/team-switcher.tsx):
-  it("returns 200 for the payload team-switcher actually sends", async () => {
-    const profile = { userId: "user-1", activeTeamId: TEAM_ID };
+  // Clients from before the device-local active team still send this body.
+  it("returns 200 and drops an activeTeamId an older client still sends", async () => {
+    const profile = { userId: "user-1" };
     mockUpdateProfileController.mockResolvedValue(profile);
     const req = routeRequest("http://localhost/api/profiles", "PATCH", {
       activeTeamId: TEAM_ID,
@@ -79,7 +63,7 @@ describe("PATCH /api/profiles", () => {
     expect(body).toEqual(profile);
     expect(mockUpdateProfileController).toHaveBeenCalledWith({
       userId: SESSION.user.id,
-      updates: { activeTeamId: TEAM_ID },
+      updates: {},
     });
   });
 });

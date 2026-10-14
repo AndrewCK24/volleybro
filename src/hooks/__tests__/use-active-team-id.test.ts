@@ -40,18 +40,9 @@ const run = async (setup: Parameters<typeof respondWith>[0]) => {
 };
 
 describe("useActiveTeamId", () => {
-  it("uses activeTeamId when the user is still a member of that team", async () => {
+  it("uses the first joined team, whatever the server profile still holds", async () => {
     const result = await run({
       activeTeamId: "team-2",
-      joinedTeamIds: ["team-1", "team-2"],
-    });
-
-    expect(result.current.teamId).toBe("team-2");
-  });
-
-  it("falls back to the first joined team when activeTeamId is stale", async () => {
-    const result = await run({
-      activeTeamId: "team-9",
       joinedTeamIds: ["team-1", "team-2"],
     });
 

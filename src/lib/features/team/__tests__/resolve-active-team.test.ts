@@ -6,10 +6,7 @@ import {
 } from "@/lib/features/team/active-team-preference";
 
 const preference = { version: 1 as const, userId: "user-1", teamId: "team-p" };
-const full = {
-  profileActiveTeamId: "team-b",
-  joinedTeamIds: ["team-a", "team-b"],
-};
+const full = { joinedTeamIds: ["team-a", "team-b"] };
 
 describe("resolveActiveTeam", () => {
   const resolve = (overrides: Partial<ActiveTeamResolutionInput> = {}) =>
@@ -17,7 +14,6 @@ describe("resolveActiveTeam", () => {
       preference: null,
       userId: undefined,
       preferredTeamStatus: "pending",
-      profileActiveTeamId: undefined,
       joinedTeamIds: [],
       ...overrides,
     });
@@ -51,26 +47,19 @@ describe("resolveActiveTeam", () => {
     (_, userId, preferredTeamStatus) => {
       expect(
         resolve({ preference, userId, preferredTeamStatus, ...full }),
-      ).toEqual({ teamId: "team-b", verification: "unused" });
+      ).toEqual({ teamId: "team-a", verification: "unused" });
     },
   );
 
-  it("without a preference resolves to the legacy active team while still joined", () => {
+  it("without a preference resolves to the first joined team", () => {
     expect(resolve(full)).toEqual({
-      teamId: "team-b",
+      teamId: "team-a",
       verification: "unused",
     });
   });
 
-  it("falls back to the first joined team when the legacy one is not joined", () => {
-    expect(
-      resolve({ profileActiveTeamId: "team-x", joinedTeamIds: ["team-a"] })
-        .teamId,
-    ).toBe("team-a");
-  });
-
   it("resolves to no team when nothing is joined", () => {
-    expect(resolve({ profileActiveTeamId: "team-x" }).teamId).toBeUndefined();
+    expect(resolve().teamId).toBeUndefined();
   });
 });
 

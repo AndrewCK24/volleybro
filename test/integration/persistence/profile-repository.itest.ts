@@ -14,11 +14,10 @@ describe("profile reads and writes", () => {
 
   it("stores a profile and reads it back with string ids", async () => {
     const userId = oid();
-    const activeTeamId = oid();
 
-    const created = await profiles().create({ userId, activeTeamId });
+    const created = await profiles().create({ userId });
 
-    expect(created).toMatchObject({ userId, activeTeamId });
+    expect(created).toMatchObject({ userId });
     expect(await profiles().findByUserId(userId)).toEqual(created);
   });
 
@@ -42,23 +41,5 @@ describe("profile reads and writes", () => {
     await expect(profiles().update(oid(), { info: {} })).rejects.toBeInstanceOf(
       NotFoundError,
     );
-  });
-
-  it("sets the active team, and clears it when given null", async () => {
-    const { userId } = await profiles().create({ userId: oid() });
-    const teamId = oid();
-
-    const set = await profiles().updateActiveTeamId(userId, teamId);
-    expect(set).toMatchObject({ activeTeamId: teamId });
-
-    const cleared = await profiles().updateActiveTeamId(userId, null);
-    expect(cleared!.activeTeamId).toBeUndefined();
-    expect(
-      (await profiles().findByUserId(userId))!.activeTeamId,
-    ).toBeUndefined();
-  });
-
-  it("finds no profile to set an active team on for a user without one", async () => {
-    expect(await profiles().updateActiveTeamId(oid(), oid())).toBeNull();
   });
 });

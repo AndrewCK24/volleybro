@@ -1,28 +1,21 @@
 import { PlayerStatus } from "@/entities/player";
-import type { Profile } from "@/entities/profile";
 import type { Team } from "@/entities/team";
 import type { User } from "@/entities/user";
 import { http, HttpResponse } from "msw";
 
-import {
-  createProfile,
-  createTeam,
-  createUser,
-} from "@test/support/fixtures/entities";
+import { createTeam, createUser } from "@test/support/fixtures/entities";
 import { server } from "@test/support/msw/server";
 
 type Gate = Promise<void>;
 
 type TeamRequests = {
   user?: User;
-  profile?: Profile;
   /** The teams the server answers for; it refuses any other id as a non-member request. */
   teams?: Team[];
   /** The ids of `teams` the user has joined; all of them by default. */
   joinedTeamIds?: string[];
   gates?: {
     user?: Gate;
-    profile?: Gate;
     players?: Gate;
     team?: Gate;
     teamPlayers?: Gate;
@@ -35,7 +28,6 @@ type TeamRequests = {
  */
 export const answerTeamRequests = ({
   user = createUser(),
-  profile = createProfile(),
   teams = [createTeam()],
   joinedTeamIds = teams.map((team) => team.id),
   gates = {},
@@ -57,9 +49,6 @@ export const answerTeamRequests = ({
   server.use(
     http.get("/api/users", ({ request }) =>
       respond(request, gates.user, () => HttpResponse.json(user)),
-    ),
-    http.get("/api/profiles", ({ request }) =>
-      respond(request, gates.profile, () => HttpResponse.json(profile)),
     ),
     http.get("/api/users/:userId/players", ({ request }) =>
       respond(request, gates.players, () =>

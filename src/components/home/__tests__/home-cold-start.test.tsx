@@ -3,11 +3,7 @@ import { SWRProvider } from "@/components/layout/swr-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { render, screen, waitFor } from "@testing-library/react";
 
-import {
-  createProfile,
-  createTeam,
-  createUser,
-} from "@test/support/fixtures/entities";
+import { createTeam, createUser } from "@test/support/fixtures/entities";
 import { deferred } from "@test/support/gates";
 import { answerTeamRequests } from "@test/support/msw/team-handlers";
 import { SwrIsolation } from "@test/support/react/swr-isolation";
@@ -33,7 +29,6 @@ describe("Home on a cold start with an active team preference", () => {
   it("S3 (Home): a refused preferred team shows no error and no request is made for its games", async () => {
     seedActiveTeamPreference("user-1", "team-gone");
     const { arrived, answered } = answerTeamRequests({
-      profile: createProfile({ activeTeamId: "team-2" }),
       teams: [createTeam({ id: "team-2" })],
     });
 
@@ -50,7 +45,7 @@ describe("Home on a cold start with an active team preference", () => {
     const user = deferred();
     const { arrived, answered } = answerTeamRequests({
       user: createUser({ id: "user-B" }),
-      profile: createProfile({ userId: "user-B", activeTeamId: "team-B" }),
+      joinedTeamIds: ["team-B", "team-A"],
       teams: [createTeam({ id: "team-A" }), createTeam({ id: "team-B" })],
       gates: { user: user.promise },
     });

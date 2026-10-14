@@ -16,7 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useFormDraft } from "@/hooks/use-form-draft";
 import { useLeavePageWarning } from "@/hooks/use-leave-page-warning";
-import { useTeam } from "@/hooks/use-data";
+import { useActiveTeamPreference } from "@/hooks/use-active-team-preference";
+import { useTeam, useUser } from "@/hooks/use-data";
 import { apiClient } from "@/lib/api/api-client";
 import type { TeamView } from "@/lib/features/team/types";
 import { useRouter } from "next/navigation";
@@ -210,6 +211,8 @@ function EditTeamWorkspaceSkeleton() {
 export function NewTeamWorkspace() {
   const router = useRouter();
   const { mutate } = useSWRConfig();
+  const { user } = useUser();
+  const { save } = useActiveTeamPreference();
 
   const onSubmit = async (formData: TeamFormValues) => {
     const team = await apiClient<TeamView>("/api/teams", {
@@ -218,6 +221,7 @@ export function NewTeamWorkspace() {
       body: JSON.stringify(formData),
     });
     mutate(`/api/teams/${team.id}`, team, false);
+    if (user) save({ userId: user.id, teamId: team.id });
     router.replace(`/team/${team.id}?tab=about`);
   };
 

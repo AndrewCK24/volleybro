@@ -43,8 +43,6 @@ export type PreferenceState = {
 };
 
 export type ActiveTeamResolutionInput = PreferenceState & {
-  /** The server's legacy `profile.activeTeamId`. */
-  profileActiveTeamId: string | undefined;
   joinedTeamIds: string[];
 };
 
@@ -66,8 +64,7 @@ const isPreferenceRejected = ({
 /**
  * A preference is trusted only once its team request succeeded and the
  * answered user is the one it was written for; until then no team is offered.
- * Without a usable preference the legacy active team is used while still
- * joined, otherwise the first joined team.
+ * Without a usable preference the first joined team is used.
  */
 export const resolveActiveTeam = (
   input: ActiveTeamResolutionInput,
@@ -78,12 +75,7 @@ export const resolveActiveTeam = (
     isPreferenceRejected(input) ||
     preferredTeamStatus === "failed"
   ) {
-    const { profileActiveTeamId, joinedTeamIds } = input;
-    const teamId =
-      profileActiveTeamId && joinedTeamIds.includes(profileActiveTeamId)
-        ? profileActiveTeamId
-        : joinedTeamIds[0];
-    return { teamId, verification: "unused" };
+    return { teamId: input.joinedTeamIds[0], verification: "unused" };
   }
   if (preferredTeamStatus === "confirmed" && userId !== undefined) {
     return { teamId: preference.teamId, verification: "verified" };
