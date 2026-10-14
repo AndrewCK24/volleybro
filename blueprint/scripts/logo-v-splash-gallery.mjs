@@ -163,58 +163,97 @@ function path(d, fill) {
   return `<path d="${escapeAttr(d)}" fill="${escapeAttr(fill)}"></path>`;
 }
 
-function symbolDiagram(weight, data, neutral, background, label) {
-  const body = `${background ? `<rect x="0" y="0" width="120" height="120" fill="${background}"></rect>` : ""}<path d="${escapeAttr(data.symL)}" fill="${neutral}"></path><path d="${escapeAttr(data.symR)}" fill="${CORAL}"></path><text x="60" y="112" fill="${background ? IVORY : "var(--foreground)"}" font-size="8" text-anchor="middle">${escapeAttr(label)}</text>`;
-  return diagram(
-    svg(data.symViewBox, body, `Logo symbol ${label} at weight ${weight}`),
-    SLUG,
-  );
+function viewBoxBounds(viewBox) {
+  const bounds = viewBox
+    .trim()
+    .split(/[\s,]+/u)
+    .map(Number);
+  if (
+    bounds.length !== 4 ||
+    bounds.some((value) => !Number.isFinite(value)) ||
+    bounds[2] <= 0 ||
+    bounds[3] <= 0
+  )
+    throw new Error(`${SLUG}: design viewBox must contain four valid numbers.`);
+  return bounds;
 }
 
-function typeDiagram(weight, data, neutral, background, label, letters) {
-  const body = `${background ? `<rect x="0" y="0" width="${data.typeW}" height="115" fill="${background}"></rect>` : ""}${path(data.typeL, neutral)}${path(data.typeR, CORAL)}<g transform="translate(${data.lettersShift} 0)" fill="${neutral}">${letters.map((d) => path(d, neutral)).join("")}</g><text x="${data.typeW / 2}" y="110" fill="${background ? IVORY : "var(--foreground)"}" font-size="5" text-anchor="middle">${escapeAttr(label)}</text>`;
+function fitTransform(viewBox, target) {
+  const [viewX, viewY, viewWidth, viewHeight] = viewBoxBounds(viewBox);
+  const scale = Math.min(target.width / viewWidth, target.height / viewHeight);
+  const x = target.x + (target.width - viewWidth * scale) / 2 - viewX * scale;
+  const y = target.y + (target.height - viewHeight * scale) / 2 - viewY * scale;
+  return `translate(${x} ${y}) scale(${scale})`;
+}
+
+function oldVsNewDiagram(data, weight) {
+  const panel = (viewBox, x, leftPath, rightPath) =>
+    `<g transform="${fitTransform(viewBox, { x, y: 10, width: 140, height: 140 })}">${path(leftPath, IVORY)}${path(rightPath, CORAL)}</g>`;
+  const labels = `<text x="82" y="174" fill="${IVORY}" font-size="10" text-anchor="middle">old — uppercase V (0.95)</text><text x="247" y="174" fill="${IVORY}" font-size="10" text-anchor="middle">new — lowercase v @${weight} (${data.aspect})</text>`;
   return diagram(
     svg(
-      `0 0 ${data.typeW} 115`,
-      body,
-      `Logo type ${label} at weight ${weight}`,
+      "0 0 330 190",
+      `<rect x="0" y="0" width="330" height="190" fill="${TEAL}"></rect>${panel(data.oldSymViewBox, 12, data.oldSymLeft, data.oldSymRight)}${panel(data.symViewBox, 177, data.symL, data.symR)}${labels}`,
+      `Old and new logo marks at weight ${weight}`,
     ),
     SLUG,
   );
 }
 
-function oldVsNewDiagram(data) {
-  const [oldViewBox] = ["-10 225 360 360"];
-  // Normalize both marks into equally sized panels; preserve their literal path geometry.
-  const old = `<g transform="translate(0 0) scale(.5)">${path(data.oldSymLeft, IVORY)}${path(data.oldSymRight, CORAL)}</g>`;
-  const next = `<g transform="translate(190 0) scale(.5)">${path(data.symL, IVORY)}${path(data.symR, CORAL)}</g>`;
-  const labels = `<text x="90" y="205" fill="var(--foreground)" font-size="10" text-anchor="middle">old — uppercase V (0.95)</text><text x="280" y="205" fill="var(--foreground)" font-size="10" text-anchor="middle">new — lowercase v @${data.weight} (${data.aspect})</text>`;
+function variantsDiagram(data, grounds, weight, letters, kind) {
+  const isSymbol = kind === "symbol";
+  const viewBox = isSymbol ? data.symViewBox : `0 0 ${data.typeW} 115`;
+  const artwork = (ground, x) => {
+    const background =
+      ground.label === "Teal"
+        ? TEAL
+        : ground.scope === "dark"
+          ? "#020a17"
+          : "var(--background)";
+    const neutral =
+      ground.variant === "adaptive"
+        ? ground.scope === "dark"
+          ? "#f4f5f6"
+          : "var(--foreground)"
+        : IVORY;
+    const target = isSymbol
+      ? { x: x + 40, y: 8, width: 210, height: 110 }
+      : { x: x + 24, y: 38, width: 245, height: 48 };
+    const mark = isSymbol
+      ? `${path(data.symL, neutral)}${path(data.symR, CORAL)}`
+      : `${path(data.typeL, neutral)}${path(data.typeR, CORAL)}<g transform="translate(${data.lettersShift} 0)" fill="${neutral}">${letters.map((letter) => path(letter, neutral)).join("")}</g>`;
+    return `<rect x="${x}" y="0" width="295" height="165" fill="${background}"></rect><g transform="${fitTransform(viewBox, target)}">${mark}</g><text x="${x + 147.5}" y="148" fill="${neutral}" font-size="26" text-anchor="middle">${escapeAttr(`${ground.label} · ${ground.variant}`)}</text>`;
+  };
+  const body = grounds
+    .map((ground, index) => artwork(ground, index * 300))
+    .join("");
   return diagram(
-    svg(
-      `0 0 380 220`,
-      `<rect x="0" y="0" width="380" height="220" fill="${TEAL}"></rect>${old}${next}${labels}`,
-      `Old and new logo marks at weight ${data.weight}; old viewBox ${oldViewBox}`,
-    ),
+    svg("0 0 900 165", body, `Logo ${kind} variants at weight ${weight}`),
     SLUG,
   );
 }
 
-function splashDiagram(data, size, wordmark, letters) {
+function splashDiagram(data, weight, size, letters) {
   const screenWidth = 110;
   const screenHeight = 250;
   const iosSize = Math.round((size / 100) * screenWidth);
   const androidSize = Math.round((25 / 100) * screenWidth);
-  const mark = (x, px) =>
-    `<g transform="translate(${x + (screenWidth - px) / 2} ${(screenHeight - px) / 2 - 20}) scale(${px / 510})">${path(data.symL, IVORY)}${path(data.symR, CORAL)}</g>`;
-  const word = `<g transform="translate(33 222) scale(${44 / data.typeW} .3826)">${path(data.typeL, IVORY)}${path(data.typeR, CORAL)}<g transform="translate(${data.lettersShift} 0)" fill="${IVORY}">${letters.map((d) => path(d, IVORY)).join("")}</g></g>`;
-  const phone = (x, label, px, appName) =>
-    `<rect x="${x}" y="0" width="110" height="250" rx="14" fill="${TEAL}" stroke="#000000" stroke-width="5"></rect>${mark(x, px)}${appName ? `<text x="${x + 55}" y="235" fill="${IVORY}" font-size="9" text-anchor="middle">VolleyBro</text>` : word}<text x="${x + 55}" y="272" fill="var(--foreground)" font-size="9" text-anchor="middle">${escapeAttr(label)}</text>`;
-  const body = `${phone(0, "iOS — apple-splash route", iosSize, false)}${phone(150, "Android — manifest splash (fixed by Chrome)", androidSize, true)}`;
+  const mark = (x, px) => {
+    const sizeX = x + (screenWidth - px) / 2;
+    const sizeY = (screenHeight - px) / 2 - 20;
+    return `<g transform="${fitTransform(data.symViewBox, { x: sizeX, y: sizeY, width: px, height: px })}">${path(data.symL, IVORY)}${path(data.symR, CORAL)}</g>`;
+  };
+  const wordWidth = 44;
+  const wordHeight = (wordWidth / data.typeW) * 115;
+  const word = `<g transform="${fitTransform(`0 0 ${data.typeW} 115`, { x: 33, y: 222, width: wordWidth, height: wordHeight })}">${path(data.typeL, IVORY)}${path(data.typeR, CORAL)}<g transform="translate(${data.lettersShift} 0)" fill="${IVORY}">${letters.map((letter) => path(letter, IVORY)).join("")}</g></g>`;
+  const phone = (x, px, appName) =>
+    `<rect x="${x}" y="0" width="110" height="250" rx="14" fill="${TEAL}" stroke="#000000" stroke-width="5"></rect>${mark(x, px)}${appName ? `<text x="${x + 55}" y="235" fill="${IVORY}" font-size="9" text-anchor="middle">VolleyBro</text>` : word}`;
+  const body = `${phone(0, iosSize, false)}${phone(150, androidSize, true)}`;
   return diagram(
     svg(
       "0 0 260 285",
       body,
-      `iOS splash at ${size}% and fixed Android splash at weight ${data.weight}`,
+      `iOS splash at ${size}% and fixed Android splash at weight ${weight}`,
     ),
     SLUG,
   );
@@ -248,7 +287,9 @@ function validateLiterals(weights, letters, grounds, source) {
     throw new Error(`${SLUG}: three ordered source grounds are required.`);
   const oldSymLeft = declaration(source, "OLD_SYM_LEFT");
   const oldSymRight = declaration(source, "OLD_SYM_RIGHT");
-  return { oldSymLeft, oldSymRight };
+  const oldSymViewBox = declaration(source, "OLD_SYM_VIEWBOX");
+  viewBoxBounds(oldSymViewBox);
+  return { oldSymLeft, oldSymRight, oldSymViewBox };
 }
 
 export function buildLogoVSplashGallery(designSource, slug = SLUG) {
@@ -256,7 +297,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
   const weights = declaration(designSource, "WEIGHTS");
   const letters = declaration(designSource, "LETTERS");
   const grounds = declaration(designSource, "GROUNDS");
-  const { oldSymLeft, oldSymRight } = validateLiterals(
+  const { oldSymLeft, oldSymRight, oldSymViewBox } = validateLiterals(
     weights,
     letters,
     grounds,
@@ -267,6 +308,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
     ...weights[weight],
     oldSymLeft,
     oldSymRight,
+    oldSymViewBox,
   }));
   const frames = [];
   for (const entry of sourceWeights) {
@@ -282,42 +324,20 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
           `Every mockup below renders the selected weight. Aspect ratio (w/h) of the bare glyph: ${WEIGHT_KEYS.map((key) => `${key} → ${weights[key].aspect}`).join(", ")}.`,
         ),
         anchoredText("Old vs New", "h2", "old-vs-new"),
-        oldVsNewDiagram({ ...data, weight }),
+        oldVsNewDiagram(data, weight),
         anchoredText("Logo-symbol variants", "h2", "symbol-variants"),
+        variantsDiagram(data, grounds, weight, letters, "symbol"),
       ];
-      for (const ground of grounds) {
-        const neutral =
-          ground.variant === "adaptive" ? "var(--foreground)" : IVORY;
-        const background =
-          ground.label === "Teal"
-            ? TEAL
-            : ground.label === "Dark"
-              ? "var(--background)"
-              : null;
-        const label = `${ground.label} · ${ground.variant}`;
-        blocks.push(symbolDiagram(weight, data, neutral, background, label));
-      }
-      blocks.push(anchoredText("Logo-type variants", "h2", "type-variants"));
-      for (const ground of grounds) {
-        const neutral =
-          ground.variant === "adaptive" ? "var(--foreground)" : IVORY;
-        const background =
-          ground.label === "Teal"
-            ? TEAL
-            : ground.label === "Dark"
-              ? "var(--background)"
-              : null;
-        const label = `${ground.label} · ${ground.variant}`;
-        blocks.push(
-          typeDiagram(weight, data, neutral, background, label, letters),
-        );
-      }
       blocks.push(
+        anchoredText("Logo-type variants", "h2", "type-variants"),
+        variantsDiagram(data, grounds, weight, letters, "type"),
         anchoredText("Splash mockups", "h2", "splash-mockups"),
         textBlock(
           "iOS renders the generated launch screen: the mark centered at the selected percentage of the shorter device dimension, plus the full wordmark (logo-type, 40% wide) centered near the bottom — the route draws the PNG itself, so the wordmark is the real logo geometry. Android composes its splash from the manifest: background_color teal field, the centered maskable icon (same teal field → bare V), and the app name text drawn by Chrome — that text is not stylable, so Android approximates the iOS layout rather than embedding logo-type. The size percentage below only parameterizes the iOS image; Chrome fixes the icon size on the Android splash itself, so the Android frame does not respond to the selector.",
         ),
-        splashDiagram(data, size, data.typeW, letters),
+        splashDiagram(data, weight, size, letters),
+        textBlock("iOS — apple-splash route"),
+        textBlock("Android — manifest splash (fixed by Chrome)"),
         anchoredText("Geometry facts", "h2", "geometry-facts"),
       );
       blocks.push(
