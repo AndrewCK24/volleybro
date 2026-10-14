@@ -1,6 +1,6 @@
 name: Production release
 
-# A push to main runs on the main ref, which the main-only production QA environment accepts.
+# Do not switch back to pull_request: its merge ref fails the main-only QA environment (ADR-0124).
 on:
   push:
     branches: [main]

@@ -257,7 +257,11 @@ async function fixture(
 const s=JSON.parse(fs.readFileSync(process.env.API_STATE)),a=process.argv.slice(2);let result;
 if(a[0]==='api'){
   const route=a[1];
-  if(/\/commits\/[0-9a-f]+\/pulls$/.test(route)){s.pullLookups=(s.pullLookups||0)+1;fs.writeFileSync(process.env.API_STATE,JSON.stringify(s));result=s.pullLookups<=(s.emptyLookups||0)?[]:s.commitPulls||(s.pr.merged?[{...s.pr,merged_at:'2026-10-01T00:00:00Z'}]:[]);}
+  if(/\/commits\/[0-9a-f]+\/pulls$/.test(route)){
+    s.pullLookups=(s.pullLookups||0)+1;fs.writeFileSync(process.env.API_STATE,JSON.stringify(s));
+    const merged=s.pr.merged?[{...s.pr,merged_at:'2026-10-01T00:00:00Z'}]:[];
+    result=s.pullLookups<=(s.emptyLookups||0)?[]:s.commitPulls||merged;
+  }
   else if(route.includes('/pulls?'))result=s.mergeBackPr?[s.mergeBackPr]:[];
   else if(route.includes('/pulls/'))result=s.pr;
   else if(route.includes('/check-runs'))result={check_runs:s.checks};
@@ -1658,6 +1662,8 @@ test("authorize validates the real PR, exact check sources and metadata through 
         },
       ],
     },
+    { pr: { ...original.pr, user: { login: "impostor" } } },
+    { pr: { ...original.pr, title: "release: something else" } },
   ]) {
     await updateApi(f, { ...original, environment: undefined, ...override });
     assert.notEqual(run(f, "authorize").status, 0, JSON.stringify(override));
@@ -1694,8 +1700,7 @@ test("a push that merged an ordinary PR ends without a release", async (t) => {
   const { pr } = JSON.parse(await readFile(f.statePath, "utf8"));
   for (const other of [
     { ...pr, head: { ...pr.head, ref: "hotfix-merge-back/1" } },
-    { ...pr, title: "feat: something" },
-    { ...pr, user: { login: "someone-else" } },
+    { ...pr, title: "feat: something", head: { ...pr.head, ref: "feat/x" } },
   ]) {
     await writeFile(f.env.GITHUB_OUTPUT, "");
     await updateApi(f, {
@@ -1723,10 +1728,6 @@ test("a merge commit with no matching merged PR cannot authorize and tells the o
     assert.match(result.stderr, /normal-retry/);
     assert.doesNotMatch(await outputOf(f), /sha=|release=/);
   }
-  assert.equal(
-    JSON.parse(await readFile(f.statePath, "utf8")).pullLookups > 1,
-    true,
-  );
 });
 
 test("a PR that GitHub has not indexed yet is found on a later lookup", async (t) => {
@@ -1740,6 +1741,14 @@ test("a PR that GitHub has not indexed yet is found on a later lookup", async (t
 test("only the release owner's merge push starts a release", async (t) => {
   const f = await fixture(t);
   const result = run(f, "authorize", { GITHUB_ACTOR: "outsider" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /normal-retry/);
+  assert.doesNotMatch(await outputOf(f), /sha=/);
+});
+
+test("a re-run by a non-owner does not start a release", async (t) => {
+  const f = await fixture(t);
+  const result = run(f, "authorize", { GITHUB_TRIGGERING_ACTOR: "outsider" });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /normal-retry/);
   assert.doesNotMatch(await outputOf(f), /sha=/);

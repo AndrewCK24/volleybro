@@ -1171,8 +1171,6 @@ async function verifyMetadataOnly(base, head) {
   }
 }
 
-// Shared by the push and normal-retry paths: the merged PR must be the trusted
-// version PR with passing checks and a metadata-only diff at the exact SHA.
 async function validateMergedVersionPr(pullRequest, sha) {
   const pr = await github(`pulls/${pullRequest}`);
   const [checks, statuses, environment] = await Promise.all([
@@ -1205,14 +1203,6 @@ async function mergedPullsForPush(sha) {
   }
 }
 
-function isVersionPr(pr, expectedAuthor, repository) {
-  try {
-    return validateVersionPr(pr, expectedAuthor, repository);
-  } catch {
-    return false;
-  }
-}
-
 async function authorize() {
   const fs = await import("node:fs/promises");
   const sha = exactSha(required("GITHUB_SHA"), "Pushed SHA");
@@ -1229,12 +1219,11 @@ async function authorize() {
   if (pulls.length > 1)
     fail("More than one merged pull request matches this push; stop");
   const [pr] = pulls;
+  // Only a PR from another branch is certainly not the version PR; any PR from
+  // the version branch must pass full validation.
   if (
-    !isVersionPr(
-      pr,
-      required("RELEASE_BOT_LOGIN"),
-      required("GITHUB_REPOSITORY"),
-    )
+    pr.head.ref !== "changeset-release/main" ||
+    pr.head.repo?.full_name !== pr.base.repo?.full_name
   ) {
     await fs.appendFile(required("GITHUB_OUTPUT"), "release=false\n");
     process.stdout.write(
@@ -1242,7 +1231,11 @@ async function authorize() {
     );
     return;
   }
-  if (required("GITHUB_ACTOR") !== required("RELEASE_OWNER_LOGIN"))
+  const owner = required("RELEASE_OWNER_LOGIN");
+  if (
+    required("GITHUB_ACTOR") !== owner ||
+    required("GITHUB_TRIGGERING_ACTOR") !== owner
+  )
     fail(
       "Only the release owner's merge starts a release; the release owner dispatches normal-retry for this version PR",
     );

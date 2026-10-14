@@ -4,7 +4,7 @@
   "title": "Normal release starts from the version PR merge push",
   "capabilities": ["platform/delivery-workflow"],
   "context": "The production release workflow ran on the version PR's `pull_request` closed event. That run's ref is the PR merge ref, which the main-only production QA environment rejects, and it was rejected only after the candidate had been promoted. v0.17.0 was left live without acceptance until an owner dispatch finished it.",
-  "decision": "A normal release starts from the `push` to `main` that merges the version PR. The run looks up the merged pull request for the pushed commit through the GitHub API and authorizes it with the same validation as an owner retry. It proceeds only when the release owner made the merge. A push that is not a version PR merge ends without releasing, and an owner dispatch remains the retry path.",
+  "decision": "A normal release starts from the `push` to `main` that merges the version PR. The run looks up the merged pull request for the pushed commit through the GitHub API and authorizes it with the same validation as an owner retry. It proceeds only when the release owner made the merge. A push that merged a pull request from another branch ends without releasing, and an unresolved or ambiguous lookup fails. An owner dispatch remains the retry path.",
   "alternatives": [
     {
       "option": "Keep the `pull_request` closed trigger",
@@ -26,7 +26,8 @@
   "consequences": [
     "The release run's ref is `main`, so the production QA environment admits it.",
     "A merge by anyone other than the release owner fails closed; the owner then dispatches a retry.",
-    "Recovery accepts original runs started by `push` or owner dispatch."
+    "Recovery accepts original runs started by `push` or owner dispatch.",
+    "The push path needs no ancestry check: the controller is the pushed commit's first parent, the trusted main before the merge."
   ],
   "revisitTriggers": [
     "GitHub evaluates environment branch policies for `pull_request` runs against the base branch.",
