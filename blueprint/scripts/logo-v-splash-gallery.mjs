@@ -342,11 +342,6 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
       );
       blocks.push(
         textBlock(
-          `Splash mark size ${size}% of shorter dimension (selected: 25%, iOS image only)`,
-        ),
-      );
-      blocks.push(
-        textBlock(
           `Glyph: Saira Stencil (variable, wdth 100) lowercase v @ wght ${weight}`,
         ),
       );
@@ -369,6 +364,11 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
       blocks.push(
         textBlock(
           `Splash field: ${TEAL} (--primary), iOS route + Android manifest`,
+        ),
+      );
+      blocks.push(
+        textBlock(
+          `Splash mark size ${size}% of shorter dimension (selected: 25%, iOS image only)`,
         ),
       );
       frames.push({

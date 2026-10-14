@@ -111,6 +111,35 @@ test("converts the complete selector matrix into portable text and Diagram v1", 
     ({ selections }) =>
       selections.weight === "700" && selections["splash-size"] === "25",
   );
+  const geometryStart = frame.blocks.findIndex(
+    (block) => block.id === "geometry-facts",
+  );
+  const facts = frame.blocks
+    .slice(geometryStart + 1)
+    .filter((block) => block._type === "block")
+    .map((block) => block.children.map((child) => child.text).join(""));
+  assert.deepEqual(
+    facts.map((fact) =>
+      [
+        "Glyph",
+        "Symbol viewBox",
+        "Type viewBox",
+        "Right arm",
+        "Neutral parts",
+        "Splash field",
+        "Splash mark size",
+      ].find((label) => fact.startsWith(label)),
+    ),
+    [
+      "Glyph",
+      "Symbol viewBox",
+      "Type viewBox",
+      "Right arm",
+      "Neutral parts",
+      "Splash field",
+      "Splash mark size",
+    ],
+  );
   const diagrams = frame.blocks.filter((block) => block._type === "diagram");
   const oldVsNew = descendants(diagrams[0].elements).filter(
     (element) => element.type === "group" && element.transform,
