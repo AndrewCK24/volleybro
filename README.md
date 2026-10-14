@@ -69,12 +69,12 @@ Three taps per rally — pick the player who made the play, log your side's acti
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/game-demo-1-dark.png">
-    <img src="public/landing/features/game-demo-1-light.png" alt="Rally recording interface" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/game-demo-1-dark.webp">
+    <img src="docs/images/readme/game-demo-1-light.webp" alt="Rally recording interface" width="240">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/game-demo-2-dark.png">
-    <img src="public/landing/features/game-demo-2-light.png" alt="Match record browsing" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/game-demo-2-dark.webp">
+    <img src="docs/images/readme/game-demo-2-light.webp" alt="Match record browsing" width="240">
   </picture>
 </div>
 
@@ -88,12 +88,12 @@ Create a team, invite members by user search, and manage roles (`OWNER` / `ADMIN
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/team-demo-1-dark.png">
-    <img src="public/landing/features/team-demo-1-light.png" alt="Team management" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/team-demo-1-dark.webp">
+    <img src="docs/images/readme/team-demo-1-light.webp" alt="Team management" width="240">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/team-demo-2-dark.png">
-    <img src="public/landing/features/team-demo-2-light.png" alt="Lineup configuration" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/team-demo-2-dark.webp">
+    <img src="docs/images/readme/team-demo-2-light.webp" alt="Lineup configuration" width="240">
   </picture>
 </div>
 
