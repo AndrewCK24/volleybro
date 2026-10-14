@@ -157,6 +157,23 @@ test("preserves code and rectangular tables", () => {
   assert.equal(result[1].hasHeaderRow, true);
 });
 
+test("preserves rendered block rows in preformatted code without changing inline or Shiki text", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<pre><code class="block w-full"><span class="block whitespace-pre" style="display:flex"><span>├── workflows/</span><span>workflow configuration</span></span><span class="block whitespace-pre" style="display:flex"><span>│   └── production-release.yml</span><span>modify  修改</span></span><span class="block whitespace-pre" style="display:flex"><span>└── src/<br>nested</span></span></code></pre><p><span>inline</span> text</p><pre><code class="language-ts"><span class="line"><span>const x = 1;</span></span>\n<span class="line"><span>return x;</span></span></code></pre>',
+    "rendered-block-code",
+  );
+
+  assert.equal(
+    result[0].code,
+    "├── workflows/  workflow configuration\n│   └── production-release.yml  modify  修改\n└── src/\nnested",
+  );
+  assert.equal(
+    result[1].children.map((span) => span.text).join(""),
+    "inline text",
+  );
+  assert.equal(result[2].code, "const x = 1;\nreturn x;");
+});
+
 test("fails closed on content with no canonical representation", () => {
   assert.throws(
     () =>

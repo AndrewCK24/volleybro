@@ -36,6 +36,42 @@ function text(node) {
   return (node.childNodes ?? []).map(text).join("");
 }
 
+function preformattedNodeText(node) {
+  if (node.nodeName === "#text") return node.value;
+  if (node.tagName === "br") return "\n";
+  return (node.childNodes ?? []).map(preformattedNodeText).join("");
+}
+
+function preformattedText(node) {
+  const children = node.childNodes ?? [];
+  const rows = children.filter(
+    (child) =>
+      child.tagName === "span" &&
+      (attr(child, "class") ?? "").split(/\s+/u).includes("block"),
+  );
+  if (
+    rows.length &&
+    children.every(
+      (child) =>
+        rows.includes(child) ||
+        (child.nodeName === "#text" && !child.value.trim()),
+    )
+  )
+    return rows
+      .map((row) => {
+        const cells = row.childNodes ?? [];
+        return cells
+          .map(preformattedNodeText)
+          .join(
+            cells.filter((cell) => cell.tagName === "span").length > 1
+              ? "  "
+              : "",
+          );
+      })
+      .join("\n");
+  return preformattedNodeText(node);
+}
+
 function stableKey(prefix, index) {
   return `${prefix}-${index + 1}`;
 }
@@ -1840,7 +1876,7 @@ export function convertRenderedHtmlToPortableText(
       blocks.push({
         _type: "code",
         _key: stableKey("code", blocks.length),
-        code: text(code),
+        code: preformattedText(code),
         ...(languageClass ? { language: languageClass } : {}),
       });
       return;
