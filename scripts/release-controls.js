@@ -1570,10 +1570,7 @@ async function workflowBlob(ref) {
   const response = await github(
     `contents/${CI_WORKFLOW}?ref=${encodeURIComponent(exactSha(ref, "Workflow ref"))}`,
   );
-  if (
-    response.path !== CI_WORKFLOW ||
-    !/^[0-9a-f]{40}$/.test(response.sha || "")
-  )
+  if (response.path !== CI_WORKFLOW || !SHA_PATTERN.test(response.sha || ""))
     fail("CI workflow blob identity is invalid");
   return response.sha;
 }
