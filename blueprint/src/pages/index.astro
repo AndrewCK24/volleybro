@@ -2,11 +2,11 @@
 import { Layers, ListTree, Palette } from "lucide-react";
 import { ChangeCardList } from "../components/change-card";
 import Layout from "../components/layout.astro";
-import { listChanges } from "../lib/changes-index";
+import { listPublishedChangeSummaries } from "../lib/github-change-data";
 import { createBlueprintSources } from "../lib/source";
 
-const { changes, features } = await createBlueprintSources();
-const summaries = listChanges(changes.getPages());
+const { features, changeEntries } = await createBlueprintSources();
+const summaries = await listPublishedChangeSummaries(changeEntries);
 const capabilities = features.getPages().filter((page) => page.slugs.length > 0).length;
 const sections = [
   {

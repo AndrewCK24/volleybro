@@ -2,24 +2,6 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
-const changePage = defineCollection({
-  loader: glob({ pattern: "**/index.mdx", base: "./content/changes" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    capabilities: z.array(z.string()).optional(),
-    visualOnly: z.boolean().optional(),
-  }),
-});
-
-const changeTabs = defineCollection({
-  loader: glob({
-    pattern: ["**/proposal.mdx", "**/review.mdx", "**/review-s*.mdx"],
-    base: "./content/changes",
-  }),
-  schema: z.object({}),
-});
-
 const featurePages = defineCollection({
   loader: glob({ pattern: "**/*.mdx", base: "./content/features" }),
   schema: z.object({
@@ -65,8 +47,6 @@ const designDocument = defineCollection({
 });
 
 export const collections = {
-  changePage,
-  changeTabs,
   featurePages,
   featureMeta,
   designMeta,

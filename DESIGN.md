@@ -293,6 +293,12 @@ Incumbent Landing examples: header shell 16/6/10, theme switcher 10/4/6, entry c
 
 ## Components
 
+### Diagrams
+
+Use the versioned `diagram` v1 block for static diagrams whose geometry, text, markers or layout must be preserved exactly. The block accepts typed numeric geometry and controlled paint values; its renderer escapes text and does not accept raw SVG, HTML, CSS, scripts, event attributes or URL paints. Add a new schema version when the stored contract changes.
+
+Use `interactive_flowchart` when readers need to select a node and inspect its authored details. It owns interaction state and its declared node/edge data. A static `diagram` does not infer graph topology or add interaction. Do not use `diagram` as a way to embed executable or arbitrary markup.
+
 ### Buttons and controls
 
 Actions use medium radius (`rounded-md`) and a clear label. Height follows the size rule below: 44px under touch, 36 or 40 under a fine pointer. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.

@@ -27,5 +27,6 @@
     "The store branch warns that it has outgrown the threshold ADR-0082 sets.",
     "A gate is reviewed by someone who cannot run the Blueprint locally."
   ],
-  "originChange": "two-gate-workflow"
+  "originChange": "two-gate-workflow",
+  "supersededBy": "0124"
 }

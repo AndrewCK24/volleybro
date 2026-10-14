@@ -1,4 +1,4 @@
-import { FigureBadges } from "@/components/figure-badges";
+import { ChangeMetricsBadges } from "@/components/change-metrics-badges";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -7,38 +7,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ChangeStatus, ChangeSummary } from "@/lib/changes-index";
+import type { ChangeStatus, ChangeSummary } from "@/lib/github-change-data";
 
 const STATUS_CLASS: Record<ChangeStatus, string> = {
-  archived:
-    "border-[color-mix(in_oklch,var(--primary)_35%,transparent)] bg-[color-mix(in_oklch,var(--primary)_12%,transparent)] text-primary-text",
   "in-progress":
     "border-[color-mix(in_oklch,var(--warning)_40%,transparent)] bg-[color-mix(in_oklch,var(--warning)_12%,transparent)] text-warning",
-  draft: "border-dashed bg-transparent text-muted-foreground",
+  merged:
+    "border-[color-mix(in_oklch,var(--primary)_35%,transparent)] bg-[color-mix(in_oklch,var(--primary)_12%,transparent)] text-primary-text",
 };
 
-const VISIBLE_CAPABILITIES = 2;
-
 export function ChangeCard({ change }: { change: ChangeSummary }) {
-  const shown = change.capabilities.slice(0, VISIBLE_CAPABILITIES);
-  const hidden = change.capabilities.length - shown.length;
-
   return (
     <a href={change.href} className="block text-inherit no-underline!">
       <Card className="gap-3 border-l-4 border-l-primary py-4 transition-colors hover:bg-muted/30">
         <CardHeader className="gap-2 px-4">
           <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-base">{change.title}</CardTitle>
-            <Badge
-              variant="outline"
-              className={STATUS_CLASS[change.state.status]}
-            >
-              {change.state.label}
+            <Badge variant="outline" className={STATUS_CLASS[change.status]}>
+              {change.status === "merged" ? "已合併" : "進行中"}
             </Badge>
-            {change.date && (
+            {(change.mergedAt ?? change.publishedAt) && (
               <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-                {change.date.kind === "started" && "started "}
-                {change.date.value.slice(0, 10)}
+                {(change.mergedAt ?? change.publishedAt)?.slice(0, 10)}
               </span>
             )}
           </div>
@@ -48,19 +38,12 @@ export function ChangeCard({ change }: { change: ChangeSummary }) {
             </CardDescription>
           )}
         </CardHeader>
-        {change.facts && (
+        {(change.metrics || change.scenarioCount > 0) && (
           <CardContent className="px-4">
-            <FigureBadges facts={change.facts} />
-          </CardContent>
-        )}
-        {change.capabilities.length > 0 && (
-          <CardContent className="flex flex-wrap gap-1.5 px-4">
-            {shown.map((capability) => (
-              <Badge key={capability} variant="outline">
-                {capability}
-              </Badge>
-            ))}
-            {hidden > 0 && <Badge variant="secondary">+{hidden}</Badge>}
+            <ChangeMetricsBadges
+              metrics={change.metrics}
+              scenarioCount={change.scenarioCount}
+            />
           </CardContent>
         )}
       </Card>

@@ -91,37 +91,17 @@ export default function ComponentLibraryShowcase({
       </TLDR>
 
       <section>
-        <h3>PR-writeup section mapping</h3>
+        <h3>Change content and PR review</h3>
         <p>
-          Where each section of the &ldquo;PR writeup&rdquo; reference belongs
-          on a Change page:
+          An EmDash Change entry holds the accepted G1 specification. Ordinary
+          content uses Portable Text; Blueprint typed blocks present decisions,
+          risks, scenarios and diagrams.
         </p>
-        <ul>
-          <li>
-            <strong>TL;DR</strong> → the top of the Proposal tab (the TLDR
-            component).
-          </li>
-          <li>
-            <strong>Why</strong> → the Proposal tab (prose).
-          </li>
-          <li>
-            <strong>Before/After</strong> → a table or AnnotatedDiff.
-          </li>
-          <li>
-            <strong>File-by-file</strong> → the pull request&rsquo;s own diff; a
-            Change page carries none.
-          </li>
-          <li>
-            <strong>Where to focus review</strong> → the Review tab&rsquo;s
-            ReviewFocus.
-          </li>
-          <li>
-            <strong>Test plan</strong> → the Review tab&rsquo;s TestPlan.
-          </li>
-          <li>
-            <strong>Rollout</strong> → the Review tab&rsquo;s AfterRelease.
-          </li>
-        </ul>
+        <p>
+          G2 review focus, verification, findings, rollout and developer actions
+          belong in the GitHub PR. Change content is not republished at G2 and
+          has no new Review tab or test-result wrapper.
+        </p>
       </section>
 
       <h2 id="prose-explainers">Prose &amp; explainers</h2>

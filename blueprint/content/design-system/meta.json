@@ -108,7 +108,21 @@
         "AnnotatedDiff",
         "InteractiveFlowchart",
         "DecisionTimeline",
-        "FigureBadges"
+        "ChangeMetricsBadges"
+      ]
+    },
+    {
+      "slug": "diagrams",
+      "title": "Diagrams",
+      "description": "Static, typed diagrams for authored geometry and the interactive flowchart for user-controlled exploration.",
+      "sections": ["Diagrams"],
+      "showcase": "diagrams",
+      "searchTerms": [
+        "diagram",
+        "viewBox",
+        "marker",
+        "InteractiveFlowchart",
+        "typed geometry"
       ]
     }
   ]

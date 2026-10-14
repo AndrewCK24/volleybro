@@ -1,21 +1,19 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { DecisionCardsList } from "@/components/decision-cards";
-import { decisionCardsForIds } from "@/lib/decision-cards";
-import { changeMdxComponents } from "@/lib/mdx-components";
+import { decisionCardsFor } from "@/lib/decision-cards";
+import { parseDecisionRecord } from "@/lib/decision-record";
+import oldDecision from "../../content/decisions/0045-two-gates-and-a-change-page-store.json";
+import replacementDecision from "../../content/decisions/0061-people-review-at-two-gates.json";
 
-jest.mock("fumadocs-ui/mdx", () => ({ __esModule: true, default: {} }));
+const records = [oldDecision, replacementDecision].map(parseDecisionRecord);
+
 jest.mock("fumadocs-ui/components/codeblock", () =>
   jest.requireActual("@test/support/fumadocs-codeblock"),
 );
 
-describe("Change DecisionCards adapter", () => {
-  it("maps the historical DecisionCards tag to compact canonical cards", () => {
-    function DecisionCardsTestAdapter({ ids = [] }: { ids?: string[] }) {
-      return <DecisionCardsList cards={decisionCardsForIds(ids)} />;
-    }
-
-    const { DecisionCards } = changeMdxComponents(DecisionCardsTestAdapter);
-    render(<DecisionCards ids={["0045", "missing"]} />);
+describe("canonical compact decision cards", () => {
+  it("opens decision details and links to the replacement capability", () => {
+    render(<DecisionCardsList cards={decisionCardsFor(records, ["0045"])} />);
 
     const trigger = screen.getByRole("button", { name: /ADR-0045/ });
     expect(trigger).toHaveAttribute("aria-expanded", "false");
@@ -31,12 +29,12 @@ describe("Change DecisionCards adapter", () => {
   });
 
   it("links to a replacement on the same page", () => {
-    const [card] = decisionCardsForIds(["0045", "0061"]);
+    const [card] = decisionCardsFor(records, ["0045", "0061"]);
     expect(card?.supersededHref).toBe("#adr-0061");
   });
 
   it("renders cards in the order requested", () => {
-    const cards = decisionCardsForIds(["0061", "0045"]);
+    const cards = decisionCardsFor(records, ["0061", "0045"]);
     render(<DecisionCardsList cards={cards} />);
 
     expect(

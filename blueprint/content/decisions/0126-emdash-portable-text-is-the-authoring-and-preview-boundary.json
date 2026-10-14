@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "id": "0126",
+  "title": "EmDash Portable Text is the Change authoring and publication boundary",
+  "capabilities": ["platform/blueprint", "platform/delivery-workflow"],
+  "context": "Accepted Change specifications and page content need one editable authority and a private review path before publication. Markdown compatibility renderers, arbitrary HTML and duplicated Team Docs would create parallel content paths that weaken preview and preservation guarantees.",
+  "decision": "Use one EmDash entry per Change as its G1 specification and reader-facing page. Authors and Agents write Portable Text and reusable, versioned Blueprint typed blocks directly through EmDash MCP; this is the sole current content path. Before G1, keep the draft private behind a signed preview bound to its exact revision and canonical content hash. Publish only after Linear verifies the accepted revision and hash. GitHub PRs are the sole G2 code-review surface; G2 does not republish the entry. The existing explicit developer authorization to merge and clean up the exact reviewed revision, and direct human merge acceptance, remain. Native GitHub identity, checks and ancestry prove completion. Reject raw HTML and executable content; retain no Markdown converter or renderer, legacy block or sanitizer. Production activation requires separate post-G2 approval.",
+  "alternatives": [
+    {
+      "option": "Keep the complete specification in a Team Doc and copy it into EmDash",
+      "reason": "Creates two editable specification sources and ambiguous review authority."
+    },
+    {
+      "option": "Convert Markdown during daily authoring or rendering",
+      "reason": "Makes a second representation part of the normal content path and can diverge from the accepted stored content."
+    },
+    {
+      "option": "Allow raw HTML or executable blocks",
+      "reason": "Bypasses the reviewed allowlisted renderer and expands the content execution boundary."
+    }
+  ],
+  "consequences": [
+    "A G1 preview and publication refer to one exact private EmDash revision and content hash.",
+    "Ordinary authored content does not require a Git change; schema and renderer changes still use a GitHub PR.",
+    "Unsupported legacy content must be mapped to a reusable typed block before migration can pass."
+  ],
+  "revisitTriggers": [
+    "EmDash cannot provide a signed private preview bound to the exact saved revision.",
+    "Portable Text and typed blocks cannot preserve the accepted content semantics without an unsafe fallback."
+  ],
+  "originChange": "emdash-blueprint-change-pages"
+}

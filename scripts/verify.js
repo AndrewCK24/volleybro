@@ -3,7 +3,7 @@
 // all of them.
 import { execFileSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { resolveScopeBase } from "./change-page.js";
+import { resolveScopeBase } from "./git-scope.js";
 
 export const LANE_COMMANDS = {
   static: [
@@ -17,16 +17,19 @@ export const LANE_COMMANDS = {
   integration: ["pnpm test:integration --coverage=false"],
   "app-build": ["pnpm build", "node scripts/assert-sw.js"],
   "app-test": ["pnpm test --coverage=false"],
-  // No local gate builds the Blueprint site: CI and the branch-preview build
-  // do (ADR-0092).
-  blueprint: ["pnpm --filter blueprint test"],
+  blueprint: [
+    "pnpm --filter blueprint test",
+    "pnpm --filter blueprint test:persistence",
+    "pnpm --filter blueprint test:migration",
+    "pnpm --filter blueprint build",
+  ],
 };
 
 export const LANE_NAMES = Object.keys(LANE_COMMANDS);
-// The component tests wait on real timers with Jest's five-second timeout, so a
-// CPU shared with any other lane times them out; CI gives them a runner of
-// their own.
-const SOLO_LANE = "app-test";
+// The component tests wait on real timers with Jest's five-second timeout, and
+// Blueprint Jest workers can segfault while competing with build lanes. Run
+// both suites after the parallel lanes; CI gives them their own runners.
+const SOLO_LANES = ["blueprint", "app-test"];
 
 const EVERY_LANE_EXACT = new Set([
   "package.json",
@@ -138,9 +141,12 @@ export function planLanes(changedPaths, { all = false, full = false } = {}) {
 
 export function laneStages(plan) {
   const running = LANE_NAMES.filter((lane) => plan[lane].run);
-  const together = running.filter((lane) => lane !== SOLO_LANE);
-  const alone = running.filter((lane) => lane === SOLO_LANE);
-  return [together, alone].filter((stage) => stage.length > 0);
+  const together = running.filter((lane) => !SOLO_LANES.includes(lane));
+  const serialized = SOLO_LANES.filter((lane) => running.includes(lane));
+  return [
+    ...(together.length > 0 ? [together] : []),
+    ...serialized.map((lane) => [lane]),
+  ];
 }
 
 function git(args) {

@@ -106,6 +106,8 @@ Mock the controller module, `@/infrastructure/db/mongoose/connect-to-mongodb`, a
 
 Integration tests run against a disposable instance of the production database engine and topology (ADR-0087): one in-memory replica set (`MongoMemoryReplSet`) for each test run, with a fresh database for each test file. The replica set supports transactions, so a write that must be atomic can be proven here. Auth services stay DI doubles: `useFakeAuth` from `test/integration/support/auth.ts` rebinds them in the container.
 
+Blueprint's Cloudflare D1 cache has its own persistence contract test at `blueprint/test/integration/persistence/`; it runs against Node's real in-memory SQLite engine, applies the checked-in EmDash D1 migration, and is included in the Blueprint verification lane. This keeps SQL, migration schema, cache expiry and permanent merge-SHA behavior on a real SQL boundary without involving the app's MongoDB topology.
+
 The directory says what a test proves (ADR-0088):
 
 - **`test/integration/api/`** — assertions that depend on a real database read or write reached through a route. Arrange and read data only through routes and repository interfaces, never through the driver, a Mongoose schema, or a helper that writes through them.

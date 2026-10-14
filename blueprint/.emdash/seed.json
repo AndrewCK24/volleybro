@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "meta": {
+    "name": "VolleyBro Blueprint",
+    "description": "Developer documentation and Change pages"
+  },
+  "collections": [
+    {
+      "slug": "blueprint_changes",
+      "label": "Blueprint Changes",
+      "labelSingular": "Blueprint Change",
+      "description": "Accepted and published Blueprint Change pages",
+      "icon": "arrows-left-right",
+      "supports": ["drafts", "revisions", "preview", "search"],
+      "urlPattern": "/changes/{slug}",
+      "titleField": "title",
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "description",
+          "label": "Description",
+          "type": "text",
+          "searchable": true
+        },
+        {
+          "slug": "linear_issue",
+          "label": "Linear issue",
+          "type": "string",
+          "indexed": true
+        },
+        {
+          "slug": "pull_requests",
+          "label": "Required pull requests",
+          "type": "repeater",
+          "validation": {
+            "subFields": [
+              {
+                "slug": "url",
+                "label": "GitHub PR URL",
+                "type": "url",
+                "required": true
+              }
+            ],
+            "maxItems": 12
+          }
+        },
+        {
+          "slug": "blocks",
+          "label": "Page content",
+          "type": "portableText"
+        }
+      ]
+    }
+  ]
+}

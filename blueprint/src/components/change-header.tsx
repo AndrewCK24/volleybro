@@ -1,36 +1,37 @@
-import { FigureBadges } from "@/components/figure-badges";
+import { ChangeMetricsBadges } from "@/components/change-metrics-badges";
 import { Badge } from "@/components/ui/badge";
-import { gateLabel, mergedLabel } from "@/lib/change-gate";
-import type { ChangeFacts } from "@/lib/change-meta";
+import type { ChangeMetrics, ChangeStatus } from "@/lib/github-change-data";
 
 export function ChangeHeader({
   title,
-  capabilities,
-  facts,
+  status,
+  mergedAt,
+  metrics,
+  scenarioCount,
 }: {
   title: string;
-  capabilities: string[];
-  facts: ChangeFacts;
+  status: ChangeStatus;
+  mergedAt?: string;
+  metrics?: ChangeMetrics;
+  scenarioCount: number;
 }) {
-  const stateLabel = facts.archivedAt ? "archived" : gateLabel(facts);
-
   return (
     <header className="not-prose mb-6 flex flex-col gap-3">
       <h1 className="text-3xl font-semibold">{title}</h1>
       <div className="flex flex-wrap items-center gap-2">
-        {(facts.archivedAt || facts.gate || facts.shards?.current) && (
-          <Badge>{stateLabel}</Badge>
+        <Badge variant={status === "merged" ? "secondary" : "outline"}>
+          {status === "merged" ? "已合併" : "進行中"}
+        </Badge>
+        {mergedAt && (
+          <time
+            dateTime={mergedAt}
+            className="text-xs text-muted-foreground tabular-nums"
+          >
+            {mergedAt.slice(0, 10)}
+          </time>
         )}
-        {mergedLabel(facts) && (
-          <Badge variant="secondary">{mergedLabel(facts)}</Badge>
-        )}
-        {capabilities.map((capability) => (
-          <Badge key={capability} variant="outline" asChild>
-            <a href={`/features/${capability}`}>{capability}</a>
-          </Badge>
-        ))}
       </div>
-      <FigureBadges facts={facts} />
+      <ChangeMetricsBadges metrics={metrics} scenarioCount={scenarioCount} />
     </header>
   );
 }

@@ -18,5 +18,6 @@
   "revisitTriggers": [
     "The store's history has to be rewritten, for example to drop pages that must not be kept, which requires lifting the ruleset as an explicit decision."
   ],
-  "originChange": "blueprint-contract-guardrails"
+  "originChange": "blueprint-contract-guardrails",
+  "supersededBy": "0124"
 }

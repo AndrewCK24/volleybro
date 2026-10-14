@@ -1,4 +1,4 @@
-import { decisionsById } from "@/lib/decisions-index";
+import { decisionsByIdFrom } from "@/lib/decision-lookup";
 import type { DecisionRecord } from "@/lib/decision-record";
 
 export type DecisionCardEntry = {
@@ -6,16 +6,20 @@ export type DecisionCardEntry = {
   supersededHref?: string;
 };
 
-export function decisionCardsForIds(ids: string[]): DecisionCardEntry[] {
+export function decisionCardsFor(
+  records: DecisionRecord[],
+  ids: string[],
+): DecisionCardEntry[] {
   const idsOnPage = new Set(ids);
-  return decisionsById(ids).map((record) => {
+  return decisionsByIdFrom(records, ids).map((record) => {
     const replacement = record.supersededBy;
     if (!replacement) return { record };
     if (idsOnPage.has(replacement)) {
       return { record, supersededHref: `#adr-${replacement}` };
     }
 
-    const [capability] = decisionsById([replacement])[0]?.capabilities ?? [];
+    const [capability] =
+      decisionsByIdFrom(records, [replacement])[0]?.capabilities ?? [];
     return {
       record,
       supersededHref: capability
