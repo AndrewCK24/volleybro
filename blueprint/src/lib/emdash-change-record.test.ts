@@ -146,9 +146,36 @@ describe("EmDash Change schema", () => {
         canonical: null,
         noIndex: false,
       },
+      bylines: [],
+      byline: null,
+      terms: {},
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it("keeps loader author and taxonomy metadata outside the accepted content hash", async () => {
+    const acceptedHash = await acceptedContentHash(content);
+    const loaded = {
+      ...content,
+      description: null,
+      bylines: [],
+      byline: null,
+      terms: {},
+    };
+
+    expect(changeDataSchema.safeParse(loaded).success).toBe(true);
+    await expect(acceptedContentHash(loaded)).resolves.toBe(acceptedHash);
+    expect(
+      changeDataSchema.safeParse({ ...loaded, bylines: [{ arbitrary: true }] })
+        .success,
+    ).toBe(false);
+    expect(
+      changeDataSchema.safeParse({
+        ...loaded,
+        terms: { category: [{ id: "term", arbitrary: true }] },
+      }).success,
+    ).toBe(false);
   });
 
   it("preserves Unicode source anchors while rejecting unsafe IDs", () => {

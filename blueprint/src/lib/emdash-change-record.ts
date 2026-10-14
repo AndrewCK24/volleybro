@@ -147,6 +147,41 @@ const standardBlockSchema = z.discriminatedUnion("_type", [
 const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
   z.strictObject({ ...shape, _key: z.string().min(1).optional() });
 
+const bylineSummarySchema = z.strictObject({
+  id: z.string(),
+  slug: z.string(),
+  displayName: z.string(),
+  bio: z.string().nullable(),
+  avatarMediaId: z.string().nullable(),
+  avatarStorageKey: z.string().nullable().optional(),
+  avatarAlt: z.string().nullable().optional(),
+  avatarBlurhash: z.string().nullable().optional(),
+  avatarDominantColor: z.string().nullable().optional(),
+  websiteUrl: z.string().nullable(),
+  userId: z.string().nullable(),
+  isGuest: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  locale: z.string(),
+  translationGroup: z.string().nullable(),
+  customFields: z
+    .record(z.string(), z.union([z.string(), z.boolean(), z.null()]))
+    .optional(),
+});
+
+const taxonomyTermSchema: z.ZodType = z.lazy(() =>
+  z.strictObject({
+    id: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    label: z.string(),
+    parentId: z.string().nullable().optional(),
+    children: z.array(taxonomyTermSchema),
+    locale: z.string(),
+    translationGroup: z.string(),
+  }),
+);
+
 export const blockSchema = z.union([
   standardBlockSchema,
   versionedBlock({
@@ -183,7 +218,7 @@ export const blockSchema = z.union([
 
 const changeDataBaseSchema = z.strictObject({
   title: z.string().trim().min(1),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   linear_issue: z
     .string()
     .regex(/^[A-Z][A-Z0-9]*-[1-9]\d*$/u)
@@ -223,6 +258,18 @@ const changeDataBaseSchema = z.strictObject({
       noIndex: z.boolean(),
     })
     .optional(),
+  bylines: z
+    .array(
+      z.strictObject({
+        roleLabel: z.string().nullable(),
+        sortOrder: z.number(),
+        source: z.enum(["explicit", "inferred"]).optional(),
+        byline: bylineSummarySchema,
+      }),
+    )
+    .optional(),
+  byline: bylineSummarySchema.nullable().optional(),
+  terms: z.record(z.string(), z.array(taxonomyTermSchema)).optional(),
 });
 
 function requireIssueForAuthoredContent(
@@ -238,9 +285,12 @@ function requireIssueForAuthoredContent(
   }
 }
 
-export const changeDataSchema = changeDataBaseSchema.superRefine(
-  requireIssueForAuthoredContent,
-);
+export const changeDataSchema = changeDataBaseSchema
+  .superRefine(requireIssueForAuthoredContent)
+  .transform((data) => ({
+    ...data,
+    description: data.description ?? undefined,
+  }));
 
 export type ChangeBlock = z.infer<typeof blockSchema>;
 export type ChangeData = z.infer<typeof changeDataSchema>;
@@ -301,7 +351,7 @@ export async function acceptedContentHash(value: unknown): Promise<string> {
     );
   const parsed = acceptedContentSchema.safeParse({
     title: stored.data.title,
-    description: stored.data.description,
+    description: stored.data.description ?? undefined,
     linear_issue: stored.data.linear_issue,
     blocks: stored.data.blocks,
   });
