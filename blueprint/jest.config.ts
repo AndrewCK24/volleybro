@@ -2,6 +2,7 @@ import type { Config } from "jest";
 
 const config: Config = {
   testEnvironment: "jsdom",
+  testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   transform: {
     "^.+\\.(ts|tsx)$": [
       "babel-jest",

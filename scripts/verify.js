@@ -20,6 +20,7 @@ export const LANE_COMMANDS = {
   blueprint: [
     "pnpm --filter blueprint test",
     "pnpm --filter blueprint test:persistence",
+    "pnpm --filter blueprint test:migration",
     "pnpm --filter blueprint build",
   ],
 };

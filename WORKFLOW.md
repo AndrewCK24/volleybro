@@ -32,22 +32,22 @@ This file is VolleyBro's canonical provider-neutral delivery contract. A develop
 
 ## Repository profile
 
-| Responsibility                         | VolleyBro binding                                                                                                                                         |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Integration branch and default PR base | `main` after cutover; during transition use the verified remote default branch                                                                            |
-| Change branches                        | `feat/<slug>`, `fix/<slug>`, or `refactor/<slug>`                                                                                                         |
-| Fast path branch                       | `fast/<slug>`, whatever the commit type                                                                                                                   |
-| Targeted repository gate               | Narrowest applicable tests, lint, and type checks                                                                                                         |
-| Section gate                           | `pnpm verify` — format, lint, type checks, unit tests, workflow conformance                                                                               |
-| Final gate                             | `pnpm verify:all` — static checks and the lanes reached by the diff against the remote default integration branch; `--full` runs all; CI runs every check |
-| Intake and active work                 | Linear issues, statuses, relations, dependencies, priority, milestones                                                                                    |
+| Responsibility                         | VolleyBro binding                                                                                                                                               |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Integration branch and default PR base | `main` after cutover; during transition use the verified remote default branch                                                                                  |
+| Change branches                        | `feat/<slug>`, `fix/<slug>`, or `refactor/<slug>`                                                                                                               |
+| Fast path branch                       | `fast/<slug>`, whatever the commit type                                                                                                                         |
+| Targeted repository gate               | Narrowest applicable tests, lint, and type checks                                                                                                               |
+| Section gate                           | `pnpm verify` — format, lint, type checks, unit tests, workflow conformance                                                                                     |
+| Final gate                             | `pnpm verify:all` — static checks and the lanes reached by the diff against the remote default integration branch; `--full` runs all; CI runs every check       |
+| Intake and active work                 | Linear issues, statuses, relations, dependencies, priority, milestones                                                                                          |
 | Change content and G1 review           | One EmDash entry per Blueprint Change; direct Portable Text and typed-block authoring; signed private Blueprint preview before G1, public page after acceptance |
-| Code review surface                    | GitHub PR at G2; G2 reviews code and does not republish the EmDash Change page                                                                            |
-| Canonical current capability knowledge | `blueprint/content/features/`                                                                                                                             |
-| Execution plan                         | `to-tickets` after G1; Linear slice sub-issues under the Change's issue                                                                                   |
-| Version and changelog evidence         | `.changeset/` through Changesets                                                                                                                          |
-| Provider-neutral workpad               | One persistent Linear comment, kept only by unattended runs                                                                                               |
-| Optional orchestration                 | Symphony run evidence with `ephemeral_text` processing                                                                                                    |
+| Code review surface                    | GitHub PR at G2; G2 reviews code and does not republish the EmDash Change page                                                                                  |
+| Canonical current capability knowledge | `blueprint/content/features/`                                                                                                                                   |
+| Execution plan                         | `to-tickets` after G1; Linear slice sub-issues under the Change's issue                                                                                         |
+| Version and changelog evidence         | `.changeset/` through Changesets                                                                                                                                |
+| Provider-neutral workpad               | One persistent Linear comment, kept only by unattended runs                                                                                                     |
+| Optional orchestration                 | Symphony run evidence with `ephemeral_text` processing                                                                                                          |
 
 The delivery profile selects responsibilities, not a fixed skill suite. Matt Pocock skills are the current engineering playbooks; a future compatible skill may replace them without changing the artifact authority or human gates defined here.
 
