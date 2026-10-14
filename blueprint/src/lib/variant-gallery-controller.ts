@@ -30,18 +30,18 @@ export function installVariantGalleryController(root: ParentNode) {
           frame.hidden = true;
           continue;
         }
-        const visible = ![...selected].some(
+        const isVisible = ![...selected].some(
           ([id, selectedValue]) => selections[id] !== selectedValue,
         );
-        frame.hidden = !visible;
+        frame.hidden = !isVisible;
 
         for (const element of frame.querySelectorAll<HTMLElement | SVGElement>(
           "[id], [data-variant-source-id]",
         )) {
-          if (visible && element.dataset.variantSourceId) {
+          if (isVisible && element.dataset.variantSourceId) {
             element.id = element.dataset.variantSourceId;
             delete element.dataset.variantSourceId;
-          } else if (!visible && element.id) {
+          } else if (!isVisible && element.id) {
             element.dataset.variantSourceId = element.id;
             element.removeAttribute("id");
           }
@@ -65,13 +65,13 @@ export function installVariantGalleryController(root: ParentNode) {
 
       for (const option of buttons) {
         if (option.dataset.choice === choice) {
-          const pressed = option === button;
-          option.setAttribute("aria-pressed", String(pressed));
+          const isPressed = option === button;
+          option.setAttribute("aria-pressed", String(isPressed));
           for (const label of option.querySelectorAll<HTMLElement>(
             "[data-variant-label]",
           )) {
             label.textContent =
-              pressed && label.dataset.selectedLabel
+              isPressed && label.dataset.selectedLabel
                 ? label.dataset.selectedLabel
                 : (label.dataset.label ?? "");
           }

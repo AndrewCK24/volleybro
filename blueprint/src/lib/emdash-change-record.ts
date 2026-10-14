@@ -231,7 +231,7 @@ export const variantGalleryBlockSchema = versionedBlock({
       });
       return false;
     }
-    let valid = true;
+    let isValid = true;
     for (const [id, value] of Object.entries(selection)) {
       if (!optionsByChoice.get(id)?.has(value)) {
         context.addIssue({
@@ -239,13 +239,13 @@ export const variantGalleryBlockSchema = versionedBlock({
           path: [...path, id],
           message: "Variant selection uses an unknown choice value.",
         });
-        valid = false;
+        isValid = false;
       }
     }
-    return valid;
+    return isValid;
   };
 
-  const defaultsValid = validateSelection(gallery.defaultValues, [
+  const hasValidDefaults = validateSelection(gallery.defaultValues, [
     "defaultValues",
   ]);
   const frameKeys = new Set<string>();
@@ -274,7 +274,7 @@ export const variantGalleryBlockSchema = versionedBlock({
         "Variant gallery must provide one frame for every choice combination.",
     });
   }
-  if (defaultsValid) {
+  if (hasValidDefaults) {
     const defaultKey = JSON.stringify(
       expectedKeys.map((id) => [id, gallery.defaultValues[id]]),
     );

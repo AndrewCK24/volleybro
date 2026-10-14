@@ -64,6 +64,15 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
+  it.each([undefined, ""])(
+    "rejects a scenario without a nonempty ID (%s)",
+    (id) => {
+      expect(blockSchema.safeParse({ ...content.blocks[0], id }).success).toBe(
+        false,
+      );
+    },
+  );
+
   it("accepts canonical Portable Text and typed blocks in one ordered stream", () => {
     const result = changeDataSchema.safeParse({
       ...content,
