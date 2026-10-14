@@ -2027,7 +2027,12 @@ async function finalize() {
     "--json",
     "tagName",
   ]).catch(() => "");
-  if (!existing)
+  if (!existing) {
+    const notes = changelogEntry(
+      await shaAt(state.sha, "CHANGELOG.md"),
+      version,
+    );
+    // A version without changeset entries still gets a Release, listing its pull requests.
     await command("gh", [
       "release",
       "create",
@@ -2036,8 +2041,22 @@ async function finalize() {
       state.sha,
       "--title",
       tag,
-      "--generate-notes",
+      ...(notes ? ["--notes", notes] : ["--generate-notes"]),
     ]);
+  }
+}
+
+export function changelogEntry(changelog, version) {
+  const lines = changelog.split("\n");
+  const start = lines.findIndex((line) => line.startsWith(`## [${version}]`));
+  if (start === -1) return "";
+  const end = lines.findIndex(
+    (line, index) => index > start && line.startsWith("## "),
+  );
+  return lines
+    .slice(start + 1, end === -1 ? undefined : end)
+    .join("\n")
+    .trim();
 }
 
 async function verifySourceQANative(state) {

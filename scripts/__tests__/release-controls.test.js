@@ -14,6 +14,8 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { changelogEntry } from "../release-controls.js";
+
 const cli =
   process.env.RELEASE_TEST_CLI ||
   fileURLToPath(new URL("../release-controls.js", import.meta.url));
@@ -1944,4 +1946,29 @@ test("promotion and publication require accepted receipts, not only a healthy al
   assert.notEqual(publication.status, 0);
   assert.match(publication.stderr, /production QA/i);
   assert.equal(f.git(["tag", "--list", "v1.0.1"]), "");
+});
+
+test("release notes are the version's CHANGELOG entry, empty when it has none", () => {
+  const changelog = [
+    "# Changelog",
+    "",
+    "## [0.17.0](https://example.test/compare/v0.16.3...v0.17.0) 2026-10-14",
+    "",
+    "### Fixed",
+    "",
+    "- Keep the header in place",
+    "",
+    "## [0.16.3](https://example.test/compare/v0.16.2...v0.16.3) 2026-10-06",
+    "## [0.16.2](https://example.test/compare/v0.16.1...v0.16.2) 2026-10-03",
+    "",
+    "- Older change",
+    "",
+  ].join("\n");
+  assert.equal(
+    changelogEntry(changelog, "0.17.0"),
+    "### Fixed\n\n- Keep the header in place",
+  );
+  assert.equal(changelogEntry(changelog, "0.16.2"), "- Older change");
+  assert.equal(changelogEntry(changelog, "0.16.3"), "");
+  assert.equal(changelogEntry(changelog, "0.1.0"), "");
 });
