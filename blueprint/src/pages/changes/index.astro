@@ -6,7 +6,7 @@ import { ChangeCardList } from "../../components/change-card";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
 
-const source = await createBlueprintSources();
+const source = await createBlueprintSources({ isFeatureStructureEnabled: false });
 const summaries = await listPublishedChangeSummaries(source.changeEntries);
 const tree = createChangesTree(source.changes.pageTree, summaries.map((change) => change.href));
 ---

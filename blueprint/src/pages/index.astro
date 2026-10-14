@@ -5,7 +5,7 @@ import Layout from "../components/layout.astro";
 import { listPublishedChangeSummaries } from "../lib/github-change-data";
 import { createBlueprintSources } from "../lib/source";
 
-const { features, changeEntries } = await createBlueprintSources();
+const { features, changeEntries } = await createBlueprintSources({ isFeatureStructureEnabled: false });
 const summaries = await listPublishedChangeSummaries(changeEntries);
 const capabilities = features.getPages().filter((page) => page.slugs.length > 0).length;
 const sections = [

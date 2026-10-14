@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "volleybro-blueprint-local",
+  "name": "volleybro-blueprint",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-10-13",
   "compatibility_flags": ["nodejs_compat"],
@@ -11,21 +11,21 @@
   "d1_databases": [
     {
       "binding": "BLUEPRINT_DB",
-      "database_name": "volleybro-blueprint-local",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_name": "volleybro-blueprint",
+      "database_id": "079d5cc7-4d2f-4fcd-809f-ea1a62af546a",
       "migrations_dir": "./.emdash/migrations",
     },
   ],
   "r2_buckets": [
     {
       "binding": "BLUEPRINT_MEDIA",
-      "bucket_name": "volleybro-blueprint-local-media",
+      "bucket_name": "volleybro-blueprint-media",
     },
   ],
   "kv_namespaces": [
     {
       "binding": "SESSION",
-      "id": "00000000000000000000000000000000",
+      "id": "feb7bba7c7384d76b8a845ccdb9e7796",
     },
   ],
 }
