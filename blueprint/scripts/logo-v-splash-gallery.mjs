@@ -390,8 +390,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
         label: "Weight",
         options: WEIGHT_KEYS.map((weight) => ({
           value: String(weight),
-          label: String(weight),
-          ...(weight === 700 ? { selectedLabel: "700 ✓ pinned" } : {}),
+          label: `${weight}${weight === 700 ? " ✓ pinned" : ""}`,
         })),
       },
       {
@@ -399,8 +398,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
         label: "iOS splash mark size",
         options: SIZE_KEYS.map((size) => ({
           value: String(size),
-          label: `${size}%`,
-          ...(size === 25 ? { selectedLabel: "25% ✓ selected" } : {}),
+          label: `${size}%${size === 25 ? " ✓ selected" : ""}`,
         })),
       },
     ],

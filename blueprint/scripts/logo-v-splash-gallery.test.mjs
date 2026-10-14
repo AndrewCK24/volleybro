@@ -54,16 +54,16 @@ test("converts the complete selector matrix into portable text and Diagram v1", 
       ["splash-size", 4],
     ],
   );
-  assert.equal(
-    gallery.choices[0].options.find(({ value }) => value === "700")
-      .selectedLabel,
-    "700 ✓ pinned",
+  assert.deepEqual(
+    gallery.choices[0].options.map(({ label }) => label),
+    ["300", "400", "500", "600", "700 ✓ pinned", "800", "900"],
   );
-  assert.equal(
-    gallery.choices[1].options.find(({ value }) => value === "25")
-      .selectedLabel,
-    "25% ✓ selected",
+  assert.deepEqual(
+    gallery.choices[1].options.map(({ label }) => label),
+    ["15%", "20%", "25% ✓ selected", "30%"],
   );
+  for (const choice of gallery.choices)
+    assert.ok(choice.options.every((option) => !("selectedLabel" in option)));
   assert.equal(gallery.frames.length, 28);
 
   for (const frame of gallery.frames) {
