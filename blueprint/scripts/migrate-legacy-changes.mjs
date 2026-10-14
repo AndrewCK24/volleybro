@@ -901,11 +901,17 @@ async function run(options) {
     }
     const scenarios = structured.scenarios;
     const importedAnchors = blocks
-      .filter(
-        (block) =>
-          block._type === "block" && block.id && !block.id.startsWith("radix-"),
-      )
-      .map((block) => block.id)
+      .flatMap((block) => {
+        if (
+          block._type === "block" &&
+          block.id &&
+          !block.id.startsWith("radix-")
+        )
+          return [block.id];
+        if (block._type === "decision_cards")
+          return JSON.parse(block.records).map((id) => `adr-${id}`);
+        return [];
+      })
       .sort();
     const sourceAnchors = [
       ...new Set(sourceAudit.ids.filter((id) => !id.startsWith("sn-"))),

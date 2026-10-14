@@ -1844,17 +1844,7 @@ export function convertRenderedHtmlToPortableText(
           throw new Error(
             `${slug}: rendered DecisionCards IDs differ from their authored values.`,
           );
-        ids.forEach((id) =>
-          blocks.push(
-            makeBlock(
-              "normal",
-              [],
-              uniqueAnchor(`adr-${id}`),
-              blocks.length,
-              [],
-            ),
-          ),
-        );
+        ids.forEach((id) => uniqueAnchor(`adr-${id}`));
         blocks.push({
           _type: "decision_cards",
           _version: 1,

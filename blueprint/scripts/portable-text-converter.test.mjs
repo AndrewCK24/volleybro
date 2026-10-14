@@ -325,7 +325,7 @@ test("extracts static Scenario props and fails on executable props", () => {
   );
 });
 
-test("maps authored DecisionCards and RiskTable to their Blueprint typed blocks", () => {
+test("maps DecisionCards to its typed block without a duplicate anchor placeholder", () => {
   const structured = {
     scenarios: [],
     decisionGroups: [["0055"]],
@@ -338,9 +338,12 @@ test("maps authored DecisionCards and RiskTable to their Blueprint typed blocks"
     [],
     structured,
   );
-  assert.equal(result[0].id, "adr-0055");
-  assert.equal(result[1]._type, "decision_cards");
-  assert.deepEqual(JSON.parse(result[1].records), ["0055"]);
-  assert.equal(result[2]._type, "risk_table");
-  assert.deepEqual(JSON.parse(result[2].risks), structured.riskTables[0]);
+  assert.equal(result[0]._type, "decision_cards");
+  assert.deepEqual(JSON.parse(result[0].records), ["0055"]);
+  assert.equal(result[1]._type, "risk_table");
+  assert.deepEqual(JSON.parse(result[1].risks), structured.riskTables[0]);
+  assert.equal(
+    result.some((block) => block.id === "adr-0055"),
+    false,
+  );
 });
