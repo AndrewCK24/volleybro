@@ -64,13 +64,13 @@ function required(name) {
   return value;
 }
 
-async function command(bin, args, options = {}) {
+async function command(bin, args, { trim = true, ...options } = {}) {
   try {
     const result = await execFile(bin, args, {
       maxBuffer: 8 * 1024 * 1024,
       ...options,
     });
-    return result.stdout.trim();
+    return trim ? result.stdout.trim() : result.stdout;
   } catch (error) {
     fail(`${bin} ${args[0]} failed: ${error.stderr?.trim() || error.message}`);
   }
@@ -140,7 +140,8 @@ async function githubAll(path) {
 }
 
 async function shaAt(ref, path) {
-  return command("git", ["show", `${ref}:${path}`]);
+  // Keep the final newline so the content equals the checked-out file.
+  return command("git", ["show", `${ref}:${path}`], { trim: false });
 }
 
 function json(value, label) {
@@ -2027,7 +2028,12 @@ async function finalize() {
     "--json",
     "tagName",
   ]).catch(() => "");
-  if (!existing)
+  if (!existing) {
+    const notes = changelogEntry(
+      await shaAt(state.sha, "CHANGELOG.md"),
+      version,
+    );
+    // Keep the fallback: a version released without changesets has no entry.
     await command("gh", [
       "release",
       "create",
@@ -2036,8 +2042,23 @@ async function finalize() {
       state.sha,
       "--title",
       tag,
-      "--generate-notes",
+      ...(notes ? ["--notes", notes] : ["--generate-notes"]),
     ]);
+  }
+}
+
+// Standalone twin of release-pr-body.js's parser: this controller runs without node_modules.
+function changelogEntry(changelog, version) {
+  const lines = changelog.split("\n");
+  const start = lines.findIndex((line) => line.startsWith(`## [${version}]`));
+  if (start === -1) return "";
+  const end = lines.findIndex(
+    (line, index) => index > start && line.startsWith("## "),
+  );
+  return lines
+    .slice(start + 1, end === -1 ? undefined : end)
+    .join("\n")
+    .trim();
 }
 
 async function verifySourceQANative(state) {
