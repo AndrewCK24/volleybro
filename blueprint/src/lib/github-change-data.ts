@@ -46,6 +46,7 @@ export type ChangeEntryForSummary = {
     description?: string;
     pull_requests?: Array<{ url?: string }>;
     blocks?: unknown[];
+    scenarioCount?: number;
     publishedAt?: Date | string | null;
   };
 };
@@ -369,16 +370,7 @@ export async function readPullRequestSummaries(
 }
 
 export function summarizeChange(
-  input: {
-    id: string;
-    data: {
-      title?: string;
-      description?: string;
-      pull_requests?: Array<{ url?: string }>;
-      blocks?: unknown[];
-      publishedAt?: Date | string | null;
-    };
-  },
+  input: ChangeEntryForSummary,
   prs: PullRequestSummary[],
 ): ChangeSummary {
   const requiredIds = [
@@ -439,7 +431,7 @@ export function summarizeChange(
     publishedAt: publishedAt ?? undefined,
     mergedAt,
     metrics,
-    scenarioCount: scenarioCount(input.data.blocks),
+    scenarioCount: input.data.scenarioCount ?? scenarioCount(input.data.blocks),
   };
 }
 

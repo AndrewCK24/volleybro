@@ -1,5 +1,6 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { getEmDashCollection, type ContentEntry } from "emdash";
+import type { ContentEntry } from "emdash";
+import { getDb } from "emdash/runtime";
 import { structure, type StructuredData } from "fumadocs-core/mdx-plugins";
 import {
   loader,
@@ -9,10 +10,44 @@ import {
 } from "fumadocs-core/source";
 import path from "node:path";
 import { changeDataSchema, type ChangeData } from "./emdash-change-record";
+import { z } from "zod";
 
 type FeaturePage = CollectionEntry<"featurePages">;
 type MetaEntry = CollectionEntry<"featureMeta">;
-type EmDashPage = ContentEntry<ChangeData>;
+type ChangeListData = Pick<
+  ChangeData,
+  "title" | "description" | "pull_requests" | "publishedAt"
+> & {
+  scenarioCount: number;
+};
+type EmDashPage = Pick<ContentEntry<ChangeListData>, "id" | "data">;
+
+type BlueprintChangeRow = {
+  id: string;
+  slug: string;
+  title: string;
+  linear_issue: string | null;
+  description: string | null;
+  pull_requests: string | Array<{ url: string }> | null;
+  published_at: string | null;
+  blocks: string | null;
+  status: string;
+  deleted_at: string | null;
+};
+
+const changeListDataSchema = z
+  .strictObject({
+    title: changeDataSchema.in.shape.title,
+    description: changeDataSchema.in.shape.description,
+    linear_issue: changeDataSchema.in.shape.linear_issue.unwrap(),
+    pull_requests: changeDataSchema.in.shape.pull_requests,
+    publishedAt: changeDataSchema.in.shape.publishedAt,
+    scenarioCount: z.number().int().nonnegative(),
+  })
+  .transform((data) => ({
+    ...data,
+    description: data.description ?? undefined,
+  }));
 type DesignPage = CollectionEntry<"designMeta">["data"]["pages"][number];
 type SourceRaw = FeaturePage | EmDashPage | DesignPage;
 
@@ -25,6 +60,7 @@ function buildContentSource(
   pages: FeaturePage[],
   metas: MetaEntry[],
   contentRoot: string,
+  isStructureEnabled: boolean,
 ): StaticSource<SourceConfig> {
   const files: StaticSource<SourceConfig>["files"] = [];
   for (const entry of pages) {
@@ -36,7 +72,9 @@ function buildContentSource(
       data: {
         ...entry.data,
         _raw: entry,
-        structuredData: structure(entry.body ?? ""),
+        structuredData: isStructureEnabled
+          ? structure(entry.body ?? "")
+          : { headings: [], contents: [] },
       },
     });
   }
@@ -69,28 +107,100 @@ function buildChangeSource(entries: EmDashPage[]): StaticSource<SourceConfig> {
 }
 
 async function readPublishedChanges(): Promise<EmDashPage[]> {
-  const entries: EmDashPage[] = [];
-  let cursor: string | undefined;
-  do {
-    const result = await getEmDashCollection("blueprint_changes", {
-      limit: 100,
-      status: "published",
-      ...(cursor ? { cursor } : {}),
-      orderBy: { published_at: "desc" },
-    });
-    if (result.error)
-      throw new Error(
-        `Could not read published Blueprint Changes: ${result.error.message}`,
-      );
-    for (const entry of result.entries) {
-      const parsed = changeDataSchema.safeParse(entry.data);
-      if (!parsed.success)
-        throw new Error(`Published Change "${entry.id}" has invalid content.`);
-      entries.push({ id: entry.id, data: parsed.data, edit: entry.edit });
+  const db = await getDb();
+  const typedDb = db.$extendTables<{
+    ec_blueprint_changes: BlueprintChangeRow;
+  }>();
+  const entries = await typedDb
+    .selectFrom("ec_blueprint_changes")
+    .select((eb) => [
+      "id",
+      "slug",
+      "title",
+      "linear_issue",
+      "description",
+      "pull_requests",
+      "published_at",
+      eb
+        .selectFrom(
+          eb
+            .fn<{ value: string }>("json_each", [
+              eb.ref("ec_blueprint_changes.blocks"),
+            ])
+            .as("block"),
+        )
+        .select((blockEb) => {
+          const blockType = blockEb.fn("json_extract", [
+            blockEb.ref("block.value"),
+            blockEb.val("$._type"),
+          ]);
+          const itemsJson = blockEb.fn("json_extract", [
+            blockEb.ref("block.value"),
+            blockEb.val("$.items"),
+          ]);
+          const cardsCount = blockEb
+            .case()
+            .when(blockEb.fn<number>("json_valid", [itemsJson]), "=", 1)
+            .then(
+              blockEb
+                .case()
+                .when(
+                  blockEb.fn<string>("json_type", [itemsJson]),
+                  "=",
+                  "array",
+                )
+                .then(blockEb.fn("json_array_length", [itemsJson]))
+                .else(0)
+                .end(),
+            )
+            .else(0)
+            .end();
+          return blockEb.fn
+            .sum(
+              blockEb
+                .case()
+                .when(blockType, "=", "scenario")
+                .then(1)
+                .when(blockType, "=", "scenario_cards")
+                .then(cardsCount)
+                .else(0)
+                .end(),
+            )
+            .as("scenarioCount");
+        })
+        .as("scenarioCount"),
+    ])
+    .where("deleted_at", "is", null)
+    .where("status", "=", "published")
+    .orderBy("published_at", "desc")
+    .orderBy("id", "desc")
+    .execute();
+
+  return entries.map((entry) => {
+    let pullRequests: unknown = entry.pull_requests;
+    if (typeof pullRequests === "string") {
+      try {
+        pullRequests = JSON.parse(pullRequests) as unknown;
+      } catch {
+        throw new Error(
+          `Published Change "${entry.slug}" has invalid PR metadata.`,
+        );
+      }
     }
-    cursor = result.nextCursor;
-  } while (cursor);
-  return entries;
+    const parsed = changeListDataSchema.safeParse({
+      title: entry.title,
+      linear_issue: entry.linear_issue,
+      description: entry.description,
+      pull_requests: pullRequests ?? [],
+      publishedAt: entry.published_at,
+      scenarioCount: Number(entry.scenarioCount ?? 0),
+    });
+    if (!parsed.success)
+      throw new Error(
+        `Published Change "${entry.slug}" has invalid summary metadata.`,
+      );
+    return { id: entry.slug, data: parsed.data };
+  });
 }
 
 function buildDesignSource(pages: DesignPage[]): StaticSource<SourceConfig> {
@@ -116,7 +226,10 @@ function buildDesignSource(pages: DesignPage[]): StaticSource<SourceConfig> {
 }
 
 export async function createBlueprintSources(
-  options: { includeChanges?: boolean } = {},
+  options: {
+    includeChanges?: boolean;
+    isFeatureStructureEnabled?: boolean;
+  } = {},
 ) {
   const [changes, features, featureMetas, designMetas] = await Promise.all([
     options.includeChanges === false
@@ -137,7 +250,12 @@ export async function createBlueprintSources(
     }),
     features: loader({
       baseUrl: "/features",
-      source: buildContentSource(features, featureMetas, featuresRoot),
+      source: buildContentSource(
+        features,
+        featureMetas,
+        featuresRoot,
+        options.isFeatureStructureEnabled !== false,
+      ),
     }),
     designSystem: loader({
       baseUrl: "/design-system",

@@ -11,7 +11,7 @@ import { createBlueprintSources } from "../../lib/source";
 
 const slug = Astro.params.slug ?? "";
 const [source, result] = await Promise.all([
-  createBlueprintSources(),
+  createBlueprintSources({ isFeatureStructureEnabled: false }),
   getEmDashEntry("blueprint_changes", slug),
 ]);
 if (result.error) throw new Error(`Could not load Change "${slug}": ${result.error.message}`);
