@@ -20,6 +20,8 @@ G2 reviews the code PR only. The G2 PR links the accepted EmDash revision/hash; 
 
 Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards` and `interactive_flowchart`, mapped to existing Astro components after strict schema validation. The renderer accepts only an explicit registry of known block types and versions. There is no legacy HTML block, sanitizer or fallback renderer in the current runtime.
 
+`diagram` version 1 preserves static diagram viewBox, source IDs, typed shapes and numeric paths, positioned text runs, nested groups/transforms and typed marker geometry. Paint accepts controlled Blueprint tokens, strict hex colors, `none` or `currentColor`. Labels are escaped text; raw SVG, arbitrary attributes, CSS, scripts and URL paints are rejected. Authored interactive flowcharts retain the existing `interactive_flowchart` block and complete node details.
+
 ## PR-derived metrics
 
 Store required GitHub PR URLs as a lookup index, one URL for each required shard. Validate the exact repository and PR URL shape. Derive status, merge date, commits, files changed, insertions, deletions and `src` files from GitHub's PR API; derive scenario count from structured scenario blocks. Store no manual status, merge date, statistics or `facts.json` copy.

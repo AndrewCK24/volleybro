@@ -40,6 +40,7 @@ flowchart LR
 
 - Code and tests define runtime behavior. EmDash defines accepted Change specifications and public article content; Linear holds operational status and the accepted revision/hash; GitHub PRs prove G2 and provide merge status and metrics.
 - Portable Text and allowlisted, versioned typed blocks are the only content path. Reject raw HTML and executable content; retain no Markdown converter, Markdown/Rich Text renderer, legacy runtime block or sanitizer. Never evaluate legacy `design.tsx` files during migration. Keep one-time conversion/import tools until production import, read-back, cutover and rollback evidence are accepted, then remove them. Production activation is separately approved after G2.
+- `diagram` v1 stores SVG geometry, positioned text, source IDs and markers as typed data; labels are escaped, with no raw SVG, CSS, script or URL paint.
 - Derivable values are not manually duplicated. A missing or unavailable source must not be replaced by a guess.
 - Decision records remain flat, repository-wide files at `blueprint/content/decisions/NNNN-<slug>.json`, with one schema definition. A record is adopted when written and is never copied, promoted or renumbered.
 - Blueprint Change prose uses zh-TW with English technical terms. Feature and Design System prose, scenario strings, decision records and agent-facing documents use English.
