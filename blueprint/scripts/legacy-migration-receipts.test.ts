@@ -104,6 +104,9 @@ const input = () => ({
     {
       slug: "alpha",
       filename: "diagram.png",
+      packagePath: "media/alpha/diagram.png",
+      contentType: "image/png",
+      alt: "Diagram",
       key: "legacy-image-alpha-one",
       sha256: imageSha256,
       size: imageBytes.byteLength,

@@ -132,7 +132,7 @@ test("fails closed on content with no canonical representation", () => {
         "<svg><text>Diagram</text></svg>",
         "sample-change",
       ),
-    /SVG flowchart/u,
+    /valid four-number viewBox/u,
   );
   assert.throws(
     () =>
@@ -144,131 +144,82 @@ test("fails closed on content with no canonical representation", () => {
   );
 });
 
-test("converts an accessible SVG flowchart to typed graph data", () => {
+test("preserves authored SVG geometry, arrow direction, and text in a native diagram", () => {
   const result = convertRenderedHtmlToPortableText(
-    '<svg role="img"><title>Flow</title><desc>Source and target</desc><rect class="sn-node" x="0" y="0" width="20" height="20"></rect><text x="2" y="10">Start</text><rect class="sn-node" x="80" y="0" width="20" height="20"></rect><text x="82" y="10">End</text><line class="sn-wire" x1="20" y1="10" x2="80" y2="10"></line></svg>',
-    "sample-change",
+    '<svg viewBox="0 0 120 60" aria-label="Verified data path"><title>Data path</title><desc>One write path</desc><defs><marker id="arrow" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warning)"></path></marker></defs><g><rect id="source" x="0" y="10" width="30" height="20" fill="var(--card)" stroke="var(--border)"></rect><text x="4" y="22" font-size="12">Queue</text><line x1="30" y1="20" x2="80" y2="20" marker-end="url(#arrow)" stroke="var(--primary)"></line><path d="M 80 20 L 110 20" stroke="var(--muted-foreground)"></path></g></svg>',
+    "diagram-source",
   );
-  assert.equal(result[0]._type, "interactive_flowchart");
-  assert.deepEqual(
-    JSON.parse(result[0].nodes).map((node) => node.label),
-    ["Start", "End"],
-  );
-  assert.deepEqual(
-    JSON.parse(result[0].edges).map(({ from, to }) => [from, to]),
-    [["sample-change-flow-node-1", "sample-change-flow-node-2"]],
-  );
-  assert.match(
-    JSON.parse(result[0].details).__diagram.body,
-    /Source and target/u,
-  );
-});
-
-test("reconstructs accessible rect and line diagrams with every text label", () => {
-  const result = convertRenderedHtmlToPortableText(
-    '<svg role="img"><title>Build path</title><desc>Credential boundary</desc><rect x="16" y="16" width="192" height="48"></rect><text><tspan x="112" y="32">Native build</tspan></text><text><tspan x="112" y="50">No credential</tspan></text><rect x="16" y="100" width="192" height="48"></rect><text><tspan x="112" y="116">Static export</tspan></text><text><tspan x="112" y="134">Upload artifact</tspan></text><line x1="112" y1="64" x2="112" y2="100" marker-end="url(#arrow)"></line></svg>',
-    "build-path",
-  );
-  assert.equal(result[0]._type, "interactive_flowchart");
-  assert.deepEqual(
-    JSON.parse(result[0].nodes).map(({ label, sublabel }) => [label, sublabel]),
-    [
-      ["Native build", "No credential"],
-      ["Static export", "Upload artifact"],
+  const [diagram] = result;
+  assert.equal(diagram._type, "diagram");
+  assert.equal(diagram._version, 1);
+  assert.deepEqual(diagram.viewBox, { x: 0, y: 0, width: 120, height: 60 });
+  assert.equal(diagram.title, "Data path");
+  assert.equal(diagram.description, "One write path");
+  const [group] = diagram.elements;
+  assert.equal(group.type, "group");
+  assert.deepEqual(group.children[0], {
+    type: "rect",
+    id: "source",
+    fill: "card",
+    stroke: "border",
+    x: 0,
+    y: 10,
+    width: 30,
+    height: 20,
+  });
+  assert.equal(group.children[1].text, "Queue");
+  assert.equal(group.children[2].markerEnd, "arrow");
+  assert.deepEqual(diagram.markers[0], {
+    id: "arrow",
+    viewBox: { x: 0, y: 0, width: 10, height: 10 },
+    width: 7,
+    height: 7,
+    refX: 9,
+    refY: 5,
+    orient: "auto-start-reverse",
+    path: [
+      { op: "M", values: [0, 0] },
+      { op: "L", values: [10, 5] },
+      { op: "L", values: [0, 10] },
+      { op: "z", values: [] },
     ],
-  );
-  assert.deepEqual(
-    JSON.parse(result[0].edges).map(({ from, to }) => [from, to]),
-    [["build-path-flow-node-1", "build-path-flow-node-2"]],
-  );
-  assert.equal(JSON.parse(result[0].details).__diagram.title, "Build path");
-  assert.equal(
-    JSON.parse(result[0].details).__diagram.body,
-    "Credential boundary",
-  );
-});
-
-test("maps SVG polygon node geometry and retains secondary labels", () => {
-  const result = convertRenderedHtmlToPortableText(
-    '<svg viewBox="0 0 120 80"><polygon class="sn-node" points="60,10 100,40 60,70 20,40"></polygon><text x="60" y="38">Decision</text><text x="60" y="52">load()</text></svg>',
-    "polygon-diagram",
-  );
-  const [node] = JSON.parse(result[0].nodes);
-  assert.equal(node.shape, "diamond");
-  assert.deepEqual([node.x, node.y, node.w, node.h], [20, 10, 80, 60]);
-  assert.equal(node.label, "Decision");
-  assert.equal(node.sublabel, "load()");
-});
-
-test("keeps flowchart legend outside the graph as typed diagram metadata", () => {
-  const result = convertRenderedHtmlToPortableText(
-    '<svg viewBox="0 0 180 80"><rect class="sn-node" x="10" y="10" width="40" height="20"></rect><text x="30" y="23">Start</text><line class="sn-rule" x1="5" y1="50" x2="175" y2="50"></line><text x="5" y="65">LEGEND</text><rect class="sn-node" x="50" y="55" width="16" height="8"></rect><text x="70" y="65">Action</text></svg>',
-    "legend-diagram",
-  );
-  assert.equal(JSON.parse(result[0].nodes).length, 1);
-  assert.deepEqual(JSON.parse(result[0].edges), []);
-  assert.deepEqual(JSON.parse(result[0].details).__diagram.legend, [
-    { label: "Action", shape: "box", emphasis: false },
+    fill: "warning",
+  });
+  assert.deepEqual(group.children[3].commands, [
+    { op: "M", values: [80, 20] },
+    { op: "L", values: [110, 20] },
   ]);
 });
 
-test("reads SVG path endpoints with horizontal and vertical commands", () => {
-  const result = convertRenderedHtmlToPortableText(
-    '<svg viewBox="0 0 120 50"><rect class="sn-node" x="0" y="0" width="20" height="20"></rect><text x="10" y="12">A</text><rect class="sn-node" x="80" y="0" width="20" height="20"></rect><text x="90" y="12">B</text><path class="sn-wire" d="M20 10 H50 V12 Q55 17 60 17 H80"></path></svg>',
-    "path-diagram",
-  );
-  assert.deepEqual(
-    JSON.parse(result[0].edges).map(({ from, to }) => [from, to]),
-    [["path-diagram-flow-node-1", "path-diagram-flow-node-2"]],
-  );
-});
-
-test("reconstructs the recognized dialog wireframe with every label", () => {
-  const rects = Array.from(
-    { length: 18 },
-    (_, index) => `<rect x="${index}" y="10" width="20" height="16"></rect>`,
-  ).join("");
-  const circles = Array.from(
-    { length: 4 },
-    (_, index) => `<circle cx="${index}" cy="4" r="2"></circle>`,
-  ).join("");
-  const result = convertRenderedHtmlToPortableText(
-    `<svg role="img" aria-label="兩個 dialog 的線框對照。left and right.">${rects}${circles}<text x="10" y="20">Header</text><text x="40" y="32">Close</text></svg>`,
-    "dialog-wireframe",
-  );
-  const graph = result[0];
-  assert.deepEqual(
-    JSON.parse(graph.nodes).map(({ label }) => label),
-    ["Header", "Close"],
-  );
-  assert.deepEqual(JSON.parse(graph.edges), []);
-  assert.equal(
-    JSON.parse(graph.details).__diagram.body,
-    "兩個 dialog 的線框對照。left and right.",
-  );
-  assert.equal(JSON.parse(graph.details).__diagram.decorations.length, 4);
-});
-
-test("fails closed when accessible SVG diagram geometry is not mapped", () => {
+test("fails closed on unsupported SVG paint and visible primitives", () => {
   assert.throws(
     () =>
       convertRenderedHtmlToPortableText(
-        '<svg role="img"><circle cx="10" cy="10" r="8"></circle><text><tspan x="10" y="10">Visible</tspan></text></svg>',
-        "unmapped-diagram",
+        '<svg viewBox="0 0 10 10"><rect x="0" y="0" width="5" height="5" fill="url(#gradient)"></rect></svg>',
+        "unsupported-paint",
       ),
-    /unsupported flowchart geometry/u,
+    /paint url\(#gradient\) has no canonical paint token/u,
+  );
+  assert.throws(
+    () =>
+      convertRenderedHtmlToPortableText(
+        '<svg viewBox="0 0 10 10"><foreignObject width="10" height="10"></foreignObject></svg>',
+        "unsupported-primitive",
+      ),
+    /unsupported visible SVG primitive/u,
   );
 });
 
 test("converts accepted Markdown structure and fails closed on raw HTML", () => {
   const result = convertMarkdownToPortableText(
-    "## Scope\n\nKeep **all** [links](https://example.test).\n\n1. First\n2. Second\n\n```ts\nconst x = 1;\n```",
+    "## Scope\n\nKeep **all** [links](https://example.test) and [angle links](<https://example.test/g1>).\n\n1. First\n2. Second\n\n```ts\nconst x = 1;\n```",
     "accepted-spec",
   );
   assert.equal(result[0].style, "h2");
   assert.equal(result[0].id, "scope");
   assert.ok(result[1].children.some((span) => span.marks?.includes("strong")));
   assert.equal(result[1].markDefs[0].href, "https://example.test");
+  assert.equal(result[1].markDefs[1].href, "https://example.test/g1");
   assert.deepEqual(
     result.slice(2, 4).map((block) => block.listItem),
     ["number", "number"],

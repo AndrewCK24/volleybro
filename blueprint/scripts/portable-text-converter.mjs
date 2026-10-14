@@ -1,4 +1,5 @@
-import { parseFragment } from "parse5";
+import { parseFragment, serializeOuter } from "parse5";
+import { createHash } from "node:crypto";
 
 const BLOCK_TAGS = new Map([
   ["p", "normal"],
@@ -24,7 +25,10 @@ const MARKS = new Map([
 ]);
 
 function attr(node, name) {
-  return node.attrs?.find((item) => item.name === name)?.value;
+  const normalized = name.toLowerCase().replaceAll("-", "");
+  return node.attrs?.find(
+    (item) => item.name.toLowerCase().replaceAll("-", "") === normalized,
+  )?.value;
 }
 
 function text(node) {
@@ -34,6 +38,14 @@ function text(node) {
 
 function stableKey(prefix, index) {
   return `${prefix}-${index + 1}`;
+}
+
+function stableMediaAsset(key) {
+  return {
+    _type: "reference",
+    _ref: key,
+    url: `/_emdash/api/media/file/${key}`,
+  };
 }
 
 function renderedNodePath(node) {
@@ -124,6 +136,8 @@ function inlineNodes(nodes, inheritedMarks, markDefs, counter) {
 
 function tableBlock(node, index) {
   const rows = [];
+  const anchors = [];
+  const images = [];
   let hasHeaderRow = false;
   const collectRows = (current) => {
     if (current.tagName === "tr") {
@@ -133,7 +147,34 @@ function tableBlock(node, index) {
       if (rows.length === 0)
         hasHeaderRow =
           cells.length > 0 && cells.every((cell) => cell.tagName === "th");
-      rows.push(cells.map((cell) => text(cell).trim()));
+      rows.push(
+        cells.map((cell) => {
+          const markDefs = [];
+          const replaceImages = (current) => {
+            if (current.tagName === "img") {
+              images.push(current);
+              return { nodeName: "#text", value: attr(current, "alt") ?? "" };
+            }
+            return {
+              ...current,
+              childNodes: (current.childNodes ?? []).map(replaceImages),
+            };
+          };
+          const content = inlineNodes(
+            (cell.childNodes ?? []).map(replaceImages),
+            [],
+            markDefs,
+            { value: 0 },
+          );
+          const collectAnchors = (current) => {
+            const id = attr(current, "id");
+            if (id) anchors.push(id);
+            for (const child of current.childNodes ?? []) collectAnchors(child);
+          };
+          collectAnchors(cell);
+          return { text: text(cell).trim(), content, markDefs };
+        }),
+      );
       return;
     }
     for (const child of current.childNodes ?? []) collectRows(child);
@@ -144,17 +185,31 @@ function tableBlock(node, index) {
   return {
     _type: "table",
     _key: stableKey("table", index),
-    rows: rows.map((cells, rowIndex) => ({
-      _type: "tableRow",
-      _key: stableKey(`table-row-${index + 1}`, rowIndex),
-      cells: cells.map((content, cellIndex) => ({
-        _type: "tableCell",
-        _key: stableKey(`table-cell-${index + 1}-${rowIndex + 1}`, cellIndex),
-        content: [{ _type: "span", text: content }],
-        ...(rowIndex === 0 && hasHeaderRow ? { isHeader: true } : {}),
+    block: {
+      _type: "table",
+      _key: stableKey("table", index),
+      rows: rows.map((cells, rowIndex) => ({
+        _type: "tableRow",
+        _key: stableKey(`table-row-${index + 1}`, rowIndex),
+        cells: cells.map(
+          ({ text: cellText, content, markDefs }, cellIndex) => ({
+            _type: "tableCell",
+            _key: stableKey(
+              `table-cell-${index + 1}-${rowIndex + 1}`,
+              cellIndex,
+            ),
+            content: content.length
+              ? content
+              : [{ _type: "span", text: cellText }],
+            ...(markDefs.length ? { markDefs } : {}),
+            ...(rowIndex === 0 && hasHeaderRow ? { isHeader: true } : {}),
+          }),
+        ),
       })),
-    })),
-    hasHeaderRow,
+      hasHeaderRow,
+    },
+    anchors,
+    images,
   };
 }
 
@@ -278,7 +333,11 @@ function markdownInline(source, markDefs) {
       throw new Error("Markdown image requires a source media mapping.");
     if (match[1] !== undefined) {
       const key = `link-${markDefs.length + 1}`;
-      markDefs.push({ _key: key, _type: "link", href: match[2] });
+      const href =
+        match[2].startsWith("<") && match[2].endsWith(">")
+          ? match[2].slice(1, -1)
+          : match[2];
+      markDefs.push({ _key: key, _type: "link", href });
       push(match[1], [key]);
     } else if (match[3] !== undefined || match[4] !== undefined)
       push(match[3] ?? match[4], ["strong"]);
@@ -305,30 +364,24 @@ function parseJsLiteral(source, slug) {
     while (/\s/u.test(source[index] ?? "")) index += 1;
   };
   const parseString = () => {
+    const start = index;
     const quote = source[index++];
     let value = "";
-    while (index < source.length && source[index] !== quote) {
+    while (index < source.length) {
+      if (source[index] === quote) {
+        index += 1;
+        return quote === '"' ? JSON.parse(source.slice(start, index)) : value;
+      }
       if (source[index] === "\\") {
         const escaped = source[index + 1];
         if (escaped === undefined)
           throw new Error(`${slug}: incomplete string escape in MDX data.`);
-        if (quote === '"') {
-          const end = source.indexOf('"', index + 1);
-          if (end < 0) throw new Error(`${slug}: unterminated MDX string.`);
-          const raw = source.slice(index - 1, end + 1);
-          value += JSON.parse(raw);
-          index = end;
-        } else {
-          value += { n: "\n", r: "\r", t: "\t" }[escaped] ?? escaped;
-          index += 1;
-        }
+        value += { n: "\n", r: "\r", t: "\t" }[escaped] ?? escaped;
+        index += 1;
       } else value += source[index];
       index += 1;
     }
-    if (source[index] !== quote)
-      throw new Error(`${slug}: unterminated MDX string.`);
-    index += 1;
-    return value;
+    throw new Error(`${slug}: unterminated MDX string.`);
   };
   const parseValue = () => {
     skip();
@@ -407,7 +460,7 @@ function parseJsLiteral(source, slug) {
   return parsed;
 }
 
-function expressionForProp(tag, prop, slug) {
+function expressionForProp(tag, prop, slug, sourceText = tag) {
   const marker = new RegExp(`\\b${prop}\\s*=\\s*\\{`, "u");
   const match = marker.exec(tag);
   if (!match) throw new Error(`${slug}: ${prop} prop has no expression.`);
@@ -425,16 +478,59 @@ function expressionForProp(tag, prop, slug) {
     }
     if (char === '"' || char === "'") quote = char;
     else if (char === "{") depth += 1;
-    else if (char === "}" && --depth === 0)
-      return parseJsLiteral(tag.slice(start, index), slug);
+    else if (char === "}" && --depth === 0) {
+      const expression = tag.slice(start, index).trim();
+      const identifier = /^[$A-Z_a-z][$\w]*$/u.exec(expression)?.[0];
+      if (!identifier) return parseJsLiteral(expression, slug);
+      const declaration = new RegExp(
+        `\\b(?:const|let)\\s+${identifier}\\s*(?::\\s*[^=]+)?=\\s*`,
+        "u",
+      ).exec(sourceText);
+      if (!declaration)
+        throw new Error(
+          `${slug}: ${prop} references unbound static value ${identifier}.`,
+        );
+      const valueStart = declaration.index + declaration[0].length;
+      let valueDepth = 0;
+      let valueQuote = "";
+      let valueEscaped = false;
+      for (
+        let valueEnd = valueStart;
+        valueEnd < sourceText.length;
+        valueEnd += 1
+      ) {
+        const valueChar = sourceText[valueEnd];
+        if (valueQuote) {
+          if (valueEscaped) valueEscaped = false;
+          else if (valueChar === "\\") valueEscaped = true;
+          else if (valueChar === valueQuote) valueQuote = "";
+          continue;
+        }
+        if (valueChar === "'" || valueChar === '"') valueQuote = valueChar;
+        else if (valueChar === "[" || valueChar === "{") valueDepth += 1;
+        else if (valueChar === "]" || valueChar === "}") {
+          valueDepth -= 1;
+          if (valueDepth === 0)
+            return parseJsLiteral(
+              sourceText.slice(valueStart, valueEnd + 1),
+              slug,
+            );
+        }
+      }
+      throw new Error(`${slug}: static value ${identifier} is incomplete.`);
+    }
   }
   throw new Error(`${slug}: unterminated ${prop} expression.`);
 }
 
-export function extractMdxStructuredData(proposal, slug) {
-  const scenarioMarker = /export\s+const\s+scenarios\s*=\s*/u.exec(proposal);
-  let scenarios = [];
-  if (scenarioMarker) {
+export function extractMdxStructuredData(
+  proposal,
+  slug,
+  extraFlowchartSource = "",
+) {
+  const scenarios = [];
+  const scenarioMarkers = /export\s+const\s+scenarios\s*=\s*/gu;
+  for (const scenarioMarker of proposal.matchAll(scenarioMarkers)) {
     const start = scenarioMarker.index + scenarioMarker[0].length;
     let depth = 0;
     let quote = "";
@@ -457,10 +553,13 @@ export function extractMdxStructuredData(proposal, slug) {
     }
     if (end < 0)
       throw new Error(`${slug}: scenario source array is incomplete.`);
-    scenarios = parseJsLiteral(proposal.slice(start, end), slug);
+    const parsed = parseJsLiteral(proposal.slice(start, end), slug);
+    if (!Array.isArray(parsed))
+      throw new Error(`${slug}: scenario source must be an array.`);
+    scenarios.push(...parsed);
   }
   const directScenarios = [
-    ...proposal.matchAll(/<Scenario\b[\s\S]*?\/>/gu),
+    ...proposal.matchAll(/^[\t ]*<Scenario\b[\s\S]*?\/>/gmu),
   ].map((match, index) => {
     const values = {};
     for (const field of ["given", "when", "then"]) {
@@ -495,13 +594,18 @@ export function extractMdxStructuredData(proposal, slug) {
   const riskTables = tags
     .filter((tag) => tag.type === "RiskTable")
     .map((tag) => expressionForProp(tag.source, "risks", slug));
-  const flowcharts = tags
-    .filter((tag) => tag.type === "InteractiveFlowchart")
-    .map((tag) => ({
-      nodes: expressionForProp(tag.source, "nodes", slug),
-      edges: expressionForProp(tag.source, "edges", slug),
-      details: expressionForProp(tag.source, "details", slug),
-    }));
+  const flowchartTags = [
+    ...tags.filter((tag) => tag.type === "InteractiveFlowchart"),
+    ...[
+      ...extraFlowchartSource.matchAll(/<InteractiveFlowchart\b[\s\S]*?\/>/gsu),
+    ].map((match) => ({ type: "InteractiveFlowchart", source: match[0] })),
+  ];
+  const sourceText = `${proposal}\n${extraFlowchartSource}`;
+  const flowcharts = flowchartTags.map((tag) => ({
+    nodes: expressionForProp(tag.source, "nodes", slug, sourceText),
+    edges: expressionForProp(tag.source, "edges", slug, sourceText),
+    details: expressionForProp(tag.source, "details", slug, sourceText),
+  }));
   if (
     !Array.isArray(scenarios) ||
     !Array.isArray(decisionGroups) ||
@@ -576,7 +680,25 @@ export function convertMarkdownToPortableText(markdown, slug) {
       blocks.push({
         _type: "table",
         _key: stableKey("table", blocks.length),
-        rows,
+        rows: rows.map((cells, rowIndex) => ({
+          _type: "tableRow",
+          _key: stableKey(`table-row-${blocks.length + 1}`, rowIndex),
+          cells: cells.map((cell, cellIndex) => {
+            const markDefs = [];
+            const content = markdownInline(cell, markDefs);
+            return {
+              _type: "tableCell",
+              _key: stableKey(
+                `table-cell-${blocks.length + 1}-${rowIndex + 1}`,
+                cellIndex,
+              ),
+              content,
+              ...(markDefs.length ? { markDefs } : {}),
+              ...(rowIndex === 0 ? { isHeader: true } : {}),
+            };
+          }),
+        })),
+        hasHeaderRow: true,
       });
       continue;
     }
@@ -629,317 +751,43 @@ function isScenario(node) {
   return ["GIVEN", "WHEN", "THEN"].every((label) => content.includes(label));
 }
 
-function accessibleSvgFlowchart(svg, descendants, index, slug) {
-  const under = (node, ancestor) => {
-    for (let current = node; current; current = current.parentNode)
-      if (current === ancestor) return true;
-    return false;
-  };
-  const inDefs = (node) =>
-    descendants.some(
-      (candidate) => candidate.tagName === "defs" && under(node, candidate),
-    );
-  const rects = descendants.filter(
-    (node) => node.tagName === "rect" && !inDefs(node),
-  );
-  const lines = descendants.filter(
-    (node) => node.tagName === "line" && !inDefs(node),
-  );
-  const circles = descendants.filter(
-    (node) => node.tagName === "circle" && !inDefs(node),
-  );
-  const isDialogWireframe =
-    attr(svg, "aria-label")?.startsWith("兩個 dialog 的線框對照。") &&
-    rects.length === 18 &&
-    circles.length === 4 &&
-    lines.length === 0;
-  const isOpenStateGraph =
-    attr(svg, "aria-label")?.startsWith("open state 歸屬圖。") &&
-    rects.length === 15 &&
-    circles.length === 0 &&
-    lines.length === 4;
-  if (
-    !rects.length ||
-    (!lines.length && !isDialogWireframe) ||
-    descendants.some(
-      (node) =>
-        ["polygon", "ellipse", "polyline", "path"].includes(node.tagName) &&
-        !inDefs(node),
-    )
-  )
-    throw new Error(
-      `${slug}: accessible SVG diagram uses unsupported flowchart geometry.`,
-    );
-
-  const numberAttr = (node, name) => {
-    const value = Number(attr(node, name));
-    return Number.isFinite(value) ? value : null;
-  };
-  const nested = (node) =>
-    (node.childNodes ?? []).flatMap((child) => [child, ...nested(child)]);
-  const labels = descendants
-    .filter((node) => node.tagName === "text")
-    .map((node, labelIndex) => {
-      const positioned = [node, ...nested(node)];
-      return {
-        text: text(node).replace(/\s+/gu, " ").trim(),
-        x: positioned
-          .map((part) => numberAttr(part, "x"))
-          .find(Number.isFinite),
-        y: positioned
-          .map((part) => numberAttr(part, "y"))
-          .find(Number.isFinite),
-        labelIndex,
-      };
-    })
-    .filter((label) => label.text);
-  if (isDialogWireframe || isOpenStateGraph) {
-    if (labels.some(({ x, y }) => !Number.isFinite(x) || !Number.isFinite(y)))
-      throw new Error(
-        `${slug}: recognized dialog wireframe has unpositioned text.`,
-      );
-    const nodes = labels.map((label, labelIndex) => ({
-      id: `${slug}-flow-label-${labelIndex + 1}`,
-      label: label.text,
-      x: label.x,
-      y: label.y - 18,
-      w: Math.max(40, label.text.length * 8),
-      h: 24,
-      shape: "box",
-    }));
-    const details = Object.fromEntries(
-      nodes.map((node) => [node.id, { title: node.label, body: "" }]),
-    );
-    details.__diagram = {
-      title: attr(svg, "aria-label"),
-      body: attr(svg, "aria-label"),
-      labels: labels.map(({ text: label }) => label),
-      decorations: circles.map((node) => ({
-        cx: numberAttr(node, "cx"),
-        cy: numberAttr(node, "cy"),
-        r: numberAttr(node, "r"),
-      })),
-    };
-    const edges = lines.map((line) => {
-      const coordinates = ["x1", "y1", "x2", "y2"].map((name) =>
-        numberAttr(line, name),
-      );
-      if (coordinates.some((value) => value === null))
-        throw new Error(`${slug}: recognized SVG graph edge is incomplete.`);
-      const nearest = (x, y) =>
-        labels
-          .map((label, labelIndex) => ({
-            labelIndex,
-            distance: Math.hypot(label.x - x, label.y - y),
-          }))
-          .sort((left, right) => left.distance - right.distance)[0]?.labelIndex;
-      const from = nearest(coordinates[0], coordinates[1]);
-      const to = nearest(coordinates[2], coordinates[3]);
-      if (from === undefined || to === undefined || from === to)
-        throw new Error(`${slug}: recognized SVG graph edge cannot be mapped.`);
-      return {
-        from: nodes[from].id,
-        to: nodes[to].id,
-      };
-    });
-    return {
-      _type: "interactive_flowchart",
-      _version: 1,
-      _key: stableKey("flowchart", index),
-      nodes: JSON.stringify(nodes),
-      edges: JSON.stringify(edges),
-      details: JSON.stringify(details),
-    };
-  }
-  const nodes = rects.map((rect, nodeIndex) => {
-    const x = numberAttr(rect, "x");
-    const y = numberAttr(rect, "y");
-    const w = numberAttr(rect, "width");
-    const h = numberAttr(rect, "height");
-    if ([x, y, w, h].some((value) => value === null))
-      throw new Error(
-        `${slug}: accessible SVG flowchart node has incomplete geometry.`,
-      );
-    const contained = labels
-      .filter(
-        (label) =>
-          Number.isFinite(label.x) &&
-          Number.isFinite(label.y) &&
-          label.x >= x &&
-          label.x <= x + w &&
-          label.y >= y &&
-          label.y <= y + h,
-      )
-      .sort(
-        (left, right) => left.y - right.y || left.labelIndex - right.labelIndex,
-      );
-    if (!contained.length)
-      throw new Error(
-        `${slug}: accessible SVG flowchart node has no mapped visible label.`,
-      );
-    return {
-      id: `${slug}-flow-node-${nodeIndex + 1}`,
-      label: contained[0].text,
-      ...(contained.length > 1
-        ? {
-            sublabel: contained
-              .slice(1)
-              .map((label) => label.text)
-              .join(" "),
-          }
-        : {}),
-      x,
-      y,
-      w,
-      h,
-      shape: "box",
-      labelIndexes: contained.map((label) => label.labelIndex),
-    };
-  });
-  const usedLabels = new Set(nodes.flatMap((node) => node.labelIndexes));
-  if (labels.some((label) => !usedLabels.has(label.labelIndex)))
-    throw new Error(
-      `${slug}: accessible SVG has visible text outside mapped flowchart nodes.`,
-    );
-  const nearestNode = (x, y) =>
-    nodes
-      .map((node) => ({
-        node,
-        distance: Math.hypot(node.x + node.w / 2 - x, node.y + node.h / 2 - y),
-      }))
-      .sort((left, right) => left.distance - right.distance)[0]?.node;
-  const edges = lines.map((line) => {
-    const coordinates = ["x1", "y1", "x2", "y2"].map((name) =>
-      numberAttr(line, name),
-    );
-    if (coordinates.some((value) => value === null))
-      throw new Error(
-        `${slug}: accessible SVG flowchart edge has incomplete geometry.`,
-      );
-    const [x1, y1, x2, y2] = coordinates;
-    const from = nearestNode(x1, y1);
-    const to = nearestNode(x2, y2);
-    if (!from || !to || from === to)
-      throw new Error(
-        `${slug}: accessible SVG flowchart edge cannot be mapped to nodes.`,
-      );
-    return { from: from.id, to: to.id };
-  });
-  const title = descendants.find((node) => node.tagName === "title");
-  const description = descendants.find((node) => node.tagName === "desc");
-  const details = Object.fromEntries(
-    nodes.map((node) => [
-      node.id,
-      { title: node.label, body: node.sublabel ?? "" },
-    ]),
-  );
-  details.__diagram = {
-    title: text(title ?? { childNodes: [] }).trim(),
-    body: text(description ?? { childNodes: [] }).trim(),
-  };
-  return {
-    _type: "interactive_flowchart",
-    _version: 1,
-    _key: stableKey("flowchart", index),
-    nodes: JSON.stringify(
-      nodes.map((node) => {
-        const output = { ...node };
-        delete output.labelIndexes;
-        return output;
-      }),
-    ),
-    edges: JSON.stringify(edges),
-    details: JSON.stringify(details),
-  };
-}
-
-function svgPathEndpoints(path, slug) {
-  const tokens =
-    path.match(/[A-Za-z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?\d+)?/gu) ?? [];
-  const arity = { M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, A: 7 };
-  let x = 0;
-  let y = 0;
-  let startX = 0;
-  let startY = 0;
-  let command;
-  let firstMove = false;
-  for (let index = 0; index < tokens.length;) {
-    if (/^[A-Za-z]$/u.test(tokens[index])) {
-      command = tokens[index++];
-      firstMove = command.toUpperCase() === "M";
-      if (command.toUpperCase() === "Z") {
-        x = startX;
-        y = startY;
-        command = undefined;
-      }
-      continue;
-    }
-    if (!command)
-      throw new Error(`${slug}: SVG flowchart path has invalid commands.`);
-    const upper = command.toUpperCase();
-    const count = arity[upper];
-    if (
-      !count ||
-      index + count > tokens.length ||
-      /^[A-Za-z]$/u.test(tokens[index + count - 1])
-    )
-      throw new Error(`${slug}: SVG flowchart path command is unsupported.`);
-    const values = tokens.slice(index, index + count).map(Number);
-    const relative = command !== upper;
-    if (["M", "L", "T"].includes(upper)) {
-      x = relative ? x + values[count - 2] : values[count - 2];
-      y = relative ? y + values[count - 1] : values[count - 1];
-      if (firstMove) {
-        startX = x;
-        startY = y;
-        firstMove = false;
-        command = relative ? "l" : "L";
-      }
-    } else if (upper === "H") x = relative ? x + values[0] : values[0];
-    else if (upper === "V") y = relative ? y + values[0] : values[0];
-    else {
-      x = relative ? x + values[count - 2] : values[count - 2];
-      y = relative ? y + values[count - 1] : values[count - 1];
-    }
-    index += count;
-  }
-  if (!tokens.length || !Number.isFinite(x) || !Number.isFinite(y))
-    throw new Error(`${slug}: SVG flowchart path has no endpoint.`);
-  return [startX, startY, x, y];
-}
-
-function diagramBlock(svg, index, slug, source) {
+function canonicalSvgDiagramBlock(svg, index, slug, source) {
   const descendants = [];
   const visit = (node) => {
     descendants.push(node);
     for (const child of node.childNodes ?? []) visit(child);
   };
   visit(svg);
+  const sourceTitle = text(
+    descendants.find((node) => node.tagName === "title") ?? { childNodes: [] },
+  ).trim();
+  const sourceDescription = text(
+    descendants.find((node) => node.tagName === "desc") ?? { childNodes: [] },
+  ).trim();
+  const ariaLabel = attr(svg, "aria-label")?.trim();
+  const title = sourceTitle || ariaLabel || "";
+  const description =
+    sourceDescription ||
+    (sourceTitle && ariaLabel && ariaLabel !== sourceTitle ? ariaLabel : "");
   if (source) {
-    const visibleText = descendants
-      .filter(
-        (node) =>
-          node.tagName === "text" ||
-          node.tagName === "title" ||
-          node.tagName === "desc",
-      )
+    const renderedText = descendants
+      .filter((node) => ["text", "title", "desc"].includes(node.tagName))
       .map((node) => text(node).replace(/\s+/gu, " ").trim())
       .filter(Boolean)
-      .join(" ");
-    const requiredLabels = [
+      .join(" ")
+      .replace(/\s+/gu, "");
+    const authoredLabels = [
       ...source.nodes.flatMap((node) =>
         [node.label, node.sublabel].filter(Boolean),
       ),
       ...source.edges.map((edge) => edge.label).filter(Boolean),
     ];
-    if (
-      requiredLabels.some(
-        (label) =>
-          !visibleText.includes(String(label).replace(/\s+/gu, " ").trim()),
-      )
-    )
+    const missing = authoredLabels.filter(
+      (label) => !renderedText.includes(String(label).replace(/\s+/gu, "")),
+    );
+    if (missing.length)
       throw new Error(
-        `${slug}: rendered flowchart labels differ from authored structured data.`,
+        `${slug}: rendered SVG labels differ from authored flowchart data (${JSON.stringify(missing)}).`,
       );
     return {
       _type: "interactive_flowchart",
@@ -950,218 +798,682 @@ function diagramBlock(svg, index, slug, source) {
       details: JSON.stringify(source.details),
     };
   }
-  if (
-    attr(svg, "role") === "img" &&
-    !descendants.some((node) =>
-      /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? ""),
-    )
-  )
-    return accessibleSvgFlowchart(svg, descendants, index, slug);
-  const attrNumber = (node, name) => {
-    const value = Number(attr(node, name));
-    return Number.isFinite(value) ? value : null;
-  };
-  const labels = descendants
-    .filter((node) => node.tagName === "text")
-    .map((node) => ({
-      text: text(node).replace(/\s+/gu, " ").trim(),
-      x: attrNumber(node, "x"),
-      y: attrNumber(node, "y"),
-    }))
-    .filter((label) => label.text && label.x !== null && label.y !== null);
-  const legendLabel = labels.find(
-    ({ text: label }) => label.toUpperCase() === "LEGEND",
-  );
-  const legendY = legendLabel?.y;
-  const isLegendShape = (node) => {
-    if (legendY === undefined) return false;
-    const top =
-      attrNumber(node, "y") ??
-      attrNumber(node, "cy") ??
-      Math.min(
-        ...(
-          attr(node, "points")
-            ?.match(/-?\d+(?:\.\d+)?/gu)
-            ?.map(Number) ?? [Infinity, Infinity]
-        ).filter((_, pointIndex) => pointIndex % 2 === 1),
-      );
-    return top >= legendY - 20;
-  };
-  const legendShapes = descendants.filter(
+  const interactionControls = descendants.filter(
     (node) =>
-      ["rect", "polygon", "ellipse", "circle"].includes(node.tagName) &&
-      /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? "") &&
-      isLegendShape(node),
+      attr(node, "tabindex") !== undefined ||
+      attr(node, "aria-pressed") !== undefined,
   );
-  const shapes = descendants
-    .filter(
-      (node) =>
-        ["rect", "polygon", "ellipse", "circle"].includes(node.tagName) &&
-        /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? "") &&
-        !isLegendShape(node),
-    )
-    .map((node, shapeIndex) => {
-      let x = attrNumber(node, "x") ?? attrNumber(node, "cx") ?? 0;
-      let y = attrNumber(node, "y") ?? attrNumber(node, "cy") ?? 0;
-      let w = attrNumber(node, "width") ?? (attrNumber(node, "r") ?? 0) * 2;
-      let h = attrNumber(node, "height") ?? (attrNumber(node, "r") ?? 0) * 2;
-      if (node.tagName === "polygon") {
-        const points =
-          attr(node, "points")
-            ?.match(/-?\d+(?:\.\d+)?/gu)
-            ?.map(Number) ?? [];
-        if (points.length < 6 || points.length % 2 !== 0)
-          throw new Error(
-            `${slug}: SVG flowchart polygon geometry is unsupported.`,
-          );
-        const xs = points.filter((_, pointIndex) => pointIndex % 2 === 0);
-        const ys = points.filter((_, pointIndex) => pointIndex % 2 === 1);
-        x = Math.min(...xs);
-        y = Math.min(...ys);
-        w = Math.max(...xs) - x;
-        h = Math.max(...ys) - y;
-      } else if (["circle", "ellipse"].includes(node.tagName)) {
-        const rx = attrNumber(node, "rx") ?? attrNumber(node, "r") ?? 0;
-        const ry = attrNumber(node, "ry") ?? attrNumber(node, "r") ?? 0;
-        x -= rx;
-        y -= ry;
-        w = rx * 2;
-        h = ry * 2;
-      }
-      const contained = labels.filter(
-        (label) =>
-          label.x >= x && label.x <= x + w && label.y >= y && label.y <= y + h,
-      );
-      return {
-        id: `${slug}-flow-node-${shapeIndex + 1}`,
-        label: contained.shift()?.text ?? "",
-        ...(contained.length
-          ? { sublabel: contained.map(({ text: label }) => label).join(" · ") }
-          : {}),
-        x,
-        y,
-        w,
-        h,
-        shape: node.tagName === "polygon" ? "diamond" : "box",
-        _labelSource: contained,
-      };
-    });
-  if (!shapes.length || shapes.some((node) => !node.label))
+  if (interactionControls.length)
     throw new Error(
-      `${slug}: SVG flowchart node labels or shapes could not be mapped (nodes=${JSON.stringify(shapes.map(({ label, x, y, w, h }) => ({ label, x, y, w, h })))}; labels=${JSON.stringify(labels.map(({ text: label, x, y }) => ({ label, x, y })).slice(0, 20))}).`,
+      `${slug}: SVG contains interactive controls without a canonical diagram interaction contract.`,
     );
-  const nearestNode = (x, y) => {
-    const ranked = shapes
-      .map((node) => ({
-        node,
-        distance: Math.hypot(
-          Math.max(node.x - x, 0, x - (node.x + node.w)),
-          Math.max(node.y - y, 0, y - (node.y + node.h)),
-        ),
-      }))
-      .sort((left, right) => left.distance - right.distance);
-    return ranked[0]?.node;
-  };
-  const wires = descendants.filter(
-    (node) =>
-      ["line", "path"].includes(node.tagName) &&
-      /sn-wire/u.test(attr(node, "class") ?? ""),
-  );
-  const edges = wires.map((wire) => {
-    let x1 = attrNumber(wire, "x1");
-    let y1 = attrNumber(wire, "y1");
-    let x2 = attrNumber(wire, "x2");
-    let y2 = attrNumber(wire, "y2");
-    if (wire.tagName === "path") {
-      [x1, y1, x2, y2] = svgPathEndpoints(attr(wire, "d") ?? "", slug);
-    }
+
+  const number = (node, name, { positive = false } = {}) => {
+    const raw = attr(node, name);
+    const value = raw === undefined ? undefined : Number(raw);
     if (
-      [x1, y1, x2, y2].some((number) => number === null || number === undefined)
+      value !== undefined &&
+      (!Number.isFinite(value) || (positive && value <= 0))
     )
-      throw new Error(`${slug}: SVG flowchart wire has no supported geometry.`);
-    const from = nearestNode(x1, y1);
-    const to = nearestNode(x2, y2);
-    if (!from || !to)
       throw new Error(
-        `${slug}: SVG flowchart wire could not be connected to nodes.`,
+        `${slug}: SVG ${node.tagName} has invalid ${name}=${raw}.`,
+      );
+    return value;
+  };
+  const paintTokens = new Map([
+    ["var(--background)", "background"],
+    ["var(--muted)", "mutedBackground"],
+    ["var(--primary-foreground)", "primaryForeground"],
+    ["var(--foreground)", "foreground"],
+    ["var(--muted-foreground)", "muted"],
+    ["var(--primary)", "primary"],
+    ["var(--border)", "border"],
+    ["var(--card)", "card"],
+    ["var(--success)", "success"],
+    ["var(--warning)", "warning"],
+    ["var(--destructive)", "destructive"],
+    ["var(--chart-1)", "chart1"],
+    ["var(--chart-3)", "chart3"],
+    ["var(--chart-5)", "chart5"],
+    [
+      "color-mix(in oklch, var(--warning) 65%, var(--foreground))",
+      "warningMuted",
+    ],
+    [
+      "color-mix(in oklch, var(--destructive) 65%, var(--foreground))",
+      "destructiveMuted",
+    ],
+    ["color-mix(in srgb,var(--primary) 8%,var(--card))", "primaryWash"],
+    ["color-mix(in srgb,var(--foreground) 3%,var(--card))", "foregroundCard3"],
+    [
+      "color-mix(in srgb,var(--foreground) 30%,transparent)",
+      "foregroundTransparent30",
+    ],
+    [
+      "color-mix(in srgb,var(--foreground) 2%,transparent)",
+      "foregroundTransparent2",
+    ],
+    [
+      "color-mix(in srgb,var(--foreground) 2%,var(--background))",
+      "foregroundBackground2",
+    ],
+  ]);
+  const paint = (raw) => {
+    if (raw === undefined) return undefined;
+    if (paintTokens.has(raw)) return paintTokens.get(raw);
+    if (
+      ["none", "currentColor"].includes(raw) ||
+      /^#[\da-f]{3}(?:[\da-f]{3})?$/iu.test(raw)
+    )
+      return raw;
+    throw new Error(`${slug}: SVG paint ${raw} has no canonical paint token.`);
+  };
+  const viewBox = (attr(svg, "viewbox") ?? "")
+    .trim()
+    .split(/[\s,]+/u)
+    .map(Number);
+  if (
+    viewBox.length !== 4 ||
+    viewBox.some((value) => !Number.isFinite(value)) ||
+    viewBox[2] <= 0 ||
+    viewBox[3] <= 0
+  )
+    throw new Error(`${slug}: SVG requires a valid four-number viewBox.`);
+  const markerNodes = descendants.filter((node) => node.tagName === "marker");
+  const markerIds = new Set(
+    markerNodes.map((node) => attr(node, "id")).filter(Boolean),
+  );
+  const presentationRules = new Map();
+  const parsePresentationDeclarations = (source) => {
+    const result = {};
+    for (const part of source.split(";")) {
+      if (!part.trim()) continue;
+      const separator = part.indexOf(":");
+      if (separator < 1)
+        throw new Error(`${slug}: SVG presentation declaration is malformed.`);
+      const property = part.slice(0, separator).trim().toLowerCase();
+      const raw = part.slice(separator + 1).trim();
+      if (property === "fill" || property === "stroke")
+        result[property] = paint(raw);
+      else if (property === "letter-spacing")
+        result.letterSpacing = Number(raw);
+      else if (property === "stroke-width") result.strokeWidth = Number(raw);
+      else if (property === "stroke-dasharray")
+        result.strokeDasharray =
+          raw === "none" ? undefined : raw.split(/[\s,]+/u).map(Number);
+      else if (property === "stroke-linecap") result.strokeLinecap = raw;
+      else if (property === "stroke-linejoin") result.strokeLinejoin = raw;
+      else if (property === "font-family")
+        result.fontFamily = /mono/u.test(raw)
+          ? "mono"
+          : /serif/u.test(raw) && !/sans/u.test(raw)
+            ? "serif"
+            : "sans";
+      else if (
+        [
+          "font-size",
+          "font-weight",
+          "fill-opacity",
+          "stroke-opacity",
+          "opacity",
+        ].includes(property)
+      ) {
+        const key = {
+          "font-size": "fontSize",
+          "font-weight": "fontWeight",
+          "fill-opacity": "fillOpacity",
+          "stroke-opacity": "strokeOpacity",
+          opacity: "opacity",
+        }[property];
+        const numeric = Number(raw);
+        result[key] =
+          property === "font-weight" && !Number.isFinite(numeric)
+            ? raw
+            : numeric;
+      } else
+        throw new Error(
+          `${slug}: SVG CSS property ${property} has no canonical diagram field.`,
+        );
+    }
+    return result;
+  };
+  for (const styleNode of descendants.filter(
+    (node) => node.tagName === "style",
+  )) {
+    const css = text(styleNode);
+    const rule = /\.([A-Za-z_][\w-]*)\s*\{([^{}]*)\}/gu;
+    let match;
+    let consumed = "";
+    while ((match = rule.exec(css))) {
+      consumed += match[0];
+      presentationRules.set(match[1], parsePresentationDeclarations(match[2]));
+    }
+    if (css.replace(consumed, "").trim())
+      throw new Error(
+        `${slug}: SVG CSS contains a selector or construct outside the supported class-rule subset.`,
+      );
+  }
+  const pathCommands = (raw) => {
+    const tokens =
+      raw.match(/[A-Za-z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?\d+)?/gu) ??
+      [];
+    const arity = {
+      M: 2,
+      L: 2,
+      H: 1,
+      V: 1,
+      C: 6,
+      S: 4,
+      Q: 4,
+      T: 2,
+      A: 7,
+      Z: 0,
+    };
+    const commands = [];
+    let op;
+    for (let i = 0; i < tokens.length;) {
+      if (/^[A-Za-z]$/u.test(tokens[i])) op = tokens[i++];
+      if (!op || !(op.toUpperCase() in arity))
+        throw new Error(`${slug}: SVG path contains unsupported command.`);
+      const count = arity[op.toUpperCase()];
+      if (count === 0) {
+        commands.push({ op, values: [] });
+        op = undefined;
+        continue;
+      }
+      if (
+        i + count > tokens.length ||
+        /^[A-Za-z]$/u.test(tokens[i + count - 1])
+      )
+        throw new Error(`${slug}: SVG path command is incomplete.`);
+      const values = tokens.slice(i, i + count).map(Number);
+      if (values.some((value) => !Number.isFinite(value)))
+        throw new Error(`${slug}: SVG path has a non-number coordinate.`);
+      commands.push({ op, values });
+      i += count;
+      if (op === "M") op = "L";
+      else if (op === "m") op = "l";
+    }
+    if (!commands.length) throw new Error(`${slug}: SVG path is empty.`);
+    return commands;
+  };
+  const transforms = (raw) => {
+    if (!raw) return undefined;
+    const result = [];
+    const regex = /([A-Za-z]+)\(([^)]*)\)/gu;
+    let match;
+    while ((match = regex.exec(raw))) {
+      const values = match[2]
+        .trim()
+        .split(/[\s,]+/u)
+        .map(Number);
+      if (values.some((value) => !Number.isFinite(value)))
+        throw new Error(`${slug}: SVG transform has invalid coordinates.`);
+      const name = match[1];
+      if (name === "translate" && [1, 2].includes(values.length))
+        result.push({ type: name, x: values[0], y: values[1] ?? 0 });
+      else if (name === "scale" && [1, 2].includes(values.length))
+        result.push({ type: name, x: values[0], y: values[1] ?? values[0] });
+      else if (name === "rotate" && [1, 3].includes(values.length))
+        result.push({
+          type: name,
+          angle: values[0],
+          ...(values.length === 3 ? { cx: values[1], cy: values[2] } : {}),
+        });
+      else if (name === "matrix" && values.length === 6)
+        result.push({ type: name, values });
+      else if (["skewX", "skewY"].includes(name) && values.length === 1)
+        result.push({ type: name, angle: values[0] });
+      else throw new Error(`${slug}: SVG transform ${name} is not supported.`);
+    }
+    if (!result.length || raw.replace(regex, "").trim())
+      throw new Error(`${slug}: SVG transform is malformed.`);
+    return result;
+  };
+  const markerReference = (node, name) => {
+    const value = attr(node, name);
+    if (value === undefined) return undefined;
+    const match = /^url\(#([^)]+)\)$/u.exec(value);
+    if (!match || !markerIds.has(match[1]))
+      throw new Error(`${slug}: SVG ${name} references an unknown marker.`);
+    return match[1];
+  };
+  const common = (node, inherited = {}) => {
+    const value = {};
+    const fields = [
+      ["id", "id"],
+      ["fill", "fill", paint],
+      ["stroke", "stroke", paint],
+      ["strokewidth", "strokeWidth", (raw) => Number(raw)],
+      ["opacity", "opacity", (raw) => Number(raw)],
+      ["fillopacity", "fillOpacity", (raw) => Number(raw)],
+      ["strokeopacity", "strokeOpacity", (raw) => Number(raw)],
+      [
+        "strokedasharray",
+        "strokeDasharray",
+        (raw) =>
+          raw
+            .trim()
+            .split(/[\s,]+/u)
+            .map(Number),
+      ],
+      ["strokelinecap", "strokeLinecap"],
+      ["strokelinejoin", "strokeLinejoin"],
+    ];
+    for (const [from, to, convert] of fields) {
+      const raw = attr(node, from);
+      if (raw !== undefined) value[to] = convert ? convert(raw) : raw;
+    }
+    const markerStart = markerReference(node, "markerstart");
+    const markerEnd = markerReference(node, "markerend");
+    if (markerStart) value.markerStart = markerStart;
+    if (markerEnd) value.markerEnd = markerEnd;
+    const classes = (attr(node, "class") ?? "").split(/\s+/u).filter(Boolean);
+    const classStyle = Object.assign(
+      {},
+      ...classes.map((className) => presentationRules.get(className) ?? {}),
+    );
+    const inlineStyle = attr(node, "style");
+    const inline = inlineStyle
+      ? parsePresentationDeclarations(inlineStyle)
+      : {};
+    return { ...inherited, ...value, ...classStyle, ...inline };
+  };
+  const numberList = (raw) => {
+    const values = raw
+      .trim()
+      .split(/[\s,]+/u)
+      .map(Number);
+    if (
+      values.length < 4 ||
+      values.length % 2 ||
+      values.some((value) => !Number.isFinite(value))
+    )
+      throw new Error(`${slug}: SVG point list is invalid.`);
+    return Array.from({ length: values.length / 2 }, (_, index) => [
+      values[index * 2],
+      values[index * 2 + 1],
+    ]);
+  };
+  const convert = (node, inherited = {}) => {
+    if (["defs", "title", "desc", "style"].includes(node.tagName)) return null;
+    if (node.tagName === "g") {
+      const properties = common(node, inherited);
+      const children = (node.childNodes ?? [])
+        .map((child) => convert(child, properties))
+        .filter(Boolean);
+      const groupProperties = Object.fromEntries(
+        Object.entries(properties).filter(
+          ([key]) =>
+            ![
+              "fontFamily",
+              "fontSize",
+              "fontWeight",
+              "textAnchor",
+              "dominantBaseline",
+            ].includes(key),
+        ),
+      );
+      return children.length
+        ? {
+            type: "group",
+            ...groupProperties,
+            ...(transforms(attr(node, "transform"))
+              ? { transform: transforms(attr(node, "transform")) }
+              : {}),
+            children,
+          }
+        : null;
+    }
+    const base = common(node, inherited);
+    for (const key of [
+      "fontFamily",
+      "fontSize",
+      "fontWeight",
+      "textAnchor",
+      "dominantBaseline",
+    ])
+      delete base[key];
+    if (node.tagName === "rect")
+      return {
+        type: "rect",
+        ...base,
+        x: number(node, "x") ?? 0,
+        y: number(node, "y") ?? 0,
+        width: number(node, "width", { positive: true }),
+        height: number(node, "height", { positive: true }),
+        ...(number(node, "rx") === undefined ? {} : { rx: number(node, "rx") }),
+        ...(number(node, "ry") === undefined ? {} : { ry: number(node, "ry") }),
+      };
+    if (node.tagName === "circle")
+      return {
+        type: "circle",
+        ...base,
+        cx: number(node, "cx"),
+        cy: number(node, "cy"),
+        r: number(node, "r", { positive: true }),
+      };
+    if (node.tagName === "ellipse")
+      return {
+        type: "ellipse",
+        ...base,
+        cx: number(node, "cx"),
+        cy: number(node, "cy"),
+        rx: number(node, "rx", { positive: true }),
+        ry: number(node, "ry", { positive: true }),
+      };
+    if (node.tagName === "line")
+      return {
+        type: "line",
+        ...base,
+        x1: number(node, "x1"),
+        y1: number(node, "y1"),
+        x2: number(node, "x2"),
+        y2: number(node, "y2"),
+      };
+    if (node.tagName === "path")
+      return {
+        type: "path",
+        ...base,
+        commands: pathCommands(attr(node, "d") ?? ""),
+      };
+    if (["polyline", "polygon"].includes(node.tagName))
+      return {
+        type: node.tagName,
+        ...base,
+        points: numberList(attr(node, "points") ?? ""),
+      };
+    if (node.tagName === "text") {
+      const textStyle = (sourceNode) => {
+        const rawFamily =
+          attr(sourceNode, "fontfamily") ?? attr(node, "fontfamily") ?? "sans";
+        const fontFamily = /mono/u.test(rawFamily)
+          ? "mono"
+          : /serif/u.test(rawFamily) && !/sans/u.test(rawFamily)
+            ? "serif"
+            : "sans";
+        const rawWeight =
+          attr(sourceNode, "fontweight") ?? attr(node, "fontweight");
+        const fontWeight =
+          rawWeight === undefined
+            ? undefined
+            : /^\d{3}$/u.test(rawWeight)
+              ? Number(rawWeight)
+              : rawWeight;
+        const style = common(sourceNode, common(node, inherited));
+        const letterSpacing =
+          number(sourceNode, "letterspacing") ??
+          number(node, "letterspacing") ??
+          style.letterSpacing;
+        const fontSize =
+          number(sourceNode, "fontsize") ??
+          number(node, "fontsize") ??
+          style.fontSize;
+        return {
+          ...(attr(sourceNode, "id") ? { id: attr(sourceNode, "id") } : {}),
+          ...["fill", "stroke", "strokeWidth", "opacity"].reduce(
+            (fields, key) => {
+              if (style[key] !== undefined) fields[key] = style[key];
+              return fields;
+            },
+            {},
+          ),
+          fontFamily: style.fontFamily ?? fontFamily,
+          ...(fontWeight === undefined && style.fontWeight === undefined
+            ? {}
+            : { fontWeight: fontWeight ?? style.fontWeight }),
+          ...(letterSpacing === undefined ? {} : { letterSpacing }),
+          ...((attr(sourceNode, "textanchor") ?? attr(node, "textanchor"))
+            ? {
+                textAnchor:
+                  attr(sourceNode, "textanchor") ?? attr(node, "textanchor"),
+              }
+            : {}),
+          ...((attr(sourceNode, "dominantbaseline") ??
+          attr(node, "dominantbaseline"))
+            ? {
+                dominantBaseline:
+                  attr(sourceNode, "dominantbaseline") ??
+                  attr(node, "dominantbaseline"),
+              }
+            : {}),
+          ...(fontSize === undefined ? {} : { fontSize }),
+        };
+      };
+      const textRuns = (node.childNodes ?? []).filter(
+        (child) => child.tagName === "tspan" || child.nodeName === "#text",
+      );
+      const tspanChildren = textRuns.filter(
+        (child) => child.tagName === "tspan",
+      );
+      if (tspanChildren.length) {
+        const runs = textRuns
+          .map((child) => {
+            const value =
+              child.nodeName === "#text" ? child.value : text(child);
+            if (!value.trim()) return null;
+            const sourceNode = child.tagName === "tspan" ? child : node;
+            return {
+              ...(attr(sourceNode, "id") ? { id: attr(sourceNode, "id") } : {}),
+              text: value,
+              ...(child.tagName === "tspan" &&
+              number(sourceNode, "x") !== undefined
+                ? { x: number(sourceNode, "x") }
+                : {}),
+              ...(child.tagName === "tspan" &&
+              number(sourceNode, "y") !== undefined
+                ? { y: number(sourceNode, "y") }
+                : {}),
+              ...textStyle(sourceNode),
+            };
+          })
+          .filter(Boolean);
+        return {
+          type: "text",
+          ...base,
+          x: number(node, "x") ?? 0,
+          y: number(node, "y") ?? 0,
+          text: text(node),
+          runs,
+          ...(number(node, "fontsize") === undefined
+            ? {}
+            : { fontSize: number(node, "fontsize") }),
+          ...(attr(node, "letterspacing") === undefined
+            ? {}
+            : { letterSpacing: number(node, "letterspacing") }),
+          ...(attr(node, "textanchor")
+            ? { textAnchor: attr(node, "textanchor") }
+            : {}),
+          ...(attr(node, "dominantbaseline")
+            ? { dominantBaseline: attr(node, "dominantbaseline") }
+            : {}),
+        };
+      }
+      const rawFontFamily = attr(node, "fontfamily") ?? "sans";
+      const fontFamily = /mono/u.test(rawFontFamily)
+        ? "mono"
+        : /serif/u.test(rawFontFamily) && !/sans/u.test(rawFontFamily)
+          ? "serif"
+          : "sans";
+      const fontWeightRaw = attr(node, "fontweight");
+      const fontWeight =
+        fontWeightRaw === undefined
+          ? undefined
+          : /^\d{3}$/u.test(fontWeightRaw)
+            ? Number(fontWeightRaw)
+            : fontWeightRaw;
+      return {
+        type: "text",
+        ...base,
+        x: number(node, "x"),
+        y: number(node, "y"),
+        text: text(node),
+        ...(number(node, "fontsize") === undefined
+          ? {}
+          : { fontSize: number(node, "fontsize") }),
+        fontFamily,
+        ...(fontWeight === undefined ? {} : { fontWeight }),
+        ...(attr(node, "textanchor")
+          ? { textAnchor: attr(node, "textanchor") }
+          : {}),
+        ...(attr(node, "dominantbaseline")
+          ? { dominantBaseline: attr(node, "dominantbaseline") }
+          : {}),
+      };
+    }
+    throw new Error(
+      `${slug}: unsupported visible SVG primitive <${node.tagName}>.`,
+    );
+  };
+  const elements = (svg.childNodes ?? []).map(convert).filter(Boolean);
+  if (!elements.length)
+    throw new Error(`${slug}: SVG has no canonical diagram elements.`);
+  const markers = markerNodes.map((marker) => {
+    const id = attr(marker, "id");
+    if (!id) throw new Error(`${slug}: SVG marker is missing its source ID.`);
+    const width = number(marker, "markerwidth", { positive: true });
+    const height = number(marker, "markerheight", { positive: true });
+    const viewBox = (attr(marker, "viewbox") ?? `0 0 ${width} ${height}`)
+      .trim()
+      .split(/[\s,]+/u)
+      .map(Number);
+    if (
+      viewBox.length !== 4 ||
+      viewBox.some((value) => !Number.isFinite(value)) ||
+      viewBox[2] <= 0 ||
+      viewBox[3] <= 0
+    )
+      throw new Error(`${slug}: SVG marker ${id} has an invalid viewBox.`);
+    const shapes = (marker.childNodes ?? []).filter(
+      (child) => child.tagName === "path" || child.tagName === "polygon",
+    );
+    if (shapes.length !== 1)
+      throw new Error(
+        `${slug}: SVG marker ${id} must contain exactly one supported path or polygon.`,
+      );
+    const shape = shapes[0];
+    const style = common(shape);
+    const path =
+      shape.tagName === "path"
+        ? pathCommands(attr(shape, "d") ?? "")
+        : (() => {
+            const points = numberList(attr(shape, "points") ?? "");
+            return [
+              { op: "M", values: points[0] },
+              ...points.slice(1).map((point) => ({ op: "L", values: point })),
+              { op: "Z", values: [] },
+            ];
+          })();
+    const rawOrient = attr(marker, "orient") ?? "0";
+    const orient = ["auto", "auto-start-reverse"].includes(rawOrient)
+      ? rawOrient
+      : Number(rawOrient);
+    if (typeof orient === "number" && !Number.isFinite(orient))
+      throw new Error(
+        `${slug}: SVG marker ${id} has invalid orient=${rawOrient}.`,
+      );
+    const units = attr(marker, "markerunits");
+    if (
+      units !== undefined &&
+      !["strokeWidth", "userSpaceOnUse"].includes(units)
+    )
+      throw new Error(
+        `${slug}: SVG marker ${id} has unsupported markerUnits=${units}.`,
       );
     return {
-      from: from.id,
-      to: to.id,
-      dashed: /sn-wire-dash/u.test(attr(wire, "class") ?? ""),
-      _mid: { x: (x1 + x2) / 2, y: (y1 + y2) / 2 },
+      id,
+      viewBox: {
+        x: viewBox[0],
+        y: viewBox[1],
+        width: viewBox[2],
+        height: viewBox[3],
+      },
+      width,
+      height,
+      refX: number(marker, "refx"),
+      refY: number(marker, "refy"),
+      orient,
+      ...(units ? { units } : {}),
+      path,
+      ...(style.fill === undefined ? {} : { fill: style.fill }),
+      ...(style.stroke === undefined ? {} : { stroke: style.stroke }),
     };
   });
-  const titleNode = descendants.find((node) => node.tagName === "title");
-  const descriptionNode = descendants.find((node) => node.tagName === "desc");
-  const details = Object.fromEntries(
-    shapes.map((node) => [node.id, { title: node.label, body: "" }]),
-  );
-  details.__diagram = {
-    title: text(titleNode ?? { childNodes: [] }).trim(),
-    body: text(descriptionNode ?? { childNodes: [] }).trim(),
-    labels: labels.map(({ text: label }) => label),
-    ...(legendShapes.length
+  const emittedIds = [];
+  const collectIds = (element) => {
+    if (element.id) emittedIds.push(element.id);
+    for (const run of element.runs ?? []) if (run.id) emittedIds.push(run.id);
+    for (const child of element.children ?? []) collectIds(child);
+  };
+  elements.forEach(collectIds);
+  const anchors = descendants
+    .map((node) => ({ node, id: attr(node, "id") }))
+    .filter(({ id }) => id && !emittedIds.includes(id) && !markerIds.has(id))
+    .map(({ node, id }) => ({
+      id,
+      ...(number(node, "x") === undefined ? {} : { x: number(node, "x") }),
+      ...(number(node, "y") === undefined ? {} : { y: number(node, "y") }),
+      ...(number(node, "cx") === undefined ? {} : { x: number(node, "cx") }),
+      ...(number(node, "cy") === undefined ? {} : { y: number(node, "cy") }),
+    }));
+  const sourceIds = descendants.map((node) => attr(node, "id")).filter(Boolean);
+  const representedIds = [
+    ...emittedIds,
+    ...markers.map(({ id }) => id),
+    ...anchors.map(({ id }) => id),
+  ].sort();
+  if (JSON.stringify([...sourceIds].sort()) !== JSON.stringify(representedIds))
+    throw new Error(
+      `${slug}: SVG source id inventory is not completely represented.`,
+    );
+  const block = {
+    _type: "diagram",
+    _version: 1,
+    ...(title ? { title } : {}),
+    ...(description ? { description } : {}),
+    ...(attr(svg, "preserveaspectratio")
       ? {
-          legend: legendShapes.map((node) => {
-            let x = attrNumber(node, "x") ?? attrNumber(node, "cx") ?? 0;
-            let y = attrNumber(node, "y") ?? attrNumber(node, "cy") ?? 0;
-            let width =
-              attrNumber(node, "width") ?? (attrNumber(node, "r") ?? 0) * 2;
-            let height =
-              attrNumber(node, "height") ?? (attrNumber(node, "r") ?? 0) * 2;
-            if (node.tagName === "polygon") {
-              const points =
-                attr(node, "points")
-                  ?.match(/-?\d+(?:\.\d+)?/gu)
-                  ?.map(Number) ?? [];
-              const xs = points.filter((_, pointIndex) => pointIndex % 2 === 0);
-              const ys = points.filter((_, pointIndex) => pointIndex % 2 === 1);
-              x = Math.min(...xs);
-              y = Math.min(...ys);
-              width = Math.max(...xs) - x;
-              height = Math.max(...ys) - y;
-            }
-            const label = labels.find(
-              (candidate) =>
-                candidate.x >= x + width &&
-                candidate.x <= x + width + 320 &&
-                candidate.y >= y - 2 &&
-                candidate.y <= y + height + 10,
-            )?.text;
-            if (!label)
-              throw new Error(
-                `${slug}: SVG flowchart legend label could not be mapped.`,
-              );
-            return {
-              label,
-              shape: node.tagName === "polygon" ? "diamond" : "box",
-              emphasis: /sn-focal/u.test(attr(node, "class") ?? ""),
-            };
-          }),
+          preserveAspectRatio: (() => {
+            const [align, mode] = attr(svg, "preserveaspectratio")
+              .trim()
+              .split(/\s+/u);
+            return align === "none"
+              ? { align: "none" }
+              : { align, ...(mode ? { mode } : {}) };
+          })(),
         }
       : {}),
+    viewBox: {
+      x: viewBox[0],
+      y: viewBox[1],
+      width: viewBox[2],
+      height: viewBox[3],
+    },
+    elements,
+    ...(markers.length ? { markers } : {}),
+    ...(anchors.length ? { anchors } : {}),
   };
-  return {
-    _type: "interactive_flowchart",
-    _version: 1,
-    _key: stableKey("flowchart", index),
-    nodes: JSON.stringify(
-      shapes.map((node) =>
-        Object.fromEntries(
-          Object.entries(node).filter(([key]) => key !== "_labelSource"),
-        ),
-      ),
-    ),
-    edges: JSON.stringify(
-      edges.map((edge) =>
-        Object.fromEntries(
-          Object.entries(edge).filter(([key]) => key !== "_mid"),
-        ),
-      ),
-    ),
-    details: JSON.stringify(details),
+  return block;
+}
+
+function svgMatchesFlowchartSource(svg, source) {
+  const visibleText = [];
+  const visit = (node) => {
+    if (["text", "title", "desc"].includes(node.tagName))
+      visibleText.push(text(node));
+    for (const child of node.childNodes ?? []) visit(child);
   };
+  visit(svg);
+  const rendered = visibleText.join(" ").replace(/\s+/gu, "");
+  const required = [
+    ...source.nodes.flatMap((node) =>
+      [node.label, node.sublabel].filter(Boolean),
+    ),
+    ...source.edges.map((edge) => edge.label).filter(Boolean),
+  ];
+  return required.every((label) =>
+    rendered.includes(String(label).replace(/\s+/gu, "")),
+  );
 }
 
 export function convertRenderedHtmlToPortableText(
@@ -1174,6 +1486,7 @@ export function convertRenderedHtmlToPortableText(
     riskTables: [],
     flowcharts: [],
   },
+  graphMappings = [],
 ) {
   const fragment = parseFragment(html);
   const blocks = [];
@@ -1213,8 +1526,118 @@ export function convertRenderedHtmlToPortableText(
     if (tag === "svg") {
       if (attr(node, "aria-hidden") === "true") return;
       const flowchart = structured.flowcharts[flowchartIndex.value];
-      blocks.push(diagramBlock(node, blocks.length, slug, flowchart));
-      if (flowchart) flowchartIndex.value += 1;
+      const isAuthoredFlowchart =
+        flowchart && svgMatchesFlowchartSource(node, flowchart);
+      const diagram = canonicalSvgDiagramBlock(
+        node,
+        blocks.length,
+        slug,
+        isAuthoredFlowchart ? flowchart : undefined,
+      );
+      const svgText = [];
+      const svgNodes = [];
+      const collectSvgText = (child) => {
+        svgNodes.push(child);
+        if (["title", "desc", "text"].includes(child.tagName)) {
+          const value = text(child).replace(/\s+/gu, " ").trim();
+          if (value) svgText.push(value);
+        }
+        for (const descendant of child.childNodes ?? [])
+          collectSvgText(descendant);
+      };
+      collectSvgText(node);
+      const sourceSvgIds = svgNodes
+        .map((child) => attr(child, "id"))
+        .filter(Boolean);
+      const sourceTextCount = svgNodes.filter(
+        (child) => child.tagName === "text",
+      ).length;
+      const canonicalTextCount =
+        diagram._type === "diagram"
+          ? (JSON.stringify(diagram.elements).match(/"type":"text"/gu)
+              ?.length ?? 0)
+          : JSON.parse(diagram.nodes).length;
+      const canonicalSvgIds =
+        diagram._type === "diagram"
+          ? [
+              ...diagram.elements.flatMap((element) => {
+                const ids = [];
+                const collect = (candidate) => {
+                  if (candidate.id) ids.push(candidate.id);
+                  for (const run of candidate.runs ?? [])
+                    if (run.id) ids.push(run.id);
+                  for (const child of candidate.children ?? []) collect(child);
+                };
+                collect(element);
+                return ids;
+              }),
+              ...(diagram.markers ?? []).map(({ id }) => id),
+              ...(diagram.anchors ?? []).map(({ id }) => id),
+            ]
+          : [
+              ...JSON.parse(diagram.nodes).map(({ id }) => id),
+              ...JSON.parse(diagram.edges).flatMap(({ from, to }) => [
+                from,
+                to,
+              ]),
+              ...Object.keys(JSON.parse(diagram.details)),
+            ];
+      const authoredFlowchartData =
+        diagram._type === "interactive_flowchart"
+          ? {
+              nodes: JSON.parse(diagram.nodes),
+              edges: JSON.parse(diagram.edges),
+              details: JSON.parse(diagram.details),
+            }
+          : null;
+      const authoredFlowchartDataPreserved = authoredFlowchartData
+        ? JSON.stringify(authoredFlowchartData) === JSON.stringify(flowchart)
+        : null;
+      graphMappings.push({
+        renderedSvgIndex: graphMappings.length + 1,
+        ariaLabel: attr(node, "aria-label") ?? null,
+        blockType: diagram._type,
+        sourceSvgSha256: createHash("sha256")
+          .update(serializeOuter(node))
+          .digest("hex"),
+        canonicalDataSha256: createHash("sha256")
+          .update(JSON.stringify(diagram))
+          .digest("hex"),
+        canonicalElementCount:
+          diagram._type === "diagram"
+            ? (JSON.stringify(diagram.elements).match(
+                /"type":"(?:rect|circle|ellipse|line|path|polyline|polygon|text|group)"/gu,
+              )?.length ?? 0)
+            : JSON.parse(diagram.nodes).length,
+        sourceTextCount,
+        canonicalTextCount,
+        sourceSvgIds,
+        canonicalSvgIds,
+        svgIdsPreserved:
+          diagram._type === "diagram"
+            ? JSON.stringify([...sourceSvgIds].sort()) ===
+              JSON.stringify([...canonicalSvgIds].sort())
+            : null,
+        authoredFlowchartDataPreserved,
+        ...(authoredFlowchartData
+          ? {
+              sourceFlowchartDataSha256: createHash("sha256")
+                .update(JSON.stringify(flowchart))
+                .digest("hex"),
+              canonicalFlowchartDataSha256: createHash("sha256")
+                .update(JSON.stringify(authoredFlowchartData))
+                .digest("hex"),
+            }
+          : {}),
+        labels: svgText,
+        mappedEdges:
+          diagram._type === "interactive_flowchart"
+            ? JSON.parse(diagram.edges)
+            : [],
+        tableRows: diagram._type === "table" ? diagram.rows.length : null,
+      });
+      blocks.push(diagram);
+      if (isAuthoredFlowchart) flowchartIndex.value += 1;
       return;
     }
     if (
@@ -1241,7 +1664,7 @@ export function convertRenderedHtmlToPortableText(
       blocks.push({
         _type: "image",
         _key: stableKey("image", blocks.length),
-        asset: { _ref: key },
+        asset: stableMediaAsset(key),
         alt: attr(node, "alt") ?? "",
         ...(attr(node, "title") ? { title: attr(node, "title") } : {}),
       });
@@ -1348,7 +1771,28 @@ export function convertRenderedHtmlToPortableText(
         });
         return;
       }
-      blocks.push(tableBlock(node, blocks.length));
+      const converted = tableBlock(node, blocks.length);
+      for (const image of converted.images) {
+        const key = attr(image, "data-emdash-media-key");
+        if (!key || !mediaByKey.has(key))
+          throw new Error(
+            `${slug}: table image was not matched to source media.`,
+          );
+        blocks.push({
+          _type: "image",
+          _key: stableKey("image", blocks.length),
+          asset: stableMediaAsset(key),
+          alt: attr(image, "alt") ?? "",
+          ...(attr(image, "title") ? { title: attr(image, "title") } : {}),
+        });
+        usedMediaKeys.add(key);
+      }
+      for (const id of converted.anchors) {
+        const anchor = uniqueAnchor(id);
+        if (anchor)
+          blocks.push(makeBlock("normal", [], anchor, blocks.length, []));
+      }
+      blocks.push(converted.block);
       return;
     }
     if (tag === "div" && attr(node, "data-slot") === "accordion") {
@@ -1511,7 +1955,7 @@ export function serializeTransferMediaPlaceholders(entries, mediaManifest) {
         if (block._type !== "image") return block;
         const key = block.asset?._ref;
         const media = mediaByKey.get(key);
-        if (!media || media.slug !== entry.slug)
+        if (!media || media.slug !== entry.slug || media.alt !== block.alt)
           throw new Error(
             `${entry.slug}: image reference has no exact source manifest row.`,
           );

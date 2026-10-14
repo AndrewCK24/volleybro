@@ -10,6 +10,16 @@ const mediaManifestSchema = z.array(
   z.strictObject({
     slug: z.string().min(1),
     filename: z.string().min(1),
+    packagePath: z.string().regex(/^media\/[a-z0-9-]+\/[^/]+$/u),
+    contentType: z.enum([
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+      "image/webp",
+      "image/avif",
+      "image/svg+xml",
+    ]),
+    alt: z.string(),
     key: z.string().min(1),
     sha256: z.string().regex(/^[a-f0-9]{64}$/u),
     size: z.number().int().nonnegative(),
@@ -291,6 +301,8 @@ export async function finalizeLegacyMigrationReceipts(input: {
         : "";
       if (
         manifest.slug !== slug ||
+        manifest.packagePath !== `media/${slug}/${manifest.filename}` ||
+        source.alt !== manifest.alt ||
         sourceUrl !== manifest.sourceUrl ||
         source.filename !== `${slug}-${manifest.filename}` ||
         (source.alt ?? "") !== (seedImage.alt ?? "") ||

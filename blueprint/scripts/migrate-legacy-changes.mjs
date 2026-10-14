@@ -43,7 +43,8 @@ function printHelp() {
   console.log(`Usage: node blueprint/scripts/migrate-legacy-changes.mjs \\
   --store <fixed snapshot extraction> --rendered <legacy static /changes output> \\
   --manifest <45-row evidence JSON> --pull-requests <GitHub PR export JSON> \\
-  --git-root <repository containing snapshot commit> --renderer-root <pinned legacy renderer checkout> \\
+  --git-root <archive repository containing snapshot commit> --archive-receipt <verified archive receipt> \\
+  --renderer-root <pinned legacy renderer checkout> \\
   --project-spec <accepted project G1 Team Doc export> --out <disposable transfer directory> \\
   [--g1-specs <accepted G1 documents JSON; matching slugs merge, other slugs create pages>]`);
 }
@@ -209,6 +210,41 @@ function localImageSources(proposal) {
   return sources;
 }
 
+function imageContentType(filename, bytes, slug) {
+  const extension = path.extname(filename).toLowerCase();
+  const signatures = {
+    ".png":
+      bytes.length >= 8 &&
+      bytes
+        .subarray(0, 8)
+        .equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+    ".jpg": bytes.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff])),
+    ".jpeg": bytes.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff])),
+    ".gif": /^GIF8[79]a/u.test(bytes.toString("ascii", 0, 6)),
+    ".webp":
+      bytes.toString("ascii", 0, 4) === "RIFF" &&
+      bytes.toString("ascii", 8, 12) === "WEBP",
+    ".avif": bytes.toString("ascii", 4, 12).startsWith("ftypavif"),
+    ".svg": /^\s*(?:<\?xml[^>]*>\s*)?<svg\b/u.test(
+      bytes.toString("utf8", 0, Math.min(bytes.length, 1024)),
+    ),
+  };
+  const contentTypes = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".avif": "image/avif",
+    ".svg": "image/svg+xml",
+  };
+  if (!signatures[extension])
+    throw new Error(
+      `${slug}: image extension ${extension || "(missing)"} has no verified content type.`,
+    );
+  return contentTypes[extension];
+}
+
 function attachMediaMarkers(html, slug, sourceImages, storeRoot, snapshot) {
   if (sourceImages.length === 0) return { html, sourceFiles: [] };
   const fragment = parseFragment(html);
@@ -245,6 +281,9 @@ function attachMediaMarkers(html, slug, sourceImages, storeRoot, snapshot) {
     if (!sourceFiles.some((file) => file.key === key))
       sourceFiles.push({
         filename: source.filename,
+        packagePath: `media/${slug}/${source.filename}`,
+        contentType: imageContentType(source.filename, bytes, slug),
+        alt: source.alt,
         key,
         sha256: digest,
         size: bytes.byteLength,
@@ -610,7 +649,7 @@ function validateProjectSpec(spec) {
 
 async function stableWritePackage(outputDirectory, files) {
   try {
-    const existing = await readdir(outputDirectory);
+    const existing = await filesBelow(outputDirectory);
     if (
       JSON.stringify([...existing].sort()) !==
       JSON.stringify(Object.keys(files).sort())
@@ -620,11 +659,11 @@ async function stableWritePackage(outputDirectory, files) {
       );
     }
     for (const [name, content] of Object.entries(files)) {
-      const existingContent = await readFile(
-        path.join(outputDirectory, name),
-        "utf8",
-      );
-      if (existingContent !== content)
+      const existingContent = await readFile(path.join(outputDirectory, name));
+      const expectedContent = Buffer.isBuffer(content)
+        ? content
+        : Buffer.from(content, "utf8");
+      if (!existingContent.equals(expectedContent))
         throw new Error(
           "Output directory already exists with different migration output.",
         );
@@ -635,8 +674,11 @@ async function stableWritePackage(outputDirectory, files) {
     if (error?.code !== "ENOENT") throw error;
   }
   await mkdir(outputDirectory, { recursive: true });
-  for (const [name, content] of Object.entries(files))
-    await writeFile(path.join(outputDirectory, name), content, "utf8");
+  for (const [name, content] of Object.entries(files)) {
+    const filePath = path.join(outputDirectory, name);
+    await mkdir(path.dirname(filePath), { recursive: true });
+    await writeFile(filePath, content);
+  }
 }
 
 async function run(options) {
@@ -646,6 +688,7 @@ async function run(options) {
     "manifest",
     "pull-requests",
     "git-root",
+    "archive-receipt",
     "renderer-root",
     "project-spec",
     "out",
@@ -675,6 +718,7 @@ async function run(options) {
     prRows,
     specs,
     projectSpecSource,
+    archiveReceipt,
   ] = await Promise.all([
     readdir(storeRoot, { withFileTypes: true }),
     readdir(renderedRoot, { withFileTypes: true }),
@@ -684,6 +728,7 @@ async function run(options) {
       ? readFile(path.resolve(options["g1-specs"]), "utf8").then(JSON.parse)
       : Promise.resolve(undefined),
     readFile(path.resolve(options["project-spec"]), "utf8").then(JSON.parse),
+    readFile(path.resolve(options["archive-receipt"]), "utf8").then(JSON.parse),
   ]);
   const projectSpec = validateProjectSpec(projectSpecSource);
   const slugs = storeEntries
@@ -732,6 +777,31 @@ async function run(options) {
     .trim()
     .split(/\r?\n/u)
     .filter(Boolean);
+  if (
+    archiveReceipt?.snapshot !== SNAPSHOT ||
+    typeof archiveReceipt.archiveTag !== "string" ||
+    !/^archive\/[a-z0-9-]+$/u.test(archiveReceipt.archiveTag) ||
+    archiveReceipt.reachableCommits !== reachable.length ||
+    archiveReceipt.isShallow !== false ||
+    archiveReceipt.bundleRestoreExactGraph !== true ||
+    !Number.isInteger(archiveReceipt.protectedRuleset) ||
+    archiveReceipt.protectedRuleset <= 0 ||
+    archiveReceipt.oldBranchRetired !== false ||
+    !/^[a-f0-9]{64}$/u.test(archiveReceipt.parentGraphSha256 ?? "")
+  )
+    throw new Error(
+      "Archive receipt does not prove the complete fixed snapshot graph.",
+    );
+  if (
+    gitOutput(gitRoot, [
+      "rev-parse",
+      `${archiveReceipt.archiveTag}^{}`,
+    ]).trim() !== SNAPSHOT
+  )
+    throw new Error("Archive tag does not point to the fixed snapshot.");
+  const archiveReceiptSha256 = sha256(
+    await readFile(path.resolve(options["archive-receipt"])),
+  );
   const prExportHash = sha256(
     await readFile(path.resolve(options["pull-requests"])),
   );
@@ -756,25 +826,36 @@ async function run(options) {
   for (const slug of slugs) {
     const sourceDirectory = path.join(storeRoot, slug);
     const htmlPath = path.join(renderedRoot, `${slug}.html`);
-    const [indexMdx, proposal, review, facts, renderedHtml] = await Promise.all(
-      [
+    const [indexMdx, proposal, reviewFiles, facts, renderedHtml, designSource] =
+      await Promise.all([
         readFile(path.join(sourceDirectory, "index.mdx"), "utf8"),
         readFile(path.join(sourceDirectory, "proposal.mdx"), "utf8").catch(
           () => "",
         ),
-        readFile(path.join(sourceDirectory, "review.mdx"), "utf8").catch(
-          () => "",
+        readdir(sourceDirectory).then((entries) =>
+          Promise.all(
+            entries
+              .filter((name) => /^review(?:-[^/]+)?\.mdx$/u.test(name))
+              .sort()
+              .map((name) =>
+                readFile(path.join(sourceDirectory, name), "utf8"),
+              ),
+          ),
         ),
         readFile(path.join(sourceDirectory, "facts.json"), "utf8").then(
           JSON.parse,
         ),
         readFile(htmlPath, "utf8"),
-      ],
-    );
+        readFile(path.join(sourceDirectory, "design.tsx"), "utf8").catch(
+          () => "",
+        ),
+      ]);
+    const review = reviewFiles.join("\n");
     const titleAndDescription = readFrontmatter(indexMdx, slug);
     const structured = extractMdxStructuredData(
       `${indexMdx}\n${proposal}\n${review}`,
       slug,
+      designSource,
     );
     const extractedHtml = extractRenderedContent(renderedHtml, slug);
     const renderArtifacts = removeLegacyPresentationArtifacts(
@@ -793,12 +874,19 @@ async function run(options) {
       SNAPSHOT,
     );
     legacyHtml = attached.html;
-    const blocks = convertRenderedHtmlToPortableText(
-      legacyHtml,
-      slug,
-      attached.sourceFiles,
-      structured,
-    );
+    let blocks;
+    const graphMappings = [];
+    try {
+      blocks = convertRenderedHtmlToPortableText(
+        legacyHtml,
+        slug,
+        attached.sourceFiles,
+        structured,
+        graphMappings,
+      );
+    } catch (error) {
+      throw new Error(`${slug}: ${error.message}`, { cause: error });
+    }
     const scenarios = structured.scenarios;
     const importedAnchors = blocks
       .filter(
@@ -909,6 +997,7 @@ async function run(options) {
       anchors,
       renderedHtmlSha256: sha256(renderedHtml),
       removedPresentationArtifacts: renderArtifacts.removed,
+      graphMappings,
       portableTextSha256: sha256(JSON.stringify(blocks)),
       seedContentSha256: seedContentHash,
       media: attached.sourceFiles.map(
@@ -1059,6 +1148,13 @@ async function run(options) {
     snapshotParent: snapshotMetadata.slice(2).join(" ") || null,
     reachableCommitCount: reachable.length,
     reachableCommitGraphSha256: sha256(`${reachable.join("\n")}\n`),
+    archive: {
+      tag: archiveReceipt.archiveTag,
+      receiptSha256: archiveReceiptSha256,
+      parentGraphSha256: archiveReceipt.parentGraphSha256,
+      protectedRuleset: archiveReceipt.protectedRuleset,
+      bundleRestoreExactGraph: archiveReceipt.bundleRestoreExactGraph,
+    },
     earlierUnreachableHistoryGuaranteed: false,
     renderedSnapshotAsserted: SNAPSHOT,
     rendererRevision,
@@ -1102,12 +1198,51 @@ async function run(options) {
     `After importing the seed as drafts, export all drafts from /_emdash/api/content/blueprint_changes?status=draft&limit=100 with an EmDash API token that can read drafts, then run finalize-legacy-migration-receipts.mjs. Only that finalizer output may be copied to the Linear migration issue.`,
     ``,
   ].join("\n");
-  await stableWritePackage(outputDirectory, {
+  const packageFiles = {
     "seed.json": seedJson,
     "audit.json": auditJson,
     "media-manifest.json": mediaJson,
     "migration-preimport.md": receiptText,
-  });
+  };
+  for (const row of mediaManifest) {
+    const bytes = readContainedImage(
+      path.join(storeRoot, row.slug, "proposal.mdx"),
+      row.filename,
+      storeRoot,
+      row.slug,
+    );
+    if (
+      bytes.byteLength !== row.size ||
+      sha256(bytes) !== row.sha256 ||
+      imageContentType(row.filename, bytes, row.slug) !== row.contentType
+    )
+      throw new Error(
+        `${row.slug}: packaged media bytes changed after conversion.`,
+      );
+    packageFiles[row.packagePath] = bytes;
+  }
+  const packageManifest = `${JSON.stringify(
+    {
+      schemaVersion: 1,
+      files: Object.entries(packageFiles)
+        .map(([filePath, content]) => {
+          const bytes = Buffer.isBuffer(content)
+            ? content
+            : Buffer.from(content, "utf8");
+          return {
+            path: filePath,
+            sha256: sha256(bytes),
+            size: bytes.byteLength,
+          };
+        })
+        .sort((left, right) => left.path.localeCompare(right.path)),
+    },
+    null,
+    2,
+  )}\n`;
+  packageFiles["package-manifest.json"] = packageManifest;
+  packageFiles["package.sha256"] = `${sha256(packageManifest)}\n`;
+  await stableWritePackage(outputDirectory, packageFiles);
   console.log(
     `Audited ${slugs.length}/45 legacy pages, ${standaloneG1Specs.length} standalone accepted G1 pages and project G1 draft; ${mediaManifest.length} media assets; ${acceptedSpecs.size} accepted G1 docs total.`,
   );
