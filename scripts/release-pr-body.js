@@ -37,7 +37,7 @@ function changelogEntryForVersion(changelog, version) {
 export function buildReleasePrBody({ packageName, version, changelog }) {
   const entry = changelogEntryForVersion(changelog, version);
   const body = [
-    "This Changesets version PR contains the release notes accumulated on `main` for this candidate. Review them before merging; the normal production-release authorization and QA gates still apply.",
+    "This Changesets version PR contains the release notes accumulated on `main` for this candidate. Review them before merging. Merging starts no release: the release owner then dispatches `production-release.yml` on `main` with `mode=normal-retry`, this PR's number and its merge SHA. The production QA gate still applies.",
     "",
     "# Releases",
     "",
