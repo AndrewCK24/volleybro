@@ -104,7 +104,7 @@ Select the bump type (patch/minor/major), then write the changeset body in Keep-
 - Migrate package manager from npm to pnpm
 ```
 
-Use only these `###` headings: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`. Add `####` domain sub-headings (e.g. `Team`, `Game`, `CI`, `Infrastructure`) when entries span multiple areas.
+Use only these `###` headings: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`. Put every entry under a `####` domain sub-heading (e.g. `Team`, `Game`, `CI`, `Infrastructure`), even in a single-entry changeset, because the release merges changesets.
 
 Omit internal refactors, test additions, linting fixes, and dep upgrades with no user-visible effect. Always include toolchain changes that affect contributor setup.
 
