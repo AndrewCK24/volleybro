@@ -1,8 +1,10 @@
 name: Production release
 
-# A merge-triggered run fails the main-only production QA environment after promoting,
-# so the release owner dispatches every release on main.
+# Do not switch back to pull_request: its merge ref fails the main-only QA environment (ADR-0127).
 on:
+  push:
+    branches: [main]
+    paths: [CHANGELOG.md]
   workflow_dispatch:
     inputs:
       mode:
@@ -32,7 +34,7 @@ env:
   PRODUCTION_DB_ACTIVE: ${{ vars.PRODUCTION_DB_ACTIVE }}
 
 jobs:
-  candidate:
+  authorize:
     if: >-
       vars.RELEASE_AUTOMATION_ENABLED == 'true' &&
       github.ref == 'refs/heads/main' && inputs.mode != 'recover'
@@ -45,16 +47,18 @@ jobs:
       pull-requests: read
       actions: read
     outputs:
-      candidate_id: ${{ steps.stage.outputs.candidate_id }}
-      candidate_url: ${{ steps.stage.outputs.candidate_url }}
-      baseline: ${{ steps.stage.outputs.baseline }}
-      sha: ${{ steps.stage.outputs.sha }}
+      release: ${{ steps.authorize.outputs.release }}
+      sha: ${{ steps.authorize.outputs.sha }}
+      release_authorization: ${{ steps.authorize.outputs.release_authorization }}
+      baseline_deployment: ${{ steps.authorize.outputs.baseline_deployment }}
+      baseline_updated_at: ${{ steps.authorize.outputs.baseline_updated_at }}
+      baseline_sha: ${{ steps.authorize.outputs.baseline_sha }}
       controller_sha: ${{ steps.controller.outputs.controller_sha }}
       mode: ${{ steps.controller.outputs.mode }}
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.workflow_sha || github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.workflow_sha || github.sha }}
           fetch-depth: 0
       - id: controller
         name: Copy trusted release controller before candidate checkout
@@ -87,8 +91,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          RELEASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.sha || github.event.pull_request.merge_commit_sha }}
+          GITHUB_SHA: ${{ github.sha }}
+          RELEASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.sha || github.sha }}
           RELEASE_BOT_LOGIN: ${{ vars.RELEASE_BOT_LOGIN }}
           RELEASE_OWNER_LOGIN: ${{ vars.RELEASE_OWNER_LOGIN }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -110,9 +114,30 @@ jobs:
           else
             node "$RUNNER_TEMP/release-controls.js" authorize
           fi
+
+  candidate:
+    needs: authorize
+    if: needs.authorize.outputs.release != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      candidate_id: ${{ steps.stage.outputs.candidate_id }}
+      candidate_url: ${{ steps.stage.outputs.candidate_url }}
+      baseline: ${{ steps.stage.outputs.baseline }}
+      sha: ${{ steps.stage.outputs.sha }}
+      controller_sha: ${{ needs.authorize.outputs.controller_sha }}
+      mode: ${{ needs.authorize.outputs.mode }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: trusted-release-controller
+          path: ${{ runner.temp }}
       - uses: actions/checkout@v7
         with:
-          ref: ${{ steps.authorize.outputs.sha }}
+          ref: ${{ needs.authorize.outputs.sha }}
           fetch-depth: 0
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
         with:
@@ -129,13 +154,13 @@ jobs:
           VERCEL_ORG_ID: ${{ vars.VERCEL_TEAM_ID }}
           VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
           PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
-          RELEASE_SHA: ${{ steps.authorize.outputs.sha }}
-          RELEASE_MODE: ${{ steps.controller.outputs.mode }}
-          RELEASE_AUTHORIZATION: ${{ steps.authorize.outputs.release_authorization }}
-          CONTROLLER_SHA: ${{ steps.controller.outputs.controller_sha }}
-          EXPECTED_BASELINE_DEPLOYMENT: ${{ steps.authorize.outputs.baseline_deployment }}
-          EXPECTED_BASELINE_UPDATED_AT: ${{ steps.authorize.outputs.baseline_updated_at }}
-          EXPECTED_BASELINE_SHA: ${{ steps.authorize.outputs.baseline_sha }}
+          RELEASE_SHA: ${{ needs.authorize.outputs.sha }}
+          RELEASE_MODE: ${{ needs.authorize.outputs.mode }}
+          RELEASE_AUTHORIZATION: ${{ needs.authorize.outputs.release_authorization }}
+          CONTROLLER_SHA: ${{ needs.authorize.outputs.controller_sha }}
+          EXPECTED_BASELINE_DEPLOYMENT: ${{ needs.authorize.outputs.baseline_deployment }}
+          EXPECTED_BASELINE_UPDATED_AT: ${{ needs.authorize.outputs.baseline_updated_at }}
+          EXPECTED_BASELINE_SHA: ${{ needs.authorize.outputs.baseline_sha }}
           RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
         run: node "$RUNNER_TEMP/release-controls.js" stage
       - uses: actions/upload-artifact@v7
@@ -577,6 +602,7 @@ jobs:
 
   failure-summary:
     needs:
+      - authorize
       - candidate
       - recovery-evidence
       - promote-and-smoke

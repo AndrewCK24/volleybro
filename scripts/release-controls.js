@@ -8,13 +8,15 @@ import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 
 const execFile = promisify(execFileCallback);
-const api = "https://api.vercel.com";
-const shaPattern = /^[0-9a-f]{40}$/;
-const digestPattern = /^sha256:([0-9a-f]{64})$/;
-const releaseStateVersion = 3;
-const productionWorkflow = ".github/workflows/production-release.yml";
-const ciWorkflow = ".github/workflows/ci.yml";
-const reviewEnvironment = "production-release-review";
+const VERCEL_API = "https://api.vercel.com";
+const SHA_PATTERN = /^[0-9a-f]{40}$/;
+const DIGEST_PATTERN = /^sha256:([0-9a-f]{64})$/;
+const RELEASE_STATE_VERSION = 3;
+const PUSH_LOOKUP_ATTEMPTS = 12;
+const PUSH_LOOKUP_DELAY_MS = 5_000;
+const PRODUCTION_WORKFLOW = ".github/workflows/production-release.yml";
+const CI_WORKFLOW = ".github/workflows/ci.yml";
+const REVIEW_ENVIRONMENT = "production-release-review";
 const RECOVERY_RECEIPT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const RECOVERY_COMPATIBILITY_TEST =
   "test/integration/persistence/release-compatibility.itest.ts";
@@ -49,7 +51,7 @@ const KNOWN_UNRELATED_PATTERNS = [
 const CANDIDATE_LEGACY_ASSERTION = "candidate reads legacy persisted records";
 const BASELINE_CANDIDATE_ASSERTION = (baselineSha) =>
   `production baseline ${baselineSha} reads candidate-written records`;
-const sourceQAScopes = [
+const SOURCE_QA_SCOPES = [
   ["unit", "Test"],
   ["integration", "Integration"],
 ];
@@ -78,7 +80,7 @@ async function command(bin, args, { trim = true, ...options } = {}) {
 
 async function vercel(path, options = {}) {
   const team = process.env.VERCEL_TEAM_ID;
-  const url = new URL(`${api}${path}`);
+  const url = new URL(`${VERCEL_API}${path}`);
   if (team) url.searchParams.set("teamId", team);
   const response = await fetch(url, {
     ...options,
@@ -154,7 +156,7 @@ function json(value, label) {
 
 function exactSha(value, label) {
   const sha = String(value || "").toLowerCase();
-  if (!shaPattern.test(sha)) fail(`${label} must be a full 40-character SHA`);
+  if (!SHA_PATTERN.test(sha)) fail(`${label} must be a full 40-character SHA`);
   return sha;
 }
 
@@ -189,7 +191,7 @@ function hostname(value, label) {
 }
 
 function validateStateSchema(state) {
-  if (state.stateVersion !== releaseStateVersion)
+  if (state.stateVersion !== RELEASE_STATE_VERSION)
     fail("Release state does not use the current QA receipt contract");
   exactSha(state.sha, "Release state SHA");
   exactSha(state.controllerSha, "Release state controller SHA");
@@ -341,7 +343,7 @@ async function protectedJobReceipt(name, environment) {
   ]);
   validateWorkflowRun(run, {
     id: runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
     attempt: runAttempt,
   });
@@ -378,7 +380,7 @@ async function verifyProtectedJobReceipt(receipt, expectedRunId, name) {
     !receipt ||
     receipt.runId !== String(expectedRunId) ||
     receipt.jobName !== name ||
-    receipt.environment !== reviewEnvironment ||
+    receipt.environment !== REVIEW_ENVIRONMENT ||
     receipt.githubJob !== expectedGithubJob ||
     !Array.isArray(receipt.reviewHistory) ||
     !receipt.reviewHistory.length
@@ -392,7 +394,7 @@ async function verifyProtectedJobReceipt(receipt, expectedRunId, name) {
   ]);
   validateWorkflowRun(run, {
     id: receipt.runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
     attempt: receipt.runAttempt,
   });
@@ -456,26 +458,17 @@ export function validateRequiredChecks(sha, checkRuns, statuses, repository) {
 }
 
 function validateAuthorization({
-  event,
+  sha,
   pr,
   expectedAuthor,
   repository,
   checkRuns,
   statuses,
 }) {
-  const mergeSha = event.pull_request?.merge_commit_sha;
-  if (
-    !event.pull_request?.merged ||
-    !mergeSha ||
-    pr.head.sha !== event.pull_request.head?.sha
-  ) {
-    fail("Only the exact merged pull request commit can authorize a release");
-  }
   validateVersionPr(pr, expectedAuthor, repository);
-  if (pr.state !== "closed" || !pr.merged || pr.merge_commit_sha !== mergeSha)
+  if (pr.state !== "closed" || !pr.merged || pr.merge_commit_sha !== sha)
     fail("Version PR must be merged at this exact commit");
   validateRequiredChecks(pr.head.sha, checkRuns, statuses, repository);
-  return mergeSha;
 }
 
 function validateHotfixPr({ pr, sha, repository, checkRuns, statuses }) {
@@ -695,7 +688,7 @@ async function verifyCompatibilityTestStep(state, receipt) {
   ]);
   validateWorkflowRun(run, {
     id: receipt.runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository: required("GITHUB_REPOSITORY"),
     attempt: receipt.runAttempt,
   });
@@ -756,7 +749,7 @@ async function recordCompatibilityTest(state, plan) {
   ]);
   validateWorkflowRun(run, {
     id: state.releaseRunId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository: required("GITHUB_REPOSITORY"),
     attempt: state.releaseRunAttempt,
   });
@@ -960,7 +953,7 @@ async function verifyRecoveryEvidence(
     fail(
       "Recovery receipt no longer matches the trusted source, baseline, candidate, or data contract",
     );
-  for (const [scope, name] of sourceQAScopes) {
+  for (const [scope, name] of SOURCE_QA_SCOPES) {
     await verifyReusableSourceQA(state, state.sourceQA.scopes[scope], name);
   }
   return receipt;
@@ -1178,44 +1171,91 @@ async function verifyMetadataOnly(base, head) {
   }
 }
 
-async function authorize() {
-  const event = json(
-    await (
-      await import("node:fs/promises")
-    ).readFile(required("GITHUB_EVENT_PATH"), "utf8"),
-    "GitHub event",
-  );
-  const prNumber = event.pull_request?.number;
-  const mergedSha = event.pull_request?.merge_commit_sha;
-  if (!prNumber || mergedSha !== required("GITHUB_SHA"))
-    fail("Only the exact merged pull request commit can authorize a release");
-  const pr = await github(`pulls/${prNumber}`);
-  const expectedAuthor = required("RELEASE_BOT_LOGIN");
-  const [checks, statuses] = await Promise.all([
+async function validateMergedVersionPr(pullRequest, sha) {
+  const pr = await github(`pulls/${pullRequest}`);
+  const [checks, statuses, environment] = await Promise.all([
     github(`commits/${pr.head.sha}/check-runs?per_page=100`),
     github(`commits/${pr.head.sha}/statuses?per_page=100`),
+    github("environments/production-release-review"),
   ]);
-  const authorizedSha = validateAuthorization({
-    event,
+  validateAuthorization({
+    sha,
     pr,
-    expectedAuthor,
+    expectedAuthor: required("RELEASE_BOT_LOGIN"),
     repository: required("GITHUB_REPOSITORY"),
     checkRuns: checks.check_runs,
     statuses,
   });
-  if (authorizedSha !== required("GITHUB_SHA"))
-    fail("Workflow checkout does not match the merged SHA");
-  const parent = await command("git", ["rev-parse", `${mergedSha}^1`]);
-  await verifyMetadataOnly(parent, mergedSha);
-  validateReviewEnvironment(
-    await github("environments/production-release-review"),
-  );
-  if (process.env.GITHUB_OUTPUT) {
-    const fs = await import("node:fs/promises");
-    await fs.appendFile(process.env.GITHUB_OUTPUT, `sha=${mergedSha}\n`);
+  const parent = await command("git", ["rev-parse", `${sha}^1`]);
+  await verifyMetadataOnly(parent, sha);
+  validateReviewEnvironment(environment);
+  return pr;
+}
+
+async function mergedPullsForPush(sha) {
+  // GitHub can index a fresh merge a moment after the push event.
+  for (let attempt = 1; ; attempt++) {
+    const pulls = (await github(`commits/${sha}/pulls`)).filter(
+      (pr) => pr.merged_at && pr.merge_commit_sha === sha,
+    );
+    if (pulls.length || attempt === PUSH_LOOKUP_ATTEMPTS) return pulls;
+    await new Promise((resolve) => setTimeout(resolve, PUSH_LOOKUP_DELAY_MS));
   }
+}
+
+async function authorize() {
+  const fs = await import("node:fs/promises");
+  const sha = exactSha(required("GITHUB_SHA"), "Pushed SHA");
+  if (
+    required("GITHUB_EVENT_NAME") !== "push" ||
+    required("GITHUB_REF") !== "refs/heads/main"
+  )
+    fail("Automatic release only starts from a push to main");
+  const pulls = await mergedPullsForPush(sha);
+  if (!pulls.length)
+    fail(
+      "No merged pull request found for this push; the release owner dispatches normal-retry with the version PR number and merge SHA",
+    );
+  if (pulls.length > 1)
+    fail("More than one merged pull request matches this push; stop");
+  const [pr] = pulls;
+  // Only a PR from another branch is certainly not the version PR; any PR from
+  // the version branch must pass full validation.
+  if (
+    pr.head.ref !== "changeset-release/main" ||
+    pr.head.repo?.full_name !== pr.base.repo?.full_name
+  ) {
+    await fs.appendFile(required("GITHUB_OUTPUT"), "release=false\n");
+    process.stdout.write(
+      `${JSON.stringify({ release: false, reason: "Push did not merge the version PR; no release needed" })}\n`,
+    );
+    return;
+  }
+  const owner = required("RELEASE_OWNER_LOGIN");
+  if (
+    required("GITHUB_ACTOR") !== owner ||
+    required("GITHUB_TRIGGERING_ACTOR") !== owner
+  )
+    fail(
+      "Only the release owner's merge starts a release; the release owner dispatches normal-retry for this version PR",
+    );
+  // A single-parent merge must land as one commit, or only its last commit
+  // would be checked for metadata-only changes.
+  const { before } = json(
+    await fs.readFile(required("GITHUB_EVENT_PATH"), "utf8"),
+    "GitHub event",
+  );
+  const parents = (
+    await command("git", ["rev-list", "--parents", "-n", "1", sha])
+  ).split(" ");
+  if (parents.length === 2 && parents[1] !== before)
+    fail(
+      "Rebase merge of a multi-commit version PR cannot be verified; merge it with a merge commit or squash",
+    );
+  await validateMergedVersionPr(pr.number, sha);
+  await fs.appendFile(required("GITHUB_OUTPUT"), `release=true\nsha=${sha}\n`);
   process.stdout.write(
-    `${JSON.stringify({ sha: mergedSha, version: json(await shaAt(mergedSha, "package.json"), "package.json").version })}\n`,
+    `${JSON.stringify({ sha, version: json(await shaAt(sha, "package.json"), "package.json").version })}\n`,
   );
 }
 
@@ -1233,29 +1273,7 @@ async function authorizeRetry() {
     controller,
     "Retry controller does not contain the authorized release",
   );
-  const pr = await github(`pulls/${pullRequest}`);
-  const [checks, statuses, environment] = await Promise.all([
-    github(`commits/${pr.head.sha}/check-runs?per_page=100`),
-    github(`commits/${pr.head.sha}/statuses?per_page=100`),
-    github("environments/production-release-review"),
-  ]);
-  validateAuthorization({
-    event: {
-      pull_request: {
-        merged: true,
-        merge_commit_sha: sha,
-        head: { sha: pr.head.sha },
-      },
-    },
-    pr,
-    expectedAuthor: required("RELEASE_BOT_LOGIN"),
-    repository: required("GITHUB_REPOSITORY"),
-    checkRuns: checks.check_runs,
-    statuses,
-  });
-  const parent = await command("git", ["rev-parse", `${sha}^1`]);
-  await verifyMetadataOnly(parent, sha);
-  validateReviewEnvironment(environment);
+  const pr = await validateMergedVersionPr(pullRequest, sha);
   const authorization = {
     owner,
     runId,
@@ -1504,7 +1522,7 @@ async function stage() {
   assertBaseline(await currentAlias(), baseline);
   const reviewedSource = await reviewedSourceMapping(sha, authorization);
   const output = {
-    stateVersion: releaseStateVersion,
+    stateVersion: RELEASE_STATE_VERSION,
     candidateId: candidate.id,
     candidateUrl: `https://${candidateUrl.replace(/^https?:\/\//, "")}`,
     sha,
@@ -1550,12 +1568,9 @@ async function appendOutputs(values) {
 
 async function workflowBlob(ref) {
   const response = await github(
-    `contents/${ciWorkflow}?ref=${encodeURIComponent(exactSha(ref, "Workflow ref"))}`,
+    `contents/${CI_WORKFLOW}?ref=${encodeURIComponent(exactSha(ref, "Workflow ref"))}`,
   );
-  if (
-    response.path !== ciWorkflow ||
-    !/^[0-9a-f]{40}$/.test(response.sha || "")
-  )
+  if (response.path !== CI_WORKFLOW || !SHA_PATTERN.test(response.sha || ""))
     fail("CI workflow blob identity is invalid");
   return response.sha;
 }
@@ -1582,7 +1597,7 @@ async function reusableSourceQA(state) {
   } catch {
     return scopes;
   }
-  if (workflow.path !== ciWorkflow || !Number.isInteger(workflow.id))
+  if (workflow.path !== CI_WORKFLOW || !Number.isInteger(workflow.id))
     return scopes;
   if (
     responses.some(
@@ -1602,7 +1617,7 @@ async function reusableSourceQA(state) {
   for (const run of runs) {
     try {
       validateWorkflowRun(run, {
-        path: ciWorkflow,
+        path: CI_WORKFLOW,
         repository,
       });
       if (
@@ -1612,7 +1627,7 @@ async function reusableSourceQA(state) {
       )
         continue;
       const jobs = await workflowJobs(run.id);
-      for (const [scope, name] of sourceQAScopes) {
+      for (const [scope, name] of SOURCE_QA_SCOPES) {
         if (scopes[scope]) continue;
         try {
           scopes[scope] = await sourceScopeEvidence(
@@ -1713,7 +1728,7 @@ async function sourceScopeEvidence(state, run, jobs, workflow, scope, name) {
     producerRunId: String(run.id),
     producerRunAttempt: String(run.run_attempt),
     workflowId: String(workflow.id),
-    workflowPath: ciWorkflow,
+    workflowPath: CI_WORKFLOW,
     workflowBlob: testedBlob,
     job: jobEvidence(job),
   };
@@ -1728,14 +1743,14 @@ async function verifyReusableSourceQA(state, receipt, expectedName) {
   ]);
   validateWorkflowRun(run, {
     id: receipt.producerRunId,
-    path: ciWorkflow,
+    path: CI_WORKFLOW,
     repository,
     attempt: receipt.producerRunAttempt,
   });
   if (
     run.status !== "completed" ||
     String(run.workflow_id) !== receipt.workflowId ||
-    workflow.path !== ciWorkflow ||
+    workflow.path !== CI_WORKFLOW ||
     String(workflow.id) !== receipt.workflowId
   )
     fail("Reusable source QA producer is no longer trusted");
@@ -1793,7 +1808,7 @@ async function recordSourceQA() {
   const state = await loadState();
   validateConfiguredPlatform(state);
   const scopes = {};
-  for (const [scope, reusedName] of sourceQAScopes) {
+  for (const [scope, reusedName] of SOURCE_QA_SCOPES) {
     const reused = state.sourceQAPlan?.[scope];
     if (!reused)
       fail("Missing trusted CI evidence; release cannot run functional tests");
@@ -1833,10 +1848,10 @@ async function loadState({ allowRecovery = false } = {}) {
   if (state.recovery) {
     if (!allowRecovery) fail("Recovery state is not valid for this action");
     validateRecoveryMarker(state);
-    if (state.stateVersion !== releaseStateVersion)
+    if (state.stateVersion !== RELEASE_STATE_VERSION)
       fail("Legacy release artifacts require a fresh authorized release run");
     validateStateSchema(state);
-  } else if (state.stateVersion === releaseStateVersion) {
+  } else if (state.stateVersion === RELEASE_STATE_VERSION) {
     validateStateSchema(state);
     if (
       state.releaseRunId !== required("GITHUB_RUN_ID") ||
@@ -1970,7 +1985,7 @@ async function recordProductionQA() {
     runAttempt: state.releaseRunAttempt,
     approval: await protectedJobReceipt(
       "Accept production QA",
-      reviewEnvironment,
+      REVIEW_ENVIRONMENT,
     ),
   };
   await writeState(required("RELEASE_FINAL_STATE_FILE"), state);
@@ -2063,7 +2078,7 @@ function changelogEntry(changelog, version) {
 
 async function verifySourceQANative(state) {
   assertSourceQAReceipt(state, state.releaseRunId);
-  for (const [scope, reusedName] of sourceQAScopes) {
+  for (const [scope, reusedName] of SOURCE_QA_SCOPES) {
     const evidence = state.sourceQA.scopes[scope];
     await verifyReusableSourceQA(state, evidence, reusedName);
   }
@@ -2082,13 +2097,13 @@ function validateOriginalAuthorization(state, run) {
       run.triggering_actor?.login !== state.authorization.owner
     )
       fail("Original manual release authorization is invalid");
-  } else if (run.event !== "pull_request" || run.head_sha !== state.sha) {
+  } else if (run.event !== "push" || run.head_sha !== state.sha) {
     fail("Original automatic release authorization is invalid");
   }
 }
 
 async function downloadAcceptedState(artifact, repository) {
-  const digest = String(artifact.digest || "").match(digestPattern)?.[1];
+  const digest = String(artifact.digest || "").match(DIGEST_PATTERN)?.[1];
   const expectedUrl = `https://api.github.com/repos/${repository}/actions/artifacts/${artifact.id}/zip`;
   if (!digest || artifact.archive_download_url !== expectedUrl)
     fail("Accepted artifact has no trusted archive digest or URL");
@@ -2142,7 +2157,7 @@ async function recoverVerify() {
   ]);
   validateWorkflowRun(currentRun, {
     id: runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
     event: "workflow_dispatch",
     sha: required("GITHUB_SHA"),
@@ -2157,7 +2172,7 @@ async function recoverVerify() {
     fail("Recovery is not running from owner-dispatched trusted main");
   validateWorkflowRun(originalRun, {
     id: originalRunId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
   });
   if (
@@ -2195,7 +2210,7 @@ async function recoverVerify() {
   )
     fail("Original accepted artifact is expired or has invalid provenance");
   const state = await downloadAcceptedState(artifact, repository);
-  if (state.stateVersion !== releaseStateVersion)
+  if (state.stateVersion !== RELEASE_STATE_VERSION)
     fail("Legacy release artifacts require a fresh authorized release run");
   validateConfiguredPlatform(state);
   if (
