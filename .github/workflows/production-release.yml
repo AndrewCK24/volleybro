@@ -34,7 +34,7 @@ env:
   PRODUCTION_DB_ACTIVE: ${{ vars.PRODUCTION_DB_ACTIVE }}
 
 jobs:
-  candidate:
+  authorize:
     if: >-
       vars.RELEASE_AUTOMATION_ENABLED == 'true' &&
       github.ref == 'refs/heads/main' && inputs.mode != 'recover'
@@ -47,13 +47,14 @@ jobs:
       pull-requests: read
       actions: read
     outputs:
-      candidate_id: ${{ steps.stage.outputs.candidate_id }}
-      candidate_url: ${{ steps.stage.outputs.candidate_url }}
-      baseline: ${{ steps.stage.outputs.baseline }}
-      sha: ${{ steps.stage.outputs.sha }}
+      release: ${{ steps.authorize.outputs.release }}
+      sha: ${{ steps.authorize.outputs.sha }}
+      release_authorization: ${{ steps.authorize.outputs.release_authorization }}
+      baseline_deployment: ${{ steps.authorize.outputs.baseline_deployment }}
+      baseline_updated_at: ${{ steps.authorize.outputs.baseline_updated_at }}
+      baseline_sha: ${{ steps.authorize.outputs.baseline_sha }}
       controller_sha: ${{ steps.controller.outputs.controller_sha }}
       mode: ${{ steps.controller.outputs.mode }}
-      release: ${{ steps.authorize.outputs.release }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -113,40 +114,56 @@ jobs:
           else
             node "$RUNNER_TEMP/release-controls.js" authorize
           fi
-      - uses: actions/checkout@v7
-        if: steps.authorize.outputs.release != 'false'
+
+  candidate:
+    needs: authorize
+    if: needs.authorize.outputs.release != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      candidate_id: ${{ steps.stage.outputs.candidate_id }}
+      candidate_url: ${{ steps.stage.outputs.candidate_url }}
+      baseline: ${{ steps.stage.outputs.baseline }}
+      sha: ${{ steps.stage.outputs.sha }}
+      controller_sha: ${{ needs.authorize.outputs.controller_sha }}
+      mode: ${{ needs.authorize.outputs.mode }}
+    steps:
+      - uses: actions/download-artifact@v8
         with:
-          ref: ${{ steps.authorize.outputs.sha }}
+          name: trusted-release-controller
+          path: ${{ runner.temp }}
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.authorize.outputs.sha }}
           fetch-depth: 0
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
-        if: steps.authorize.outputs.release != 'false'
         with:
           install: false
           node-version-file: false
       - uses: actions/setup-node@v7
-        if: steps.authorize.outputs.release != 'false'
         with:
           node-version-file: .nvmrc
       - id: stage
         name: Stage exact SHA with production configuration
-        if: steps.authorize.outputs.release != 'false'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
           VERCEL_ORG_ID: ${{ vars.VERCEL_TEAM_ID }}
           VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
           PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
-          RELEASE_SHA: ${{ steps.authorize.outputs.sha }}
-          RELEASE_MODE: ${{ steps.controller.outputs.mode }}
-          RELEASE_AUTHORIZATION: ${{ steps.authorize.outputs.release_authorization }}
-          CONTROLLER_SHA: ${{ steps.controller.outputs.controller_sha }}
-          EXPECTED_BASELINE_DEPLOYMENT: ${{ steps.authorize.outputs.baseline_deployment }}
-          EXPECTED_BASELINE_UPDATED_AT: ${{ steps.authorize.outputs.baseline_updated_at }}
-          EXPECTED_BASELINE_SHA: ${{ steps.authorize.outputs.baseline_sha }}
+          RELEASE_SHA: ${{ needs.authorize.outputs.sha }}
+          RELEASE_MODE: ${{ needs.authorize.outputs.mode }}
+          RELEASE_AUTHORIZATION: ${{ needs.authorize.outputs.release_authorization }}
+          CONTROLLER_SHA: ${{ needs.authorize.outputs.controller_sha }}
+          EXPECTED_BASELINE_DEPLOYMENT: ${{ needs.authorize.outputs.baseline_deployment }}
+          EXPECTED_BASELINE_UPDATED_AT: ${{ needs.authorize.outputs.baseline_updated_at }}
+          EXPECTED_BASELINE_SHA: ${{ needs.authorize.outputs.baseline_sha }}
           RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
         run: node "$RUNNER_TEMP/release-controls.js" stage
       - uses: actions/upload-artifact@v7
-        if: steps.authorize.outputs.release != 'false'
         with:
           name: production-release-state
           path: ${{ runner.temp }}/release-state.json
@@ -156,7 +173,6 @@ jobs:
   source-inspection:
     name: Inspect source QA
     needs: candidate
-    if: needs.candidate.outputs.release != 'false'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -586,6 +602,7 @@ jobs:
 
   failure-summary:
     needs:
+      - authorize
       - candidate
       - recovery-evidence
       - promote-and-smoke
