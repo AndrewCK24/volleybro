@@ -71,7 +71,7 @@ The gates that must pass before a pull request are listed in `WORKFLOW.md`'s Rep
 
 ### Working in a git worktree
 
-A worktree starts without `node_modules`. Run `pnpm install --frozen-lockfile --prefer-offline` in it rather than symlinking the main checkout's `node_modules`, which pnpm's dependency check and Turbopack both reject.
+A worktree starts without `node_modules`. Run `pnpm install --frozen-lockfile --prefer-offline` in it rather than symlinking the main checkout's `node_modules`, which pnpm's dependency check and Turbopack both reject. Git hooks live in the committed `.husky/` directory and `pnpm install` points the shared `core.hooksPath` at it, so a commit in a worktree without `node_modules` fails with that instruction instead of silently skipping the hooks.
 
 `.worktreeinclude` lists `.env.local`, so agent tooling that reads that file copies it into each worktree it creates. A worktree made with plain `git worktree add`, or by a tool that ignores the file, gets no copy: copy `.env.local` yourself before running `pnpm build` or `pnpm dev`.
 
