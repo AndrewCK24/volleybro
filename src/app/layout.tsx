@@ -99,42 +99,42 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        {/* apple touch icons, learn more: https://developer.apple.com/design/human-interface-guidelines/app-icons */}
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* apple touch icons; ?v= busts the icon iOS caches per URL, bump it when the icons change */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
         <link
           rel="apple-touch-icon"
           sizes="76x76"
-          href="/apple-touch-icon-76x76.png"
+          href="/apple-touch-icon-76x76.png?v=2"
         />
         <link
           rel="apple-touch-icon"
           sizes="114x114"
-          href="/apple-touch-icon-114x114.png"
+          href="/apple-touch-icon-114x114.png?v=2"
         />
         <link
           rel="apple-touch-icon"
           sizes="120x120"
-          href="/apple-touch-icon-120x120.png"
+          href="/apple-touch-icon-120x120.png?v=2"
         />
         <link
           rel="apple-touch-icon"
           sizes="144x144"
-          href="/apple-touch-icon-144x144.png"
+          href="/apple-touch-icon-144x144.png?v=2"
         />
         <link
           rel="apple-touch-icon"
           sizes="152x152"
-          href="/apple-touch-icon-152x152.png"
+          href="/apple-touch-icon-152x152.png?v=2"
         />
         <link
           rel="apple-touch-icon"
           sizes="167x167"
-          href="/apple-touch-icon-167x167.png"
+          href="/apple-touch-icon-167x167.png?v=2"
         />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href="/apple-touch-icon-180x180.png"
+          href="/apple-touch-icon-180x180.png?v=2"
         />
 
         <meta property="og:type" content="website" />
