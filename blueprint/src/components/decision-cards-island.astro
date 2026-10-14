@@ -1,8 +1,0 @@
----
-import { DecisionCardsList } from "./decision-cards";
-import { decisionCardsForIds } from "../lib/decision-cards";
-
-const { ids = [] } = Astro.props;
----
-
-<DecisionCardsList cards={decisionCardsForIds(ids)} client:load />

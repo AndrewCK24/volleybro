@@ -124,3 +124,13 @@ These tests parsed local MDX/TSX and git shortstat to derive old page fields. Th
 | `a scenario's shard is read as a number`                                      | Extraction of shard numbers from scenario metadata.                  | No keeper for embedded shard metadata; required PR URLs now identify delivery shards.                                                                                                                           |
 | `shardCount reads a Sharded Change's shard count from the frontmatter`        | Shard count extraction from frontmatter.                             | No keeper; frontmatter is not the current specification format.                                                                                                                                                 |
 | `readChangeDir reads the index, the Proposal and every Review in shard order` | Assembly/order of local Change and Review files.                     | No keeper; Git page-directory layout retired.                                                                                                                                                                   |
+
+## Runtime catalog boundary
+
+`decisions-index.test.ts` previously mocked filesystem reads. Its exact-capability, numeric-order and requested-ID contracts now belong to `decision-lookup.test.ts`; the deployed-catalog boundary is checked against the compiled Worker by verifying Feature ADR anchors and canonical decision cards. The old missing-directory fallback is retired: records are bundled and validated by Vite.
+
+The old Change MDX-tag adapter test is retired with `changeMdxComponents` and `decision-cards-island.astro`. `decision-cards.test.tsx` directly owns compact-card disclosure, replacement links and requested order using validated ADR records; the current EmDash typed-block caller supplies the bundled catalog.
+
+## Retired Review-only components
+
+`ScenarioResults` and `TestPlan` have no current callers after the Change MDX adapter retires. Their four disclosure/executor/outcome tests retire with the old Review UI; historical result and evidence content is preserved in canonical Portable Text and audited per page. `review-sections.tsx` has no remaining current caller either. The surviving `Scenarios` list is owned by `scenario-cards.test.tsx` (`renders scenario IDs in authored order with each scenario body`); that test also verifies every Given/When/Then body.

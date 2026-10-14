@@ -7,7 +7,8 @@ import { Diagram } from "./diagram";
 import { Scenarios } from "./scenario-cards";
 import VariantGallery from "./variant-gallery.astro";
 import { blockSchema, parseJsonField } from "../lib/emdash-change-record";
-import { decisionCardsForIds } from "../lib/decision-cards";
+import { decisionCardsFor } from "../lib/decision-cards";
+import { allDecisions } from "../lib/decisions-index";
 import { z } from "zod";
 
 const riskSchema = z.array(
@@ -75,7 +76,7 @@ if (block._type === "decision_cards") {
     z.array(z.string()),
     "decision_cards.records",
   );
-  decisionCards = decisionCardsForIds(ids);
+  decisionCards = decisionCardsFor(allDecisions(), ids);
 } else if (block._type === "risk_table") {
   risks = parseJsonField(
     block.risks,
