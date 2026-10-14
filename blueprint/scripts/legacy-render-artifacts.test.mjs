@@ -49,6 +49,25 @@ test("removes only recognized Astro boundary and empty inline separator comments
   );
 });
 
+test("removes and audits only the legacy code-copy control", () => {
+  const html =
+    '<figure><div><button aria-live="polite"><svg class="lucide-clipboard"></svg><span class="sr-only">Copy Text</span></button></div><pre><code>const x = 1;</code></pre></figure>';
+  const result = removeLegacyPresentationArtifacts(html, "example", "");
+  assert.ok(result.html.includes("<code>const x = 1;</code>"));
+  assert.equal(result.html.includes("Copy Text"), false);
+  assert.deepEqual(
+    result.removed.map(({ kind, provenance }) => ({ kind, provenance })),
+    [{ kind: "button", provenance: "renderer-code-copy-control" }],
+  );
+  const standalone = removeLegacyPresentationArtifacts(
+    '<button aria-live="polite"><svg class="lucide-clipboard"></svg><span class="sr-only">Copy Text</span></button>',
+    "example",
+    "",
+  );
+  assert.equal(standalone.html.includes("<button"), true);
+  assert.deepEqual(standalone.removed, []);
+});
+
 test("fails closed on unrecognized script and style artifacts", () => {
   assert.throws(
     () =>
@@ -57,7 +76,7 @@ test("fails closed on unrecognized script and style artifacts", () => {
         "example",
         "",
       ),
-    /not a recognized renderer bootstrap/u,
+    /no verified renderer provenance/u,
   );
   assert.throws(
     () =>

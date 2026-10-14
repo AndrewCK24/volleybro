@@ -61,6 +61,49 @@ test("converts scenario cards and native media without legacy wrappers", () => {
   );
 });
 
+test("compares scenario presentation while retaining authored inline syntax", () => {
+  const authored = {
+    id: "S-inline",
+    given: "every record in `blueprint/content/decisions/`",
+    when: "**an agent** opens the page",
+    then: "the content appears",
+  };
+  const result = convertRenderedHtmlToPortableText(
+    '<div data-slot="card"><div><span>GIVEN</span><span>every record in blueprint/content/decisions/</span></div><div><span>WHEN</span><span>an agent opens the page</span></div><div><span>THEN</span><span>the content appears</span></div></div>',
+    "sample-change",
+    [],
+    {
+      scenarios: [authored],
+      decisionGroups: [],
+      riskTables: [],
+      flowcharts: [],
+    },
+  );
+  assert.deepEqual(
+    [result[0].given, result[0].when, result[0].then],
+    [authored.given, authored.when, authored.then],
+  );
+});
+
+test("compares risk table presentation while retaining authored inline syntax", () => {
+  const risks = [
+    {
+      name: "git 2.31 以前沒有 `--disk-usage`",
+      severity: "info",
+      mitigation: "版本不符時 **明確提示**。",
+    },
+  ];
+  const result = convertRenderedHtmlToPortableText(
+    "<table><thead><tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr></thead><tbody><tr><td>git 2.31 以前沒有 --disk-usage</td><td>info</td><td>版本不符時 明確提示。</td></tr></tbody></table>",
+    "sample-change",
+    [],
+    { scenarios: [], decisionGroups: [], riskTables: [risks], flowcharts: [] },
+  );
+  assert.equal(result[0]._type, "risk_table");
+  assert.equal(JSON.parse(result[0].risks)[0].name, risks[0].name);
+  assert.equal(JSON.parse(result[0].risks)[0].mitigation, risks[0].mitigation);
+});
+
 test("preserves code and rectangular tables", () => {
   const result = convertRenderedHtmlToPortableText(
     '<pre><code class="language-ts">const x = 1;</code></pre><table><tbody><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></tbody></table>',
@@ -143,6 +186,67 @@ test("reconstructs accessible rect and line diagrams with every text label", () 
     JSON.parse(result[0].details).__diagram.body,
     "Credential boundary",
   );
+});
+
+test("maps SVG polygon node geometry and retains secondary labels", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<svg viewBox="0 0 120 80"><polygon class="sn-node" points="60,10 100,40 60,70 20,40"></polygon><text x="60" y="38">Decision</text><text x="60" y="52">load()</text></svg>',
+    "polygon-diagram",
+  );
+  const [node] = JSON.parse(result[0].nodes);
+  assert.equal(node.shape, "diamond");
+  assert.deepEqual([node.x, node.y, node.w, node.h], [20, 10, 80, 60]);
+  assert.equal(node.label, "Decision");
+  assert.equal(node.sublabel, "load()");
+});
+
+test("keeps flowchart legend outside the graph as typed diagram metadata", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<svg viewBox="0 0 180 80"><rect class="sn-node" x="10" y="10" width="40" height="20"></rect><text x="30" y="23">Start</text><line class="sn-rule" x1="5" y1="50" x2="175" y2="50"></line><text x="5" y="65">LEGEND</text><rect class="sn-node" x="50" y="55" width="16" height="8"></rect><text x="70" y="65">Action</text></svg>',
+    "legend-diagram",
+  );
+  assert.equal(JSON.parse(result[0].nodes).length, 1);
+  assert.deepEqual(JSON.parse(result[0].edges), []);
+  assert.deepEqual(JSON.parse(result[0].details).__diagram.legend, [
+    { label: "Action", shape: "box", emphasis: false },
+  ]);
+});
+
+test("reads SVG path endpoints with horizontal and vertical commands", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<svg viewBox="0 0 120 50"><rect class="sn-node" x="0" y="0" width="20" height="20"></rect><text x="10" y="12">A</text><rect class="sn-node" x="80" y="0" width="20" height="20"></rect><text x="90" y="12">B</text><path class="sn-wire" d="M20 10 H50 V12 Q55 17 60 17 H80"></path></svg>',
+    "path-diagram",
+  );
+  assert.deepEqual(
+    JSON.parse(result[0].edges).map(({ from, to }) => [from, to]),
+    [["path-diagram-flow-node-1", "path-diagram-flow-node-2"]],
+  );
+});
+
+test("reconstructs the recognized dialog wireframe with every label", () => {
+  const rects = Array.from(
+    { length: 18 },
+    (_, index) => `<rect x="${index}" y="10" width="20" height="16"></rect>`,
+  ).join("");
+  const circles = Array.from(
+    { length: 4 },
+    (_, index) => `<circle cx="${index}" cy="4" r="2"></circle>`,
+  ).join("");
+  const result = convertRenderedHtmlToPortableText(
+    `<svg role="img" aria-label="兩個 dialog 的線框對照。left and right.">${rects}${circles}<text x="10" y="20">Header</text><text x="40" y="32">Close</text></svg>`,
+    "dialog-wireframe",
+  );
+  const graph = result[0];
+  assert.deepEqual(
+    JSON.parse(graph.nodes).map(({ label }) => label),
+    ["Header", "Close"],
+  );
+  assert.deepEqual(JSON.parse(graph.edges), []);
+  assert.equal(
+    JSON.parse(graph.details).__diagram.body,
+    "兩個 dialog 的線框對照。left and right.",
+  );
+  assert.equal(JSON.parse(graph.details).__diagram.decorations.length, 4);
 });
 
 test("fails closed when accessible SVG diagram geometry is not mapped", () => {

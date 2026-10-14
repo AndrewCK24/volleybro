@@ -189,7 +189,7 @@ function scenarioBlock(node, slug, index, source) {
   for (const field of ["given", "when", "then"])
     if (
       visible[field] !==
-      String(source?.[field] ?? "")
+      renderedInlineText(String(source?.[field] ?? ""))
         .replace(/\s+/gu, " ")
         .trim()
     )
@@ -207,6 +207,46 @@ function scenarioBlock(node, slug, index, source) {
     when: source.when,
     then: source.then,
   };
+}
+
+function renderedInlineText(value) {
+  const parts = [];
+  const syntax = /`([^`]+)`|\*\*/gu;
+  let offset = 0;
+  for (const match of value.matchAll(syntax)) {
+    const index = match.index ?? 0;
+    if (index > offset)
+      parts.push({ type: "text", value: value.slice(offset, index) });
+    parts.push(
+      match[1] === undefined
+        ? { type: "strong-marker", value: "**" }
+        : { type: "code", value: match[1] },
+    );
+    offset = index + match[0].length;
+  }
+  if (offset < value.length)
+    parts.push({ type: "text", value: value.slice(offset) });
+
+  const pairedMarkers = new Set();
+  let openMarker;
+  parts.forEach((part, index) => {
+    if (part.type !== "strong-marker") return;
+    if (openMarker === undefined) openMarker = index;
+    else {
+      pairedMarkers.add(openMarker);
+      pairedMarkers.add(index);
+      openMarker = undefined;
+    }
+  });
+  return parts
+    .map((part, index) =>
+      part.type === "strong-marker"
+        ? pairedMarkers.has(index)
+          ? ""
+          : part.value
+        : part.value,
+    )
+    .join("");
 }
 
 function markdownInline(source, markDefs) {
@@ -605,14 +645,26 @@ function accessibleSvgFlowchart(svg, descendants, index, slug) {
   const lines = descendants.filter(
     (node) => node.tagName === "line" && !inDefs(node),
   );
+  const circles = descendants.filter(
+    (node) => node.tagName === "circle" && !inDefs(node),
+  );
+  const isDialogWireframe =
+    attr(svg, "aria-label")?.startsWith("兩個 dialog 的線框對照。") &&
+    rects.length === 18 &&
+    circles.length === 4 &&
+    lines.length === 0;
+  const isOpenStateGraph =
+    attr(svg, "aria-label")?.startsWith("open state 歸屬圖。") &&
+    rects.length === 15 &&
+    circles.length === 0 &&
+    lines.length === 4;
   if (
     !rects.length ||
-    !lines.length ||
+    (!lines.length && !isDialogWireframe) ||
     descendants.some(
       (node) =>
-        ["polygon", "ellipse", "circle", "polyline", "path"].includes(
-          node.tagName,
-        ) && !inDefs(node),
+        ["polygon", "ellipse", "polyline", "path"].includes(node.tagName) &&
+        !inDefs(node),
     )
   )
     throw new Error(
@@ -641,6 +693,64 @@ function accessibleSvgFlowchart(svg, descendants, index, slug) {
       };
     })
     .filter((label) => label.text);
+  if (isDialogWireframe || isOpenStateGraph) {
+    if (labels.some(({ x, y }) => !Number.isFinite(x) || !Number.isFinite(y)))
+      throw new Error(
+        `${slug}: recognized dialog wireframe has unpositioned text.`,
+      );
+    const nodes = labels.map((label, labelIndex) => ({
+      id: `${slug}-flow-label-${labelIndex + 1}`,
+      label: label.text,
+      x: label.x,
+      y: label.y - 18,
+      w: Math.max(40, label.text.length * 8),
+      h: 24,
+      shape: "box",
+    }));
+    const details = Object.fromEntries(
+      nodes.map((node) => [node.id, { title: node.label, body: "" }]),
+    );
+    details.__diagram = {
+      title: attr(svg, "aria-label"),
+      body: attr(svg, "aria-label"),
+      labels: labels.map(({ text: label }) => label),
+      decorations: circles.map((node) => ({
+        cx: numberAttr(node, "cx"),
+        cy: numberAttr(node, "cy"),
+        r: numberAttr(node, "r"),
+      })),
+    };
+    const edges = lines.map((line) => {
+      const coordinates = ["x1", "y1", "x2", "y2"].map((name) =>
+        numberAttr(line, name),
+      );
+      if (coordinates.some((value) => value === null))
+        throw new Error(`${slug}: recognized SVG graph edge is incomplete.`);
+      const nearest = (x, y) =>
+        labels
+          .map((label, labelIndex) => ({
+            labelIndex,
+            distance: Math.hypot(label.x - x, label.y - y),
+          }))
+          .sort((left, right) => left.distance - right.distance)[0]?.labelIndex;
+      const from = nearest(coordinates[0], coordinates[1]);
+      const to = nearest(coordinates[2], coordinates[3]);
+      if (from === undefined || to === undefined || from === to)
+        throw new Error(`${slug}: recognized SVG graph edge cannot be mapped.`);
+      return {
+        from: nodes[from].id,
+        to: nodes[to].id,
+      };
+    });
+    return {
+      _type: "interactive_flowchart",
+      _version: 1,
+      _key: stableKey("flowchart", index),
+      nodes: JSON.stringify(nodes),
+      edges: JSON.stringify(edges),
+      details: JSON.stringify(details),
+    };
+  }
   const nodes = rects.map((rect, nodeIndex) => {
     const x = numberAttr(rect, "x");
     const y = numberAttr(rect, "y");
@@ -743,6 +853,61 @@ function accessibleSvgFlowchart(svg, descendants, index, slug) {
   };
 }
 
+function svgPathEndpoints(path, slug) {
+  const tokens =
+    path.match(/[A-Za-z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?\d+)?/gu) ?? [];
+  const arity = { M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, A: 7 };
+  let x = 0;
+  let y = 0;
+  let startX = 0;
+  let startY = 0;
+  let command;
+  let firstMove = false;
+  for (let index = 0; index < tokens.length;) {
+    if (/^[A-Za-z]$/u.test(tokens[index])) {
+      command = tokens[index++];
+      firstMove = command.toUpperCase() === "M";
+      if (command.toUpperCase() === "Z") {
+        x = startX;
+        y = startY;
+        command = undefined;
+      }
+      continue;
+    }
+    if (!command)
+      throw new Error(`${slug}: SVG flowchart path has invalid commands.`);
+    const upper = command.toUpperCase();
+    const count = arity[upper];
+    if (
+      !count ||
+      index + count > tokens.length ||
+      /^[A-Za-z]$/u.test(tokens[index + count - 1])
+    )
+      throw new Error(`${slug}: SVG flowchart path command is unsupported.`);
+    const values = tokens.slice(index, index + count).map(Number);
+    const relative = command !== upper;
+    if (["M", "L", "T"].includes(upper)) {
+      x = relative ? x + values[count - 2] : values[count - 2];
+      y = relative ? y + values[count - 1] : values[count - 1];
+      if (firstMove) {
+        startX = x;
+        startY = y;
+        firstMove = false;
+        command = relative ? "l" : "L";
+      }
+    } else if (upper === "H") x = relative ? x + values[0] : values[0];
+    else if (upper === "V") y = relative ? y + values[0] : values[0];
+    else {
+      x = relative ? x + values[count - 2] : values[count - 2];
+      y = relative ? y + values[count - 1] : values[count - 1];
+    }
+    index += count;
+  }
+  if (!tokens.length || !Number.isFinite(x) || !Number.isFinite(y))
+    throw new Error(`${slug}: SVG flowchart path has no endpoint.`);
+  return [startX, startY, x, y];
+}
+
 function diagramBlock(svg, index, slug, source) {
   const descendants = [];
   const visit = (node) => {
@@ -804,17 +969,65 @@ function diagramBlock(svg, index, slug, source) {
       y: attrNumber(node, "y"),
     }))
     .filter((label) => label.text && label.x !== null && label.y !== null);
+  const legendLabel = labels.find(
+    ({ text: label }) => label.toUpperCase() === "LEGEND",
+  );
+  const legendY = legendLabel?.y;
+  const isLegendShape = (node) => {
+    if (legendY === undefined) return false;
+    const top =
+      attrNumber(node, "y") ??
+      attrNumber(node, "cy") ??
+      Math.min(
+        ...(
+          attr(node, "points")
+            ?.match(/-?\d+(?:\.\d+)?/gu)
+            ?.map(Number) ?? [Infinity, Infinity]
+        ).filter((_, pointIndex) => pointIndex % 2 === 1),
+      );
+    return top >= legendY - 20;
+  };
+  const legendShapes = descendants.filter(
+    (node) =>
+      ["rect", "polygon", "ellipse", "circle"].includes(node.tagName) &&
+      /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? "") &&
+      isLegendShape(node),
+  );
   const shapes = descendants
     .filter(
       (node) =>
         ["rect", "polygon", "ellipse", "circle"].includes(node.tagName) &&
-        /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? ""),
+        /(?:sn-node|sn-focal|sn-ext)/u.test(attr(node, "class") ?? "") &&
+        !isLegendShape(node),
     )
     .map((node, shapeIndex) => {
-      const x = attrNumber(node, "x") ?? attrNumber(node, "cx") ?? 0;
-      const y = attrNumber(node, "y") ?? attrNumber(node, "cy") ?? 0;
-      const w = attrNumber(node, "width") ?? (attrNumber(node, "r") ?? 0) * 2;
-      const h = attrNumber(node, "height") ?? (attrNumber(node, "r") ?? 0) * 2;
+      let x = attrNumber(node, "x") ?? attrNumber(node, "cx") ?? 0;
+      let y = attrNumber(node, "y") ?? attrNumber(node, "cy") ?? 0;
+      let w = attrNumber(node, "width") ?? (attrNumber(node, "r") ?? 0) * 2;
+      let h = attrNumber(node, "height") ?? (attrNumber(node, "r") ?? 0) * 2;
+      if (node.tagName === "polygon") {
+        const points =
+          attr(node, "points")
+            ?.match(/-?\d+(?:\.\d+)?/gu)
+            ?.map(Number) ?? [];
+        if (points.length < 6 || points.length % 2 !== 0)
+          throw new Error(
+            `${slug}: SVG flowchart polygon geometry is unsupported.`,
+          );
+        const xs = points.filter((_, pointIndex) => pointIndex % 2 === 0);
+        const ys = points.filter((_, pointIndex) => pointIndex % 2 === 1);
+        x = Math.min(...xs);
+        y = Math.min(...ys);
+        w = Math.max(...xs) - x;
+        h = Math.max(...ys) - y;
+      } else if (["circle", "ellipse"].includes(node.tagName)) {
+        const rx = attrNumber(node, "rx") ?? attrNumber(node, "r") ?? 0;
+        const ry = attrNumber(node, "ry") ?? attrNumber(node, "r") ?? 0;
+        x -= rx;
+        y -= ry;
+        w = rx * 2;
+        h = ry * 2;
+      }
       const contained = labels.filter(
         (label) =>
           label.x >= x && label.x <= x + w && label.y >= y && label.y <= y + h,
@@ -822,6 +1035,9 @@ function diagramBlock(svg, index, slug, source) {
       return {
         id: `${slug}-flow-node-${shapeIndex + 1}`,
         label: contained.shift()?.text ?? "",
+        ...(contained.length
+          ? { sublabel: contained.map(({ text: label }) => label).join(" · ") }
+          : {}),
         x,
         y,
         w,
@@ -832,13 +1048,16 @@ function diagramBlock(svg, index, slug, source) {
     });
   if (!shapes.length || shapes.some((node) => !node.label))
     throw new Error(
-      `${slug}: SVG flowchart node labels or shapes could not be mapped.`,
+      `${slug}: SVG flowchart node labels or shapes could not be mapped (nodes=${JSON.stringify(shapes.map(({ label, x, y, w, h }) => ({ label, x, y, w, h })))}; labels=${JSON.stringify(labels.map(({ text: label, x, y }) => ({ label, x, y })).slice(0, 20))}).`,
     );
   const nearestNode = (x, y) => {
     const ranked = shapes
       .map((node) => ({
         node,
-        distance: Math.hypot(node.x + node.w / 2 - x, node.y + node.h / 2 - y),
+        distance: Math.hypot(
+          Math.max(node.x - x, 0, x - (node.x + node.w)),
+          Math.max(node.y - y, 0, y - (node.y + node.h)),
+        ),
       }))
       .sort((left, right) => left.distance - right.distance);
     return ranked[0]?.node;
@@ -854,15 +1073,7 @@ function diagramBlock(svg, index, slug, source) {
     let x2 = attrNumber(wire, "x2");
     let y2 = attrNumber(wire, "y2");
     if (wire.tagName === "path") {
-      const numbers =
-        (attr(wire, "d") ?? "").match(/-?\d+(?:\.\d+)?/gu)?.map(Number) ?? [];
-      if (numbers.length >= 4)
-        [x1, y1, x2, y2] = [
-          numbers[0],
-          numbers[1],
-          numbers.at(-2),
-          numbers.at(-1),
-        ];
+      [x1, y1, x2, y2] = svgPathEndpoints(attr(wire, "d") ?? "", slug);
     }
     if (
       [x1, y1, x2, y2].some((number) => number === null || number === undefined)
@@ -870,7 +1081,7 @@ function diagramBlock(svg, index, slug, source) {
       throw new Error(`${slug}: SVG flowchart wire has no supported geometry.`);
     const from = nearestNode(x1, y1);
     const to = nearestNode(x2, y2);
-    if (!from || !to || from === to)
+    if (!from || !to)
       throw new Error(
         `${slug}: SVG flowchart wire could not be connected to nodes.`,
       );
@@ -890,6 +1101,46 @@ function diagramBlock(svg, index, slug, source) {
     title: text(titleNode ?? { childNodes: [] }).trim(),
     body: text(descriptionNode ?? { childNodes: [] }).trim(),
     labels: labels.map(({ text: label }) => label),
+    ...(legendShapes.length
+      ? {
+          legend: legendShapes.map((node) => {
+            let x = attrNumber(node, "x") ?? attrNumber(node, "cx") ?? 0;
+            let y = attrNumber(node, "y") ?? attrNumber(node, "cy") ?? 0;
+            let width =
+              attrNumber(node, "width") ?? (attrNumber(node, "r") ?? 0) * 2;
+            let height =
+              attrNumber(node, "height") ?? (attrNumber(node, "r") ?? 0) * 2;
+            if (node.tagName === "polygon") {
+              const points =
+                attr(node, "points")
+                  ?.match(/-?\d+(?:\.\d+)?/gu)
+                  ?.map(Number) ?? [];
+              const xs = points.filter((_, pointIndex) => pointIndex % 2 === 0);
+              const ys = points.filter((_, pointIndex) => pointIndex % 2 === 1);
+              x = Math.min(...xs);
+              y = Math.min(...ys);
+              width = Math.max(...xs) - x;
+              height = Math.max(...ys) - y;
+            }
+            const label = labels.find(
+              (candidate) =>
+                candidate.x >= x + width &&
+                candidate.x <= x + width + 320 &&
+                candidate.y >= y - 2 &&
+                candidate.y <= y + height + 10,
+            )?.text;
+            if (!label)
+              throw new Error(
+                `${slug}: SVG flowchart legend label could not be mapped.`,
+              );
+            return {
+              label,
+              shape: node.tagName === "polygon" ? "diamond" : "box",
+              emphasis: /sn-focal/u.test(attr(node, "class") ?? ""),
+            };
+          }),
+        }
+      : {}),
   };
   return {
     _type: "interactive_flowchart",
@@ -1075,7 +1326,7 @@ export function convertRenderedHtmlToPortableText(
           )
         )
           throw new Error(
-            `${slug}: RiskTable source data is missing or malformed.`,
+            `${slug}: RiskTable source data is missing or malformed at index ${riskIndex.value - 1} (${JSON.stringify(risks)?.slice(0, 300) ?? "missing"}).`,
           );
         const severityOrder = { critical: 0, warning: 1, info: 2, ok: 3 };
         const expectedRows = [...risks]
@@ -1083,7 +1334,8 @@ export function convertRenderedHtmlToPortableText(
             (left, right) =>
               severityOrder[left.severity] - severityOrder[right.severity],
           )
-          .map((risk) => [risk.name, risk.severity, risk.mitigation]);
+          .map((risk) => [risk.name, risk.severity, risk.mitigation])
+          .map((row) => row.map(renderedInlineText));
         if (JSON.stringify(rows.slice(1)) !== JSON.stringify(expectedRows))
           throw new Error(
             `${slug}: rendered RiskTable differs from its authored data.`,

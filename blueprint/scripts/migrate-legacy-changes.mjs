@@ -773,7 +773,7 @@ async function run(options) {
     );
     const titleAndDescription = readFrontmatter(indexMdx, slug);
     const structured = extractMdxStructuredData(
-      `${indexMdx}\n${proposal}`,
+      `${indexMdx}\n${proposal}\n${review}`,
       slug,
     );
     const extractedHtml = extractRenderedContent(renderedHtml, slug);

@@ -29,6 +29,40 @@ function walk(node, predicate, result = []) {
   return result;
 }
 
+function isCodeCopyControl(node) {
+  if (node.tagName !== "button") return false;
+  const attr = (current, name) =>
+    current.attrs?.find((item) => item.name === name)?.value;
+  const descendants = walk(node, () => false);
+  const visit = (current) => {
+    descendants.push(current);
+    for (const child of current.childNodes ?? []) visit(child);
+  };
+  visit(node);
+  const icon = descendants.some(
+    (current) =>
+      current.tagName === "svg" &&
+      (attr(current, "class") ?? "").split(/\s+/u).includes("lucide-clipboard"),
+  );
+  const label = descendants.some(
+    (current) =>
+      current.tagName === "span" &&
+      (attr(current, "class") ?? "").split(/\s+/u).includes("sr-only") &&
+      (current.childNodes ?? []).map((child) => child.value ?? "").join("") ===
+        "Copy Text",
+  );
+  let figure = node.parentNode;
+  while (figure && figure.tagName !== "figure") figure = figure.parentNode;
+  return (
+    attr(node, "aria-live") === "polite" &&
+    icon &&
+    label &&
+    Boolean(
+      figure && walk(figure, (current) => current.tagName === "code").length,
+    )
+  );
+}
+
 /**
  * Removes only known non-reader presentation artifacts from a pinned legacy
  * renderer output. Every removal is recorded without retaining CSS or JS.
@@ -42,13 +76,20 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
     (node) =>
       node.nodeName === "#comment" ||
       node.tagName === "style" ||
-      node.tagName === "script",
+      node.tagName === "script" ||
+      isCodeCopyControl(node),
   );
 
   for (const node of artifacts) {
     const tag = node.tagName;
     const kind = node.nodeName === "#comment" ? "comment" : "element";
-    const body = kind === "comment" ? node.data : rawText(node);
+    const codeCopyControl = isCodeCopyControl(node);
+    const body =
+      kind === "comment"
+        ? node.data
+        : codeCopyControl
+          ? serialize(node)
+          : rawText(node);
     const hash = sha256(body);
     let provenance;
     if (kind === "comment") {
@@ -64,6 +105,8 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
         throw new Error(
           `${slug}: rendered comment has no verified renderer provenance (${hash}).`,
         );
+    } else if (codeCopyControl) {
+      provenance = "renderer-code-copy-control";
     } else if (tag === "style") {
       if (hash === ASTRO_ISLAND_STYLE_SHA256)
         provenance = "renderer-island-presentation";
@@ -73,11 +116,11 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
         throw new Error(
           `${slug}: rendered <style> has no verified presentation-only source provenance (${hash}).`,
         );
-    } else if (ASTRO_BOOTSTRAP_SHA256.has(hash)) {
+    } else if (tag === "script" && ASTRO_BOOTSTRAP_SHA256.has(hash)) {
       provenance = "renderer-bootstrap";
     } else {
       throw new Error(
-        `${slug}: rendered <script> is not a recognized renderer bootstrap (${hash}).`,
+        `${slug}: rendered <${tag}> artifact has no verified renderer provenance (${hash}).`,
       );
     }
 
