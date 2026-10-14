@@ -1,4 +1,4 @@
-import { fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 
 import { blockSchema } from "../lib/emdash-change-record";
 import { installVariantGalleryController } from "../lib/variant-gallery-controller";
@@ -44,6 +44,68 @@ const gallery = {
     blocks: [text(`${selections.weight} / ${selections.size}`)],
   })),
 };
+
+function GalleryHarness() {
+  return (
+    <section data-variant-gallery aria-label="Logo variants">
+      <fieldset>
+        <legend>Weight</legend>
+        <button
+          type="button"
+          data-choice="weight"
+          data-value="300"
+          aria-pressed="false"
+        >
+          300
+        </button>
+        <button
+          type="button"
+          data-choice="weight"
+          data-value="700"
+          aria-pressed="true"
+        >
+          700 ✓ pinned
+        </button>
+      </fieldset>
+      <fieldset>
+        <legend>iOS size</legend>
+        <button
+          type="button"
+          data-choice="size"
+          data-value="15"
+          aria-pressed="false"
+        >
+          15%
+        </button>
+        <button
+          type="button"
+          data-choice="size"
+          data-value="25"
+          aria-pressed="true"
+        >
+          <span
+            data-variant-label
+            data-label="25%"
+            data-selected-label="25% ✓ selected"
+          >
+            25% ✓ selected
+          </span>
+        </button>
+      </fieldset>
+      {combinations.map((selections) => (
+        <div
+          key={`${selections.weight}-${selections.size}`}
+          data-variant-frame={JSON.stringify(selections)}
+          hidden={selections.weight !== "700" || selections.size !== "25"}
+        >
+          <h2 id="section-anchor">
+            {selections.weight} / {selections.size}
+          </h2>
+        </div>
+      ))}
+    </section>
+  );
+}
 
 describe("variant_gallery v1 registry contract", () => {
   it("accepts a complete Cartesian set of Portable Text frames", () => {
@@ -113,54 +175,56 @@ describe("variant_gallery v1 registry contract", () => {
 
 describe("variant gallery controller", () => {
   it("switches the visible pre-rendered frame and pressed state for native button selections", () => {
-    const root = document.createElement("div");
-    root.innerHTML = `
-      <section data-variant-gallery>
-        <button type="button" data-choice="weight" data-value="300" aria-pressed="false"><span data-variant-label data-label="300">300</span></button>
-        <button type="button" data-choice="weight" data-value="700" aria-pressed="true"><span data-variant-label data-label="700 ✓ pinned">700 ✓ pinned</span></button>
-        <button type="button" data-choice="size" data-value="15" aria-pressed="false"><span data-variant-label data-label="15%">15%</span></button>
-        <button type="button" data-choice="size" data-value="25" aria-pressed="true"><span data-variant-label data-label="25%" data-selected-label="25% ✓ selected">25% ✓ selected</span></button>
-        <div data-variant-frame='{"weight":"300","size":"15"}' hidden><h2 id="section-anchor">300 / 15</h2></div>
-        <div data-variant-frame='{"weight":"300","size":"25"}' hidden><h2 id="section-anchor">300 / 25</h2></div>
-        <div data-variant-frame='{"weight":"700","size":"15"}' hidden><h2 id="section-anchor">700 / 15</h2></div>
-        <div data-variant-frame='{"weight":"700","size":"25"}'><h2 id="section-anchor">700 / 25</h2></div>
-      </section>`;
-    document.body.append(root);
-    installVariantGalleryController(root);
-    expect(root.querySelectorAll("#section-anchor")).toHaveLength(1);
-    expect(root.querySelector("#section-anchor")).toHaveTextContent("700 / 25");
+    const { container } = render(<GalleryHarness />);
+    installVariantGalleryController(container);
+    const weight = within(screen.getByRole("group", { name: "Weight" }));
+    const size = within(screen.getByRole("group", { name: "iOS size" }));
 
-    fireEvent.click(
-      root.querySelector('button[data-choice="weight"][data-value="300"]')!,
-    );
+    const expectActiveFrame = (active: string) => {
+      for (const selections of combinations) {
+        const headingName = `${selections.weight} / ${selections.size}`;
+        const heading = screen.getByRole("heading", {
+          level: 2,
+          name: headingName,
+          hidden: true,
+        });
+        if (headingName === active) {
+          expect(heading).toHaveAttribute("id", "section-anchor");
+          expect(heading).toBeVisible();
+        } else {
+          expect(heading).not.toHaveAttribute("id");
+          expect(heading).not.toBeVisible();
+        }
+      }
+    };
 
+    expectActiveFrame("700 / 25");
     expect(
-      root.querySelector('button[data-choice="weight"][data-value="300"]'),
+      size.getByRole("button", { name: "25% ✓ selected" }),
     ).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(weight.getByRole("button", { name: "300" }));
+    expectActiveFrame("300 / 25");
+    expect(weight.getByRole("button", { name: "300" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     expect(
-      root.querySelector('button[data-choice="weight"][data-value="700"]'),
+      weight.getByRole("button", { name: "700 ✓ pinned" }),
     ).toHaveAttribute("aria-pressed", "false");
     expect(
-      root.querySelector(
-        '[data-choice="weight"][data-value="700"] [data-variant-label]',
-      ),
-    ).toHaveTextContent("700 ✓ pinned");
+      size.getByRole("button", { name: "25% ✓ selected" }),
+    ).toHaveTextContent("25% ✓ selected");
+
+    fireEvent.click(size.getByRole("button", { name: "15%" }));
+    expectActiveFrame("300 / 15");
+    expect(size.getByRole("button", { name: "25%" })).toHaveTextContent("25%");
+    fireEvent.click(weight.getByRole("button", { name: "700 ✓ pinned" }));
+    expectActiveFrame("700 / 15");
+    fireEvent.click(size.getByRole("button", { name: "25%" }));
+    expectActiveFrame("700 / 25");
     expect(
-      root.querySelector(
-        '[data-choice="size"][data-value="25"] [data-variant-label]',
-      ),
-    ).toHaveTextContent("25%");
-    expect(
-      root.querySelector(
-        '[data-variant-frame*="300"][data-variant-frame*="25"]',
-      ),
-    ).not.toHaveAttribute("hidden");
-    expect(
-      root.querySelector(
-        '[data-variant-frame*="700"][data-variant-frame*="25"]',
-      ),
-    ).toHaveAttribute("hidden");
-    expect(root.querySelectorAll("#section-anchor")).toHaveLength(1);
-    expect(root.querySelector("#section-anchor")).toHaveTextContent("300 / 25");
+      size.getByRole("button", { name: "25% ✓ selected" }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 });
