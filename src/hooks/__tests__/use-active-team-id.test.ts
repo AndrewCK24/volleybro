@@ -31,7 +31,7 @@ const run = async (setup: Parameters<typeof respondWith>[0]) => {
 };
 
 describe("useActiveTeamId", () => {
-  it("uses the first joined team", async () => {
+  it("without a preference, uses the first joined team", async () => {
     const result = await run({ joinedTeamIds: ["team-1", "team-2"] });
 
     expect(result.current.teamId).toBe("team-1");

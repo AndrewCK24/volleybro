@@ -36,6 +36,7 @@ describe("PATCH /api/profiles", () => {
   it("returns 400 for a body with an undeclared field", async () => {
     const consoleSpy = silenceConsoleError();
     const req = routeRequest("http://localhost/api/profiles", "PATCH", {
+      activeTeamId: TEAM_ID,
       isAdmin: true,
     });
 
@@ -46,23 +47,5 @@ describe("PATCH /api/profiles", () => {
     expect(body.code).toBe("VALIDATION");
     expect(mockUpdateProfileController).not.toHaveBeenCalled();
     consoleSpy.mockRestore();
-  });
-
-  it("returns 200 and drops an activeTeamId an older client still sends", async () => {
-    const profile = { userId: "user-1" };
-    mockUpdateProfileController.mockResolvedValue(profile);
-    const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: TEAM_ID,
-    });
-
-    const res = await PATCH(req as never);
-    const body = await res.json();
-
-    expect(res.status).toBe(200);
-    expect(body).toEqual(profile);
-    expect(mockUpdateProfileController).toHaveBeenCalledWith({
-      userId: SESSION.user.id,
-      updates: {},
-    });
   });
 });

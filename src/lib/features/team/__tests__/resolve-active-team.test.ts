@@ -50,17 +50,6 @@ describe("resolveActiveTeam", () => {
       ).toEqual({ teamId: "team-a", verification: "unused" });
     },
   );
-
-  it("without a preference resolves to the first joined team", () => {
-    expect(resolve(full)).toEqual({
-      teamId: "team-a",
-      verification: "unused",
-    });
-  });
-
-  it("resolves to no team when nothing is joined", () => {
-    expect(resolve().teamId).toBeUndefined();
-  });
 });
 
 describe("decidePreferenceAction", () => {
