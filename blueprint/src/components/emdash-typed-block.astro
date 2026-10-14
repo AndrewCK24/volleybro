@@ -3,6 +3,7 @@ import { DecisionCardsList } from "./decision-cards";
 import { InteractiveFlowchart } from "./interactive-flowchart";
 import { RiskTable } from "./risk-table";
 import { Scenario } from "./scenario";
+import { Diagram } from "./diagram";
 import { Scenarios } from "./scenario-cards";
 import { blockSchema, parseJsonField } from "../lib/emdash-change-record";
 import { decisionCardsForIds } from "../lib/decision-cards";
@@ -131,3 +132,5 @@ if (block._type === "decision_cards") {
     />
   )
 }
+
+{block._type === "diagram" && <Diagram diagram={block} />}

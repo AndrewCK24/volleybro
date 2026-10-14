@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { diagramBlockSchema } from "./diagram-schema";
 
 const portableSpanSchema = z.strictObject({
   _key: z.string().optional(),
@@ -184,6 +185,7 @@ const taxonomyTermSchema: z.ZodType = z.lazy(() =>
 
 export const blockSchema = z.union([
   standardBlockSchema,
+  diagramBlockSchema,
   versionedBlock({
     _type: z.literal("decision_cards"),
     _version: z.literal(1),
