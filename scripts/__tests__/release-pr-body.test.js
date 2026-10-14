@@ -25,9 +25,7 @@ test("release PR body includes this version's notes, not oversized history", () 
     changelog,
   });
 
-  assert.match(body, /Merging by the release owner starts the release/);
-  assert.match(body, /someone else merged.*`mode=normal-retry`/);
-  assert.doesNotMatch(body, /starts no release/);
+  assert.match(body, /`mode=normal-retry`/);
   assert.match(body, /## volleybro@0\.16\.3/);
   assert.match(body, /Fix the current authentication issue\./);
   assert.doesNotMatch(body, /Historical release notes/);

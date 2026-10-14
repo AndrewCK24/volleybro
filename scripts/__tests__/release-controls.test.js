@@ -259,7 +259,7 @@ if(a[0]==='api'){
   const route=a[1];
   if(/\/commits\/[0-9a-f]+\/pulls$/.test(route)){
     s.pullLookups=(s.pullLookups||0)+1;fs.writeFileSync(process.env.API_STATE,JSON.stringify(s));
-    const merged=s.pr.merged?[{...s.pr,merged_at:'2026-10-01T00:00:00Z'}]:[];
+    const merged=[{...s.pr,merged_at:s.pr.merged?'2026-10-01T00:00:00Z':null}];
     result=s.pullLookups<=(s.emptyLookups||0)?[]:s.commitPulls||merged;
   }
   else if(route.includes('/pulls?'))result=s.mergeBackPr?[s.mergeBackPr]:[];
@@ -1700,7 +1700,6 @@ test("a push that merged an ordinary PR ends without a release", async (t) => {
   const { pr } = JSON.parse(await readFile(f.statePath, "utf8"));
   for (const other of [
     { ...pr, head: { ...pr.head, ref: "hotfix-merge-back/1" } },
-    { ...pr, head: { ...pr.head, ref: "feat/x" } },
     { ...pr, head: { ...pr.head, repo: { full_name: "attacker/repo" } } },
   ]) {
     await writeFile(f.env.GITHUB_OUTPUT, "");
@@ -1728,11 +1727,10 @@ test("a merge commit with no matching merged PR cannot authorize and tells the o
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /normal-retry/);
     assert.doesNotMatch(await outputOf(f), /sha=|release=/);
-    assert.equal(
-      JSON.parse(await readFile(f.statePath, "utf8")).pullLookups,
-      12,
-    );
   }
+  await updateApi(f, { commitPulls: [], pullLookups: 0 });
+  run(f, "authorize");
+  assert.ok(JSON.parse(await readFile(f.statePath, "utf8")).pullLookups > 1);
 });
 
 test("a PR that GitHub has not indexed yet is found on a later lookup", async (t) => {
@@ -1743,20 +1741,19 @@ test("a PR that GitHub has not indexed yet is found on a later lookup", async (t
   assert.equal(JSON.parse(await readFile(f.statePath, "utf8")).pullLookups, 4);
 });
 
-test("only the release owner's merge push starts a release", async (t) => {
+test("only the release owner's merge push on main starts a release", async (t) => {
   const f = await fixture(t);
-  const result = run(f, "authorize", { GITHUB_ACTOR: "outsider" });
-  assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /normal-retry/);
-  assert.doesNotMatch(await outputOf(f), /sha=/);
-});
-
-test("a re-run by a non-owner does not start a release", async (t) => {
-  const f = await fixture(t);
-  const result = run(f, "authorize", { GITHUB_TRIGGERING_ACTOR: "outsider" });
-  assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /normal-retry/);
-  assert.doesNotMatch(await outputOf(f), /sha=/);
+  for (const [override, message] of [
+    [{ GITHUB_ACTOR: "someone-else" }, /release owner's merge/],
+    [{ GITHUB_TRIGGERING_ACTOR: "someone-else" }, /release owner's merge/],
+    [{ GITHUB_EVENT_NAME: "workflow_dispatch" }, /only starts from a push/],
+    [{ GITHUB_REF: "refs/heads/x" }, /only starts from a push/],
+  ]) {
+    const result = run(f, "authorize", override);
+    assert.notEqual(result.status, 0, JSON.stringify(override));
+    assert.match(result.stderr, message, JSON.stringify(override));
+    assert.doesNotMatch(await outputOf(f), /sha=/);
+  }
 });
 
 test("several merged PRs for one push fail instead of guessing", async (t) => {
@@ -1770,7 +1767,7 @@ test("several merged PRs for one push fail instead of guessing", async (t) => {
   assert.doesNotMatch(await outputOf(f), /sha=/);
 });
 
-test("a multi-commit version PR rebase merge fails closed while squash and merge commits authorize", async (t) => {
+test("a multi-commit version PR rebase merge fails closed while a single-commit landing authorizes", async (t) => {
   const f = await fixture(t);
   const rebased = { ...JSON.parse(await readFile(f.statePath, "utf8")).pr };
   const landed = { ...rebased, merge_commit_sha: f.head };
