@@ -331,7 +331,8 @@
 
 @layer utilities {
   /* Grows the tap area to --control-size on touch without changing the visual size. */
-  .touch-target {
+  /* :where() keeps specificity at zero so an element already positioned (e.g. `absolute`) keeps it. */
+  :where(.touch-target) {
     position: relative;
   }
 
