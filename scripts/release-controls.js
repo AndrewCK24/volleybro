@@ -8,15 +8,15 @@ import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 
 const execFile = promisify(execFileCallback);
-const api = "https://api.vercel.com";
-const shaPattern = /^[0-9a-f]{40}$/;
-const digestPattern = /^sha256:([0-9a-f]{64})$/;
-const releaseStateVersion = 3;
-const pushLookupAttempts = 12;
-const pushLookupDelayMs = 5_000;
-const productionWorkflow = ".github/workflows/production-release.yml";
-const ciWorkflow = ".github/workflows/ci.yml";
-const reviewEnvironment = "production-release-review";
+const VERCEL_API = "https://api.vercel.com";
+const SHA_PATTERN = /^[0-9a-f]{40}$/;
+const DIGEST_PATTERN = /^sha256:([0-9a-f]{64})$/;
+const RELEASE_STATE_VERSION = 3;
+const PUSH_LOOKUP_ATTEMPTS = 12;
+const PUSH_LOOKUP_DELAY_MS = 5_000;
+const PRODUCTION_WORKFLOW = ".github/workflows/production-release.yml";
+const CI_WORKFLOW = ".github/workflows/ci.yml";
+const REVIEW_ENVIRONMENT = "production-release-review";
 const RECOVERY_RECEIPT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const RECOVERY_COMPATIBILITY_TEST =
   "test/integration/persistence/release-compatibility.itest.ts";
@@ -51,7 +51,7 @@ const KNOWN_UNRELATED_PATTERNS = [
 const CANDIDATE_LEGACY_ASSERTION = "candidate reads legacy persisted records";
 const BASELINE_CANDIDATE_ASSERTION = (baselineSha) =>
   `production baseline ${baselineSha} reads candidate-written records`;
-const sourceQAScopes = [
+const SOURCE_QA_SCOPES = [
   ["unit", "Test"],
   ["integration", "Integration"],
 ];
@@ -80,7 +80,7 @@ async function command(bin, args, { trim = true, ...options } = {}) {
 
 async function vercel(path, options = {}) {
   const team = process.env.VERCEL_TEAM_ID;
-  const url = new URL(`${api}${path}`);
+  const url = new URL(`${VERCEL_API}${path}`);
   if (team) url.searchParams.set("teamId", team);
   const response = await fetch(url, {
     ...options,
@@ -156,7 +156,7 @@ function json(value, label) {
 
 function exactSha(value, label) {
   const sha = String(value || "").toLowerCase();
-  if (!shaPattern.test(sha)) fail(`${label} must be a full 40-character SHA`);
+  if (!SHA_PATTERN.test(sha)) fail(`${label} must be a full 40-character SHA`);
   return sha;
 }
 
@@ -191,7 +191,7 @@ function hostname(value, label) {
 }
 
 function validateStateSchema(state) {
-  if (state.stateVersion !== releaseStateVersion)
+  if (state.stateVersion !== RELEASE_STATE_VERSION)
     fail("Release state does not use the current QA receipt contract");
   exactSha(state.sha, "Release state SHA");
   exactSha(state.controllerSha, "Release state controller SHA");
@@ -343,7 +343,7 @@ async function protectedJobReceipt(name, environment) {
   ]);
   validateWorkflowRun(run, {
     id: runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
     attempt: runAttempt,
   });
@@ -380,7 +380,7 @@ async function verifyProtectedJobReceipt(receipt, expectedRunId, name) {
     !receipt ||
     receipt.runId !== String(expectedRunId) ||
     receipt.jobName !== name ||
-    receipt.environment !== reviewEnvironment ||
+    receipt.environment !== REVIEW_ENVIRONMENT ||
     receipt.githubJob !== expectedGithubJob ||
     !Array.isArray(receipt.reviewHistory) ||
     !receipt.reviewHistory.length
@@ -394,7 +394,7 @@ async function verifyProtectedJobReceipt(receipt, expectedRunId, name) {
   ]);
   validateWorkflowRun(run, {
     id: receipt.runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
     attempt: receipt.runAttempt,
   });
@@ -688,7 +688,7 @@ async function verifyCompatibilityTestStep(state, receipt) {
   ]);
   validateWorkflowRun(run, {
     id: receipt.runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository: required("GITHUB_REPOSITORY"),
     attempt: receipt.runAttempt,
   });
@@ -749,7 +749,7 @@ async function recordCompatibilityTest(state, plan) {
   ]);
   validateWorkflowRun(run, {
     id: state.releaseRunId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository: required("GITHUB_REPOSITORY"),
     attempt: state.releaseRunAttempt,
   });
@@ -953,7 +953,7 @@ async function verifyRecoveryEvidence(
     fail(
       "Recovery receipt no longer matches the trusted source, baseline, candidate, or data contract",
     );
-  for (const [scope, name] of sourceQAScopes) {
+  for (const [scope, name] of SOURCE_QA_SCOPES) {
     await verifyReusableSourceQA(state, state.sourceQA.scopes[scope], name);
   }
   return receipt;
@@ -1198,8 +1198,8 @@ async function mergedPullsForPush(sha) {
     const pulls = (await github(`commits/${sha}/pulls`)).filter(
       (pr) => pr.merged_at && pr.merge_commit_sha === sha,
     );
-    if (pulls.length || attempt === pushLookupAttempts) return pulls;
-    await new Promise((resolve) => setTimeout(resolve, pushLookupDelayMs));
+    if (pulls.length || attempt === PUSH_LOOKUP_ATTEMPTS) return pulls;
+    await new Promise((resolve) => setTimeout(resolve, PUSH_LOOKUP_DELAY_MS));
   }
 }
 
@@ -1522,7 +1522,7 @@ async function stage() {
   assertBaseline(await currentAlias(), baseline);
   const reviewedSource = await reviewedSourceMapping(sha, authorization);
   const output = {
-    stateVersion: releaseStateVersion,
+    stateVersion: RELEASE_STATE_VERSION,
     candidateId: candidate.id,
     candidateUrl: `https://${candidateUrl.replace(/^https?:\/\//, "")}`,
     sha,
@@ -1568,10 +1568,10 @@ async function appendOutputs(values) {
 
 async function workflowBlob(ref) {
   const response = await github(
-    `contents/${ciWorkflow}?ref=${encodeURIComponent(exactSha(ref, "Workflow ref"))}`,
+    `contents/${CI_WORKFLOW}?ref=${encodeURIComponent(exactSha(ref, "Workflow ref"))}`,
   );
   if (
-    response.path !== ciWorkflow ||
+    response.path !== CI_WORKFLOW ||
     !/^[0-9a-f]{40}$/.test(response.sha || "")
   )
     fail("CI workflow blob identity is invalid");
@@ -1600,7 +1600,7 @@ async function reusableSourceQA(state) {
   } catch {
     return scopes;
   }
-  if (workflow.path !== ciWorkflow || !Number.isInteger(workflow.id))
+  if (workflow.path !== CI_WORKFLOW || !Number.isInteger(workflow.id))
     return scopes;
   if (
     responses.some(
@@ -1620,7 +1620,7 @@ async function reusableSourceQA(state) {
   for (const run of runs) {
     try {
       validateWorkflowRun(run, {
-        path: ciWorkflow,
+        path: CI_WORKFLOW,
         repository,
       });
       if (
@@ -1630,7 +1630,7 @@ async function reusableSourceQA(state) {
       )
         continue;
       const jobs = await workflowJobs(run.id);
-      for (const [scope, name] of sourceQAScopes) {
+      for (const [scope, name] of SOURCE_QA_SCOPES) {
         if (scopes[scope]) continue;
         try {
           scopes[scope] = await sourceScopeEvidence(
@@ -1731,7 +1731,7 @@ async function sourceScopeEvidence(state, run, jobs, workflow, scope, name) {
     producerRunId: String(run.id),
     producerRunAttempt: String(run.run_attempt),
     workflowId: String(workflow.id),
-    workflowPath: ciWorkflow,
+    workflowPath: CI_WORKFLOW,
     workflowBlob: testedBlob,
     job: jobEvidence(job),
   };
@@ -1746,14 +1746,14 @@ async function verifyReusableSourceQA(state, receipt, expectedName) {
   ]);
   validateWorkflowRun(run, {
     id: receipt.producerRunId,
-    path: ciWorkflow,
+    path: CI_WORKFLOW,
     repository,
     attempt: receipt.producerRunAttempt,
   });
   if (
     run.status !== "completed" ||
     String(run.workflow_id) !== receipt.workflowId ||
-    workflow.path !== ciWorkflow ||
+    workflow.path !== CI_WORKFLOW ||
     String(workflow.id) !== receipt.workflowId
   )
     fail("Reusable source QA producer is no longer trusted");
@@ -1811,7 +1811,7 @@ async function recordSourceQA() {
   const state = await loadState();
   validateConfiguredPlatform(state);
   const scopes = {};
-  for (const [scope, reusedName] of sourceQAScopes) {
+  for (const [scope, reusedName] of SOURCE_QA_SCOPES) {
     const reused = state.sourceQAPlan?.[scope];
     if (!reused)
       fail("Missing trusted CI evidence; release cannot run functional tests");
@@ -1851,10 +1851,10 @@ async function loadState({ allowRecovery = false } = {}) {
   if (state.recovery) {
     if (!allowRecovery) fail("Recovery state is not valid for this action");
     validateRecoveryMarker(state);
-    if (state.stateVersion !== releaseStateVersion)
+    if (state.stateVersion !== RELEASE_STATE_VERSION)
       fail("Legacy release artifacts require a fresh authorized release run");
     validateStateSchema(state);
-  } else if (state.stateVersion === releaseStateVersion) {
+  } else if (state.stateVersion === RELEASE_STATE_VERSION) {
     validateStateSchema(state);
     if (
       state.releaseRunId !== required("GITHUB_RUN_ID") ||
@@ -1988,7 +1988,7 @@ async function recordProductionQA() {
     runAttempt: state.releaseRunAttempt,
     approval: await protectedJobReceipt(
       "Accept production QA",
-      reviewEnvironment,
+      REVIEW_ENVIRONMENT,
     ),
   };
   await writeState(required("RELEASE_FINAL_STATE_FILE"), state);
@@ -2081,7 +2081,7 @@ function changelogEntry(changelog, version) {
 
 async function verifySourceQANative(state) {
   assertSourceQAReceipt(state, state.releaseRunId);
-  for (const [scope, reusedName] of sourceQAScopes) {
+  for (const [scope, reusedName] of SOURCE_QA_SCOPES) {
     const evidence = state.sourceQA.scopes[scope];
     await verifyReusableSourceQA(state, evidence, reusedName);
   }
@@ -2106,7 +2106,7 @@ function validateOriginalAuthorization(state, run) {
 }
 
 async function downloadAcceptedState(artifact, repository) {
-  const digest = String(artifact.digest || "").match(digestPattern)?.[1];
+  const digest = String(artifact.digest || "").match(DIGEST_PATTERN)?.[1];
   const expectedUrl = `https://api.github.com/repos/${repository}/actions/artifacts/${artifact.id}/zip`;
   if (!digest || artifact.archive_download_url !== expectedUrl)
     fail("Accepted artifact has no trusted archive digest or URL");
@@ -2160,7 +2160,7 @@ async function recoverVerify() {
   ]);
   validateWorkflowRun(currentRun, {
     id: runId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
     event: "workflow_dispatch",
     sha: required("GITHUB_SHA"),
@@ -2175,7 +2175,7 @@ async function recoverVerify() {
     fail("Recovery is not running from owner-dispatched trusted main");
   validateWorkflowRun(originalRun, {
     id: originalRunId,
-    path: productionWorkflow,
+    path: PRODUCTION_WORKFLOW,
     repository,
   });
   if (
@@ -2213,7 +2213,7 @@ async function recoverVerify() {
   )
     fail("Original accepted artifact is expired or has invalid provenance");
   const state = await downloadAcceptedState(artifact, repository);
-  if (state.stateVersion !== releaseStateVersion)
+  if (state.stateVersion !== RELEASE_STATE_VERSION)
     fail("Legacy release artifacts require a fresh authorized release run");
   validateConfiguredPlatform(state);
   if (
