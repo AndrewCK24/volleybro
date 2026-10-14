@@ -11,4 +11,4 @@ const props = Astro.props as {
 const blockProps = { ...props, id: props.node.id };
 ---
 
-<EmDashPortableTextBlock {...blockProps} />
+<EmDashPortableTextBlock {...blockProps}><slot /></EmDashPortableTextBlock>

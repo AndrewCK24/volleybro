@@ -182,6 +182,14 @@ describe("EmDash Change schema", () => {
     expect(
       blockSchema.safeParse({
         _type: "block",
+        id: "３月測試-anchor",
+        style: "h2",
+        children: [{ _type: "span", text: "三月測試" }],
+      }).success,
+    ).toBe(true);
+    expect(
+      blockSchema.safeParse({
+        _type: "block",
         id: "archive-assessment-與殘留工作",
         style: "h2",
         children: [{ _type: "span", text: "評估" }],
@@ -191,6 +199,13 @@ describe("EmDash Change schema", () => {
       blockSchema.safeParse({
         _type: "block",
         id: "heading id",
+        children: [{ _type: "span", text: "Unsafe" }],
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        _type: "block",
+        id: "　unsafe",
         children: [{ _type: "span", text: "Unsafe" }],
       }).success,
     ).toBe(false);

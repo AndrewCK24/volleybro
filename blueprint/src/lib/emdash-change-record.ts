@@ -28,7 +28,7 @@ const textBlockSchema = z
     _key: z.string().optional(),
     id: z
       .string()
-      .regex(/^[\p{L}][\p{L}\p{M}\p{N}_:.-]*$/u)
+      .regex(/^[\p{L}\p{N}][\p{L}\p{M}\p{N}_:.-]*$/u)
       .optional(),
     _type: z.literal("block"),
     children: z.array(portableSpanSchema),
