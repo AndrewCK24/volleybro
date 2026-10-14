@@ -1,0 +1,78 @@
+---
+import { PortableText } from "emdash/ui";
+import type { PortableTextFrameBlock, VariantGalleryBlock } from "../lib/emdash-change-record";
+import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
+import EmDashDiagramBlock from "./emdash-diagram-block.astro";
+
+const { gallery } = Astro.props as { gallery: VariantGalleryBlock };
+const defaultKey = JSON.stringify(
+  Object.keys(gallery.defaultValues)
+    .sort()
+    .map((id) => [id, gallery.defaultValues[id]]),
+);
+const frameKey = (selections: Record<string, string>) =>
+  JSON.stringify(Object.keys(selections).sort().map((id) => [id, selections[id]]));
+---
+
+<section class="my-6" data-variant-gallery aria-label={gallery.title}>
+  <h3>{gallery.title}</h3>
+  <div class="my-4 flex flex-wrap gap-4">
+    {gallery.choices.map((choice) => (
+      <fieldset>
+        <legend class="mb-2 text-sm font-medium">{choice.label}</legend>
+        <div class="flex flex-wrap gap-2">
+          {choice.options.map((option) => (
+            <button
+              type="button"
+              data-choice={choice.id}
+              data-value={option.value}
+              aria-pressed={gallery.defaultValues[choice.id] === option.value ? "true" : "false"}
+              class="rounded-md border px-3 py-1.5 font-mono text-sm aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+            >
+              <span
+                data-variant-label
+                data-label={option.label}
+                data-selected-label={option.selectedLabel}
+              >
+                {gallery.defaultValues[choice.id] === option.value && option.selectedLabel
+                  ? option.selectedLabel
+                  : option.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </fieldset>
+    ))}
+  </div>
+
+  {gallery.frames.map((frame) => (
+    <div
+      data-variant-frame={JSON.stringify(frame.selections)}
+      hidden={frameKey(frame.selections) !== defaultKey}
+      aria-live="polite"
+    >
+      <PortableText
+        value={frame.blocks as PortableTextFrameBlock[]}
+        components={{
+          block: {
+            normal: EmDashPortableTextBlock,
+            h1: EmDashPortableTextBlock,
+            h2: EmDashPortableTextBlock,
+            h3: EmDashPortableTextBlock,
+            h4: EmDashPortableTextBlock,
+            h5: EmDashPortableTextBlock,
+            h6: EmDashPortableTextBlock,
+            blockquote: EmDashPortableTextBlock,
+          },
+          type: { diagram: EmDashDiagramBlock },
+        }}
+      />
+    </div>
+  ))}
+</section>
+
+<script>
+  import { installVariantGalleryController } from "../lib/variant-gallery-controller";
+
+  installVariantGalleryController(document);
+</script>

@@ -5,6 +5,7 @@ import { RiskTable } from "./risk-table";
 import { Scenario } from "./scenario";
 import { Diagram } from "./diagram";
 import { Scenarios } from "./scenario-cards";
+import VariantGallery from "./variant-gallery.astro";
 import { blockSchema, parseJsonField } from "../lib/emdash-change-record";
 import { decisionCardsForIds } from "../lib/decision-cards";
 import { z } from "zod";
@@ -134,3 +135,4 @@ if (block._type === "decision_cards") {
 }
 
 {block._type === "diagram" && <Diagram diagram={block} />}
+{block._type === "variant_gallery" && <VariantGallery gallery={block} />}

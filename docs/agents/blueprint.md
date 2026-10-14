@@ -22,6 +22,8 @@ Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tab
 
 `diagram` version 1 preserves static diagram viewBox, source IDs, typed shapes and numeric paths, positioned text runs, nested groups/transforms and typed marker geometry. Paint accepts controlled Blueprint tokens, strict hex colors, `none` or `currentColor`. Labels are escaped text; raw SVG, arbitrary attributes, CSS, scripts and URL paints are rejected. Authored interactive flowcharts retain the existing `interactive_flowchart` block and complete node details.
 
+`variant_gallery` version 1 is a reusable finite selector for data-authored visual variants. It declares labeled choices, a default selection, and exactly one pre-rendered Portable Text frame for every Cartesian choice combination. Frames contain only standard Portable Text blocks and `diagram` v1; they cannot contain nested galleries or scenario-counting blocks. The server renders every frame with the native Portable Text and typed-diagram renderers. Native buttons switch which existing frame is visible; authored data never supplies HTML, CSS, JavaScript, or component names.
+
 ## PR-derived metrics
 
 Store required GitHub PR URLs as a lookup index, one URL for each required shard. Validate the exact repository and PR URL shape. Derive status, merge date, commits, files changed, insertions, deletions and `src` files from GitHub's PR API; derive scenario count from structured scenario blocks. Store no manual status, merge date, statistics or `facts.json` copy.

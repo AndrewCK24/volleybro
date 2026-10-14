@@ -145,8 +145,107 @@ const standardBlockSchema = z.discriminatedUnion("_type", [
   tableBlockSchema,
 ]);
 
+const portableTextFrameBlockSchema = z.union([
+  standardBlockSchema,
+  diagramBlockSchema,
+]);
+
+export type PortableTextFrameBlock = z.infer<typeof portableTextFrameBlockSchema>;
+
 const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
   z.strictObject({ ...shape, _key: z.string().min(1).optional() });
+
+const variantChoiceSchema = z.strictObject({
+  id: z.string().min(1).max(64).regex(/^[a-z][a-z0-9_-]*$/u),
+  label: z.string().min(1).max(120),
+  options: z
+    .array(
+      z.strictObject({
+        value: z.string().min(1).max(64),
+        label: z.string().min(1).max(120),
+        selectedLabel: z.string().min(1).max(120).optional(),
+      }),
+    )
+    .min(2)
+    .max(20)
+    .refine(
+      (options) => new Set(options.map(({ value }) => value)).size === options.length,
+      "Variant option values must be unique.",
+    ),
+});
+
+export const variantGalleryBlockSchema = versionedBlock({
+  _type: z.literal("variant_gallery"),
+  version: z.literal(1),
+  title: z.string().min(1).max(200),
+  choices: z.array(variantChoiceSchema).min(1).max(4),
+  defaultValues: z.record(z.string(), z.string()),
+  frames: z
+    .array(
+      z.strictObject({
+        selections: z.record(z.string(), z.string()),
+        blocks: z.array(portableTextFrameBlockSchema).min(1).max(200),
+      }),
+    )
+    .min(1)
+    .max(256),
+}).superRefine((gallery, context) => {
+  const choiceIds = gallery.choices.map(({ id }) => id);
+  if (new Set(choiceIds).size !== choiceIds.length) {
+    context.addIssue({ code: "custom", path: ["choices"], message: "Variant choice IDs must be unique." });
+    return;
+  }
+
+  const optionsByChoice = new Map(
+    gallery.choices.map(({ id, options }) => [
+      id,
+      new Set(options.map(({ value }) => value)),
+    ]),
+  );
+  const expectedKeys = [...choiceIds].sort();
+  const validateSelection = (selection: Record<string, string>, path: (string | number)[]) => {
+    const keys = Object.keys(selection).sort();
+    if (keys.length !== expectedKeys.length || keys.some((key, index) => key !== expectedKeys[index])) {
+      context.addIssue({ code: "custom", path, message: "Every variant selection must specify each choice exactly once." });
+      return false;
+    }
+    let valid = true;
+    for (const [id, value] of Object.entries(selection)) {
+      if (!optionsByChoice.get(id)?.has(value)) {
+        context.addIssue({ code: "custom", path: [...path, id], message: "Variant selection uses an unknown choice value." });
+        valid = false;
+      }
+    }
+    return valid;
+  };
+
+  const defaultsValid = validateSelection(gallery.defaultValues, ["defaultValues"]);
+  const frameKeys = new Set<string>();
+  gallery.frames.forEach(({ selections }, index) => {
+    if (!validateSelection(selections, ["frames", index, "selections"])) return;
+    const key = JSON.stringify(expectedKeys.map((id) => [id, selections[id]]));
+    if (frameKeys.has(key)) {
+      context.addIssue({ code: "custom", path: ["frames", index, "selections"], message: "Variant frame selections must be unique." });
+    }
+    frameKeys.add(key);
+  });
+
+  const expectedFrameCount = gallery.choices.reduce(
+    (count, { options }) => count * options.length,
+    1,
+  );
+  if (gallery.frames.length !== expectedFrameCount) {
+    context.addIssue({ code: "custom", path: ["frames"], message: "Variant gallery must provide one frame for every choice combination." });
+  }
+  if (defaultsValid) {
+    const defaultKey = JSON.stringify(expectedKeys.map((id) => [id, gallery.defaultValues[id]]));
+    if (!frameKeys.has(defaultKey)) {
+      context.addIssue({ code: "custom", path: ["defaultValues"], message: "Variant gallery must include its default selection frame." });
+    }
+  }
+});
+
+export type VariantGalleryBlock = z.infer<typeof variantGalleryBlockSchema>;
 
 const bylineSummarySchema = z.strictObject({
   id: z.string(),
@@ -186,6 +285,7 @@ const taxonomyTermSchema: z.ZodType = z.lazy(() =>
 export const blockSchema = z.union([
   standardBlockSchema,
   diagramBlockSchema,
+  variantGalleryBlockSchema,
   versionedBlock({
     _type: z.literal("decision_cards"),
     _version: z.literal(1),
