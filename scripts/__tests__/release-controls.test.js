@@ -1727,10 +1727,11 @@ test("a merge commit with no matching merged PR cannot authorize and tells the o
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /normal-retry/);
     assert.doesNotMatch(await outputOf(f), /sha=|release=/);
+    if (!commitPulls.length)
+      assert.ok(
+        JSON.parse(await readFile(f.statePath, "utf8")).pullLookups > 1,
+      );
   }
-  await updateApi(f, { commitPulls: [], pullLookups: 0 });
-  run(f, "authorize");
-  assert.ok(JSON.parse(await readFile(f.statePath, "utf8")).pullLookups > 1);
 });
 
 test("a PR that GitHub has not indexed yet is found on a later lookup", async (t) => {
@@ -1744,8 +1745,11 @@ test("a PR that GitHub has not indexed yet is found on a later lookup", async (t
 test("only the release owner's merge push on main starts a release", async (t) => {
   const f = await fixture(t);
   for (const [override, message] of [
-    [{ GITHUB_ACTOR: "someone-else" }, /release owner's merge/],
-    [{ GITHUB_TRIGGERING_ACTOR: "someone-else" }, /release owner's merge/],
+    [{ GITHUB_ACTOR: "someone-else" }, /release owner's merge.*normal-retry/],
+    [
+      { GITHUB_TRIGGERING_ACTOR: "someone-else" },
+      /release owner's merge.*normal-retry/,
+    ],
     [{ GITHUB_EVENT_NAME: "workflow_dispatch" }, /only starts from a push/],
     [{ GITHUB_REF: "refs/heads/x" }, /only starts from a push/],
   ]) {
