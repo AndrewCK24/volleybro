@@ -12,6 +12,8 @@ const api = "https://api.vercel.com";
 const shaPattern = /^[0-9a-f]{40}$/;
 const digestPattern = /^sha256:([0-9a-f]{64})$/;
 const releaseStateVersion = 3;
+const pushLookupAttempts = 12;
+const pushLookupDelayMs = 5_000;
 const productionWorkflow = ".github/workflows/production-release.yml";
 const ciWorkflow = ".github/workflows/ci.yml";
 const reviewEnvironment = "production-release-review";
@@ -456,26 +458,17 @@ export function validateRequiredChecks(sha, checkRuns, statuses, repository) {
 }
 
 function validateAuthorization({
-  event,
+  sha,
   pr,
   expectedAuthor,
   repository,
   checkRuns,
   statuses,
 }) {
-  const mergeSha = event.pull_request?.merge_commit_sha;
-  if (
-    !event.pull_request?.merged ||
-    !mergeSha ||
-    pr.head.sha !== event.pull_request.head?.sha
-  ) {
-    fail("Only the exact merged pull request commit can authorize a release");
-  }
   validateVersionPr(pr, expectedAuthor, repository);
-  if (pr.state !== "closed" || !pr.merged || pr.merge_commit_sha !== mergeSha)
+  if (pr.state !== "closed" || !pr.merged || pr.merge_commit_sha !== sha)
     fail("Version PR must be merged at this exact commit");
   validateRequiredChecks(pr.head.sha, checkRuns, statuses, repository);
-  return mergeSha;
 }
 
 function validateHotfixPr({ pr, sha, repository, checkRuns, statuses }) {
@@ -1178,44 +1171,98 @@ async function verifyMetadataOnly(base, head) {
   }
 }
 
-async function authorize() {
-  const event = json(
-    await (
-      await import("node:fs/promises")
-    ).readFile(required("GITHUB_EVENT_PATH"), "utf8"),
-    "GitHub event",
-  );
-  const prNumber = event.pull_request?.number;
-  const mergedSha = event.pull_request?.merge_commit_sha;
-  if (!prNumber || mergedSha !== required("GITHUB_SHA"))
-    fail("Only the exact merged pull request commit can authorize a release");
-  const pr = await github(`pulls/${prNumber}`);
-  const expectedAuthor = required("RELEASE_BOT_LOGIN");
-  const [checks, statuses] = await Promise.all([
+// Shared by the push and normal-retry paths: the merged PR must be the trusted
+// version PR with passing checks and a metadata-only diff at the exact SHA.
+async function validateMergedVersionPr(pullRequest, sha) {
+  const pr = await github(`pulls/${pullRequest}`);
+  const [checks, statuses, environment] = await Promise.all([
     github(`commits/${pr.head.sha}/check-runs?per_page=100`),
     github(`commits/${pr.head.sha}/statuses?per_page=100`),
+    github("environments/production-release-review"),
   ]);
-  const authorizedSha = validateAuthorization({
-    event,
+  validateAuthorization({
+    sha,
     pr,
-    expectedAuthor,
+    expectedAuthor: required("RELEASE_BOT_LOGIN"),
     repository: required("GITHUB_REPOSITORY"),
     checkRuns: checks.check_runs,
     statuses,
   });
-  if (authorizedSha !== required("GITHUB_SHA"))
-    fail("Workflow checkout does not match the merged SHA");
-  const parent = await command("git", ["rev-parse", `${mergedSha}^1`]);
-  await verifyMetadataOnly(parent, mergedSha);
-  validateReviewEnvironment(
-    await github("environments/production-release-review"),
-  );
-  if (process.env.GITHUB_OUTPUT) {
-    const fs = await import("node:fs/promises");
-    await fs.appendFile(process.env.GITHUB_OUTPUT, `sha=${mergedSha}\n`);
+  const parent = await command("git", ["rev-parse", `${sha}^1`]);
+  await verifyMetadataOnly(parent, sha);
+  validateReviewEnvironment(environment);
+  return pr;
+}
+
+async function mergedPullsForPush(sha) {
+  // GitHub can index a fresh merge a moment after the push event.
+  for (let attempt = 1; ; attempt++) {
+    const pulls = (await github(`commits/${sha}/pulls`)).filter(
+      (pr) => pr.merged_at && pr.merge_commit_sha === sha,
+    );
+    if (pulls.length || attempt === pushLookupAttempts) return pulls;
+    await new Promise((resolve) => setTimeout(resolve, pushLookupDelayMs));
   }
+}
+
+function isVersionPr(pr, expectedAuthor, repository) {
+  try {
+    return validateVersionPr(pr, expectedAuthor, repository);
+  } catch {
+    return false;
+  }
+}
+
+async function authorize() {
+  const fs = await import("node:fs/promises");
+  const sha = exactSha(required("GITHUB_SHA"), "Pushed SHA");
+  if (
+    required("GITHUB_EVENT_NAME") !== "push" ||
+    required("GITHUB_REF") !== "refs/heads/main"
+  )
+    fail("Automatic release only starts from a push to main");
+  const pulls = await mergedPullsForPush(sha);
+  if (!pulls.length)
+    fail(
+      "No merged pull request found for this push; the release owner dispatches normal-retry with the version PR number and merge SHA",
+    );
+  if (pulls.length > 1)
+    fail("More than one merged pull request matches this push; stop");
+  const [pr] = pulls;
+  if (
+    !isVersionPr(
+      pr,
+      required("RELEASE_BOT_LOGIN"),
+      required("GITHUB_REPOSITORY"),
+    )
+  ) {
+    await fs.appendFile(required("GITHUB_OUTPUT"), "release=false\n");
+    process.stdout.write(
+      `${JSON.stringify({ release: false, reason: "Push did not merge the version PR; no release needed" })}\n`,
+    );
+    return;
+  }
+  if (required("GITHUB_ACTOR") !== required("RELEASE_OWNER_LOGIN"))
+    fail(
+      "Only the release owner's merge starts a release; the release owner dispatches normal-retry for this version PR",
+    );
+  // A single-parent merge must land as one commit, or only its last commit
+  // would be checked for metadata-only changes.
+  const { before } = json(
+    await fs.readFile(required("GITHUB_EVENT_PATH"), "utf8"),
+    "GitHub event",
+  );
+  const parents = (
+    await command("git", ["rev-list", "--parents", "-n", "1", sha])
+  ).split(" ");
+  if (parents.length === 2 && parents[1] !== before)
+    fail(
+      "Rebase merge of a multi-commit version PR cannot be verified; merge it with a merge commit or squash",
+    );
+  await validateMergedVersionPr(pr.number, sha);
+  await fs.appendFile(required("GITHUB_OUTPUT"), `release=true\nsha=${sha}\n`);
   process.stdout.write(
-    `${JSON.stringify({ sha: mergedSha, version: json(await shaAt(mergedSha, "package.json"), "package.json").version })}\n`,
+    `${JSON.stringify({ sha, version: json(await shaAt(sha, "package.json"), "package.json").version })}\n`,
   );
 }
 
@@ -1233,29 +1280,7 @@ async function authorizeRetry() {
     controller,
     "Retry controller does not contain the authorized release",
   );
-  const pr = await github(`pulls/${pullRequest}`);
-  const [checks, statuses, environment] = await Promise.all([
-    github(`commits/${pr.head.sha}/check-runs?per_page=100`),
-    github(`commits/${pr.head.sha}/statuses?per_page=100`),
-    github("environments/production-release-review"),
-  ]);
-  validateAuthorization({
-    event: {
-      pull_request: {
-        merged: true,
-        merge_commit_sha: sha,
-        head: { sha: pr.head.sha },
-      },
-    },
-    pr,
-    expectedAuthor: required("RELEASE_BOT_LOGIN"),
-    repository: required("GITHUB_REPOSITORY"),
-    checkRuns: checks.check_runs,
-    statuses,
-  });
-  const parent = await command("git", ["rev-parse", `${sha}^1`]);
-  await verifyMetadataOnly(parent, sha);
-  validateReviewEnvironment(environment);
+  const pr = await validateMergedVersionPr(pullRequest, sha);
   const authorization = {
     owner,
     runId,
@@ -2082,7 +2107,7 @@ function validateOriginalAuthorization(state, run) {
       run.triggering_actor?.login !== state.authorization.owner
     )
       fail("Original manual release authorization is invalid");
-  } else if (run.event !== "pull_request" || run.head_sha !== state.sha) {
+  } else if (run.event !== "push" || run.head_sha !== state.sha) {
     fail("Original automatic release authorization is invalid");
   }
 }

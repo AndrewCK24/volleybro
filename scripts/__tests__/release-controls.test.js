@@ -143,15 +143,7 @@ async function fixture(
   const eventPath = path.join(root, "event.json");
   await writeFile(
     eventPath,
-    JSON.stringify({
-      action: "closed",
-      pull_request: {
-        number: 1,
-        merged: true,
-        merge_commit_sha: merge,
-        head: { sha: head },
-      },
-    }),
+    JSON.stringify({ ref: "refs/heads/main", before: base, after: merge }),
   );
   const statePath = path.join(root, "api.json");
   await writeFile(
@@ -229,7 +221,7 @@ async function fixture(
         9: {
           id: 9,
           path: ".github/workflows/production-release.yml@refs/heads/main",
-          event: "pull_request",
+          event: "push",
           head_branch: "main",
           head_sha: merge,
           run_attempt: 1,
@@ -265,7 +257,8 @@ async function fixture(
 const s=JSON.parse(fs.readFileSync(process.env.API_STATE)),a=process.argv.slice(2);let result;
 if(a[0]==='api'){
   const route=a[1];
-  if(route.includes('/pulls?'))result=s.mergeBackPr?[s.mergeBackPr]:[];
+  if(/\/commits\/[0-9a-f]+\/pulls$/.test(route)){s.pullLookups=(s.pullLookups||0)+1;fs.writeFileSync(process.env.API_STATE,JSON.stringify(s));result=s.pullLookups<=(s.emptyLookups||0)?[]:s.commitPulls||(s.pr.merged?[{...s.pr,merged_at:'2026-10-01T00:00:00Z'}]:[]);}
+  else if(route.includes('/pulls?'))result=s.mergeBackPr?[s.mergeBackPr]:[];
   else if(route.includes('/pulls/'))result=s.pr;
   else if(route.includes('/check-runs'))result={check_runs:s.checks};
   else if(route.includes('/statuses?'))result=s.statuses;
@@ -358,7 +351,7 @@ globalThis.fetch=async(u,options={})=>{
       RELEASE_OWNER_LOGIN: "release-owner",
       GITHUB_ACTOR: "release-owner",
       GITHUB_TRIGGERING_ACTOR: "release-owner",
-      GITHUB_EVENT_NAME: "pull_request",
+      GITHUB_EVENT_NAME: "push",
       GITHUB_REF: "refs/heads/main",
     },
   };
@@ -1543,6 +1536,17 @@ test("owner recovery accepts only the original nonexpired proven artifact", asyn
       9: [{ ...currentArtifact, digest: `sha256:${restoredDigest}` }],
     },
   });
+  const pushState = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    runs: {
+      ...pushState.runs,
+      9: { ...pushState.runs[9], event: "pull_request" },
+    },
+  });
+  result = run(f, "recover-verify", recoveryEnv);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Original automatic release authorization/);
+  await updateApi(f, { runs: pushState.runs });
   result = run(f, "recover-verify", recoveryEnv);
   assert.equal(result.status, 0, result.stderr);
   const recovered = JSON.parse(await readFile(recovery, "utf8"));
@@ -1654,7 +1658,6 @@ test("authorize validates the real PR, exact check sources and metadata through 
         },
       ],
     },
-    { pr: { ...original.pr, user: { login: "impostor" } } },
   ]) {
     await updateApi(f, { ...original, environment: undefined, ...override });
     assert.notEqual(run(f, "authorize").status, 0, JSON.stringify(override));
@@ -1669,13 +1672,111 @@ test("authorize validates the real PR, exact check sources and metadata through 
   const invalid = f.git(["rev-parse", "HEAD"]);
   const pr = { ...original.pr, merge_commit_sha: invalid };
   await updateApi(f, { pr });
-  await writeFile(
-    f.eventPath,
-    JSON.stringify({ pull_request: { ...pr, head: { sha: f.head } } }),
-  );
   const result = run(f, "authorize", { GITHUB_SHA: invalid });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /non-metadata change/);
+});
+
+async function outputOf(f) {
+  return readFile(f.env.GITHUB_OUTPUT, "utf8").catch(() => "");
+}
+
+test("owner merge of the version PR authorizes the exact push SHA", async (t) => {
+  const f = await fixture(t);
+  const result = run(f, "authorize");
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).sha, f.merge);
+  assert.match(await outputOf(f), new RegExp(`^sha=${f.merge}$`, "m"));
+});
+
+test("a push that merged an ordinary PR ends without a release", async (t) => {
+  const f = await fixture(t);
+  const { pr } = JSON.parse(await readFile(f.statePath, "utf8"));
+  for (const other of [
+    { ...pr, head: { ...pr.head, ref: "hotfix-merge-back/1" } },
+    { ...pr, title: "feat: something" },
+    { ...pr, user: { login: "someone-else" } },
+  ]) {
+    await writeFile(f.env.GITHUB_OUTPUT, "");
+    await updateApi(f, {
+      commitPulls: [{ ...other, merged_at: "2026-10-01" }],
+    });
+    const result = run(f, "authorize", { GITHUB_ACTOR: "someone-else" });
+    assert.equal(result.status, 0, result.stderr);
+    const output = await outputOf(f);
+    assert.match(output, /^release=false$/m);
+    assert.doesNotMatch(output, /sha=|release_authorization/);
+  }
+});
+
+test("a merge commit with no matching merged PR cannot authorize and tells the owner to dispatch", async (t) => {
+  const f = await fixture(t);
+  const { pr } = JSON.parse(await readFile(f.statePath, "utf8"));
+  for (const commitPulls of [
+    [],
+    [{ ...pr, merge_commit_sha: f.head, merged_at: "2026-10-01" }],
+    [{ ...pr, merged_at: null }],
+  ]) {
+    await updateApi(f, { commitPulls, pullLookups: 0 });
+    const result = run(f, "authorize");
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /normal-retry/);
+    assert.doesNotMatch(await outputOf(f), /sha=|release=/);
+  }
+  assert.equal(
+    JSON.parse(await readFile(f.statePath, "utf8")).pullLookups > 1,
+    true,
+  );
+});
+
+test("a PR that GitHub has not indexed yet is found on a later lookup", async (t) => {
+  const f = await fixture(t);
+  await updateApi(f, { emptyLookups: 3 });
+  const result = run(f, "authorize");
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(await readFile(f.statePath, "utf8")).pullLookups, 4);
+});
+
+test("only the release owner's merge push starts a release", async (t) => {
+  const f = await fixture(t);
+  const result = run(f, "authorize", { GITHUB_ACTOR: "outsider" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /normal-retry/);
+  assert.doesNotMatch(await outputOf(f), /sha=/);
+});
+
+test("several merged PRs for one push fail instead of guessing", async (t) => {
+  const f = await fixture(t);
+  const { pr } = JSON.parse(await readFile(f.statePath, "utf8"));
+  const merged = { ...pr, merged_at: "2026-10-01" };
+  await updateApi(f, { commitPulls: [merged, { ...merged, number: 2 }] });
+  const result = run(f, "authorize");
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /more than one/i);
+  assert.doesNotMatch(await outputOf(f), /sha=/);
+});
+
+test("a multi-commit version PR rebase merge fails closed while squash and merge commits authorize", async (t) => {
+  const f = await fixture(t);
+  const rebased = { ...JSON.parse(await readFile(f.statePath, "utf8")).pr };
+  const landed = { ...rebased, merge_commit_sha: f.head };
+  await updateApi(f, { pr: landed });
+  const env = { GITHUB_SHA: f.head };
+  const parent = f.git(["rev-parse", `${f.head}^1`]);
+  // squash or single-commit rebase: the push holds exactly one commit
+  await writeFile(
+    f.eventPath,
+    JSON.stringify({ before: parent, after: f.head }),
+  );
+  assert.equal(run(f, "authorize", env).status, 0);
+  // rebase of several commits: the push holds more than one commit
+  await writeFile(
+    f.eventPath,
+    JSON.stringify({ before: f.deployed, after: f.head }),
+  );
+  const result = run(f, "authorize", env);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /rebase/i);
 });
 
 test("open version PR validation has no release authority and rejects foreign changes", async (t) => {

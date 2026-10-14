@@ -1,8 +1,10 @@
 name: Production release
 
-# A merge-triggered run fails the main-only production QA environment after promoting,
-# so the release owner dispatches every release on main.
+# A push to main runs on the main ref, which the main-only production QA environment accepts.
 on:
+  push:
+    branches: [main]
+    paths: [CHANGELOG.md]
   workflow_dispatch:
     inputs:
       mode:
@@ -51,10 +53,11 @@ jobs:
       sha: ${{ steps.stage.outputs.sha }}
       controller_sha: ${{ steps.controller.outputs.controller_sha }}
       mode: ${{ steps.controller.outputs.mode }}
+      release: ${{ steps.authorize.outputs.release }}
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.workflow_sha || github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.workflow_sha || github.sha }}
           fetch-depth: 0
       - id: controller
         name: Copy trusted release controller before candidate checkout
@@ -87,8 +90,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          RELEASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.sha || github.event.pull_request.merge_commit_sha }}
+          GITHUB_SHA: ${{ github.sha }}
+          RELEASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.sha || github.sha }}
           RELEASE_BOT_LOGIN: ${{ vars.RELEASE_BOT_LOGIN }}
           RELEASE_OWNER_LOGIN: ${{ vars.RELEASE_OWNER_LOGIN }}
           GITHUB_ACTOR: ${{ github.actor }}
@@ -111,18 +114,22 @@ jobs:
             node "$RUNNER_TEMP/release-controls.js" authorize
           fi
       - uses: actions/checkout@v7
+        if: steps.authorize.outputs.release != 'false'
         with:
           ref: ${{ steps.authorize.outputs.sha }}
           fetch-depth: 0
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
+        if: steps.authorize.outputs.release != 'false'
         with:
           install: false
           node-version-file: false
       - uses: actions/setup-node@v7
+        if: steps.authorize.outputs.release != 'false'
         with:
           node-version-file: .nvmrc
       - id: stage
         name: Stage exact SHA with production configuration
+        if: steps.authorize.outputs.release != 'false'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
@@ -139,6 +146,7 @@ jobs:
           RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
         run: node "$RUNNER_TEMP/release-controls.js" stage
       - uses: actions/upload-artifact@v7
+        if: steps.authorize.outputs.release != 'false'
         with:
           name: production-release-state
           path: ${{ runner.temp }}/release-state.json
@@ -148,6 +156,7 @@ jobs:
   source-inspection:
     name: Inspect source QA
     needs: candidate
+    if: needs.candidate.outputs.release != 'false'
     runs-on: ubuntu-latest
     permissions:
       contents: read
