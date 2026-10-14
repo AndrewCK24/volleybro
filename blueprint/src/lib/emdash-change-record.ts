@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { diagramBlockSchema } from "./diagram-schema";
+import { diagramBlockSchema } from "./diagram-schema.ts";
 
 const portableSpanSchema = z.strictObject({
   _key: z.string().optional(),
