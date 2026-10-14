@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Run after `changeset version` (via the release:version script) to:
 // 1. Fix version headers:  ## X.Y.Z  →  ## [X.Y.Z](compare-link) YYYY-MM-DD
-// 2. Merge duplicate ### type headings within each version block
+// 2. Merge duplicate ### type and #### domain headings within each version block
 
 import { execSync } from "node:child_process";
 import fs from "node:fs";
@@ -28,7 +28,7 @@ function prevGitVersion(current) {
   }
 }
 
-// Merge duplicate ### type sections and their ### domain sub-sections.
+// Merge duplicate ### type sections and their #### domain sub-sections.
 // Input: the body text below a ## version header.
 // Output: reconstructed body with each type appearing exactly once.
 function mergeSections(body) {
