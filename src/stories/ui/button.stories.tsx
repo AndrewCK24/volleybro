@@ -70,6 +70,20 @@ export const IconOnly: Story = {
   },
 };
 
+// A row of segmented icon choices with the 8px gap its callers use.
+export const SegmentedIconGroup: Story = {
+  args: { variant: "segmented", size: "icon" },
+  render: (args) => (
+    <div className="flex flex-row items-center gap-2">
+      {["All", "1", "2", "3"].map((label, index) => (
+        <Button key={label} {...args} aria-pressed={index === 1}>
+          {label}
+        </Button>
+      ))}
+    </div>
+  ),
+};
+
 export const Loading: Story = {
   args: { loading: true, loadingText: "Saving..." },
 };

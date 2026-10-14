@@ -24,7 +24,7 @@
     }
   ],
   "consequences": [
-    "The stats set switcher and the lineup switcher draw 36px on touch without caller changes.",
+    "Every segmented icon group, today the stats set switcher, the lineup switcher and the new-game lineup picker, draws 36px on touch without caller changes.",
     "Siblings of a segmented icon need a gap of at least 8px (`--control-size` minus 36px) so tap areas do not intersect, and no ancestor may clip the 4px the tap area extends.",
     "A lone segmented icon would also draw 36px; segmented means a choice among siblings, so that case should not arise.",
     "Decision 0121 is superseded; its still-valid rules are restated here."

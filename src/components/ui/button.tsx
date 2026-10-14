@@ -36,7 +36,7 @@ const buttonVariants = cva(
       },
     },
     compoundVariants: [
-      // A segmented icon group stays 36px on touch; .touch-target keeps each tap area at --control-size.
+      // Deliberately a fixed 36px under every pointer; see ADR-0128.
       { variant: "segmented", size: "icon", className: "touch-target size-9" },
     ],
     defaultVariants: {
