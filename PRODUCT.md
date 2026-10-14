@@ -61,7 +61,7 @@ Constraints:
 
 ## Evidence on Hand
 
-- Real app screenshots, light and dark: `public/landing/features/` (`game-demo-*`, `team-demo-*`).
+- Real app screenshots, light and dark: `docs/images/readme/` (`game-demo-*`, `team-demo-*`), used by the READMEs.
 - The real recording and statistics components can be rendered with fixture data as live demonstrations.
 - **No public usage evidence exists**: no testimonials, team names, user counts, ratings or press. Future work must not fabricate any of these.
 

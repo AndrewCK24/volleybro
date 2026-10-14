@@ -69,12 +69,12 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/game-demo-1-dark.png">
-    <img src="public/landing/features/game-demo-1-light.png" alt="逐球記錄介面" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/game-demo-1-dark.webp">
+    <img src="docs/images/readme/game-demo-1-light.webp" alt="逐球記錄介面" width="240">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/game-demo-2-dark.png">
-    <img src="public/landing/features/game-demo-2-light.png" alt="賽事記錄瀏覽" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/game-demo-2-dark.webp">
+    <img src="docs/images/readme/game-demo-2-light.webp" alt="賽事記錄瀏覽" width="240">
   </picture>
 </div>
 
@@ -88,12 +88,12 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/team-demo-1-dark.png">
-    <img src="public/landing/features/team-demo-1-light.png" alt="隊伍管理" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/team-demo-1-dark.webp">
+    <img src="docs/images/readme/team-demo-1-light.webp" alt="隊伍管理" width="240">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="public/landing/features/team-demo-2-dark.png">
-    <img src="public/landing/features/team-demo-2-light.png" alt="陣容設定" width="240">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/team-demo-2-dark.webp">
+    <img src="docs/images/readme/team-demo-2-light.webp" alt="陣容設定" width="240">
   </picture>
 </div>
 
