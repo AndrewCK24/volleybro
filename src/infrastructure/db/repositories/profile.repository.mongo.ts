@@ -41,7 +41,7 @@ export class ProfileRepositoryImpl implements IProfileRepository {
   async update(id: string, updates: Partial<Profile>): Promise<Profile> {
     try {
       const doc = await ProfileModel.findByIdAndUpdate(id, updates, {
-        new: true,
+        returnDocument: "after",
       });
       if (!doc)
         throw new NotFoundError(
@@ -64,7 +64,7 @@ export class ProfileRepositoryImpl implements IProfileRepository {
           ? { $unset: { activeTeamId: "" } }
           : { $set: { activeTeamId } };
       const doc = await ProfileModel.findOneAndUpdate({ userId }, update, {
-        new: true,
+        returnDocument: "after",
       });
       return doc ? this.toProfile(doc) : null;
     } catch (error) {
