@@ -4,16 +4,11 @@ import {
 } from "@test/support/http/route-request";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockSearchUserController =
   jest.fn<(input: unknown) => Promise<unknown>>();
 const mockGetUserByIdController =
   jest.fn<(input: unknown) => Promise<unknown>>();
 const mockGetSession = jest.fn<() => Promise<unknown>>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock("@/interface/controllers/user/user.controller", () => ({
   searchUserController: mockSearchUserController,
@@ -40,7 +35,6 @@ describe("GET /api/users", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     mockGetSession.mockResolvedValue(SESSION);
     ({ GET } = await import("../route"));
     ({ NotFoundError } = await import("@/entities/errors"));

@@ -9,6 +9,7 @@ import {
   AuthReason,
   CommonReason,
 } from "@/entities/errors";
+import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { auth } from "@/lib/auth";
 
 type RouteHandler = (req: NextRequest) => Promise<NextResponse>;
@@ -91,6 +92,7 @@ function logError(error: AppError | Error, req: NextRequest): void {
 export function withErrorHandler(handler: RouteHandler): RouteHandler {
   return async (req: NextRequest) => {
     try {
+      await connectToMongoDB();
       return await handler(req);
     } catch (raw) {
       // Normalize error before logging so ZodError logs as warn, not error

@@ -1,5 +1,4 @@
 import { withAuth } from "@/lib/api/wrappers";
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import {
   createProfileController,
   getProfileController,
@@ -14,8 +13,6 @@ export const dynamic = "force-dynamic";
 // GET: 取得當前用戶的 profile
 // 注意：保留自動建立邏輯作為 fallback（防止 Hook 失敗情況）
 export const GET = withAuth(async (_req, { userId }) => {
-  await connectToMongoDB();
-
   let profile = await getProfileController({ userId });
 
   if (!profile) {
@@ -32,8 +29,6 @@ export const GET = withAuth(async (_req, { userId }) => {
 export const PATCH = withAuth(async (request: NextRequest, { userId }) => {
   const body = await request.json();
   const updates = UpdateProfileRequestSchema.parse(body);
-
-  await connectToMongoDB();
 
   const profile = await updateProfileController({ userId, updates });
 

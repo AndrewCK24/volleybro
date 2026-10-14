@@ -11,15 +11,10 @@ import {
   jest,
 } from "@jest/globals";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockCreateGameController =
   jest.fn<(input: unknown) => Promise<unknown>>();
 const mockFindGameSummariesController =
   jest.fn<(input: unknown) => Promise<unknown>>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock("@/interface/controllers/game/game.controller", () => ({
   createGameController: mockCreateGameController,
@@ -51,7 +46,6 @@ describe("GET /api/games", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
   });
 
   it("returns 400 when teamId query is missing", async () => {
@@ -105,7 +99,6 @@ describe("POST /api/games", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
   });
 
   it("returns 400 when teamId query is missing", async () => {
@@ -146,7 +139,6 @@ describe("POST /api/games", () => {
 
     expect(res.status).toBe(201);
     expect(resBody).toEqual(createdGame);
-    expect(mockConnectToMongoDB).toHaveBeenCalled();
     expect(mockCreateGameController).toHaveBeenCalledWith({
       params: { teamId: "team-1" },
       data: body,

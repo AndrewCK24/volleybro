@@ -9,6 +9,11 @@ jest.mock("next/server", () => ({
   },
 }));
 
+// Routes connect inside withErrorHandler; route tests never touch a database.
+jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
+  connectToMongoDB: jest.fn().mockResolvedValue(undefined),
+}));
+
 jest.mock("next/headers", () => ({
   headers: jest.fn().mockResolvedValue(new Headers()),
 }));

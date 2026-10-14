@@ -3,7 +3,9 @@ import {
   NotFoundError,
   ValidationError,
   AuthReason,
+  CommonReason,
 } from "@/entities/errors";
+import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { withAuth, withErrorHandler } from "@/lib/api/wrappers";
 import { z } from "zod";
 
@@ -295,5 +297,59 @@ describe("withAuth", () => {
       code: "AUTHENTICATION",
       reason: AuthReason.SESSION_REQUIRED,
     });
+  });
+});
+
+describe("database connection", () => {
+  const mockConnect = connectToMongoDB as unknown as jest.Mock;
+  const handler = jest.fn(async () => ({
+    status: 200,
+    json: async () => ({ ok: true }),
+  }));
+
+  beforeEach(() => {
+    mockConnect.mockReset().mockResolvedValue(undefined);
+    handler.mockClear();
+  });
+
+  it("connects before running a withErrorHandler handler", async () => {
+    const order: string[] = [];
+    mockConnect.mockImplementation(async () => {
+      order.push("connect");
+    });
+    handler.mockImplementation(async () => {
+      order.push("handler");
+      return { status: 200, json: async () => ({ ok: true }) };
+    });
+
+    await withErrorHandler(handler as never)(makeRequest());
+
+    expect(order).toEqual(["connect", "handler"]);
+  });
+
+  it("connects before running a withAuth handler", async () => {
+    mockGetSession.mockResolvedValue({ user: { id: "user123" } });
+
+    await withAuth(handler as never)(makeRequest());
+
+    expect(mockConnect).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns the standard 500 and skips the handler when connecting fails", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+    mockConnect.mockRejectedValue(new Error("connect failed"));
+
+    const { status, body } = await call(
+      withErrorHandler(handler as never) as never,
+    );
+
+    expect(status).toBe(500);
+    expect(body).toEqual({
+      code: "UNEXPECTED",
+      reason: CommonReason.UNHANDLED_ERROR,
+    });
+    expect(handler).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 });
