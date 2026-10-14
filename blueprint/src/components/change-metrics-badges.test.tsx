@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 
-import { ChangeMetricsBadges } from "./figure-badges";
+import { ChangeMetricsBadges } from "./change-metrics-badges";
 
 describe("ChangeMetricsBadges", () => {
   it("shows insertions and deletions as separate badges, named for screen readers", () => {

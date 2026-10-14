@@ -291,13 +291,13 @@ Use concentric corners: `inner-radius = outer-radius - padding`. Equal radii on 
 
 Incumbent Landing examples: header shell 16/6/10, theme switcher 10/4/6, entry card 12/6/6, demo tray 20/8/12, stats slide 16/8/8 or 24/16/8 (outer/padding/inner in px). The current Drawer uses 10px top corners. These are incumbent examples, not a universal shape rule.
 
-## Diagrams
+## Components
+
+### Diagrams
 
 Use the versioned `diagram` v1 block for static diagrams whose geometry, text, markers or layout must be preserved exactly. The block accepts typed numeric geometry and controlled paint values; its renderer escapes text and does not accept raw SVG, HTML, CSS, scripts, event attributes or URL paints. Add a new schema version when the stored contract changes.
 
 Use `interactive_flowchart` when readers need to select a node and inspect its authored details. It owns interaction state and its declared node/edge data. A static `diagram` does not infer graph topology or add interaction. Do not use `diagram` as a way to embed executable or arbitrary markup.
-
-## Components
 
 ### Buttons and controls
 

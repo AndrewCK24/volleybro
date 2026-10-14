@@ -1,4 +1,4 @@
-import { ChangeMetricsBadges } from "@/components/figure-badges";
+import { ChangeMetricsBadges } from "@/components/change-metrics-badges";
 import { Badge } from "@/components/ui/badge";
 import type { ChangeMetrics, ChangeStatus } from "@/lib/github-change-data";
 
