@@ -52,6 +52,5 @@ export function createMockProfileRepository(): jest.Mocked<IProfileRepository> {
     findByUserId: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
-    updateActiveTeamId: jest.fn(),
   };
 }

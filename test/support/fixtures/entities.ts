@@ -96,7 +96,6 @@ export function createProfile(overrides?: Partial<Profile>): Profile {
   return {
     id: "profile-1",
     userId: "user-1",
-    activeTeamId: "team-1",
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),
     ...overrides,

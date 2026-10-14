@@ -1,11 +1,9 @@
 import {
   createMockPlayerRepository,
-  createMockProfileRepository,
   createMockTeamRepository,
 } from "@test/support/doubles/repositories";
 import {
   createPlayer,
-  createProfile,
   createUnlinkedPlayer,
 } from "@test/support/fixtures/entities";
 import type { ILeaveTeamUseCase } from "@/applications/usecases/player/leave-team.usecase";
@@ -22,17 +20,11 @@ describe("LeaveTeamUseCase", () => {
   let useCase: ILeaveTeamUseCase;
   let mockPlayerRepository: ReturnType<typeof createMockPlayerRepository>;
   let mockTeamRepository: ReturnType<typeof createMockTeamRepository>;
-  let mockProfileRepository: ReturnType<typeof createMockProfileRepository>;
 
   beforeEach(() => {
     mockPlayerRepository = createMockPlayerRepository();
     mockTeamRepository = createMockTeamRepository();
-    mockProfileRepository = createMockProfileRepository();
-    useCase = new LeaveTeamUseCase(
-      mockPlayerRepository,
-      mockTeamRepository,
-      mockProfileRepository,
-    );
+    useCase = new LeaveTeamUseCase(mockPlayerRepository, mockTeamRepository);
   });
 
   describe("execute", () => {
@@ -49,10 +41,6 @@ describe("LeaveTeamUseCase", () => {
         createUnlinkedPlayer({ id: "player_123", teamId: "team_789" }),
       );
       mockTeamRepository.removePlayerFromLineups.mockResolvedValue();
-      mockProfileRepository.findByUserId.mockResolvedValue(
-        createProfile({ userId: "user_456", activeTeamId: "team_789" }),
-      );
-      mockProfileRepository.updateActiveTeamId.mockResolvedValue(null);
 
       const result = await useCase.execute({
         playerId: "player_123",
@@ -87,28 +75,6 @@ describe("LeaveTeamUseCase", () => {
         "team_789",
         "player_123",
       );
-    });
-
-    it("should not clear activeTeamId if it points to a different team", async () => {
-      const player = createPlayer({
-        id: "player_123",
-        teamId: "team_789",
-        status: PlayerStatus.JOINED,
-        userId: "user_456",
-      });
-
-      mockPlayerRepository.findById.mockResolvedValue(player);
-      mockPlayerRepository.update.mockResolvedValue(
-        createUnlinkedPlayer({ id: "player_123", teamId: "team_789" }),
-      );
-      mockTeamRepository.removePlayerFromLineups.mockResolvedValue();
-      mockProfileRepository.findByUserId.mockResolvedValue(
-        createProfile({ userId: "user_456", activeTeamId: "other_team" }),
-      );
-
-      await useCase.execute({ playerId: "player_123", userId: "user_456" });
-
-      expect(mockProfileRepository.updateActiveTeamId).not.toHaveBeenCalled();
     });
 
     it("should reject if player not found", async () => {

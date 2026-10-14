@@ -9,7 +9,6 @@ import {
 
 export interface ProfileDocument extends Document {
   userId: Types.ObjectId;
-  activeTeamId?: Types.ObjectId;
   info?: Record<string, unknown>;
   preferences?: Record<string, unknown>;
 }
@@ -21,11 +20,6 @@ const profileSchema = new Schema<ProfileDocument>(
       ref: "User",
       required: true,
       unique: true,
-    },
-    activeTeamId: {
-      type: Schema.Types.ObjectId,
-      ref: "Team",
-      required: false,
     },
     info: {
       type: Object,

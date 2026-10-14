@@ -1,5 +1,4 @@
 import type { IPlayerRepository } from "@/applications/repositories/player.repository.interface";
-import type { IProfileRepository } from "@/applications/repositories/profile.repository.interface";
 import {
   AuthorizationError,
   AuthReason,
@@ -30,15 +29,4 @@ export const authorizeManagePlayer = async (
   const actor = await players.findByTeamIdAndUserId(teamId, userId);
   const refusal = refuseToManagePlayer(actor, target);
   if (refusal) throw new AuthorizationError(refusal, DETAILS[refusal]);
-};
-
-/** A default team must not outlive the membership it points at. */
-export const clearActiveTeam = async (
-  profiles: IProfileRepository,
-  userId: string,
-  teamId: string,
-): Promise<void> => {
-  const profile = await profiles.findByUserId(userId);
-  if (profile?.activeTeamId === teamId)
-    await profiles.updateActiveTeamId(userId, null);
 };

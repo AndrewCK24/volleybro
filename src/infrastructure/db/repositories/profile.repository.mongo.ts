@@ -14,7 +14,6 @@ export class ProfileRepositoryImpl implements IProfileRepository {
       ...obj,
       id: obj._id.toString(),
       userId: obj.userId.toString(),
-      activeTeamId: obj.activeTeamId?.toString(),
     };
   }
 
@@ -49,24 +48,6 @@ export class ProfileRepositoryImpl implements IProfileRepository {
           "The profile to update was not found",
         );
       return this.toProfile(doc);
-    } catch (error) {
-      throw translateRepositoryError(error);
-    }
-  }
-
-  async updateActiveTeamId(
-    userId: string,
-    activeTeamId: string | null,
-  ): Promise<Profile | null> {
-    try {
-      const update =
-        activeTeamId === null
-          ? { $unset: { activeTeamId: "" } }
-          : { $set: { activeTeamId } };
-      const doc = await ProfileModel.findOneAndUpdate({ userId }, update, {
-        returnDocument: "after",
-      });
-      return doc ? this.toProfile(doc) : null;
     } catch (error) {
       throw translateRepositoryError(error);
     }

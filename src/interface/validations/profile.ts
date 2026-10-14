@@ -1,11 +1,9 @@
 import type { IUpdateProfileInput } from "@/applications/usecases/user/profile.usecase";
-import { objectId } from "@/interface/validations/object-id";
 import { z } from "zod";
 
 /** PATCH /api/profiles */
 export const UpdateProfileRequestSchema = z
   .object({
-    activeTeamId: objectId.optional(),
     info: z.record(z.string(), z.unknown()).optional(),
     preferences: z.record(z.string(), z.unknown()).optional(),
   })
