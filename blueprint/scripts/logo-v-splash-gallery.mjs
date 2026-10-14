@@ -272,7 +272,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
   for (const entry of sourceWeights) {
     for (const size of SIZE_KEYS) {
       const { weight, ...data } = entry;
-      const selected = { weight: String(weight), splashSize: String(size) };
+      const selected = { weight: String(weight), "splash-size": String(size) };
       const blocks = [
         textBlock(
           "The V mark moves from the Saira Stencil One uppercase V (single-weight family) to the lowercase v of the variable Saira Stencil family, scaled up to cap height. The lowercase glyph is nearly square at the heavier weights, keeps the identical two-arm stencil anatomy, and gives the standalone symbol a balanced footprint in icons and splash screens. Full rationale in the change's design.md.",
@@ -375,7 +375,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
         })),
       },
       {
-        id: "splashSize",
+        id: "splash-size",
         label: "iOS splash mark size",
         options: SIZE_KEYS.map((size) => ({
           value: String(size),
@@ -384,7 +384,7 @@ export function buildLogoVSplashGallery(designSource, slug = SLUG) {
         })),
       },
     ],
-    defaultValues: { weight: "700", splashSize: "25" },
+    defaultValues: { weight: "700", "splash-size": "25" },
     frames,
   };
 }

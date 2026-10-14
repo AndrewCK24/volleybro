@@ -28,12 +28,15 @@ test("converts the complete selector matrix into portable text and Diagram v1", 
 
   assert.equal(gallery._type, "variant_gallery");
   assert.equal(gallery.version, 1);
-  assert.deepEqual(gallery.defaultValues, { weight: "700", splashSize: "25" });
+  assert.deepEqual(gallery.defaultValues, {
+    weight: "700",
+    "splash-size": "25",
+  });
   assert.deepEqual(
     gallery.choices.map(({ id, options }) => [id, options.length]),
     [
       ["weight", 7],
-      ["splashSize", 4],
+      ["splash-size", 4],
     ],
   );
   assert.equal(
