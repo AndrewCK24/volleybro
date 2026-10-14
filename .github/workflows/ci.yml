@@ -164,6 +164,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm --filter blueprint test
+      - run: pnpm --filter blueprint test:persistence
+      - run: pnpm --filter blueprint test:migration
       - run: pnpm --filter blueprint build
 
   commitlint:

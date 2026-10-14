@@ -1,0 +1,50 @@
+---
+import { PortableText } from "emdash/ui";
+import { z } from "zod";
+import { blockSchema } from "../lib/emdash-change-record";
+import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
+import EmDashTypedBlock from "./emdash-typed-block.astro";
+
+const { blocks } = Astro.props as { blocks: unknown };
+const parsedBlocks = z.array(blockSchema).safeParse(blocks);
+if (!parsedBlocks.success) {
+  throw new Error("EmDash Change content contains an unsupported Portable Text block.");
+}
+const value = parsedBlocks.data;
+---
+
+<div class="prose flex-1" data-emdash-block-renderer="v2">
+  <PortableText
+    value={value}
+    components={{
+      block: {
+        normal: EmDashPortableTextBlock,
+        h1: EmDashPortableTextBlock,
+        h2: EmDashPortableTextBlock,
+        h3: EmDashPortableTextBlock,
+        h4: EmDashPortableTextBlock,
+        h5: EmDashPortableTextBlock,
+        h6: EmDashPortableTextBlock,
+        blockquote: EmDashPortableTextBlock,
+      },
+      type: {
+        decision_cards: EmDashTypedBlock,
+        risk_table: EmDashTypedBlock,
+        scenario: EmDashTypedBlock,
+        scenario_cards: EmDashTypedBlock,
+        interactive_flowchart: EmDashTypedBlock,
+        diagram: EmDashTypedBlock,
+        variant_gallery: EmDashTypedBlock,
+      },
+    }}
+  />
+</div>
+
+<style>
+  .prose :global(.emdash-code code) {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+</style>

@@ -52,7 +52,7 @@ The long-term operational issue tracks phases and evidence, not a permanently ac
 Every Linear cycle's package update checks two things before merging:
 
 - **Major bumps**, handled as above.
-- **Pre-release packages**, such as `cf` at `1.0.0-beta`: a caret range takes every later pre-release of the same version, and a pre-release may change commands or output without a major bump. Read its changelog and run what the repository calls it for; for `cf`, that is `pnpm blueprint:gate` on a Change branch (ADR-0097).
+- **Cloudflare tooling:** Blueprint pins Wrangler in its workspace. Review the official Wrangler migration notes before version changes, then run the Blueprint test and production-build gates in `WORKFLOW.md`; do not substitute an unpinned `dlx` CLI.
 
 ---
 

@@ -1,0 +1,139 @@
+---
+import { DecisionCardsList } from "./decision-cards";
+import { InteractiveFlowchart } from "./interactive-flowchart";
+import { RiskTable } from "./risk-table";
+import { Scenario } from "./scenario";
+import { Diagram } from "./diagram";
+import { Scenarios } from "./scenario-cards";
+import VariantGallery from "./variant-gallery.astro";
+import { blockSchema, parseJsonField } from "../lib/emdash-change-record";
+import { decisionCardsFor } from "../lib/decision-cards";
+import { allDecisions } from "../lib/decisions-index";
+import { z } from "zod";
+
+const riskSchema = z.array(
+  z.strictObject({
+    name: z.string(),
+    severity: z.enum(["critical", "warning", "info", "ok"]),
+    mitigation: z.string(),
+  }),
+);
+const scenarioSchema = z.array(
+  z.strictObject({
+    id: z.string().min(1),
+    given: z.string(),
+    when: z.string(),
+    then: z.string(),
+  }),
+);
+const nodeSchema = z.array(
+  z.strictObject({
+    id: z.string(),
+    label: z.string(),
+    x: z.number(),
+    y: z.number(),
+    sublabel: z.string().optional(),
+    w: z.number().optional(),
+    h: z.number().optional(),
+    shape: z.enum(["box", "diamond"]).optional(),
+  }),
+);
+const edgeSchema = z.array(
+  z.strictObject({
+    from: z.string(),
+    to: z.string(),
+    label: z.string().optional(),
+    dashed: z.boolean().optional(),
+    route: z.enum(["curve"]).optional(),
+  }),
+);
+const detailsSchema = z.record(
+  z.string(),
+  z.strictObject({ title: z.string(), body: z.string() }),
+);
+
+const parsed = blockSchema.safeParse((Astro.props as { node: unknown }).node);
+if (
+  !parsed.success ||
+  parsed.data._type === "block" ||
+  parsed.data._type === "image" ||
+  parsed.data._type === "code" ||
+  parsed.data._type === "table"
+) {
+  throw new Error("EmDash typed block renderer received an unsupported block.");
+}
+const block = parsed.data;
+
+let decisionCards;
+let risks;
+let scenarios;
+let flowchartNodes;
+let flowchartEdges;
+let flowchartDetails;
+if (block._type === "decision_cards") {
+  const ids = parseJsonField(
+    block.records,
+    z.array(z.string()),
+    "decision_cards.records",
+  );
+  decisionCards = decisionCardsFor(allDecisions(), ids);
+} else if (block._type === "risk_table") {
+  risks = parseJsonField(
+    block.risks,
+    riskSchema,
+    "risk_table.risks",
+  );
+} else if (block._type === "scenario_cards") {
+  scenarios = parseJsonField(
+    block.items,
+    scenarioSchema,
+    "scenario_cards.items",
+  );
+} else if (block._type === "interactive_flowchart") {
+  flowchartNodes = parseJsonField(
+    block.nodes,
+    nodeSchema,
+    "interactive_flowchart.nodes",
+  );
+  flowchartEdges = parseJsonField(
+    block.edges,
+    edgeSchema,
+    "interactive_flowchart.edges",
+  );
+  flowchartDetails = parseJsonField(
+    block.details,
+    detailsSchema,
+    "interactive_flowchart.details",
+  );
+}
+---
+
+{
+  block._type === "decision_cards" && (
+    <DecisionCardsList cards={decisionCards!} client:load />
+  )
+}
+{block._type === "risk_table" && <RiskTable risks={risks!} />}
+{
+  block._type === "scenario" && (
+    <Scenario given={block.given} when={block.when} then={block.then} />
+  )
+}
+{
+  block._type === "scenario_cards" && (
+    <Scenarios items={scenarios!} client:load />
+  )
+}
+{
+  block._type === "interactive_flowchart" && (
+    <InteractiveFlowchart
+      nodes={flowchartNodes!}
+      edges={flowchartEdges!}
+      details={flowchartDetails!}
+      client:load
+    />
+  )
+}
+
+{block._type === "diagram" && <Diagram diagram={block} />}
+{block._type === "variant_gallery" && <VariantGallery gallery={block} />}

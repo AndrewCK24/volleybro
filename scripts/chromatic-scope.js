@@ -269,6 +269,7 @@ function isSafePath(file) {
 
 function runGit(args, cwd) {
   return execFileSync("git", args, {
+    maxBuffer: 16 * 1024 * 1024,
     cwd,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],

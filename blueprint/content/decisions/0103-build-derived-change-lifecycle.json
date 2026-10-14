@@ -24,5 +24,6 @@
     "archivedAt still means integration landing, not pre-PR Archive or production release; all declared shards must land before their parent.",
     "Converted pages retain historical facts; gate and publish validation never use the overlay."
   ],
-  "originChange": "blueprint-build-archive"
+  "originChange": "blueprint-build-archive",
+  "supersededBy": "0125"
 }

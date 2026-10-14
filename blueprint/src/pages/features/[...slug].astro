@@ -5,13 +5,14 @@ import { Docs } from "../../components/docs";
 import FlowchartIsland from "../../components/interactive-flowchart-island.astro";
 import DecisionTimelineIsland from "../../components/decision-timeline-island.astro";
 import Layout from "../../components/layout.astro";
-import { listChanges } from "../../lib/changes-index";
 import { featureMdxComponents } from "../../lib/mdx-components";
 import { flattenIndexOnlyFolders } from "../../lib/page-tree";
 import { createBlueprintSources } from "../../lib/source";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
-  const { features } = await createBlueprintSources();
+  const { features } = await createBlueprintSources({ includeChanges: false });
   return features.getPages().map((page) => {
     if (!("id" in page.data._raw)) {
       throw new Error(`Feature page source is missing its collection id: ${page.url}`);
@@ -29,9 +30,8 @@ const entry = entries.find((page) => page.id === entryId) as CollectionEntry<"fe
 if (!entry) throw new Error(`Feature page not found: ${entryId}`);
 
 const { Content, headings } = await render(entry);
-const sources = await createBlueprintSources();
+const sources = await createBlueprintSources({ includeChanges: false });
 const { features } = sources;
-const hasChanges = listChanges(sources.changes.getPages()).length > 0;
 const toc = headings.map((heading) => ({
   title: heading.text,
   url: `#${heading.slug}`,
@@ -52,7 +52,7 @@ const components = {
     tree={flattenIndexOnlyFolders(features.pageTree)}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
-    hasChanges={hasChanges}
+    hasChanges={true}
     page={{ toc }}
   >
     <main>

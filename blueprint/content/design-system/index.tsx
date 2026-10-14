@@ -41,6 +41,11 @@ const sections = [
     title: "Components",
     body: "The blueprint component library showcase — cards, tables, badges, flowcharts, and more.",
   },
+  {
+    href: "/design-system/diagrams",
+    title: "Diagrams",
+    body: "Strict typed static geometry for authored diagrams, with InteractiveFlowchart reserved for selectable nodes and details.",
+  },
 ];
 
 export default function DesignSystemOverview() {

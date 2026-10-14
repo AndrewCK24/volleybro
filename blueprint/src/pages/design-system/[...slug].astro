@@ -3,8 +3,9 @@ import { render } from "astro:content";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
 import { createBlueprintSources } from "../../lib/source";
+
+export const prerender = true;
 import { flattenIndexOnlyFolders } from "../../lib/page-tree";
-import { listChanges } from "../../lib/changes-index";
 import DesignSystemOverview, { toc as overviewToc } from "../../../content/design-system/index";
 import BrandPage, { toc as brandToc } from "../../../content/design-system/brand/index";
 import ColorPage, { toc as colorToc } from "../../../content/design-system/color/index";
@@ -13,15 +14,16 @@ import SpacingPage, { toc as spacingToc } from "../../../content/design-system/s
 import RadiusPage, { toc as radiusToc } from "../../../content/design-system/radius/index";
 import ElevationDepthPage, { toc as elevationDepthToc } from "../../../content/design-system/elevation-depth/index";
 import ComponentLibraryShowcase, { annotatedDiffCode, toc as componentsToc } from "../../../content/design-system/components/index";
+import DiagramShowcase, { toc as diagramsToc } from "../../../content/design-system/diagrams/index";
 import { renderAnnotatedDiffHtml } from "../../lib/annotated-diff-html";
 
-const sources = await createBlueprintSources();
+const sources = await createBlueprintSources({ includeChanges: false });
 const slug = (Astro.props as { slug: string }).slug;
 const designPage = sources.designPages.find((page) => page.slug === slug);
 if (!designPage) throw new Error(`Design System page not found: ${slug}`);
 
 export async function getStaticPaths() {
-  const { designPages } = await createBlueprintSources();
+  const { designPages } = await createBlueprintSources({ includeChanges: false });
   return designPages.map((page) => ({
     params: { slug: page.slug || undefined },
     props: { slug: page.slug },
@@ -38,6 +40,7 @@ const showcaseToc = {
   radius: radiusToc,
   "elevation-depth": elevationDepthToc,
   components: componentsToc,
+  diagrams: diagramsToc,
 }[designPage.showcase];
 if (!showcaseToc) throw new Error(`Design System showcase not found: ${designPage.showcase}`);
 let isInSelectedSection = false;
@@ -49,7 +52,6 @@ const documentToc = headings.flatMap((heading) => {
     ? [{ title: heading.text, url: `#${heading.slug}`, depth: heading.depth }]
     : [];
 });
-const hasChanges = listChanges(sources.changes.getPages()).length > 0;
 const annotatedDiffHtml = designPage.showcase === "components"
   ? await renderAnnotatedDiffHtml(annotatedDiffCode, "tsx")
   : undefined;
@@ -72,7 +74,7 @@ const pageToc = [...documentToc, ...showcaseToc];
     tree={flattenIndexOnlyFolders(sources.designSystem.pageTree)}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
-    hasChanges={hasChanges}
+    hasChanges={true}
     page={{ toc: pageToc }}
   >
     <main data-blueprint-design-page={slug}>
@@ -86,6 +88,7 @@ const pageToc = [...documentToc, ...showcaseToc];
       {designPage.showcase === "radius" && <RadiusPage />}
       {designPage.showcase === "elevation-depth" && <ElevationDepthPage />}
       {designPage.showcase === "components" && <ComponentLibraryShowcase client:load annotatedDiffHtml={annotatedDiffHtml} />}
+      {designPage.showcase === "diagrams" && <DiagramShowcase />}
     </main>
   </Docs>
 </Layout>

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "id": "0124",
+  "title": "EmDash publication retires the Change store with a protected archive",
+  "capabilities": ["platform/blueprint", "platform/delivery-workflow"],
+  "context": "Blueprint Change pages lived on a dedicated Git branch. Moving publication to EmDash removes Git deployment from content updates, while the old store remains evidence that must be preserved and recoverable during migration.",
+  "decision": "Store each Blueprint Change as one EmDash entry at its stable slug. Retire the remote blueprint-changes store only after the fixed snapshot has been completely converted, all 45 pages have passed isolated import, read-back and per-page semantic and visual review, and archive plus rollback evidence is accepted before G2. Preserve every commit reachable from the fixed snapshot in a protected archive tag; earlier unreachable commits are not guaranteed. Formal production import reuses the same verified artifact without reconversion, with environment-specific media references rebound and verified. Keep one-time conversion and import tools until production import, read-back, formal cutover and rollback evidence are accepted, then remove them. Production activation is a separate post-G2 approval.",
+  "alternatives": [
+    {
+      "option": "Retire the store before the EmDash migration is proven",
+      "reason": "Would discard the only complete source before content fidelity and recovery have been established."
+    },
+    {
+      "option": "Repeat conversion for production",
+      "reason": "Creates a second transformation with a different result from the artifact reviewed before G2."
+    },
+    {
+      "option": "Keep one-time tooling indefinitely",
+      "reason": "Leaves migration-only code and inputs as permanent maintenance surface after production acceptance."
+    }
+  ],
+  "consequences": [
+    "EmDash publication changes a page without a Git commit, build or deployment.",
+    "The fixed snapshot remains recoverable through its protected reachable commit graph and retained final receipts.",
+    "The production import is reproducible from the exact artifact reviewed before G2; media references can be rebound for the target environment.",
+    "Production activation and remote store retirement remain explicitly authorized steps."
+  ],
+  "revisitTriggers": [
+    "The fixed snapshot cannot be fully represented by Portable Text and typed blocks without losing meaning.",
+    "The archive tag or rollback evidence cannot recover the verified migration source."
+  ],
+  "originChange": "emdash-blueprint-change-pages"
+}

@@ -1,160 +1,85 @@
 ---
-import { getCollection, render } from "astro:content";
-import type { CollectionEntry } from "astro:content";
-import { FigureBadges } from "../../components/figure-badges";
-import { ChangeHeader } from "../../components/change-header";
+import { getEmDashEntry } from "emdash";
 import { Docs } from "../../components/docs";
+import EmDashChangeBlocks from "../../components/emdash-change-blocks.astro";
+import { ChangeHeader } from "../../components/change-header";
 import Layout from "../../components/layout.astro";
-import FlowchartIsland from "../../components/interactive-flowchart-island.astro";
-import DecisionCardsIsland from "../../components/decision-cards-island.astro";
-import MockupIsland from "../../components/mockup-island.astro";
-import AnnotatedDiffHtml from "../../components/annotated-diff.astro";
-import { changeMdxComponents } from "../../lib/mdx-components";
-import { readCapabilities, readChangeBuildIdentity, readFacts } from "../../lib/change-meta";
-import { listChanges } from "../../lib/changes-index";
+import { acceptedContentHash, changeDataSchema } from "../../lib/emdash-change-record";
 import { createChangesBreadcrumbTree, createChangesTree } from "../../lib/changes-tree";
+import { listPublishedChangeSummaries, summarizeChange } from "../../lib/github-change-data";
 import { createBlueprintSources } from "../../lib/source";
 
-export async function getStaticPaths() {
-  const { changes } = await createBlueprintSources();
-  return changes.getPages()
-    .filter((page) => page.slugs.length === 1)
-    .map((page) => ({ params: { slug: page.slugs[0] } }));
-}
-
 const slug = Astro.params.slug ?? "";
-const [sources, changeEntries, tabEntries] = await Promise.all([
+const [source, result] = await Promise.all([
   createBlueprintSources(),
-  getCollection("changePage"),
-  getCollection("changeTabs"),
+  getEmDashEntry("blueprint_changes", slug),
 ]);
-const changeEntry = changeEntries.find((entry) =>
-  entry.filePath?.split("content/changes/")[1]?.startsWith(`${slug}/`),
-);
-if (!changeEntry) throw new Error(`Change page not found: ${slug}`);
-
-const summaries = listChanges(sources.changes.getPages());
-const changesTree = createChangesTree(
-  sources.changes.pageTree,
-  summaries.map((change) => change.href),
-);
-const tree = createChangesBreadcrumbTree(changesTree);
-const { Proposal, reviews } = (() => {
-  const selected: {
-    Proposal: (typeof tabEntries)[number] | undefined;
-    reviews: { entry: (typeof tabEntries)[number]; shard?: number }[];
-  } = { Proposal: undefined, reviews: [] };
-  for (const entry of tabEntries) {
-    const relative = entry.filePath?.split("content/changes/")[1] ?? "";
-    const match = relative.match(/^([^/]+)\/(proposal|review)(?:-s([1-9]\d*))?\.mdx$/u);
-    if (!match || match[1] !== slug) continue;
-    if (match[2] === "proposal") selected.Proposal = entry;
-    else selected.reviews.push({ entry, shard: match[3] ? Number(match[3]) : undefined });
-  }
-  selected.reviews.sort((a, b) => (a.shard ?? 0) - (b.shard ?? 0));
-  return selected;
-})();
-
-const facts = readFacts(slug);
-const shardFacts = new Map((facts.shards?.items ?? []).map((item) => [item.shard, item]));
-const mdxComponents = {
-  ...changeMdxComponents(DecisionCardsIsland),
-  AnnotatedDiff: AnnotatedDiffHtml,
-  InteractiveFlowchart: FlowchartIsland,
-  DesignMockup: MockupIsland,
-};
-const staticDesignProposalSlugs = new Set([
-  "api-objectid-guards",
-  "contextual-edit-pages",
-  "entry-ui",
-  "team-routes-clean-architecture",
-]);
-
-async function renderContent(
-  entry: CollectionEntry<"changeTabs"> | undefined,
-  label: string,
-) {
-  if (!entry) return { Content: undefined, error: undefined };
-  try {
-    const result = await render(entry);
-    return { Content: result.Content, error: undefined };
-  } catch (error) {
-    console.error(`Change tab "${label}" failed to render:`, error);
-    return {
-      Content: undefined,
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
+if (result.error) throw new Error(`Could not load Change "${slug}": ${result.error.message}`);
+const entry = result.entry;
+const parsed = entry ? changeDataSchema.safeParse(entry.data) : undefined;
+if (entry && !parsed?.success) throw new Error(`Published Change "${slug}" has invalid content.`);
+const change = parsed?.success ? parsed.data : undefined;
+if (result.isPreview) {
+  Astro.response.headers.set("Cache-Control", "private, no-store, max-age=0");
+  Astro.response.headers.set("Vary", "Cookie");
 }
+if (!entry) Astro.response.status = 404;
 
-const proposal = await renderContent(Proposal, "Proposal");
-const ProposalContent = proposal.Content;
-const reviewPanels = await Promise.all(
-  reviews.map(async (review) => ({
-    ...review,
-    label: review.shard === undefined ? "Review" : `Shard ${review.shard}`,
-    anchor: review.shard === undefined ? "review" : `review-s${review.shard}`,
-    facts: review.shard === undefined ? undefined : shardFacts.get(review.shard),
-    content: await renderContent(review.entry, review.shard === undefined ? "Review" : `Shard ${review.shard}`),
-  })),
-);
-const changeIdentity = readChangeBuildIdentity(slug);
-const capabilities = readCapabilities(slug);
+const summaries = entry && !result.isPreview
+  ? await listPublishedChangeSummaries(source.changeEntries)
+  : [];
+const summary = entry && change
+  ? result.isPreview
+    ? summarizeChange({ id: entry.id, data: change }, [])
+    : summaries.find((candidate) => candidate.slug === slug) ?? summarizeChange({ id: entry.id, data: change }, [])
+  : undefined;
+const visibleHrefs = summaries.map((item) => item.href);
+if (result.isPreview) visibleHrefs.unshift(`/changes/${slug}`);
+const changesTree = createChangesTree(source.changes.pageTree, visibleHrefs);
+const tree = createChangesBreadcrumbTree(changesTree);
+const revision = result.isPreview && typeof change?.draftRevisionId === "string"
+  ? change.draftRevisionId
+  : undefined;
+const contentHash = result.isPreview && change ? await acceptedContentHash(change) : undefined;
 ---
 
 <Layout>
-  <title>{changeEntry.data.title} · Blueprint</title>
+  <title>{change?.title ?? "找不到 Change"} · Blueprint</title>
+  {result.isPreview && <meta name="robots" content="noindex, nofollow" />}
   <Docs
     client:load
     tree={tree}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
-    hasChanges={summaries.length > 0}
+    hasChanges={true}
     page={{
       tableOfContent: { enabled: false },
       breadcrumb: { includeRoot: { url: "/changes" }, includePage: true },
     }}
   >
-    <main data-blueprint-build-identity={changeIdentity}>
-      <ChangeHeader title={changeEntry.data.title} capabilities={capabilities} facts={facts} />
-      {ProposalContent && <section
-        id="proposal"
-        class="prose flex-1"
-        data-blueprint-mockup-mode={staticDesignProposalSlugs.has(slug) ? "static-content" : undefined}
-      >
-        <ProposalContent components={mdxComponents} />
-      </section>}
-      {proposal.error && <section
-        id="proposal"
-        class="prose flex-1"
-        data-blueprint-mockup-mode={staticDesignProposalSlugs.has(slug) ? "static-content" : undefined}
-      >
-        <span hidden data-blueprint-render-error="true" />
-        <p class="text-sm text-error-text">此內容（Proposal）在此 checkout 中無法顯示：{proposal.error}</p>
-      </section>}
-      {reviewPanels.length > 0 && <footer class="mt-10 border-t border-border pt-6">
-        <h2 class="text-lg font-semibold">歷史 Review</h2>
-        <div class="mt-3 space-y-3">
-          {reviewPanels.map((panel) => {
-            const Content = panel.content.Content;
-            return <details id={panel.anchor} class="rounded-md border border-border px-4 py-3">
-              <summary class="cursor-pointer font-medium">{panel.label}</summary>
-              <div class="prose mt-4">
-                {panel.facts && <div class="not-prose mb-4"><FigureBadges facts={panel.facts} /></div>}
-                {panel.content.error && <>
-                  <span hidden data-blueprint-render-error="true" />
-                  <p class="text-sm text-error-text">此 Review（{panel.label}）在此 checkout 中無法顯示：{panel.content.error}</p>
-                </>}
-                {Content && <Content components={mdxComponents} />}
-              </div>
-            </details>;
-          })}
-        </div>
-      </footer>}
+    <main data-emdash-change={slug} data-emdash-preview={result.isPreview ? "true" : undefined} data-emdash-revision={revision} data-emdash-content-sha256={contentHash}>
+      {result.isPreview && <p class="mb-4 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">私密預覽 · 尚未發布</p>}
+      {change && summary ? (
+        <>
+          <ChangeHeader
+            title={change.title}
+            status={summary.status}
+            mergedAt={summary.mergedAt}
+            metrics={summary.metrics}
+            scenarioCount={summary.scenarioCount}
+          />
+          <EmDashChangeBlocks blocks={change.blocks} />
+        </>
+      ) : (
+        <section>
+          <h1>找不到這篇 Change</h1>
+          <p>文章不存在，或目前尚未公開。</p>
+        </section>
+      )}
     </main>
   </Docs>
 </Layout>
 
 <script>
-  import "../../scripts/change-tabs";
+  import "../../scripts/change-disclosure";
 </script>
