@@ -2,21 +2,22 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { removeLegacyPresentationArtifacts } from "./legacy-render-artifacts.mjs";
 
-test("omits source-backed SVG styling while preserving diagram and code content", () => {
+test("retains verified SVG styles for canonical paint conversion", () => {
   const css = ".node { fill: white; }";
   const html = `<svg><style>${css}</style><text>Decision</text></svg><pre><code>${css}</code></pre>`;
   const result = removeLegacyPresentationArtifacts(html, "example", css);
 
-  assert.equal(result.html.includes("<style>"), false);
+  assert.ok(result.html.includes(`<style>${css}</style>`));
   assert.match(result.html, /<text>Decision<\/text>/u);
   assert.ok(result.html.includes(`<code>${css}</code>`));
-  assert.deepEqual(result.removed, [
+  assert.deepEqual(result.removed, []);
+  assert.deepEqual(result.canonicalPresentationMappings, [
     {
-      kind: "style",
       sha256:
         "dddf25a5e872ac39fabdac735f3921683d81a618a2ba6da8ef0a2995e0d2c50d",
       bytes: Buffer.byteLength(css),
       provenance: "authored-presentation",
+      target: "canonical-diagram-paint",
     },
   ]);
 });

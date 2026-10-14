@@ -29,6 +29,12 @@ function walk(node, predicate, result = []) {
   return result;
 }
 
+function insideSvg(node) {
+  for (let current = node.parentNode; current; current = current.parentNode)
+    if (current.tagName === "svg") return true;
+  return false;
+}
+
 function isCodeCopyControl(node) {
   if (node.tagName !== "button") return false;
   const attr = (current, name) =>
@@ -70,6 +76,7 @@ function isCodeCopyControl(node) {
 export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
   const fragment = parseFragment(html);
   const removed = [];
+  const canonicalPresentationMappings = [];
   const normalizedSource = normalizeCss(sourceMdx);
   const artifacts = walk(
     fragment,
@@ -127,6 +134,15 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
     const parent = node.parentNode;
     if (!parent)
       throw new Error(`${slug}: render artifact has no parent node.`);
+    if (tag === "style" && insideSvg(node)) {
+      canonicalPresentationMappings.push({
+        sha256: hash,
+        bytes: Buffer.byteLength(body),
+        provenance,
+        target: "canonical-diagram-paint",
+      });
+      continue;
+    }
     const index = parent.childNodes.indexOf(node);
     if (index < 0) throw new Error(`${slug}: render artifact is detached.`);
     parent.childNodes.splice(index, 1);
@@ -138,5 +154,9 @@ export function removeLegacyPresentationArtifacts(html, slug, sourceMdx) {
     });
   }
 
-  return { html: serialize(fragment), removed };
+  return {
+    html: serialize(fragment),
+    removed,
+    canonicalPresentationMappings,
+  };
 }

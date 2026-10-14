@@ -5,6 +5,38 @@ import {
   extractMdxStructuredData,
   convertRenderedHtmlToPortableText,
 } from "./portable-text-converter.mjs";
+import { removeLegacyPresentationArtifacts } from "./legacy-render-artifacts.mjs";
+
+test("maps authored SVG class paints before presentation styles are removed", () => {
+  const css = `.paper { fill: var(--background); }
+  .node { fill: var(--card); stroke: var(--border); }
+  .label { fill: var(--foreground); }`;
+  const source = `<svg viewBox="0 0 40 20"><style>${css}</style><rect id="node" class="node" width="40" height="20"></rect></svg>`;
+  const extracted = removeLegacyPresentationArtifacts(
+    source,
+    "style-proof",
+    css,
+  );
+  const blocks = convertRenderedHtmlToPortableText(
+    extracted.html,
+    "style-proof",
+  );
+
+  assert.equal(blocks[0]._type, "diagram");
+  assert.equal(blocks[0].elements[0].id, "node");
+  assert.equal(blocks[0].elements[0].fill, "card");
+  assert.equal(blocks[0].elements[0].stroke, "border");
+  assert.equal(blocks[0].elements[0].type, "rect");
+  assert.deepEqual(extracted.canonicalPresentationMappings, [
+    {
+      sha256:
+        "5eef537d51180db90dfce5b7cbf59d7465b66ca9e423658b1b7e08b642182d02",
+      bytes: Buffer.byteLength(css),
+      provenance: "authored-presentation",
+      target: "canonical-diagram-paint",
+    },
+  ]);
+});
 
 test("preserves authored structure, inline marks, links, anchors, and lists", () => {
   const result = convertRenderedHtmlToPortableText(

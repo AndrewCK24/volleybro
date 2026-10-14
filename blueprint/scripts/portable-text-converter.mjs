@@ -943,12 +943,11 @@ function canonicalSvgDiagramBlock(svg, index, slug, source) {
     const css = text(styleNode);
     const rule = /\.([A-Za-z_][\w-]*)\s*\{([^{}]*)\}/gu;
     let match;
-    let consumed = "";
     while ((match = rule.exec(css))) {
-      consumed += match[0];
       presentationRules.set(match[1], parsePresentationDeclarations(match[2]));
     }
-    if (css.replace(consumed, "").trim())
+    rule.lastIndex = 0;
+    if (css.replace(rule, "").trim())
       throw new Error(
         `${slug}: SVG CSS contains a selector or construct outside the supported class-rule subset.`,
       );

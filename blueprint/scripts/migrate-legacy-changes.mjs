@@ -997,6 +997,8 @@ async function run(options) {
       anchors,
       renderedHtmlSha256: sha256(renderedHtml),
       removedPresentationArtifacts: renderArtifacts.removed,
+      canonicalPresentationMappings:
+        renderArtifacts.canonicalPresentationMappings,
       graphMappings,
       portableTextSha256: sha256(JSON.stringify(blocks)),
       seedContentSha256: seedContentHash,
