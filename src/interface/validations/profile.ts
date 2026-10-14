@@ -5,6 +5,7 @@ import { z } from "zod";
 export const UpdateProfileRequestSchema = z
   .object({
     // Clients from before the device-local active team still send it; accepted and dropped.
+    // Remove once no installed PWA predates v0.16.2, the first release that stopped sending it.
     activeTeamId: z.unknown().optional(),
     info: z.record(z.string(), z.unknown()).optional(),
     preferences: z.record(z.string(), z.unknown()).optional(),

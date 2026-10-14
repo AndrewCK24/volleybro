@@ -48,7 +48,6 @@ describe("PATCH /api/profiles", () => {
     consoleSpy.mockRestore();
   });
 
-  // Clients from before the device-local active team still send this body.
   it("returns 200 and drops an activeTeamId an older client still sends", async () => {
     const profile = { userId: "user-1" };
     mockUpdateProfileController.mockResolvedValue(profile);

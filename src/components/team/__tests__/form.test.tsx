@@ -159,17 +159,18 @@ describe("NewTeamWorkspace", () => {
         HttpResponse.json(createTeam({ id: "team-new" })),
       ),
     );
+    const user = userEvent.setup();
     render(
       <SwrIsolation>
         <NewTeamWorkspace />
       </SwrIsolation>,
     );
 
-    await userEvent.type(
+    await user.type(
       screen.getByPlaceholderText("日本國家男子排球隊"),
       "New Team",
     );
-    await userEvent.click(screen.getByRole("button", { name: "建立隊伍" }));
+    await user.click(screen.getByRole("button", { name: "建立隊伍" }));
 
     await waitFor(() =>
       expect(storedActiveTeamPreference()).toEqual(
