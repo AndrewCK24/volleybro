@@ -51,13 +51,61 @@ describe("variant_gallery v1 registry contract", () => {
   });
 
   it.each([
-    ["an unknown default choice", { ...gallery, defaultValues: { weight: "700", size: "25", platform: "ios" } }],
-    ["an unknown option value", { ...gallery, defaultValues: { weight: "1000", size: "25" } }],
-    ["an incomplete frame matrix", { ...gallery, frames: gallery.frames.slice(1) }],
-    ["a duplicate frame", { ...gallery, frames: [...gallery.frames, gallery.frames[0]] }],
-    ["an unknown frame choice", { ...gallery, frames: [{ ...gallery.frames[0], selections: { weight: "300", size: "15", platform: "ios" } }, ...gallery.frames.slice(1)] }],
-    ["raw markup", { ...gallery, frames: [{ ...gallery.frames[0], blocks: [{ _type: "html", html: "<script>run()</script>" }] }, ...gallery.frames.slice(1)] }],
-    ["nested galleries", { ...gallery, frames: [{ ...gallery.frames[0], blocks: [{ ...gallery, frames: [] }] }, ...gallery.frames.slice(1)] }],
+    [
+      "an unknown default choice",
+      {
+        ...gallery,
+        defaultValues: { weight: "700", size: "25", platform: "ios" },
+      },
+    ],
+    [
+      "an unknown option value",
+      { ...gallery, defaultValues: { weight: "1000", size: "25" } },
+    ],
+    [
+      "an incomplete frame matrix",
+      { ...gallery, frames: gallery.frames.slice(1) },
+    ],
+    [
+      "a duplicate frame",
+      { ...gallery, frames: [...gallery.frames, gallery.frames[0]] },
+    ],
+    [
+      "an unknown frame choice",
+      {
+        ...gallery,
+        frames: [
+          {
+            ...gallery.frames[0],
+            selections: { weight: "300", size: "15", platform: "ios" },
+          },
+          ...gallery.frames.slice(1),
+        ],
+      },
+    ],
+    [
+      "raw markup",
+      {
+        ...gallery,
+        frames: [
+          {
+            ...gallery.frames[0],
+            blocks: [{ _type: "html", html: "<script>run()</script>" }],
+          },
+          ...gallery.frames.slice(1),
+        ],
+      },
+    ],
+    [
+      "nested galleries",
+      {
+        ...gallery,
+        frames: [
+          { ...gallery.frames[0], blocks: [{ ...gallery, frames: [] }] },
+          ...gallery.frames.slice(1),
+        ],
+      },
+    ],
   ])("rejects %s", (_name, candidate) => {
     expect(blockSchema.safeParse(candidate).success).toBe(false);
   });
@@ -72,21 +120,47 @@ describe("variant gallery controller", () => {
         <button type="button" data-choice="weight" data-value="700" aria-pressed="true"><span data-variant-label data-label="700 ✓ pinned">700 ✓ pinned</span></button>
         <button type="button" data-choice="size" data-value="15" aria-pressed="false"><span data-variant-label data-label="15%">15%</span></button>
         <button type="button" data-choice="size" data-value="25" aria-pressed="true"><span data-variant-label data-label="25%" data-selected-label="25% ✓ selected">25% ✓ selected</span></button>
-        <div data-variant-frame='{"weight":"300","size":"15"}' hidden></div>
-        <div data-variant-frame='{"weight":"300","size":"25"}' hidden></div>
-        <div data-variant-frame='{"weight":"700","size":"15"}' hidden></div>
-        <div data-variant-frame='{"weight":"700","size":"25"}'></div>
+        <div data-variant-frame='{"weight":"300","size":"15"}' hidden><h2 id="section-anchor">300 / 15</h2></div>
+        <div data-variant-frame='{"weight":"300","size":"25"}' hidden><h2 id="section-anchor">300 / 25</h2></div>
+        <div data-variant-frame='{"weight":"700","size":"15"}' hidden><h2 id="section-anchor">700 / 15</h2></div>
+        <div data-variant-frame='{"weight":"700","size":"25"}'><h2 id="section-anchor">700 / 25</h2></div>
       </section>`;
     document.body.append(root);
     installVariantGalleryController(root);
+    expect(root.querySelectorAll("#section-anchor")).toHaveLength(1);
+    expect(root.querySelector("#section-anchor")).toHaveTextContent("700 / 25");
 
-    fireEvent.click(root.querySelector('button[data-choice="weight"][data-value="300"]')!);
+    fireEvent.click(
+      root.querySelector('button[data-choice="weight"][data-value="300"]')!,
+    );
 
-    expect(root.querySelector('button[data-choice="weight"][data-value="300"]')).toHaveAttribute("aria-pressed", "true");
-    expect(root.querySelector('button[data-choice="weight"][data-value="700"]')).toHaveAttribute("aria-pressed", "false");
-    expect(root.querySelector('[data-choice="weight"][data-value="700"] [data-variant-label]')).toHaveTextContent("700 ✓ pinned");
-    expect(root.querySelector('[data-choice="size"][data-value="25"] [data-variant-label]')).toHaveTextContent("25%");
-    expect(root.querySelector('[data-variant-frame*="300"][data-variant-frame*="25"]')).not.toHaveAttribute("hidden");
-    expect(root.querySelector('[data-variant-frame*="700"][data-variant-frame*="25"]')).toHaveAttribute("hidden");
+    expect(
+      root.querySelector('button[data-choice="weight"][data-value="300"]'),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      root.querySelector('button[data-choice="weight"][data-value="700"]'),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(
+      root.querySelector(
+        '[data-choice="weight"][data-value="700"] [data-variant-label]',
+      ),
+    ).toHaveTextContent("700 ✓ pinned");
+    expect(
+      root.querySelector(
+        '[data-choice="size"][data-value="25"] [data-variant-label]',
+      ),
+    ).toHaveTextContent("25%");
+    expect(
+      root.querySelector(
+        '[data-variant-frame*="300"][data-variant-frame*="25"]',
+      ),
+    ).not.toHaveAttribute("hidden");
+    expect(
+      root.querySelector(
+        '[data-variant-frame*="700"][data-variant-frame*="25"]',
+      ),
+    ).toHaveAttribute("hidden");
+    expect(root.querySelectorAll("#section-anchor")).toHaveLength(1);
+    expect(root.querySelector("#section-anchor")).toHaveTextContent("300 / 25");
   });
 });

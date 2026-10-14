@@ -150,13 +150,19 @@ const portableTextFrameBlockSchema = z.union([
   diagramBlockSchema,
 ]);
 
-export type PortableTextFrameBlock = z.infer<typeof portableTextFrameBlockSchema>;
+export type PortableTextFrameBlock = z.infer<
+  typeof portableTextFrameBlockSchema
+>;
 
 const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
   z.strictObject({ ...shape, _key: z.string().min(1).optional() });
 
 const variantChoiceSchema = z.strictObject({
-  id: z.string().min(1).max(64).regex(/^[a-z][a-z0-9_-]*$/u),
+  id: z
+    .string()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z][a-z0-9_-]*$/u),
   label: z.string().min(1).max(120),
   options: z
     .array(
@@ -169,7 +175,8 @@ const variantChoiceSchema = z.strictObject({
     .min(2)
     .max(20)
     .refine(
-      (options) => new Set(options.map(({ value }) => value)).size === options.length,
+      (options) =>
+        new Set(options.map(({ value }) => value)).size === options.length,
       "Variant option values must be unique.",
     ),
 });
@@ -192,7 +199,11 @@ export const variantGalleryBlockSchema = versionedBlock({
 }).superRefine((gallery, context) => {
   const choiceIds = gallery.choices.map(({ id }) => id);
   if (new Set(choiceIds).size !== choiceIds.length) {
-    context.addIssue({ code: "custom", path: ["choices"], message: "Variant choice IDs must be unique." });
+    context.addIssue({
+      code: "custom",
+      path: ["choices"],
+      message: "Variant choice IDs must be unique.",
+    });
     return;
   }
 
@@ -203,29 +214,50 @@ export const variantGalleryBlockSchema = versionedBlock({
     ]),
   );
   const expectedKeys = [...choiceIds].sort();
-  const validateSelection = (selection: Record<string, string>, path: (string | number)[]) => {
+  const validateSelection = (
+    selection: Record<string, string>,
+    path: (string | number)[],
+  ) => {
     const keys = Object.keys(selection).sort();
-    if (keys.length !== expectedKeys.length || keys.some((key, index) => key !== expectedKeys[index])) {
-      context.addIssue({ code: "custom", path, message: "Every variant selection must specify each choice exactly once." });
+    if (
+      keys.length !== expectedKeys.length ||
+      keys.some((key, index) => key !== expectedKeys[index])
+    ) {
+      context.addIssue({
+        code: "custom",
+        path,
+        message:
+          "Every variant selection must specify each choice exactly once.",
+      });
       return false;
     }
     let valid = true;
     for (const [id, value] of Object.entries(selection)) {
       if (!optionsByChoice.get(id)?.has(value)) {
-        context.addIssue({ code: "custom", path: [...path, id], message: "Variant selection uses an unknown choice value." });
+        context.addIssue({
+          code: "custom",
+          path: [...path, id],
+          message: "Variant selection uses an unknown choice value.",
+        });
         valid = false;
       }
     }
     return valid;
   };
 
-  const defaultsValid = validateSelection(gallery.defaultValues, ["defaultValues"]);
+  const defaultsValid = validateSelection(gallery.defaultValues, [
+    "defaultValues",
+  ]);
   const frameKeys = new Set<string>();
   gallery.frames.forEach(({ selections }, index) => {
     if (!validateSelection(selections, ["frames", index, "selections"])) return;
     const key = JSON.stringify(expectedKeys.map((id) => [id, selections[id]]));
     if (frameKeys.has(key)) {
-      context.addIssue({ code: "custom", path: ["frames", index, "selections"], message: "Variant frame selections must be unique." });
+      context.addIssue({
+        code: "custom",
+        path: ["frames", index, "selections"],
+        message: "Variant frame selections must be unique.",
+      });
     }
     frameKeys.add(key);
   });
@@ -235,12 +267,23 @@ export const variantGalleryBlockSchema = versionedBlock({
     1,
   );
   if (gallery.frames.length !== expectedFrameCount) {
-    context.addIssue({ code: "custom", path: ["frames"], message: "Variant gallery must provide one frame for every choice combination." });
+    context.addIssue({
+      code: "custom",
+      path: ["frames"],
+      message:
+        "Variant gallery must provide one frame for every choice combination.",
+    });
   }
   if (defaultsValid) {
-    const defaultKey = JSON.stringify(expectedKeys.map((id) => [id, gallery.defaultValues[id]]));
+    const defaultKey = JSON.stringify(
+      expectedKeys.map((id) => [id, gallery.defaultValues[id]]),
+    );
     if (!frameKeys.has(defaultKey)) {
-      context.addIssue({ code: "custom", path: ["defaultValues"], message: "Variant gallery must include its default selection frame." });
+      context.addIssue({
+        code: "custom",
+        path: ["defaultValues"],
+        message: "Variant gallery must include its default selection frame.",
+      });
     }
   }
 });
