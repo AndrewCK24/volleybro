@@ -74,7 +74,7 @@ export class PlayerRepositoryImpl implements IPlayerRepository {
 
     try {
       const updated = await PlayerModel.findByIdAndUpdate(id, updateOps, {
-        new: true,
+        returnDocument: "after",
       }).exec();
       if (!updated) {
         throw new NotFoundError(
