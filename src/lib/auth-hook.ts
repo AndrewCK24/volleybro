@@ -2,6 +2,7 @@ import type { ILinkPendingInvitationsUseCase } from "@/applications/usecases/use
 import type { CreateProfileUseCase } from "@/applications/usecases/user/profile.usecase";
 import { TransientError } from "@/entities/errors";
 import { container } from "@/infrastructure/di/inversify.config";
+import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { TYPES } from "@/infrastructure/di/types";
 
 /**
@@ -23,6 +24,8 @@ export async function handleUserCreated(user: {
   );
 
   try {
+    // Better Auth calls this from its own route, outside withErrorHandler's connect.
+    await connectToMongoDB();
     await createProfileUseCase.execute({ userId: user.id });
     console.log(`[Auth Hook] Profile created for user ${user.id}`);
   } catch (error) {

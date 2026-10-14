@@ -5,15 +5,10 @@ import {
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Position } from "@/entities/team";
 
-const mockConnectToMongoDB = jest.fn<() => Promise<void>>();
 const mockUpdateTeamLineupsController =
   jest.fn<(teamId: string, lineups: unknown) => Promise<unknown>>();
 const mockGetSession = jest.fn<() => Promise<unknown>>();
 const mockContainerGet = jest.fn<() => unknown>();
-
-jest.mock("@/infrastructure/db/mongoose/connect-to-mongodb", () => ({
-  connectToMongoDB: mockConnectToMongoDB,
-}));
 
 jest.mock(
   "@/interface/controllers/team/update-team-lineups.controller",
@@ -51,7 +46,6 @@ describe("PATCH /api/teams/[teamId]/lineups", () => {
   beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
-    mockConnectToMongoDB.mockResolvedValue(undefined);
     mockGetSession.mockResolvedValue(SESSION);
     mockContainerGet.mockReturnValue({
       verifyTeamRole: jest
@@ -91,7 +85,6 @@ describe("PATCH /api/teams/[teamId]/lineups", () => {
 
     expect(res.status).toBe(400);
     expect(body.code).toBe("VALIDATION");
-    expect(mockConnectToMongoDB).not.toHaveBeenCalled();
     expect(mockUpdateTeamLineupsController).not.toHaveBeenCalled();
     consoleSpy.mockRestore();
   });

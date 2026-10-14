@@ -1,4 +1,3 @@
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import {
   createSetController,
   updateSetController,
@@ -15,7 +14,6 @@ export const POST = (
   withErrorHandler(async (req) => {
     const { gameId } = await props.params;
     assertObjectId(gameId, "gameId");
-    await connectToMongoDB();
     const data = CreateSetSchema.parse(await req.json());
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
@@ -34,7 +32,6 @@ export const PUT = (
   withErrorHandler(async (req) => {
     const { gameId } = await props.params;
     assertObjectId(gameId, "gameId");
-    await connectToMongoDB();
     const data = UpdateSetSchema.parse(await req.json());
     const searchParams = req.nextUrl.searchParams;
     const setIndex = parseInt(searchParams.get("si") || "0", 10);
