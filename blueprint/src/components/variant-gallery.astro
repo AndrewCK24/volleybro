@@ -29,15 +29,7 @@ const frameKey = (selections: Record<string, string>) =>
               aria-pressed={gallery.defaultValues[choice.id] === option.value ? "true" : "false"}
               class="rounded-md border px-3 py-1.5 font-mono text-sm aria-pressed:bg-primary aria-pressed:text-primary-foreground"
             >
-              <span
-                data-variant-label
-                data-label={option.label}
-                data-selected-label={option.selectedLabel}
-              >
-                {gallery.defaultValues[choice.id] === option.value && option.selectedLabel
-                  ? option.selectedLabel
-                  : option.label}
-              </span>
+              {option.label}
             </button>
           ))}
         </div>

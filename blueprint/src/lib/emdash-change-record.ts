@@ -169,7 +169,6 @@ const variantChoiceSchema = z.strictObject({
       z.strictObject({
         value: z.string().min(1).max(64),
         label: z.string().min(1).max(120),
-        selectedLabel: z.string().min(1).max(120).optional(),
       }),
     )
     .min(2)

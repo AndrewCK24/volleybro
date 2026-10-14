@@ -34,7 +34,7 @@ const gallery = {
       label: "iOS size",
       options: [
         { value: "15", label: "15%" },
-        { value: "25", label: "25%", selectedLabel: "25% ✓ selected" },
+        { value: "25", label: "25% ✓ selected" },
       ],
     },
   ],
@@ -83,13 +83,7 @@ function GalleryHarness() {
           data-value="25"
           aria-pressed="true"
         >
-          <span
-            data-variant-label
-            data-label="25%"
-            data-selected-label="25% ✓ selected"
-          >
-            25% ✓ selected
-          </span>
+          25% ✓ selected
         </button>
       </fieldset>
       {combinations.map((selections) => (
@@ -214,14 +208,16 @@ describe("variant gallery controller", () => {
     ).toHaveAttribute("aria-pressed", "false");
     expect(
       size.getByRole("button", { name: "25% ✓ selected" }),
-    ).toHaveTextContent("25% ✓ selected");
+    ).toHaveAttribute("aria-pressed", "true");
 
     fireEvent.click(size.getByRole("button", { name: "15%" }));
     expectActiveFrame("300 / 15");
-    expect(size.getByRole("button", { name: "25%" })).toHaveTextContent("25%");
+    expect(
+      size.getByRole("button", { name: "25% ✓ selected" }),
+    ).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(weight.getByRole("button", { name: "700 ✓ pinned" }));
     expectActiveFrame("700 / 15");
-    fireEvent.click(size.getByRole("button", { name: "25%" }));
+    fireEvent.click(size.getByRole("button", { name: "25% ✓ selected" }));
     expectActiveFrame("700 / 25");
     expect(
       size.getByRole("button", { name: "25% ✓ selected" }),

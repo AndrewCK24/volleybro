@@ -67,14 +67,6 @@ export function installVariantGalleryController(root: ParentNode) {
         if (option.dataset.choice === choice) {
           const isPressed = option === button;
           option.setAttribute("aria-pressed", String(isPressed));
-          for (const label of option.querySelectorAll<HTMLElement>(
-            "[data-variant-label]",
-          )) {
-            label.textContent =
-              isPressed && label.dataset.selectedLabel
-                ? label.dataset.selectedLabel
-                : (label.dataset.label ?? "");
-          }
         }
       }
 
