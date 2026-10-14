@@ -17,6 +17,10 @@ import {
 } from "../src/lib/github-change-data.ts";
 import { prepareLinearG1Markdown } from "./linear-g1-markdown.ts";
 import { removeLegacyPresentationArtifacts } from "./legacy-render-artifacts.mjs";
+import {
+  buildLogoVSplashGallery,
+  replaceLogoVSplashPlaceholder,
+} from "./logo-v-splash-gallery.mjs";
 import { parseCliArgs } from "./parse-cli-args.ts";
 import {
   convertMarkdownToPortableText,
@@ -886,6 +890,14 @@ async function run(options) {
       );
     } catch (error) {
       throw new Error(`${slug}: ${error.message}`, { cause: error });
+    }
+    if (slug === "logo-v-splash-redesign") {
+      const gallery = buildLogoVSplashGallery(designSource, slug);
+      if (!gallery)
+        throw new Error(
+          `${slug}: static design source did not produce its variant gallery.`,
+        );
+      blocks = replaceLogoVSplashPlaceholder(blocks, gallery, slug);
     }
     const scenarios = structured.scenarios;
     const importedAnchors = blocks
