@@ -223,7 +223,7 @@ it("S3: a failure to ask the preferred team leaves the stored preference as it w
 
 describe("a verified preference when its team is revalidated", () => {
   const verifyPreferredTeam = async (
-    joinedTeamIds: string[] = ["team-1", "team-2"],
+    joinedTeamIds: string[] = ["team-2", "team-1"],
   ) => {
     seedActiveTeamPreference("user-1", "team-1");
     answerTeamRequests({
@@ -249,7 +249,7 @@ describe("a verified preference when its team is revalidated", () => {
   });
 
   it("S3 (revalidation): does not store a refused team again while the players list still lists it first", async () => {
-    await verifyPreferredTeam();
+    await verifyPreferredTeam(["team-1", "team-2"]);
     server.use(
       http.get("/api/teams/team-1", () =>
         HttpResponse.json(
@@ -268,7 +268,7 @@ describe("a verified preference when its team is revalidated", () => {
   });
 
   it("S3 (revalidation): discards the preference when the revalidation is refused", async () => {
-    await verifyPreferredTeam(["team-2", "team-1"]);
+    await verifyPreferredTeam();
     server.use(
       http.get("/api/teams/team-1", () =>
         HttpResponse.json(

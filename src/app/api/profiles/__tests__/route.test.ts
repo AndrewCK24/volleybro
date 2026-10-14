@@ -33,12 +33,12 @@ describe("PATCH /api/profiles", () => {
     ({ PATCH } = await import("../route"));
   });
 
-  it("returns 400 for a body with an undeclared field", async () => {
+  it.each([
+    ["an undeclared field", { isAdmin: true }],
+    ["the removed activeTeamId", { activeTeamId: TEAM_ID }],
+  ])("returns 400 for a body with %s", async (_, payload) => {
     const consoleSpy = silenceConsoleError();
-    const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: TEAM_ID,
-      isAdmin: true,
-    });
+    const req = routeRequest("http://localhost/api/profiles", "PATCH", payload);
 
     const res = await PATCH(req as never);
     const body = (await res.json()) as { code: string };
