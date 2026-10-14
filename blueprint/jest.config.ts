@@ -4,7 +4,8 @@ const config: Config = {
   testEnvironment: "jsdom",
   transform: {
     "^.+\\.(ts|tsx)$": [
-      "babel-jest",
+      // Jest's own babel-jest instance is peered with Babel 7; use Blueprint's, peered with Babel 8.
+      "<rootDir>/node_modules/babel-jest",
       {
         presets: [
           ["@babel/preset-env", { targets: { node: "current" } }],
