@@ -4,6 +4,7 @@ import {
   createMockProfileRepository,
 } from "@test/support/doubles/repositories";
 import { TransientError, CommonReason } from "@/entities/errors";
+import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { container } from "@/infrastructure/di/inversify.config";
 import { TYPES } from "@/infrastructure/di/types";
 import { handleUserCreated } from "@/lib/auth-hook";
@@ -39,6 +40,35 @@ describe("handleUserCreated (auth hook)", () => {
       "test@example.com",
       "user-1",
     );
+  });
+
+  it("connects to the database before creating the profile", async () => {
+    const order: string[] = [];
+    jest.mocked(connectToMongoDB).mockImplementation(async () => {
+      order.push("connect");
+      return undefined as never;
+    });
+    profileRepository.create.mockImplementation(async () => {
+      order.push("create");
+      return createProfile();
+    });
+
+    await handleUserCreated({ id: "user-1", email: "test@example.com" });
+
+    expect(order).toEqual(["connect", "create"]);
+  });
+
+  it("logs and returns without creating a profile when the connection fails", async () => {
+    jest.mocked(connectToMongoDB).mockRejectedValue(new Error("no server"));
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      handleUserCreated({ id: "user-1", email: "test@example.com" }),
+    ).resolves.toBeUndefined();
+
+    expect(profileRepository.create).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalled();
+    log.mockRestore();
   });
 
   it("should retry LinkPendingInvitationsUseCase once on transient failure", async () => {
