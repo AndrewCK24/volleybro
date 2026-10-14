@@ -1700,7 +1700,8 @@ test("a push that merged an ordinary PR ends without a release", async (t) => {
   const { pr } = JSON.parse(await readFile(f.statePath, "utf8"));
   for (const other of [
     { ...pr, head: { ...pr.head, ref: "hotfix-merge-back/1" } },
-    { ...pr, title: "feat: something", head: { ...pr.head, ref: "feat/x" } },
+    { ...pr, head: { ...pr.head, ref: "feat/x" } },
+    { ...pr, head: { ...pr.head, repo: { full_name: "attacker/repo" } } },
   ]) {
     await writeFile(f.env.GITHUB_OUTPUT, "");
     await updateApi(f, {
@@ -1727,6 +1728,10 @@ test("a merge commit with no matching merged PR cannot authorize and tells the o
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /normal-retry/);
     assert.doesNotMatch(await outputOf(f), /sha=|release=/);
+    assert.equal(
+      JSON.parse(await readFile(f.statePath, "utf8")).pullLookups,
+      12,
+    );
   }
 });
 
