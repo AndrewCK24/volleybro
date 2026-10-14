@@ -120,7 +120,7 @@ jobs:
         with:
           ref: ${{ steps.authorize.outputs.sha }}
           fetch-depth: 0
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
         with:
           install: false
           node-version-file: false
@@ -251,7 +251,7 @@ jobs:
           PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
           RELEASE_STATE_FILE: ${{ runner.temp }}/source/release-state.json
         run: node "$RUNNER_TEMP/trusted/release-controls.js" plan-recovery-compatibility
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
         if: steps.compatibility-plan.outputs.required == 'true'
         with:
           install: false
@@ -321,7 +321,7 @@ jobs:
         with:
           name: production-release-accepted-state
           path: ${{ runner.temp }}
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
         with:
           install: false
           node-version-file: false
@@ -455,7 +455,7 @@ jobs:
         with:
           name: production-release-accepted-state
           path: ${{ runner.temp }}
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
         with:
           install: false
           node-version-file: false

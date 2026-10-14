@@ -1,5 +1,51 @@
 # VolleyBro CHANGELOG
 
+## [0.17.0](https://github.com/andrewck24/volleybro/compare/v0.16.3...v0.17.0) 2026-10-14
+
+### Changed
+
+#### Landing
+
+- Redesign the landing page as a volleyball court plan: a live rally feed in the hero, a four-step recording walkthrough on the real recording components, a stats court you can swipe through, a list of the seven supporting features, and a closing call to action on the court.
+- Match the phone status bar to the landing page's background in light and dark mode.
+
+#### UI
+
+- Make buttons, icon controls, choices and list rows at least 44px tall on touch screens.
+- Use one arrow for back and one cross for close in every header, drawn on a soft glass background without an outline.
+- Size actions by role: page primary actions and form submits are large, in-section and confirmation actions are regular, and side-by-side buttons match.
+- Show the serving-side choice, the stats set selector and the dark-mode choice as segmented options with a clear selected state.
+- Show selectable and navigable lists as consistent rows: the user menu, substitute and position pickers, libero replace mode, the game date and the team switcher. The selected one is highlighted.
+
+#### Record
+
+- Lay out opponent errors in two columns so every reason fits without scrolling on common phones, with labels that scale down on narrow screens.
+
+### Removed
+
+#### Landing
+
+- Remove the highlights and feature showcase sections, replaced by the recording walkthrough and stats court.
+
+### Fixed
+
+#### Landing
+
+- Stop the landing page from scrolling sideways on phones; the stats carousel arrows stay inside the screen and no longer cover the figures.
+
+#### UI
+
+- Make error text and the leave-team, remove-player and transfer-ownership headings readable in light and dark mode, and show error alerts and toasts on a light tint with red text.
+- Keep destructive buttons a vivid red, and draw opponent and loss marks and badges in a muted red with legible white text.
+- Make teal text and icons readable on dark cards, including the rally list plus and minus icons, navigation labels, tabs and links.
+- Make secondary grey text readable on muted backgrounds in dark mode.
+- Make the radio button outline visible in dark mode.
+- Show the selected opponent-move button on the recording panel, the opponent stat bar and the libero badge in the court coral with dark text.
+
+#### Game
+
+- Keep the game overview's loading header at the top of the screen, so the page no longer jumps when the game finishes loading.
+
 ## [0.16.3](https://github.com/andrewck24/volleybro/compare/v0.16.2...v0.16.3) 2026-10-06
 
 ### Security

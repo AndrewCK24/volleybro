@@ -59,7 +59,7 @@ async function fixture(
       2,
     )}\n`,
   );
-  await writeFile(path.join(repo, "CHANGELOG.md"), "# Changes\\n");
+  await writeFile(path.join(repo, "CHANGELOG.md"), "# Changes\n");
   if (baselineCompatibilityTest) {
     await mkdir(path.dirname(compatibilityPath), { recursive: true });
     await writeFile(
@@ -102,7 +102,7 @@ async function fixture(
   );
   await writeFile(
     path.join(repo, "CHANGELOG.md"),
-    "# Changes\\n\\n## [1.0.1]\\n\\n- Release changes\\n",
+    "# Changes\n\n## [1.0.1]\n\n- Release changes\n",
   );
   await rm(path.join(repo, ".changeset", "one.md"));
   git(["add", "-A"]);
@@ -122,7 +122,7 @@ async function fixture(
   );
   await writeFile(
     path.join(repo, "CHANGELOG.md"),
-    "# Changes\\n\\n## [1.0.1]\\n\\n- Release changes\\n",
+    "# Changes\n\n## [1.0.1]\n\n- Release changes\n",
   );
   await writeFile(path.join(repo, "repair.js"), "export const fixed = true;\n");
   git(["add", "."]);
@@ -1574,7 +1574,7 @@ test("hotfix authorization rejects a non-patch version", async (t) => {
   );
   await writeFile(
     path.join(f.repo, "CHANGELOG.md"),
-    "# Changes\\n\\n## [1.1.0]\\n\\n- Wrong bump\\n",
+    "# Changes\n\n## [1.1.0]\n\n- Wrong bump\n",
   );
   f.git(["add", "package.json", "CHANGELOG.md"]);
   f.git(["commit", "-m", "wrong version"]);
@@ -1908,11 +1908,15 @@ test("finalize tags only the promoted exact SHA and repeats without duplicate Re
   assert.equal(f.git(["rev-parse", "v1.0.1"]), f.merge);
   assert.equal(run(f, "finalize", env).status, 0);
   const state = JSON.parse(await readFile(f.statePath, "utf8"));
-  assert.equal(
-    state.calls.filter((args) => args[0] === "release" && args[1] === "create")
-      .length,
-    1,
+  const creates = state.calls.filter(
+    (args) => args[0] === "release" && args[1] === "create",
   );
+  assert.equal(creates.length, 1);
+  assert.equal(
+    creates[0][creates[0].indexOf("--notes") + 1],
+    "- Release changes",
+  );
+  assert.equal(creates[0].includes("--generate-notes"), false);
   f.git(["tag", "-f", "v1.0.1", `${f.merge}^1`]);
   result = run(f, "finalize", env);
   assert.notEqual(result.status, 0);

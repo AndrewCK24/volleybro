@@ -43,7 +43,7 @@ export class TeamRepositoryImpl implements ITeamRepository {
   async update(id: string, updates: Partial<Team>): Promise<Team> {
     try {
       const doc = await TeamModel.findByIdAndUpdate(id, updates, {
-        new: true,
+        returnDocument: "after",
       }).exec();
       if (!doc)
         throw new NotFoundError(
@@ -61,7 +61,7 @@ export class TeamRepositoryImpl implements ITeamRepository {
       const doc = await TeamModel.findByIdAndUpdate(
         teamId,
         { lineups: lineups.map((lineup) => toLineupDoc(lineup)) },
-        { new: true },
+        { returnDocument: "after" },
       ).exec();
       if (!doc)
         throw new NotFoundError(
