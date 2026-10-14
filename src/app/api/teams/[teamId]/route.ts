@@ -1,6 +1,5 @@
 import type { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
 import { NotFoundError, CommonReason } from "@/entities/errors";
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { container } from "@/infrastructure/di/inversify.config";
 import { TYPES } from "@/infrastructure/di/types";
 import { getTeamController } from "@/interface/controllers/team/get-team.controller";
@@ -17,8 +16,6 @@ export const GET = (
   withAuth(async (_req, { userId }) => {
     const { teamId } = await props.params;
     assertObjectId(teamId, "teamId");
-    await connectToMongoDB();
-
     const team = await getTeamController({ teamId, userId });
     if (!team) {
       throw new NotFoundError(
@@ -37,8 +34,6 @@ export const PATCH = (
   withAuth(async (req, { userId }) => {
     const { teamId } = await props.params;
     assertObjectId(teamId, "teamId");
-    await connectToMongoDB();
-
     const authorizationService = container.get<IAuthorizationService>(
       TYPES.AuthorizationService,
     );

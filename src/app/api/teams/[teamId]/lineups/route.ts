@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToMongoDB } from "@/infrastructure/db/mongoose/connect-to-mongodb";
 import { container } from "@/infrastructure/di/inversify.config";
 import { TYPES } from "@/infrastructure/di/types";
 import type { IAuthorizationService } from "@/applications/services/auth/authorization.service.interface";
@@ -16,8 +15,6 @@ export const PATCH = (
   withAuth(async (req, { userId }) => {
     const { teamId } = await props.params;
     assertObjectId(teamId, "teamId");
-    await connectToMongoDB();
-
     const authorizationService = container.get<IAuthorizationService>(
       TYPES.AuthorizationService,
     );
