@@ -171,12 +171,13 @@ export const useActiveTeamId = () => {
     profileActiveTeamId: profile?.activeTeamId,
     joinedTeamIds,
   });
-  const { team } = useTeam(teamId ?? "");
+  const { team, error: teamError } = useTeam(teamId ?? "");
   usePersistActiveTeam(
     decidePreferenceAction({
       ...preferenceState,
       teamId,
-      loadedTeamId: team ? teamId : undefined,
+      // SWR keeps the last data after a refusal; storing that team would be refused again, forever.
+      loadedTeamId: team && !isTeamRefusal(teamError) ? teamId : undefined,
     }),
   );
   usePreloadTeamPlayers(preference?.teamId);
