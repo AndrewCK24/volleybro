@@ -1,5 +1,23 @@
 # VolleyBro CHANGELOG
 
+## [0.17.1](https://github.com/andrewck24/volleybro/compare/v0.17.0...v0.17.1) 2026-10-14
+
+### Fixed
+
+#### Team
+
+- Stop the home and team pages intermittently timing out while loading the team's players, invitations and memberships.
+
+#### Account
+
+- Create a new user's profile reliably on first sign-in.
+
+### Changed
+
+#### Infrastructure
+
+- `scripts/worktree-setup.sh` installs dependencies, and with them the git hooks, in a new worktree; agent tools run it when they create one, so commit checks no longer skip silently there.
+
 ## [0.17.0](https://github.com/andrewck24/volleybro/compare/v0.16.3...v0.17.0) 2026-10-14
 
 ### Changed
