@@ -1,16 +1,12 @@
 "use client";
 import { TeamsStats } from "@/components/game/stats/teams-stats";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardBtnGroup,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGame } from "@/hooks/use-data";
 import type { SetView } from "@/lib/features/game/types";
 import { useState } from "react";
+import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 export const Stats = ({ gameId }: { gameId: string }) => {
   const [setIndex, setSetIndex] = useState(-1);
@@ -19,14 +15,11 @@ export const Stats = ({ gameId }: { gameId: string }) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>
-          數據總覽
-          <SetSwitch
-            sets={game!.sets}
-            setIndex={setIndex}
-            setSetIndex={setSetIndex}
-          />
-        </CardTitle>
+        <SetPager
+          sets={game!.sets}
+          setIndex={setIndex}
+          setSetIndex={setSetIndex}
+        />
       </CardHeader>
       <Tabs defaultValue="team-stats" className="relative w-full">
         <TabsList className="grid w-full grid-cols-2">
@@ -71,7 +64,7 @@ export const StatsForOneSet = ({
   );
 };
 
-const SetSwitch = ({
+const SetPager = ({
   sets,
   setIndex,
   setSetIndex,
@@ -80,27 +73,38 @@ const SetSwitch = ({
   setIndex: number;
   setSetIndex: (index: number) => void;
 }) => {
+  const isOverview = setIndex === -1;
+  const hasNext = setIndex + 1 < sets.length;
+
   return (
-    <CardBtnGroup>
-      <Button
-        variant="segmented"
-        size="icon"
-        aria-pressed={setIndex === -1}
-        onClick={() => setSetIndex(-1)}
-      >
-        All
-      </Button>
-      {sets.map((_, index) => (
-        <Button
-          key={index}
-          variant="segmented"
-          size="icon"
-          aria-pressed={setIndex === index}
-          onClick={() => setSetIndex(index)}
-        >
-          {index + 1}
-        </Button>
-      ))}
-    </CardBtnGroup>
+    <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center">
+      <div className="justify-self-start">
+        {!isOverview && (
+          <Button
+            variant="ghost"
+            className="text-sm text-muted-foreground"
+            onClick={() => setSetIndex(setIndex === 0 ? -1 : setIndex - 1)}
+          >
+            <RiArrowLeftSLine />
+            {setIndex === 0 ? "總覽" : `第 ${setIndex} 局`}
+          </Button>
+        )}
+      </div>
+      <CardTitle aria-live="polite" className="justify-center">
+        {isOverview ? "數據總覽" : `第 ${setIndex + 1} 局數據`}
+      </CardTitle>
+      <div className="justify-self-end">
+        {hasNext && (
+          <Button
+            variant="ghost"
+            className="text-sm text-muted-foreground"
+            onClick={() => setSetIndex(setIndex + 1)}
+          >
+            {`第 ${setIndex + 2} 局`}
+            <RiArrowRightSLine />
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
