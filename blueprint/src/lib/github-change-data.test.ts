@@ -391,7 +391,22 @@ describe("GitHub derived Change status and metrics", () => {
           title: "New Change",
           pull_requests: [],
           publishedAt: "2026-10-12T08:00:00Z",
-          blocks: [{ _type: "scenario", _version: 1 }],
+          blocks: [
+            { _type: "scenario", _version: 1 },
+            {
+              _type: "disclosure",
+              _version: 1,
+              summary: "Details",
+              blocks: [
+                { _type: "scenario", _version: 1 },
+                {
+                  _type: "scenario_cards",
+                  _version: 1,
+                  items: '[{"id":"nested-1"},{"id":"nested-2"}]',
+                },
+              ],
+            },
+          ],
         },
       },
       [],
@@ -401,7 +416,7 @@ describe("GitHub derived Change status and metrics", () => {
       slug: "new-change",
       status: "in-progress",
       publishedAt: "2026-10-12T08:00:00Z",
-      scenarioCount: 1,
+      scenarioCount: 4,
     });
     expect(summary.metrics).toBeUndefined();
   });
@@ -428,13 +443,29 @@ describe("GitHub derived Change status and metrics", () => {
     ]);
   });
 
-  it("derives scenarios only from the structured scenario blocks", () => {
+  it("counts scenarios in disclosure trees without scanning unrelated block data", () => {
     expect(
       scenarioCount([
         { _type: "scenario" },
         { _type: "scenario_cards", items: '[{"id":"S1"},{"id":"S2"}]' },
+        {
+          _type: "disclosure",
+          blocks: [
+            { _type: "scenario" },
+            { _type: "scenario_cards", items: '[{"id":"S3"}]' },
+            { _type: "code", code: '{"_type":"scenario"}' },
+            {
+              _type: "variant_gallery",
+              frames: [{ blocks: [{ _type: "scenario" }] }],
+            },
+            {
+              _type: "disclosure",
+              blocks: [{ _type: "scenario" }],
+            },
+          ],
+        },
         { _type: "scenario_cards", items: "not-json" },
       ]),
-    ).toBe(3);
+    ).toBe(6);
   });
 });

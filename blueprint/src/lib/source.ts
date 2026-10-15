@@ -124,8 +124,19 @@ async function readPublishedChanges(): Promise<EmDashPage[]> {
       eb
         .selectFrom(
           eb
-            .fn<{ value: string }>("json_each", [
-              eb.ref("ec_blueprint_changes.blocks"),
+            .fn<{ value: string; type: string; path: string }>("json_tree", [
+              eb
+                .case()
+                .when(
+                  eb.fn<number>("json_valid", [
+                    eb.ref("ec_blueprint_changes.blocks"),
+                  ]),
+                  "=",
+                  1,
+                )
+                .then(eb.ref("ec_blueprint_changes.blocks"))
+                .else(eb.val("[]"))
+                .end(),
             ])
             .as("block"),
         )
@@ -168,6 +179,8 @@ async function readPublishedChanges(): Promise<EmDashPage[]> {
             )
             .as("scenarioCount");
         })
+        .where("block.type", "=", "object")
+        .where("block.path", "not like", "%.frames%")
         .as("scenarioCount"),
     ])
     .where("deleted_at", "is", null)
