@@ -169,7 +169,7 @@ describe("ActionButton / NewGameForm creation failure", () => {
     const dialog = await screen.findByRole("dialog");
     expect(await within(dialog).findByText("測試隊伍")).toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole("button", { name: "2" }));
+    await user.click(within(dialog).getByRole("radio", { name: "2" }));
     expect(within(dialog).getByText("陣容配置 2")).toBeInTheDocument();
 
     await user.click(
