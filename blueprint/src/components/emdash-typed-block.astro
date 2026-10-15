@@ -6,10 +6,15 @@ import { Scenario } from "./scenario";
 import { Diagram } from "./diagram";
 import { Scenarios } from "./scenario-cards";
 import VariantGallery from "./variant-gallery.astro";
-import { blockSchema, parseJsonField } from "../lib/emdash-change-record";
+import { parseJsonField, type ChangeBlock } from "../lib/emdash-change-record";
 import { decisionCardsFor } from "../lib/decision-cards";
 import { allDecisions } from "../lib/decisions-index";
 import { z } from "zod";
+
+type TypedChangeBlock = Exclude<
+  ChangeBlock,
+  { _type: "block" | "image" | "code" | "table" | "tldr" }
+>;
 
 const riskSchema = z.array(
   z.strictObject({
@@ -52,17 +57,7 @@ const detailsSchema = z.record(
   z.strictObject({ title: z.string(), body: z.string() }),
 );
 
-const parsed = blockSchema.safeParse((Astro.props as { node: unknown }).node);
-if (
-  !parsed.success ||
-  parsed.data._type === "block" ||
-  parsed.data._type === "image" ||
-  parsed.data._type === "code" ||
-  parsed.data._type === "table"
-) {
-  throw new Error("EmDash typed block renderer received an unsupported block.");
-}
-const block = parsed.data;
+const block = (Astro.props as { node: TypedChangeBlock }).node;
 
 let decisionCards;
 let risks;

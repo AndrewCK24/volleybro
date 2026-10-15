@@ -73,6 +73,148 @@ describe("EmDash Change schema", () => {
     },
   );
 
+  it("accepts version 1 TL;DR blocks containing native Portable Text", () => {
+    expect(
+      blockSchema.safeParse({
+        _type: "tldr",
+        _version: 1,
+        blocks: [
+          {
+            _type: "block",
+            _key: "tldr-text",
+            id: "tldr-summary",
+            children: [{ _type: "span", text: "Summary" }],
+          },
+          {
+            _type: "image",
+            asset: {
+              _type: "reference",
+              _ref: "media-1",
+              url: "/_emdash/api/media/file/media-1.png",
+            },
+            alt: "Summary illustration",
+          },
+          { _type: "code", code: "const ready = true;", language: "ts" },
+          {
+            _type: "table",
+            rows: [
+              {
+                _type: "tableRow",
+                _key: "tldr-row",
+                cells: [
+                  {
+                    _type: "tableCell",
+                    _key: "tldr-cell",
+                    content: [{ _type: "span", text: "Ready" }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects raw, unknown, and unsupported-version TL;DR content", () => {
+    const tldr = {
+      _type: "tldr",
+      _version: 1,
+      blocks: [
+        {
+          _type: "block",
+          children: [{ _type: "span", text: "Summary" }],
+        },
+      ],
+    };
+
+    expect(
+      blockSchema.safeParse({
+        ...tldr,
+        _version: 2,
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        ...tldr,
+        blocks: [{ _type: "html", html: "<script>unsafe()</script>" }],
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        ...tldr,
+        blocks: [{ _type: "unknown", payload: "unsafe" }],
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts version 1 disclosures with a summary and native Portable Text", () => {
+    const parsed = blockSchema.safeParse({
+      _type: "disclosure",
+      _version: 1,
+      _key: "review-details",
+      summary: "Review details",
+      blocks: [
+        {
+          _type: "block",
+          _key: "review-body",
+          id: "review-body-anchor",
+          children: [{ _type: "span", text: "Full review notes." }],
+        },
+        { _type: "code", code: "pnpm verify", language: "bash" },
+      ],
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success && parsed.data._type === "disclosure") {
+      expect(parsed.data.summary).toBe("Review details");
+      expect(parsed.data.blocks[0]).toMatchObject({
+        _type: "block",
+        id: "review-body-anchor",
+      });
+    }
+  });
+
+  it("rejects empty summaries, nested typed blocks, raw HTML, and other versions", () => {
+    const disclosure = {
+      _type: "disclosure",
+      _version: 1,
+      summary: "Review details",
+      blocks: [
+        {
+          _type: "block",
+          children: [{ _type: "span", text: "Full review notes." }],
+        },
+      ],
+    };
+
+    expect(
+      blockSchema.safeParse({ ...disclosure, summary: "  " }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        ...disclosure,
+        blocks: [
+          {
+            _type: "disclosure",
+            _version: 1,
+            summary: "Nested review details",
+            blocks: [],
+          },
+        ],
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        ...disclosure,
+        blocks: [{ _type: "html", html: "<strong>unsafe</strong>" }],
+      }).success,
+    ).toBe(false);
+    expect(blockSchema.safeParse({ ...disclosure, _version: 2 }).success).toBe(
+      false,
+    );
+  });
+
   it("accepts canonical Portable Text and typed blocks in one ordered stream", () => {
     const result = changeDataSchema.safeParse({
       ...content,

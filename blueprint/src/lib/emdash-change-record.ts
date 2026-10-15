@@ -145,6 +145,8 @@ const standardBlockSchema = z.discriminatedUnion("_type", [
   tableBlockSchema,
 ]);
 
+export type PortableTextCoreBlock = z.infer<typeof standardBlockSchema>;
+
 const portableTextFrameBlockSchema = z.union([
   standardBlockSchema,
   diagramBlockSchema,
@@ -156,6 +158,23 @@ export type PortableTextFrameBlock = z.infer<
 
 const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
   z.strictObject({ ...shape, _key: z.string().min(1).optional() });
+
+const tldrBlockSchema = versionedBlock({
+  _type: z.literal("tldr"),
+  _version: z.literal(1),
+  blocks: z.array(standardBlockSchema),
+});
+
+export type TldrBlock = z.infer<typeof tldrBlockSchema>;
+
+const disclosureBlockSchema = versionedBlock({
+  _type: z.literal("disclosure"),
+  _version: z.literal(1),
+  summary: z.string().trim().min(1),
+  blocks: z.array(standardBlockSchema),
+});
+
+export type DisclosureBlock = z.infer<typeof disclosureBlockSchema>;
 
 const variantChoiceSchema = z.strictObject({
   id: z
@@ -328,6 +347,8 @@ export const blockSchema = z.union([
   standardBlockSchema,
   diagramBlockSchema,
   variantGalleryBlockSchema,
+  tldrBlockSchema,
+  disclosureBlockSchema,
   versionedBlock({
     _type: z.literal("decision_cards"),
     _version: z.literal(1),

@@ -59,6 +59,88 @@ test("preserves authored structure, inline marks, links, anchors, and lists", ()
   assert.equal(result.at(-2).id, "one");
 });
 
+test("converts the rendered TL;DR wrapper into a native typed block", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<div class="my-6 rounded-r-md border-l-4 border-primary bg-muted/40 py-3 pr-4 pl-4"><span class="font-mono text-xs font-semibold tracking-wide text-primary-text uppercase">TL;DR</span><div class="text-base leading-relaxed text-foreground"><p id="summary">Keep <strong>the details</strong>.</p><h2>Next steps</h2></div></div><p>After the summary.</p>',
+    "tldr-wrapper",
+  );
+
+  assert.equal(result[0]._type, "tldr");
+  assert.equal(result[0]._version, 1);
+  assert.equal(result[0]._key, "tldr-1");
+  assert.deepEqual(
+    result[0].blocks.map((block) => ({
+      id: block.id ?? null,
+      style: block.style,
+      spans: block.children.map((span) => ({
+        text: span.text,
+        marks: span.marks ?? [],
+      })),
+    })),
+    [
+      {
+        id: "summary",
+        style: "normal",
+        spans: [
+          { text: "Keep ", marks: [] },
+          { text: "the details", marks: ["strong"] },
+          { text: ".", marks: [] },
+        ],
+      },
+      {
+        id: null,
+        style: "h2",
+        spans: [{ text: "Next steps", marks: [] }],
+      },
+    ],
+  );
+  assert.equal(result[1]._type, "block");
+  assert.equal(
+    result[1].children.map((span) => span.text).join(""),
+    "After the summary.",
+  );
+});
+
+test("does not classify plain TL;DR prose as a typed wrapper", () => {
+  const result = convertRenderedHtmlToPortableText(
+    "<p>TL;DR: Keep this route simple.</p>",
+    "plain-tldr-prose",
+  );
+
+  assert.equal(result.length, 1);
+  assert.equal(result[0]._type, "block");
+  assert.equal(
+    result[0].children.map((span) => span.text).join(""),
+    "TL;DR: Keep this route simple.",
+  );
+});
+
+test("preserves direct text around a rendered TL;DR wrapper", () => {
+  const result = convertRenderedHtmlToPortableText(
+    '<div class="rounded-r-md border-l-4">prefix<span>TL;DR</span><div><p>Summary body.</p></div>suffix</div>',
+    "tldr-with-direct-text",
+  );
+  const text = result
+    .flatMap((block) => (block._type === "tldr" ? block.blocks : [block]))
+    .flatMap((block) => block.children ?? [])
+    .map((span) => span.text)
+    .join("");
+
+  assert.match(text, /prefix/u);
+  assert.match(text, /suffix/u);
+});
+
+test("rejects non-native diagram content inside a rendered TL;DR wrapper", () => {
+  assert.throws(
+    () =>
+      convertRenderedHtmlToPortableText(
+        '<div class="my-6 rounded-r-md border-l-4"><span>TL;DR</span><div class="text-base"><svg viewBox="0 0 10 10"><rect x="0" y="0" width="10" height="10"></rect></svg></div></div>',
+        "tldr-nonnative-child",
+      ),
+    /TL;DR wrapper contains a non-native Portable Text block: diagram/u,
+  );
+});
+
 test("converts scenario cards and native media without legacy wrappers", () => {
   const result = convertRenderedHtmlToPortableText(
     '<div data-slot="card"><div><span>GIVEN</span><span>team exists</span></div><div><span>WHEN</span><span>open page</span></div><div><span>THEN</span><span>page loads</span></div></div><img data-emdash-media-key="asset-key" alt="court" />',
