@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import {
+  SegmentedPicker,
+  SegmentedPickerItem,
+} from "@/components/ui/segmented-picker";
+import {
   Table,
   TableBody,
   TableCell,
@@ -53,21 +57,20 @@ export const LineupOptions = ({
 
   return (
     <PanelContent>
-      <CardHeader className="w-full flex-row items-center justify-start">
+      <CardHeader className="w-full flex-row flex-wrap items-center justify-start">
         <CardTitle>陣容配置 {status.lineupIndex + 1}</CardTitle>
-        <div className="flex flex-1 flex-row items-center justify-end gap-2">
-          {lineups.map((_, index) => (
-            <Button
-              key={index}
-              variant="segmented"
-              size="icon"
-              aria-pressed={status.lineupIndex === index}
-              onClick={() => handlelineupIndexClick(index)}
-              className="text-lg"
-            >
-              {index + 1}
-            </Button>
-          ))}
+        <div className="flex flex-1 flex-row items-center justify-end">
+          <SegmentedPicker
+            label="陣容配置"
+            value={String(status.lineupIndex)}
+            onValueChange={(v) => handlelineupIndexClick(Number(v))}
+          >
+            {lineups.map((_, index) => (
+              <SegmentedPickerItem key={index} value={String(index)}>
+                {index + 1}
+              </SegmentedPickerItem>
+            ))}
+          </SegmentedPicker>
         </div>
       </CardHeader>
       <LineupError open={dialogOpen} setOpen={setDialogOpen} />

@@ -20,6 +20,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  SegmentedPicker,
+  SegmentedPickerItem,
+} from "@/components/ui/segmented-picker";
 import { useToast } from "@/components/ui/use-toast";
 import { useTeam, useTeamPlayers } from "@/hooks/use-data";
 import { apiClient } from "@/lib/api/api-client";
@@ -147,22 +151,20 @@ export const NewGameForm = ({
                 </CardTitle>
               </CardHeader>
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="flex-wrap">
                   陣容配置 {lineupIndex + 1}
                   <CardBtnGroup>
-                    {team?.lineups.map((_, index) => (
-                      <Button
-                        key={index}
-                        type="button"
-                        variant="segmented"
-                        size="icon"
-                        aria-pressed={lineupIndex === index}
-                        onClick={() => setLineupIndex(index)}
-                        className="text-[1.25rem]"
-                      >
-                        {index + 1}
-                      </Button>
-                    ))}
+                    <SegmentedPicker
+                      label="陣容配置"
+                      value={String(lineupIndex)}
+                      onValueChange={(v) => setLineupIndex(Number(v))}
+                    >
+                      {team?.lineups.map((_, index) => (
+                        <SegmentedPickerItem key={index} value={String(index)}>
+                          {index + 1}
+                        </SegmentedPickerItem>
+                      ))}
+                    </SegmentedPicker>
                   </CardBtnGroup>
                 </CardTitle>
               </CardHeader>

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 2,
+  "id": "0128",
+  "title": "Segmented choices use one SegmentedPicker track, and long ones use a pager",
+  "capabilities": ["platform/design-system/components"],
+  "context": "Decision 0121 drew every button at its real 44px touch size. Rows of separate segmented icon Buttons, such as the stats set switcher and the lineup switcher, then filled most of a card header and made the page feel crowded. HIG asks for a hit region of at least 44x44 pt, not a 44pt visual size, and iOS draws a segmented control as one grouped track.",
+  "decision": "Button sizes are `default`, `lg` and `icon` only, each 44px tall under `pointer: coarse` and 36, 40 and 36x36 under `pointer: fine`; `sm`, `xs` and `wide` stay removed. Size follows role: a page's primary action and every `type=\"submit\"` use `lg`, an in-section action and AlertDialog actions use `default`, and side-by-side buttons share one size with the variant showing importance. Floating header, back and close controls alone use the outline-free, circular Liquid Glass `glass` variant (translucent fill, blur, inner highlight; opaque under reduced transparency or more contrast), with RiArrowLeftSLine and RiCloseLine as their only glyphs. Every other button keeps its real size. The navigation FAB and the landing CTAButton keep their own sizes. A single-select, immediately applied choice of up to about five short options uses `SegmentedPicker`, named after SwiftUI's segmented Picker: one track 32px tall with equal 44x28 segments, each with a 44x44 tap area through `.touch-target`, a thumb that slides under the selected segment with `transform` and does not move under reduced motion, and radiogroup semantics. Content that can exceed that, such as statistics by set, uses a centred-title pager with previous and next text buttons instead. The Button `segmented` variant stays for other single-select uses.",
+  "alternatives": [
+    {
+      "option": "Draw each segmented icon Button at 36px",
+      "reason": "A row of separate filled tiles still outweighs the card title and crowds the header."
+    },
+    {
+      "option": "Draw each segmented icon Button at 32px",
+      "reason": "Tiles look scattered and need 12px gaps to keep 44px tap areas apart."
+    },
+    {
+      "option": "Scroll the segments horizontally",
+      "reason": "It clips the vertical tap area, hides options and breaks HIG's grouping of a segmented control."
+    },
+    {
+      "option": "Keep every button at its real 44px size",
+      "reason": "Dense segmented rows crowd card headers for no gain in tap area."
+    }
+  ],
+  "consequences": [
+    "The lineup switcher and the new-game lineup picker use SegmentedPicker; the stats set switcher moves to a pager.",
+    "Segments are equal width, so neighbours abut and their 44x44 tap areas do not overlap; no ancestor may clip the area `.touch-target` adds.",
+    "Card header rows that hold a picker wrap when the title and track cannot share a line.",
+    "Decision 0121 is superseded; its still-valid rules are restated here."
+  ],
+  "revisitTriggers": [
+    "A segmented choice needs more than five options or a second size."
+  ],
+  "originChange": "compact-segmented-icon"
+}

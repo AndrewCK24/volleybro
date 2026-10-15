@@ -35,10 +35,6 @@ const buttonVariants = cva(
         icon: "size-(--control-size) [&>svg]:size-7",
       },
     },
-    compoundVariants: [
-      // Deliberately a fixed 36px under every pointer; see ADR-0128.
-      { variant: "segmented", size: "icon", className: "touch-target size-9" },
-    ],
     defaultVariants: {
       variant: "default",
       size: "default",
