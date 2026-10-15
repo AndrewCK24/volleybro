@@ -5,11 +5,18 @@ import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
 import EmDashTypedBlock from "./emdash-typed-block.astro";
 import EmDashTldrBlock from "./emdash-tldr-block.astro";
 import EmDashDisclosureBlock from "./emdash-disclosure-block.astro";
+import EmDashAnnotatedDiff from "./emdash-annotated-diff.astro";
 
-const { blocks: value } = Astro.props as { blocks: ChangeBlock[] };
+const { blocks: value, hasProseLayout = true } = Astro.props as {
+  blocks: ChangeBlock[];
+  hasProseLayout?: boolean;
+};
 ---
 
-<div class="prose flex-1 emdash-portable-text" data-emdash-block-renderer="v2">
+<div
+  class:list={[hasProseLayout && "prose flex-1", "emdash-portable-text"]}
+  data-emdash-block-renderer="v2"
+>
   <PortableText
     value={value}
     components={{
@@ -26,6 +33,7 @@ const { blocks: value } = Astro.props as { blocks: ChangeBlock[] };
       type: {
         tldr: EmDashTldrBlock,
         disclosure: EmDashDisclosureBlock,
+        annotated_diff: EmDashAnnotatedDiff,
         decision_cards: EmDashTypedBlock,
         risk_table: EmDashTypedBlock,
         scenario: EmDashTypedBlock,

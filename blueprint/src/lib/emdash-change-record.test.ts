@@ -148,71 +148,149 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
-  it("accepts version 1 disclosures with a summary and native Portable Text", () => {
-    const parsed = blockSchema.safeParse({
-      _type: "disclosure",
-      _version: 1,
-      _key: "review-details",
-      summary: "Review details",
+  it("preserves nested typed blocks through full Change validation", () => {
+    const result = changeDataSchema.safeParse({
+      ...content,
       blocks: [
         {
-          _type: "block",
-          _key: "review-body",
-          id: "review-body-anchor",
-          children: [{ _type: "span", text: "Full review notes." }],
+          _type: "disclosure",
+          _version: 1,
+          _key: "review-details",
+          id: "review",
+          summary: "Review details",
+          blocks: [
+            {
+              _type: "block",
+              _key: "review-body",
+              id: "review-body-anchor",
+              children: [{ _type: "span", text: "Full review notes." }],
+            },
+            { _type: "risk_table", _version: 1, risks: "[]" },
+            {
+              _type: "diagram",
+              _version: 1,
+              title: "Review flow",
+              viewBox: { x: 0, y: 0, width: 10, height: 10 },
+              elements: [
+                {
+                  type: "rect",
+                  id: "review-node",
+                  x: 1,
+                  y: 1,
+                  width: 8,
+                  height: 8,
+                },
+              ],
+            },
+            {
+              _type: "disclosure",
+              _version: 1,
+              _key: "review-shard-1",
+              id: "review-s1",
+              summary: "Shard 1",
+              blocks: [
+                { _type: "decision_cards", _version: 1, records: "[]" },
+                {
+                  _type: "block",
+                  id: "shard-note",
+                  children: [{ _type: "span", text: "Shard review note." }],
+                },
+              ],
+            },
+          ],
         },
-        { _type: "code", code: "pnpm verify", language: "bash" },
       ],
     });
 
-    expect(parsed.success).toBe(true);
-    if (parsed.success && parsed.data._type === "disclosure") {
-      expect(parsed.data.summary).toBe("Review details");
-      expect(parsed.data.blocks[0]).toMatchObject({
-        _type: "block",
-        id: "review-body-anchor",
-      });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    const review = result.data.blocks[0];
+    expect(review._type).toBe("disclosure");
+    if (review._type !== "disclosure") return;
+    expect(review.id).toBe("review");
+    expect(review.summary).toBe("Review details");
+    expect(review.blocks.map((block) => block._type)).toEqual([
+      "block",
+      "risk_table",
+      "diagram",
+      "disclosure",
+    ]);
+    expect(review.blocks[0]).toMatchObject({ id: "review-body-anchor" });
+    expect(review.blocks[2]).toMatchObject({ title: "Review flow" });
+    const shard = review.blocks[3];
+    expect(shard._type).toBe("disclosure");
+    if (shard._type === "disclosure") {
+      expect(shard.id).toBe("review-s1");
+      expect(shard.blocks.map((block) => block._type)).toEqual([
+        "decision_cards",
+        "block",
+      ]);
+      expect(shard.blocks[1]).toMatchObject({ id: "shard-note" });
     }
   });
 
-  it("rejects empty summaries, nested typed blocks, raw HTML, and other versions", () => {
+  it("rejects unknown, raw, unsafe-link, and unsupported disclosure content", () => {
     const disclosure = {
       _type: "disclosure",
       _version: 1,
       summary: "Review details",
-      blocks: [
+      blocks: [{ _type: "block", children: [{ _type: "span", text: "OK" }] }],
+    };
+    const invalidBlocks = [
+      [{ _type: "unknown", payload: "unsafe" }],
+      [{ _type: "html", html: "<script>unsafe()</script>" }],
+      [
         {
           _type: "block",
-          children: [{ _type: "span", text: "Full review notes." }],
+          children: [{ _type: "span", text: "unsafe", marks: ["bad-link"] }],
+          markDefs: [
+            { _key: "bad-link", _type: "link", href: "javascript:alert(1)" },
+          ],
         },
       ],
-    };
+    ];
 
-    expect(
-      blockSchema.safeParse({ ...disclosure, summary: "  " }).success,
-    ).toBe(false);
-    expect(
-      blockSchema.safeParse({
-        ...disclosure,
-        blocks: [
-          {
-            _type: "disclosure",
-            _version: 1,
-            summary: "Nested review details",
-            blocks: [],
-          },
-        ],
-      }).success,
-    ).toBe(false);
-    expect(
-      blockSchema.safeParse({
-        ...disclosure,
-        blocks: [{ _type: "html", html: "<strong>unsafe</strong>" }],
-      }).success,
-    ).toBe(false);
+    for (const blocks of invalidBlocks) {
+      expect(blockSchema.safeParse({ ...disclosure, blocks }).success).toBe(
+        false,
+      );
+    }
     expect(blockSchema.safeParse({ ...disclosure, _version: 2 }).success).toBe(
       false,
     );
+    expect(
+      blockSchema.safeParse({ ...disclosure, id: "bad anchor" }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({ ...disclosure, summary: "  " }).success,
+    ).toBe(false);
+  });
+
+  it("rejects disclosure nesting beyond the supported maximum", () => {
+    let tooDeep: unknown = {
+      _type: "disclosure",
+      _version: 1,
+      summary: "Level 1",
+      blocks: [],
+    };
+    for (let level = 2; level <= 9; level += 1) {
+      tooDeep = {
+        _type: "disclosure",
+        _version: 1,
+        summary: `Level ${level}`,
+        blocks: [tooDeep],
+      };
+    }
+
+    const parsed = blockSchema.safeParse(tooDeep);
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(
+        parsed.error.issues.some((issue) =>
+          issue.message.includes("cannot be nested more than 8 levels"),
+        ),
+      ).toBe(true);
+    }
   });
 
   it("accepts canonical Portable Text and typed blocks in one ordered stream", () => {
@@ -483,5 +561,47 @@ describe("EmDash Change schema", () => {
         ],
       }),
     ).resolves.not.toBe(acceptedHash);
+  });
+
+  it("accepts annotated diff blocks and preserves their typed payload", () => {
+    const diff = {
+      _type: "annotated_diff",
+      _version: 1,
+      _key: "diff-1",
+      language: "ts",
+      lines: [
+        { kind: "context", text: "const ready = false;" },
+        { kind: "remove", text: "const ready = false;" },
+        { kind: "add", text: "const ready = true;" },
+      ],
+    };
+    const parsed = blockSchema.safeParse(diff);
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data).toEqual(diff);
+  });
+
+  it("rejects invalid annotated diff kinds, versions, and raw HTML fields", () => {
+    const diff = {
+      _type: "annotated_diff",
+      _version: 1,
+      lines: [{ kind: "context", text: "safe" }],
+    };
+    for (const invalid of [
+      { ...diff, lines: [{ kind: "script", text: "unsafe" }] },
+      { ...diff, _version: 2 },
+      { ...diff, html: "<script>unsafe()</script>" },
+    ]) {
+      expect(blockSchema.safeParse(invalid).success).toBe(false);
+    }
+  });
+
+  it("rejects a 1000-level unknown container without throwing", () => {
+    let malformed: unknown = { _type: "block", children: [] };
+    for (let level = 0; level < 1000; level += 1) {
+      malformed = { _type: "unknown-container", blocks: [malformed] };
+    }
+    expect(() => {
+      expect(blockSchema.safeParse(malformed).success).toBe(false);
+    }).not.toThrow();
   });
 });

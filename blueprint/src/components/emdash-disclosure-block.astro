@@ -1,31 +1,19 @@
 ---
-import { PortableText } from "emdash/ui";
 import type { DisclosureBlock } from "../lib/emdash-change-record";
-import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
+import EmDashChangeBlocks from "./emdash-change-blocks.astro";
 
 const { node } = Astro.props as { node: DisclosureBlock };
 ---
 
-<details class="emdash-disclosure rounded-md border border-border bg-card px-4 py-3">
+<details
+  id={node.id}
+  class="emdash-disclosure rounded-md border border-border bg-card px-4 py-3"
+>
   <summary class="cursor-pointer font-medium text-foreground">
     {node.summary}
   </summary>
   <div class="pt-3 text-foreground">
-    <PortableText
-      value={node.blocks}
-      components={{
-        block: {
-          normal: EmDashPortableTextBlock,
-          h1: EmDashPortableTextBlock,
-          h2: EmDashPortableTextBlock,
-          h3: EmDashPortableTextBlock,
-          h4: EmDashPortableTextBlock,
-          h5: EmDashPortableTextBlock,
-          h6: EmDashPortableTextBlock,
-          blockquote: EmDashPortableTextBlock,
-        },
-      }}
-    />
+    <EmDashChangeBlocks blocks={node.blocks} hasProseLayout={false} />
   </div>
 </details>
 

@@ -1,0 +1,18 @@
+---
+import type { AnnotatedDiffBlock } from "../lib/annotated-diff-block";
+
+const { node } = Astro.props as { node: AnnotatedDiffBlock };
+const glyph = { context: " ", add: "+", remove: "−" } as const;
+---
+
+<figure class="not-prose my-6 overflow-x-auto rounded-md border border-border bg-muted/30" aria-label="Annotated code diff">
+  <figcaption class="sr-only">Code diff{node.language ? ` (${node.language})` : ""}</figcaption>
+  <pre class="m-0 min-w-max p-4 text-sm leading-6"><code>{node.lines.map((line) => (
+    <span class:list={[
+      "block whitespace-pre",
+      line.kind === "add" && "bg-success/10 text-success-text",
+      line.kind === "remove" && "bg-error/10 text-error-text",
+      line.kind === "context" && "text-foreground",
+    ]}><span aria-hidden="true" class="inline-block w-5 select-none text-center">{glyph[line.kind]}</span>{line.kind !== "context" && <span class="sr-only">{line.kind === "add" ? "Added line: " : "Removed line: "}</span>}<span>{line.text}</span></span>
+  ))}</code></pre>
+</figure>

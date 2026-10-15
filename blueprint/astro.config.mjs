@@ -45,6 +45,7 @@ const astroConfig = {
     react(),
     mdx({ extendMarkdownConfig: true, syntaxHighlight: false }),
     emdash({
+      toolbar: false,
       database: d1({ binding: "BLUEPRINT_DB" }),
       storage: r2({ binding: "BLUEPRINT_MEDIA" }),
       plugins: [
