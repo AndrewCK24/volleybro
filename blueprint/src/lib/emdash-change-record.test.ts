@@ -2,6 +2,7 @@
 
 import {
   acceptedContentHash,
+  acceptedContentHashFromValidatedChange,
   blockSchema,
   changeDataSchema,
 } from "./emdash-change-record";
@@ -473,6 +474,17 @@ describe("EmDash Change schema", () => {
     await expect(acceptedContentHash(unsafe)).rejects.toThrow(
       "Change content does not match",
     );
+  });
+
+  it("preserves the canonical digest for validated Change data", async () => {
+    const validated = changeDataSchema.parse(content);
+    const expected =
+      "657805508a9f7d4d8c6a1f9165ed446ca933d65c451db491ca8d56304224b8d2";
+
+    await expect(acceptedContentHash(content)).resolves.toBe(expected);
+    await expect(
+      acceptedContentHashFromValidatedChange(validated),
+    ).resolves.toBe(expected);
   });
 
   it("hashes accepted fields in a stable order and excludes CMS metadata", async () => {

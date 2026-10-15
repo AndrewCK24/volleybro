@@ -579,28 +579,35 @@ export function canonicalizeContentValue(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 
+async function hashValidatedAcceptedContent(
+  value: z.infer<typeof acceptedContentSchema>,
+): Promise<string> {
+  const content = acceptedHashProjection(value);
+  const bytes = new TextEncoder().encode(canonicalizeContentValue(content));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function acceptedContentHashFromValidatedChange(
+  value: ChangeData,
+): Promise<string> {
+  return hashValidatedAcceptedContent({
+    title: value.title,
+    description: value.description ?? undefined,
+    linear_issue: value.linear_issue,
+    blocks: value.blocks,
+  });
+}
+
 export async function acceptedContentHash(value: unknown): Promise<string> {
   const stored = changeDataSchema.safeParse(value);
   if (!stored.success)
     throw new Error(
       "Change content does not match the accepted EmDash schema.",
     );
-  const parsed = acceptedContentSchema.safeParse({
-    title: stored.data.title,
-    description: stored.data.description ?? undefined,
-    linear_issue: stored.data.linear_issue,
-    blocks: stored.data.blocks,
-  });
-  if (!parsed.success)
-    throw new Error(
-      "Change content does not match the accepted EmDash schema.",
-    );
-  const content = acceptedHashProjection(parsed.data);
-  const bytes = new TextEncoder().encode(canonicalizeContentValue(content));
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
+  return acceptedContentHashFromValidatedChange(stored.data);
 }
 
 export function parseJsonField<T>(

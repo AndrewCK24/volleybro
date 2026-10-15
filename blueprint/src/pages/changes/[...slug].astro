@@ -4,7 +4,10 @@ import { Docs } from "../../components/docs";
 import EmDashChangeBlocks from "../../components/emdash-change-blocks.astro";
 import { ChangeHeader } from "../../components/change-header";
 import Layout from "../../components/layout.astro";
-import { acceptedContentHash, changeDataSchema } from "../../lib/emdash-change-record";
+import {
+  acceptedContentHashFromValidatedChange,
+  changeDataSchema,
+} from "../../lib/emdash-change-record";
 import { createChangesBreadcrumbTree, createChangesTree } from "../../lib/changes-tree";
 import { listPublishedChangeSummaries, summarizeChange } from "../../lib/github-change-data";
 import { createBlueprintSources } from "../../lib/source";
@@ -40,7 +43,10 @@ const tree = createChangesBreadcrumbTree(changesTree);
 const revision = result.isPreview && typeof change?.draftRevisionId === "string"
   ? change.draftRevisionId
   : undefined;
-const contentHash = result.isPreview && change ? await acceptedContentHash(change) : undefined;
+const contentHash =
+  result.isPreview && change
+    ? await acceptedContentHashFromValidatedChange(change)
+    : undefined;
 ---
 
 <Layout>
