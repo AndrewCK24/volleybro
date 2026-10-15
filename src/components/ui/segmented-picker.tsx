@@ -23,6 +23,7 @@ const SegmentedPicker = ({
   children,
   className,
 }: SegmentedPickerProps) => {
+  // shortcut: items must be direct children (a wrapper hides the thumb); read selection from context if a caller needs wrappers.
   const index = React.Children.toArray(children).findIndex(
     (child) =>
       React.isValidElement<{ value?: string }>(child) &&
@@ -61,7 +62,7 @@ const SegmentedPickerItem = ({
   <RadioGroupPrimitive.Item
     data-slot="SegmentedPickerItem"
     className={cn(
-      `touch-target relative z-10 inline-flex ${SEGMENT_BOX} items-center justify-center text-sm font-medium text-foreground transition-colors duration-200 ease-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden data-[state=checked]:text-primary-foreground`,
+      `touch-target relative z-10 inline-flex ${SEGMENT_BOX} items-center justify-center text-sm font-medium text-foreground transition-colors duration-200 ease-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden data-[state=checked]:text-primary-foreground motion-reduce:transition-none`,
       className,
     )}
     {...props}
