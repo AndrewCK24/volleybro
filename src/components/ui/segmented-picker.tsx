@@ -5,6 +5,9 @@ import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 
 import { cn } from "@/lib/utils";
 
+// The thumb must match a segment exactly, so both share one box.
+const SEGMENT_BOX = "h-7 w-11 rounded-md";
+
 interface SegmentedPickerProps {
   label: string;
   value: string;
@@ -13,7 +16,6 @@ interface SegmentedPickerProps {
   className?: string;
 }
 
-// One track, equal 44x28 segments; the thumb slides under the segment matching `value`.
 const SegmentedPicker = ({
   label,
   value,
@@ -43,7 +45,7 @@ const SegmentedPicker = ({
       {index >= 0 && (
         <span
           aria-hidden
-          className="absolute top-0.5 left-0.5 h-7 w-11 rounded-md bg-primary shadow-sm transition-transform duration-200 ease-out motion-reduce:transition-none"
+          className={`absolute top-0.5 left-0.5 ${SEGMENT_BOX} bg-primary shadow-sm transition-transform duration-200 ease-out motion-reduce:transition-none`}
           style={{ transform: `translateX(${index * 100}%)` }}
         />
       )}
@@ -59,7 +61,7 @@ const SegmentedPickerItem = ({
   <RadioGroupPrimitive.Item
     data-slot="SegmentedPickerItem"
     className={cn(
-      "touch-target relative z-10 inline-flex h-7 w-11 items-center justify-center rounded-md text-sm font-medium text-foreground transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden data-[state=checked]:text-primary-foreground",
+      `touch-target relative z-10 inline-flex ${SEGMENT_BOX} items-center justify-center text-sm font-medium text-foreground transition-colors duration-200 ease-out focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden data-[state=checked]:text-primary-foreground`,
       className,
     )}
     {...props}
