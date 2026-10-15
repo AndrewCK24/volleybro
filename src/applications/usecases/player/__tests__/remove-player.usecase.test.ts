@@ -1,12 +1,10 @@
 import {
   createInvitedPlayer,
   createPlayer,
-  createProfile,
   createUnlinkedPlayer,
 } from "@test/support/fixtures/entities";
 import {
   createMockPlayerRepository,
-  createMockProfileRepository,
   createMockTeamRepository,
 } from "@test/support/doubles/repositories";
 import type { IRemovePlayerUseCase } from "@/applications/usecases/player/remove-player.usecase";
@@ -25,7 +23,6 @@ describe("RemovePlayerUseCase", () => {
   let useCase: IRemovePlayerUseCase;
   let mockPlayerRepository: ReturnType<typeof createMockPlayerRepository>;
   let mockTeamRepository: ReturnType<typeof createMockTeamRepository>;
-  let mockProfileRepository: ReturnType<typeof createMockProfileRepository>;
 
   const caller = "user-actor";
 
@@ -63,15 +60,9 @@ describe("RemovePlayerUseCase", () => {
   beforeEach(() => {
     mockPlayerRepository = createMockPlayerRepository();
     mockTeamRepository = createMockTeamRepository();
-    mockProfileRepository = createMockProfileRepository();
-    useCase = new RemovePlayerUseCase(
-      mockPlayerRepository,
-      mockTeamRepository,
-      mockProfileRepository,
-    );
+    useCase = new RemovePlayerUseCase(mockPlayerRepository, mockTeamRepository);
     mockPlayerRepository.delete.mockResolvedValue(true);
     mockTeamRepository.removePlayerFromLineups.mockResolvedValue();
-    mockProfileRepository.findByUserId.mockResolvedValue(null);
   });
 
   describe("targets an admin may delete", () => {
@@ -162,45 +153,5 @@ describe("RemovePlayerUseCase", () => {
     mockPlayerRepository.delete.mockResolvedValue(false);
 
     await expect(remove()).rejects.toBeInstanceOf(UnexpectedError);
-  });
-
-  describe("the deleted member's default team", () => {
-    beforeEach(() => {
-      mockPlayerRepository.findByTeamIdAndUserId.mockResolvedValue(
-        actor(PlayerRole.ADMIN),
-      );
-      mockPlayerRepository.findById.mockResolvedValue(targets.member);
-    });
-
-    it("is cleared when it points at this team", async () => {
-      mockProfileRepository.findByUserId.mockResolvedValue(
-        createProfile({ userId: "user-target", activeTeamId: "team-1" }),
-      );
-
-      await remove();
-
-      expect(mockProfileRepository.updateActiveTeamId).toHaveBeenCalledWith(
-        "user-target",
-        null,
-      );
-    });
-
-    it("is left alone when it points at another team", async () => {
-      mockProfileRepository.findByUserId.mockResolvedValue(
-        createProfile({ userId: "user-target", activeTeamId: "team-2" }),
-      );
-
-      await remove();
-
-      expect(mockProfileRepository.updateActiveTeamId).not.toHaveBeenCalled();
-    });
-
-    it("is not read for a player who never joined", async () => {
-      mockPlayerRepository.findById.mockResolvedValue(targets.invitee);
-
-      await remove();
-
-      expect(mockProfileRepository.findByUserId).not.toHaveBeenCalled();
-    });
   });
 });

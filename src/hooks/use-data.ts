@@ -1,5 +1,4 @@
 import { PlayerStatus } from "@/entities/player";
-import type { Profile } from "@/entities/profile";
 import type { User } from "@/entities/user";
 import { apiClient, ApiClientError } from "@/lib/api/api-client";
 import { mergePendingEntries } from "@/lib/features/game/pending-writes";
@@ -17,7 +16,7 @@ import {
   type PreferenceAction,
   type PreferenceState,
 } from "@/lib/features/team/active-team-preference";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import useSWR, { useSWRConfig, type SWRConfiguration } from "swr";
 import useSWRInfinite from "swr/infinite";
 
@@ -56,15 +55,6 @@ export const useUser = () => {
   >("/api/users", fetcher, SWR_CONFIG.DEFAULT);
 
   return { user: data, error, isLoading, isValidating, mutate };
-};
-
-export const useProfile = () => {
-  const { data, error, isLoading, isValidating, mutate } = useSWR<
-    Profile,
-    ApiClientError
-  >("/api/profiles", fetcher, SWR_CONFIG.DEFAULT);
-
-  return { profile: data, error, isLoading, isValidating, mutate };
 };
 
 export const useUserPlayers = (userId: string | undefined) => {
@@ -138,12 +128,6 @@ export const useActiveTeamId = () => {
     error: userError,
     mutate: mutateUser,
   } = useUser();
-  const {
-    profile,
-    isLoading: profileLoading,
-    error: profileError,
-    mutate: mutateProfile,
-  } = useProfile();
   const { players, isLoading: playersLoading } = useUserPlayers(user?.id);
   const { preference } = useActiveTeamPreference();
   const { team: preferredTeam, error: preferredTeamError } = usePreferredTeam(
@@ -168,30 +152,24 @@ export const useActiveTeamId = () => {
   };
   const { teamId, verification } = resolveActiveTeam({
     ...preferenceState,
-    profileActiveTeamId: profile?.activeTeamId,
     joinedTeamIds,
   });
-  const { team } = useTeam(teamId ?? "");
+  const { team, error: teamError } = useTeam(teamId ?? "");
   usePersistActiveTeam(
     decidePreferenceAction({
       ...preferenceState,
       teamId,
-      loadedTeamId: team ? teamId : undefined,
+      // SWR keeps the last data after a refusal; storing that team would be refused again, forever.
+      loadedTeamId: team && !isTeamRefusal(teamError) ? teamId : undefined,
     }),
   );
   usePreloadTeamPlayers(preference?.teamId);
 
   const isLoading =
     verification === "pending" ||
-    (verification === "unused" &&
-      (userLoading || profileLoading || playersLoading));
-  const error = userError ?? profileError;
-  const mutate = useCallback(
-    () => Promise.all([mutateUser(), mutateProfile()]),
-    [mutateUser, mutateProfile],
-  );
+    (verification === "unused" && (userLoading || playersLoading));
 
-  return { teamId, isLoading, error, mutate };
+  return { teamId, isLoading, error: userError, mutate: mutateUser };
 };
 
 export const useTeam = (teamId: string) => {

@@ -35,9 +35,9 @@ Use ONLY these `###` headings. No others.
 
 ## Domain Sub-headings (`####`)
 
-Use `####` under a type heading to group entries by affected area when they span multiple domains. Omit if all entries share one scope.
+Put every entry under a `####` domain inside its type heading, even when the changeset has a single entry or a single domain. A release merges many changesets into one version block, and the postprocess merges matching `###` and `####` headings but never adds a missing one, so a changeset without domains leaves its entries ungrouped beside other changesets' groups.
 
-**With domains:**
+**Example:**
 
 ```markdown
 ### Changed
@@ -49,14 +49,6 @@ Use `####` under a type heading to group entries by affected area when they span
 #### UI
 
 - Update team page layout to support mobile viewports
-```
-
-**Without domains (single scope):**
-
-```markdown
-### Fixed
-
-- Fix duplicate rally numbers after a substitution event
 ```
 
 **Common domain names:**

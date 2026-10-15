@@ -104,9 +104,7 @@ Select the bump type (patch/minor/major), then write the changeset body in Keep-
 - Migrate package manager from npm to pnpm
 ```
 
-Use only these `###` headings: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`. Add `####` domain sub-headings (e.g. `Team`, `Game`, `CI`, `Infrastructure`) when entries span multiple areas.
-
-Omit internal refactors, test additions, linting fixes, and dep upgrades with no user-visible effect. Always include toolchain changes that affect contributor setup.
+Headings, domains, bullet style and what to omit follow [`.claude/skills/writing-changesets/body-format.md`](.claude/skills/writing-changesets/body-format.md).
 
 Commit the generated `.changeset/*.md` file along with your changes. PRs that omit a changeset when required will not trigger an automated version PR.
 

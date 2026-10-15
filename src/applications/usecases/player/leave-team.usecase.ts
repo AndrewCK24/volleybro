@@ -1,7 +1,5 @@
 import type { IPlayerRepository } from "@/applications/repositories/player.repository.interface";
-import type { IProfileRepository } from "@/applications/repositories/profile.repository.interface";
 import type { ITeamRepository } from "@/applications/repositories/team.repository.interface";
-import { clearActiveTeam } from "@/applications/usecases/player/membership";
 import {
   AuthorizationError,
   NotFoundError,
@@ -34,8 +32,6 @@ export class LeaveTeamUseCase implements ILeaveTeamUseCase {
     private playerRepository: IPlayerRepository,
     @inject(TYPES.TeamRepository)
     private teamRepository: ITeamRepository,
-    @inject(TYPES.ProfileRepository)
-    private profileRepository: IProfileRepository,
   ) {}
 
   async execute({
@@ -84,8 +80,6 @@ export class LeaveTeamUseCase implements ILeaveTeamUseCase {
         "Failed to leave team",
       );
     }
-
-    await clearActiveTeam(this.profileRepository, userId, player.teamId);
 
     return { success: true };
   }

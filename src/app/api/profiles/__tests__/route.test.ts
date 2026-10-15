@@ -33,12 +33,12 @@ describe("PATCH /api/profiles", () => {
     ({ PATCH } = await import("../route"));
   });
 
-  it("returns 400 for a body with an undeclared field", async () => {
+  it.each([
+    ["an undeclared field", { isAdmin: true }],
+    ["the removed activeTeamId", { activeTeamId: TEAM_ID }],
+  ])("returns 400 for a body with %s", async (_, payload) => {
     const consoleSpy = silenceConsoleError();
-    const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: TEAM_ID,
-      isAdmin: true,
-    });
+    const req = routeRequest("http://localhost/api/profiles", "PATCH", payload);
 
     const res = await PATCH(req as never);
     const body = (await res.json()) as { code: string };
@@ -47,39 +47,5 @@ describe("PATCH /api/profiles", () => {
     expect(body.code).toBe("VALIDATION");
     expect(mockUpdateProfileController).not.toHaveBeenCalled();
     consoleSpy.mockRestore();
-  });
-
-  it("returns 400 for an activeTeamId that is not an ObjectId", async () => {
-    const consoleSpy = silenceConsoleError();
-    const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: "team-1",
-    });
-
-    const res = await PATCH(req as never);
-    const body = (await res.json()) as { code: string };
-
-    expect(res.status).toBe(400);
-    expect(body.code).toBe("VALIDATION");
-    expect(mockUpdateProfileController).not.toHaveBeenCalled();
-    consoleSpy.mockRestore();
-  });
-
-  // The exact body team-switcher sends (src/components/team/team-switcher.tsx):
-  it("returns 200 for the payload team-switcher actually sends", async () => {
-    const profile = { userId: "user-1", activeTeamId: TEAM_ID };
-    mockUpdateProfileController.mockResolvedValue(profile);
-    const req = routeRequest("http://localhost/api/profiles", "PATCH", {
-      activeTeamId: TEAM_ID,
-    });
-
-    const res = await PATCH(req as never);
-    const body = await res.json();
-
-    expect(res.status).toBe(200);
-    expect(body).toEqual(profile);
-    expect(mockUpdateProfileController).toHaveBeenCalledWith({
-      userId: SESSION.user.id,
-      updates: { activeTeamId: TEAM_ID },
-    });
   });
 });

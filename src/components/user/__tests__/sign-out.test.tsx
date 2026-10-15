@@ -5,11 +5,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 
-import {
-  createProfile,
-  createTeam,
-  createUser,
-} from "@test/support/fixtures/entities";
+import { createTeam, createUser } from "@test/support/fixtures/entities";
 import { deferred } from "@test/support/gates";
 import { answerTeamRequests } from "@test/support/msw/team-handlers";
 import { server } from "@test/support/msw/server";
@@ -70,7 +66,7 @@ describe("User sign-out", () => {
   it("S8: the preference is not saved again while sign-out is still in progress, next to a consumer of the active team", async () => {
     seedActiveTeamPreference("user-1", "team-1");
     answerTeamRequests({
-      profile: createProfile({ activeTeamId: "team-2" }),
+      joinedTeamIds: ["team-2", "team-1"],
       teams: [createTeam({ id: "team-1" }), createTeam({ id: "team-2" })],
     });
     const signOut = deferred();

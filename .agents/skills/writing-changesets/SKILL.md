@@ -65,7 +65,7 @@ When writing the body at Archive, pull from the Change's own artifacts:
 | "I'll add an Internal Changes section for completeness"           | Omit entirely. There is no Internal Changes type.                             |
 | "Minor Changes / Bug Fixes are clearer headings"                  | Use the exact headings in `body-format.md`. No others.                        |
 | "The bug fix is more informative with the root cause"             | Describe the observable fix, not the implementation.                          |
-| "Skipping `####` domains is fine for a short list"                | Add domains whenever entries span multiple areas, regardless of count.        |
+| "Skipping `####` domains is fine for a short list or one scope"   | Every entry sits under a `####` domain; the release merges changesets.        |
 | "The dep upgrade is worth mentioning even with no visible change" | Only include if it changes observable behavior or removes deprecated options. |
 | "This change is too small for a changeset"                        | If it has user-visible impact, it needs a changeset. Size doesn't matter.     |
 | "I'll create the changeset later"                                 | Create at archive time. Context is freshest then.                             |

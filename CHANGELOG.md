@@ -1,5 +1,26 @@
 # VolleyBro CHANGELOG
 
+## [0.18.0](https://github.com/andrewck24/volleybro/compare/v0.17.1...v0.18.0) 2026-10-14
+
+### Changed
+
+#### Team
+
+- Show a newly created team as the active team on the device that created it.
+- Open a device with no saved active team on the user's first joined team, instead of the team the server last remembered.
+
+### Removed
+
+#### Team
+
+- The server no longer stores the user's active team; each device keeps its own.
+
+### Fixed
+
+#### Team
+
+- Stop the app freezing when the active team refuses a refresh while the team list still shows it first.
+
 ## [0.17.1](https://github.com/andrewck24/volleybro/compare/v0.17.0...v0.17.1) 2026-10-14
 
 ### Fixed

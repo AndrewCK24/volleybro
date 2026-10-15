@@ -1,17 +1,12 @@
 import type { IPlayerRepository } from "@/applications/repositories/player.repository.interface";
-import type { IProfileRepository } from "@/applications/repositories/profile.repository.interface";
 import type { ITeamRepository } from "@/applications/repositories/team.repository.interface";
-import {
-  authorizeManagePlayer,
-  clearActiveTeam,
-} from "@/applications/usecases/player/membership";
+import { authorizeManagePlayer } from "@/applications/usecases/player/membership";
 import {
   NotFoundError,
   UnexpectedError,
   CommonReason,
   PlayerReason,
 } from "@/entities/errors";
-import { isTeamMember } from "@/entities/player";
 import { TYPES } from "@/infrastructure/di/types";
 import { inject, injectable } from "inversify";
 
@@ -31,8 +26,6 @@ export class RemovePlayerUseCase implements IRemovePlayerUseCase {
     private playerRepository: IPlayerRepository,
     @inject(TYPES.TeamRepository)
     private teamRepository: ITeamRepository,
-    @inject(TYPES.ProfileRepository)
-    private profileRepository: IProfileRepository,
   ) {}
 
   async execute({
@@ -69,13 +62,6 @@ export class RemovePlayerUseCase implements IRemovePlayerUseCase {
         "Failed to delete player",
       );
     }
-
-    if (isTeamMember(player))
-      await clearActiveTeam(
-        this.profileRepository,
-        player.userId,
-        player.teamId,
-      );
 
     return { success: true };
   }

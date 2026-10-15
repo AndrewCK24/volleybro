@@ -6,8 +6,4 @@ export interface IProfileRepository {
     data: Omit<Profile, "id" | "createdAt" | "updatedAt">,
   ): Promise<Profile>;
   update(id: string, updates: Partial<Profile>): Promise<Profile>;
-  updateActiveTeamId(
-    userId: string,
-    activeTeamId: string | null,
-  ): Promise<Profile | null>;
 }

@@ -7,11 +7,7 @@ import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { http, HttpResponse } from "msw";
 
-import {
-  createProfile,
-  createTeam,
-  createUser,
-} from "@test/support/fixtures/entities";
+import { createTeam, createUser } from "@test/support/fixtures/entities";
 import { deferred } from "@test/support/gates";
 import { answerTeamRequests } from "@test/support/msw/team-handlers";
 import { server } from "@test/support/msw/server";
@@ -68,11 +64,10 @@ beforeEach(() => localStorage.clear());
 afterEach(() => jest.restoreAllMocks());
 
 describe("cold start with an active team preference", () => {
-  it("S1: requests the preferred team without waiting for the user, profile and players, and shows nothing of it before it answers", async () => {
+  it("S1: requests the preferred team without waiting for the user and players, and shows nothing of it before it answers", async () => {
     seedActiveTeamPreference("user-1", "team-1");
     const gates = {
       user: deferred(),
-      profile: deferred(),
       players: deferred(),
       team: deferred(),
     };
@@ -80,7 +75,6 @@ describe("cold start with an active team preference", () => {
       teams: [createTeam({ id: "team-1", name: "真實隊" })],
       gates: {
         user: gates.user.promise,
-        profile: gates.profile.promise,
         players: gates.players.promise,
         team: gates.team.promise,
       },
@@ -90,7 +84,6 @@ describe("cold start with an active team preference", () => {
 
     await waitFor(() => expect(arrived).toContain("/api/teams/team-1"));
     expect(answered).not.toContain("/api/users");
-    expect(answered).not.toContain("/api/profiles");
     expect(answered).not.toContain("/api/users/user-1/players");
     expect(screen.queryByText("真實隊")).not.toBeInTheDocument();
 
@@ -122,7 +115,6 @@ describe("cold start with an active team preference", () => {
   it("S3: a refused preferred team is discarded and the full resolution's team is stored", async () => {
     seedActiveTeamPreference("user-1", "team-gone");
     answerTeamRequests({
-      profile: createProfile({ activeTeamId: "team-2" }),
       teams: [createTeam({ id: "team-2" })],
     });
 
@@ -140,7 +132,6 @@ describe("cold start with an active team preference", () => {
     seedActiveTeamPreference("user-A", "team-A");
     answerTeamRequests({
       user: createUser({ id: "user-B" }),
-      profile: createProfile({ userId: "user-B", activeTeamId: "team-B" }),
       teams: [
         createTeam({ id: "team-A" }),
         createTeam({ id: "team-B", name: "B隊" }),
@@ -213,7 +204,7 @@ describe("cold start with an active team preference", () => {
 it("S3: a failure to ask the preferred team leaves the stored preference as it was while the fallback team is shown", async () => {
   seedActiveTeamPreference("user-1", "team-1");
   answerTeamRequests({
-    profile: createProfile({ activeTeamId: "team-2" }),
+    joinedTeamIds: ["team-2", "team-1"],
     teams: [
       createTeam({ id: "team-1" }),
       createTeam({ id: "team-2", name: "乙隊" }),
@@ -231,11 +222,13 @@ it("S3: a failure to ask the preferred team leaves the stored preference as it w
 });
 
 describe("a verified preference when its team is revalidated", () => {
-  const verifyPreferredTeam = async () => {
+  const verifyPreferredTeam = async (
+    joinedTeamIds: string[] = ["team-2", "team-1"],
+  ) => {
     seedActiveTeamPreference("user-1", "team-1");
     answerTeamRequests({
-      profile: createProfile({ activeTeamId: "team-2" }),
       teams: [createTeam({ id: "team-1" }), createTeam({ id: "team-2" })],
+      joinedTeamIds,
     });
     renderColdStart(<RevalidateTeam teamId="team-1" />);
     await waitFor(() => expect(activeTeam()).toHaveTextContent("team-1"));
@@ -253,6 +246,25 @@ describe("a verified preference when its team is revalidated", () => {
 
     expect(activeTeam()).toHaveTextContent("team-1");
     expect(storedActiveTeamPreference()).toMatchObject({ teamId: "team-1" });
+  });
+
+  it("S3 (revalidation): does not store a refused team again while the players list still lists it first", async () => {
+    await verifyPreferredTeam(["team-1", "team-2"]);
+    server.use(
+      http.get("/api/teams/team-1", () =>
+        HttpResponse.json(
+          { code: "AUTHORIZATION", reason: "NOT_A_MEMBER" },
+          { status: 403 },
+        ),
+      ),
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "revalidate" }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("team error")).toHaveTextContent("failed"),
+    );
+    expect(storedActiveTeamPreference()).toBeNull();
   });
 
   it("S3 (revalidation): discards the preference when the revalidation is refused", async () => {

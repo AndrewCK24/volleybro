@@ -1,5 +1,4 @@
 import type { IPlayerRepository } from "@/applications/repositories/player.repository.interface";
-import type { IProfileRepository } from "@/applications/repositories/profile.repository.interface";
 import type { ITeamRepository } from "@/applications/repositories/team.repository.interface";
 import { PlayerRole, PlayerStatus } from "@/entities/player";
 import type { Team } from "@/entities/team";
@@ -29,8 +28,6 @@ export class CreateTeamUseCase implements ICreateTeamUseCase {
     private teamRepository: ITeamRepository,
     @inject(TYPES.PlayerRepository)
     private playerRepository: IPlayerRepository,
-    @inject(TYPES.ProfileRepository)
-    private profileRepository: IProfileRepository,
   ) {}
 
   async execute({
@@ -61,8 +58,6 @@ export class CreateTeamUseCase implements ICreateTeamUseCase {
       teamId: team.id,
       userId,
     });
-
-    await this.profileRepository.updateActiveTeamId(userId, team.id);
 
     return team;
   }
