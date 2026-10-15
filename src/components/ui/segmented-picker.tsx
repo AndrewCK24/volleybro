@@ -36,7 +36,7 @@ const SegmentedPicker = ({
       value={value}
       onValueChange={onValueChange}
       className={cn(
-        "relative inline-flex rounded-lg bg-secondary p-0.5",
+        "relative inline-flex rounded-lg bg-background p-0.5",
         className,
       )}
     >
@@ -59,7 +59,7 @@ const SegmentedPickerItem = ({
   <RadioGroupPrimitive.Item
     data-slot="SegmentedPickerItem"
     className={cn(
-      "touch-target relative z-10 inline-flex h-7 w-11 items-center justify-center rounded-md text-sm font-medium text-secondary-foreground transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden data-[state=checked]:text-primary-foreground",
+      "touch-target relative z-10 inline-flex h-7 w-11 items-center justify-center rounded-md text-sm font-medium text-foreground transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden data-[state=checked]:text-primary-foreground",
       className,
     )}
     {...props}

@@ -58,7 +58,9 @@ export const LineupOptions = ({
   return (
     <PanelContent>
       <CardHeader className="w-full flex-row flex-wrap items-center justify-start">
-        <CardTitle>陣容配置 {status.lineupIndex + 1}</CardTitle>
+        <CardTitle className="w-auto">
+          陣容配置 {status.lineupIndex + 1}
+        </CardTitle>
         <div className="flex flex-1 flex-row items-center justify-end">
           <SegmentedPicker
             label="陣容配置"
