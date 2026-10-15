@@ -112,19 +112,12 @@ async function readPublishedChanges(): Promise<EmDashPage[]> {
     ec_blueprint_changes: BlueprintChangeRow;
   }>();
   const entries = await typedDb
-    .selectFrom("ec_blueprint_changes")
-    .select((eb) => [
-      "id",
-      "slug",
-      "title",
-      "linear_issue",
-      "description",
-      "pull_requests",
-      "published_at",
-      eb
-        .selectFrom(
+    .withRecursive("changeBlocks", (cte) => {
+      const rootBlocks = cte
+        .selectFrom("ec_blueprint_changes")
+        .crossJoin((eb) =>
           eb
-            .fn<{ value: string; type: string; path: string }>("json_tree", [
+            .fn<{ value: string; type: string }>("json_each", [
               eb
                 .case()
                 .when(
@@ -140,53 +133,112 @@ async function readPublishedChanges(): Promise<EmDashPage[]> {
             ])
             .as("block"),
         )
-        .select((blockEb) => {
-          const blockType = blockEb.fn("json_extract", [
-            blockEb.ref("block.value"),
-            blockEb.val("$._type"),
+        .select((eb) => [
+          "ec_blueprint_changes.id as entryId",
+          "block.value as value",
+          eb.val(0).as("depth"),
+        ])
+        .where("ec_blueprint_changes.deleted_at", "is", null)
+        .where("ec_blueprint_changes.status", "=", "published")
+        .where("block.type", "=", "object");
+
+      const disclosureBlocks = cte
+        .selectFrom("changeBlocks")
+        .crossJoin((eb) => {
+          const blocksJson = eb.fn("json_extract", [
+            eb.ref("changeBlocks.value"),
+            eb.val("$.blocks"),
           ]);
-          const itemsJson = blockEb.fn("json_extract", [
-            blockEb.ref("block.value"),
-            blockEb.val("$.items"),
-          ]);
-          const cardsCount = blockEb
+          const safeBlocks = eb
             .case()
-            .when(blockEb.fn<number>("json_valid", [itemsJson]), "=", 1)
-            .then(
-              blockEb
-                .case()
-                .when(
-                  blockEb.fn<string>("json_type", [itemsJson]),
-                  "=",
-                  "array",
-                )
-                .then(blockEb.fn("json_array_length", [itemsJson]))
-                .else(0)
-                .end(),
-            )
-            .else(0)
+            .when(eb.fn<number>("json_valid", [blocksJson]), "=", 1)
+            .then(blocksJson)
+            .else(eb.val("[]"))
             .end();
-          return blockEb.fn
-            .sum(
-              blockEb
-                .case()
-                .when(blockType, "=", "scenario")
-                .then(1)
-                .when(blockType, "=", "scenario_cards")
-                .then(cardsCount)
-                .else(0)
-                .end(),
-            )
-            .as("scenarioCount");
+          return eb
+            .fn<{ value: string; type: string }>("json_each", [safeBlocks])
+            .as("child");
         })
-        .where("block.type", "=", "object")
-        .where("block.path", "not like", "%.frames%")
-        .as("scenarioCount"),
+        .select((eb) => [
+          eb.ref("changeBlocks.entryId").$castTo<string>().as("entryId"),
+          eb.ref("child.value").$castTo<string>().as("value"),
+          eb(eb.ref("changeBlocks.depth").$castTo<number>(), "+", 1)
+            .$castTo<number>()
+            .as("depth"),
+        ])
+        .where(
+          (eb) =>
+            eb.fn<string>("json_extract", [
+              eb.ref("changeBlocks.value"),
+              eb.val("$._type"),
+            ]),
+          "=",
+          "disclosure",
+        )
+        .where("changeBlocks.depth", "<", 8)
+        .where("child.type", "=", "object");
+
+      return rootBlocks.unionAll(disclosureBlocks);
+    })
+    .selectFrom("ec_blueprint_changes")
+    .leftJoin("changeBlocks", "changeBlocks.entryId", "ec_blueprint_changes.id")
+    .select((eb) => {
+      const blockType = eb.fn("json_extract", [
+        eb.ref("changeBlocks.value"),
+        eb.val("$._type"),
+      ]);
+      const itemsJson = eb.fn("json_extract", [
+        eb.ref("changeBlocks.value"),
+        eb.val("$.items"),
+      ]);
+      const cardsCount = eb
+        .case()
+        .when(eb.fn<number>("json_valid", [itemsJson]), "=", 1)
+        .then(
+          eb
+            .case()
+            .when(eb.fn<string>("json_type", [itemsJson]), "=", "array")
+            .then(eb.fn("json_array_length", [itemsJson]))
+            .else(0)
+            .end(),
+        )
+        .else(0)
+        .end();
+      return [
+        "ec_blueprint_changes.id as id",
+        "ec_blueprint_changes.slug as slug",
+        "ec_blueprint_changes.title as title",
+        "ec_blueprint_changes.linear_issue as linear_issue",
+        "ec_blueprint_changes.description as description",
+        "ec_blueprint_changes.pull_requests as pull_requests",
+        "ec_blueprint_changes.published_at as published_at",
+        eb.fn
+          .sum(
+            eb
+              .case()
+              .when(blockType, "=", "scenario")
+              .then(1)
+              .when(blockType, "=", "scenario_cards")
+              .then(cardsCount)
+              .else(0)
+              .end(),
+          )
+          .as("scenarioCount"),
+      ];
+    })
+    .where("ec_blueprint_changes.deleted_at", "is", null)
+    .where("ec_blueprint_changes.status", "=", "published")
+    .groupBy([
+      "ec_blueprint_changes.id",
+      "ec_blueprint_changes.slug",
+      "ec_blueprint_changes.title",
+      "ec_blueprint_changes.linear_issue",
+      "ec_blueprint_changes.description",
+      "ec_blueprint_changes.pull_requests",
+      "ec_blueprint_changes.published_at",
     ])
-    .where("deleted_at", "is", null)
-    .where("status", "=", "published")
-    .orderBy("published_at", "desc")
-    .orderBy("id", "desc")
+    .orderBy("ec_blueprint_changes.published_at", "desc")
+    .orderBy("ec_blueprint_changes.id", "desc")
     .execute();
 
   return entries.map((entry) => {
