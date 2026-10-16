@@ -1,26 +1,29 @@
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import type { Config } from "jest";
+import nextJest from "next/jest.js";
 
-const config: Config = {
-  testEnvironment: "jsdom",
-  testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
-  transform: {
-    "^.+\\.(ts|tsx)$": [
-      // Jest's own babel-jest instance is peered with Babel 7; use Blueprint's, peered with Babel 8.
-      "<rootDir>/node_modules/babel-jest",
-      {
-        presets: [
-          ["@babel/preset-env", { targets: { node: "current" } }],
-          ["@babel/preset-react", { runtime: "automatic" }],
-          "@babel/preset-typescript",
-        ],
-      },
+const blueprintRoot = path.dirname(fileURLToPath(import.meta.url));
+const createJestConfig = nextJest({ dir: blueprintRoot });
+
+export default async function jestConfig(): Promise<Config> {
+  const nextResolved = await createJestConfig({})();
+
+  return {
+    ...nextResolved,
+    rootDir: blueprintRoot,
+    testEnvironment: "jest-fixed-jsdom",
+    testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
+    transform: nextResolved.transform,
+    transformIgnorePatterns: [
+      "/node_modules/(?!.*(msw|@mswjs|rettime|until-async|@open-draft|cookie)/)",
+      "^.+\\.module\\.(css|sass|scss)$",
     ],
-  },
-  setupFilesAfterEnv: ["@testing-library/jest-dom"],
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
-    "^@test/(.*)$": "<rootDir>/test/$1",
-  },
-};
-
-export default config;
+    setupFilesAfterEnv: [path.join(blueprintRoot, "test/setup.ts")],
+    moduleNameMapper: {
+      ...nextResolved.moduleNameMapper,
+      "^@/(.*)$": path.join(blueprintRoot, "src/$1"),
+      "^@test/(.*)$": path.join(blueprintRoot, "test/$1"),
+    },
+  };
+}

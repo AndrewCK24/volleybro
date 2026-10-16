@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { readChangeBuildSnapshot } from "../../../build/read-change-build-snapshot.mjs";
-import { acceptedContentHashFromValidatedChange } from "../../../src/lib/emdash-change-record.ts";
 
 function createDatabase(t) {
   const db = new DatabaseSync(":memory:");
@@ -54,7 +53,7 @@ function insertEntry(db, entry) {
     entry.locale ?? "en",
     entry.title,
     entry.description ?? null,
-    entry.linear_issue ?? "ATE-1",
+    entry.linear_issue ?? "EXAMPLE-1",
     entry.pull_requests ?? "[]",
     entry.blocks ?? "[]",
   );
@@ -97,7 +96,7 @@ function publishedEntry(overrides = {}) {
     locale: "en",
     title: "Live title",
     description: "Live description",
-    linear_issue: "ATE-1",
+    linear_issue: "EXAMPLE-1",
     pull_requests: "[]",
     blocks: "[]",
     ...overrides,
@@ -111,7 +110,7 @@ function contentRevision(id, entryId, title, overrides = {}) {
     data: JSON.stringify({
       title,
       description: `${title} description`,
-      linear_issue: "ATE-1",
+      linear_issue: "EXAMPLE-1",
       pull_requests: [],
       blocks: [],
       ...overrides,
@@ -181,12 +180,7 @@ test("reads published live content and current/private drafts from SQLite", asyn
   assert.equal(publicEntries[0].locale, "en");
   assert.equal(
     publicEntries[0].contentHash,
-    await acceptedContentHashFromValidatedChange({
-      title: "Live title",
-      description: "Live description",
-      linear_issue: "ATE-1",
-      blocks: [],
-    }),
+    "f000942392fa1870aa5c3190e908450f4de386c87b0e3253803cc29b80b4d7bf",
   );
   assert.equal(publicPreview.data.title, "Current draft");
   assert.equal(publicPreview.revisionId, "revision-current-draft");

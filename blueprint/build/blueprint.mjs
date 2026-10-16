@@ -6,6 +6,7 @@ import { randomBytes } from "node:crypto";
 import { spawn } from "node:child_process";
 import { blueprintRendererId } from "./renderer-id.mjs";
 import { readChangeBuildSnapshot } from "./read-change-build-snapshot.mjs";
+import { createD1SnapshotReader } from "./d1-snapshot-reader.mjs";
 import {
   changeDataSchema,
   acceptedContentHashFromValidatedChange,
@@ -105,40 +106,17 @@ try {
       throw new Error(
         "The authorized Cloudflare build identity is not configured.",
       );
-    let rowsRead = 0;
+    const reader = createD1SnapshotReader({
+      accountId: account,
+      databaseId: db.database_id,
+      token,
+    });
     snapshot = await readChangeBuildSnapshot({
       rendererId,
-      query: async (sql, params) => {
-        if (!/^\s*SELECT\b/iu.test(sql) || rowsRead > 10_000)
-          throw new Error("The read-only Change snapshot budget was exceeded.");
-        const response = await fetch(
-          `https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${db.database_id}/query`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ sql, params }),
-            redirect: "error",
-          },
-        );
-        if (!response.ok)
-          throw new Error(
-            `Cloudflare snapshot request failed (${response.status}).`,
-          );
-        const result = await response.json();
-        const page = result.result?.[0];
-        if (!result.success || !page?.success || !Array.isArray(page.results))
-          throw new Error("Cloudflare snapshot query failed.");
-        rowsRead += Number(page.meta?.rows_read ?? 0);
-        return page.results;
-      },
+      query: reader.query,
     });
-    if (rowsRead > 10_000)
-      throw new Error("The Change snapshot exceeded its D1 read budget.");
     console.log(
-      `Change snapshot: ${snapshot.entries.length} views, ${rowsRead} D1 rows read.`,
+      `Change snapshot: ${snapshot.entries.length} views, ${reader.rowsRead} D1 rows read.`,
     );
   }
 } finally {

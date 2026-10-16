@@ -6,6 +6,8 @@ import {
   summarizeChange,
   type PullRequestSummary,
 } from "./github-change-data";
+import { http, HttpResponse } from "msw";
+import { server } from "../../../test/support/msw/server";
 
 class MemoryD1 {
   rows = new Map<string, { payload: string; expires_at: number | null }>();
@@ -81,7 +83,11 @@ const openPullRequest = {
 };
 
 describe("GitHub derived Change status and metrics", () => {
-  const originalFetch = Object.getOwnPropertyDescriptor(globalThis, "fetch");
+  let originalFetch: PropertyDescriptor | undefined;
+
+  beforeAll(() => {
+    originalFetch = Object.getOwnPropertyDescriptor(globalThis, "fetch");
+  });
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -192,6 +198,12 @@ describe("GitHub derived Change status and metrics", () => {
   it("does not fail public Change status when the cache database is unavailable", async () => {
     const db = new MemoryD1();
     db.hasReadFailure = true;
+    server.use(
+      http.get(
+        "https://api.github.com/repos/andrewck24/volleybro/pulls/552",
+        () => HttpResponse.error(),
+      ),
+    );
     await expect(
       readPullRequestSummaries(
         ["https://github.com/andrewck24/volleybro/pull/552"],
