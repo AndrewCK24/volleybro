@@ -1,12 +1,15 @@
 ---
+export const prerender = true;
+
 import { Layers, ListTree, Palette } from "lucide-react";
-import { ChangeCardList } from "../components/change-card";
+import { LiveChangeCardList } from "../components/live-change-card-list";
 import Layout from "../components/layout.astro";
-import { listPublishedChangeSummaries } from "../lib/github-change-data";
 import { createBlueprintSources } from "../lib/source";
 
-const { features, changeEntries } = await createBlueprintSources({ isFeatureStructureEnabled: false });
-const summaries = await listPublishedChangeSummaries(changeEntries);
+const { features } = await createBlueprintSources({
+  includeChanges: false,
+  isFeatureStructureEnabled: false,
+});
 const capabilities = features.getPages().filter((page) => page.slugs.length > 0).length;
 const sections = [
   {
@@ -20,7 +23,7 @@ const sections = [
     href: "/changes",
     title: "Changes",
     description: "每一次交付的 Proposal 與 Review：做了什麼、為什麼、怎麼驗證。",
-    figure: `${summaries.length} changes`,
+    figure: "delivery history",
     Icon: Layers,
   },
   {
@@ -66,16 +69,14 @@ const sections = [
       </ul>
     </nav>
 
-    {summaries.length > 0 && (
-      <section aria-labelledby="latest-changes" class="flex flex-col">
-        <div class="flex items-baseline justify-between gap-4">
-          <h2 id="latest-changes" class="m-0 text-lg font-semibold">最近的 Change</h2>
-          <a href="/changes" class="text-sm text-primary-text underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
-            全部 Change
-          </a>
-        </div>
-        <ChangeCardList changes={summaries.slice(0, 3)} />
-      </section>
-    )}
+    <section aria-labelledby="latest-changes" class="flex flex-col">
+      <div class="flex items-baseline justify-between gap-4">
+        <h2 id="latest-changes" class="m-0 text-lg font-semibold">最近的 Change</h2>
+        <a href="/changes" class="text-sm text-primary-text underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+          全部 Change
+        </a>
+      </div>
+      <LiveChangeCardList client:load limit={3} />
+    </section>
   </main>
 </Layout>

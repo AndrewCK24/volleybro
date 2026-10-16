@@ -1,33 +1,32 @@
 ---
-import { createBlueprintSources } from "../../lib/source";
-import { listPublishedChangeSummaries } from "../../lib/github-change-data";
-import { createChangesTree } from "../../lib/changes-tree";
-import { ChangeCardList } from "../../components/change-card";
+export const prerender = true;
+
+import type { Root } from "fumadocs-core/page-tree";
+import { LiveChangeCardList } from "../../components/live-change-card-list";
 import { Docs } from "../../components/docs";
 import Layout from "../../components/layout.astro";
 
-const source = await createBlueprintSources({ isFeatureStructureEnabled: false });
-const summaries = await listPublishedChangeSummaries(source.changeEntries);
-const tree = createChangesTree(source.changes.pageTree, summaries.map((change) => change.href));
+const emptyTree: Root = {
+  $id: "blueprint-changes-static-shell",
+  name: "Changes",
+  children: [],
+};
 ---
 
 <Layout>
   <title>Changes · Blueprint</title>
   <Docs
     client:load
-    tree={tree}
+    tree={emptyTree}
     pathname={Astro.url.pathname.replace(/\.html$/u, "")}
     params={Astro.params}
     hasChanges={true}
+    liveChanges={true}
     page={{ breadcrumb: { includePage: false } }}
   >
     <main>
       <h1>Changes</h1>
-      {summaries.length === 0 ? (
-        <p>目前沒有已發布的 Change。</p>
-      ) : (
-        <ChangeCardList changes={summaries} />
-      )}
+      <LiveChangeCardList client:load />
     </main>
   </Docs>
 </Layout>

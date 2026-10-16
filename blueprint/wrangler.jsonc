@@ -18,6 +18,10 @@
   ],
   "r2_buckets": [
     {
+      "binding": "BLUEPRINT_PAGES",
+      "bucket_name": "volleybro-blueprint-pages",
+    },
+    {
       "binding": "BLUEPRINT_MEDIA",
       "bucket_name": "volleybro-blueprint-media",
     },

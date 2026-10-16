@@ -1,12 +1,14 @@
 import { ContentSaveRejectedError, definePlugin } from "emdash";
-import type { PluginDescriptor } from "emdash";
+import type { PluginContext, PluginDescriptor } from "emdash";
 import { z } from "astro/zod";
 import { acceptedContentHash, changeDataSchema } from "./emdash-change-record";
 import { publicationReceiptProblem } from "./publication-receipt";
 import { reserveBlueprintMediaUpload } from "./media-upload-budget";
+import { triggerCloudflareDeployHook } from "./cloudflare-deploy-hook";
 
 const PLUGIN_ID = "volleybro-blueprint-publication-policy";
 const PLUGIN_VERSION = "1.0.0";
+const BUILD_HOOK_SETTING = "cloudflareBuildDeployHookUrl";
 
 export function emdashPublicationPolicy(entrypoint: string): PluginDescriptor {
   return {
@@ -17,18 +19,51 @@ export function emdashPublicationPolicy(entrypoint: string): PluginDescriptor {
   };
 }
 
+async function requestBlueprintBuild(
+  collection: string,
+  context: PluginContext,
+): Promise<void> {
+  if (collection !== "blueprint_changes") return;
+
+  const deployHookUrl = await context.settings.get<string>(BUILD_HOOK_SETTING);
+  if (
+    typeof deployHookUrl !== "string" ||
+    !deployHookUrl.trim() ||
+    !context.http
+  ) {
+    context.log.warn("Blueprint build hook is not configured", { collection });
+    return;
+  }
+
+  try {
+    const result = await triggerCloudflareDeployHook(
+      deployHookUrl,
+      context.http,
+    );
+    context.log.info("Blueprint build requested", {
+      collection,
+      buildUuid: result.buildUuid,
+      alreadyExists: result.alreadyExists,
+    });
+  } catch {
+    // Never log the URL or the thrown error: HTTP errors can include request URLs.
+    context.log.error("Blueprint build hook request failed", { collection });
+  }
+}
+
 export function createPlugin() {
   return definePlugin({
     id: PLUGIN_ID,
     version: PLUGIN_VERSION,
     capabilities: [
       "content:write",
+      "content:read",
       "hooks.content-policy:register",
       "network:request",
       "media:read",
       "media:write",
     ],
-    allowedHosts: ["api.linear.app"],
+    allowedHosts: ["api.linear.app", "api.cloudflare.com"],
     admin: {
       settingsSchema: {
         linearApiKey: {
@@ -36,6 +71,12 @@ export function createPlugin() {
           label: "Linear API key",
           description:
             "Used only to verify the accepted EmDash revision before publish.",
+        },
+        [BUILD_HOOK_SETTING]: {
+          type: "secret",
+          label: "Cloudflare build hook URL",
+          description:
+            "Secret URL used to request a Workers Build after Change content changes.",
         },
       },
     },
@@ -54,6 +95,18 @@ export function createPlugin() {
             "Change content does not match the canonical Blueprint schema.",
           );
         }
+      },
+      "content:afterSave": async (event, context) => {
+        await requestBlueprintBuild(event.collection, context);
+      },
+      "content:afterDelete": async (event, context) => {
+        await requestBlueprintBuild(event.collection, context);
+      },
+      "content:afterPublish": async (event, context) => {
+        await requestBlueprintBuild(event.collection, context);
+      },
+      "content:afterUnpublish": async (event, context) => {
+        await requestBlueprintBuild(event.collection, context);
       },
       "media:beforeUpload": async (event, context) => {
         if (!context.media)

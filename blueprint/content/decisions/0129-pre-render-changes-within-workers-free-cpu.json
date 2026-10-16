@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 2,
+  "id": "0129",
+  "title": "Pre-render Change HTML to keep delivery within Workers Free CPU",
+  "capabilities": ["platform/blueprint"],
+  "context": "Large Portable Text Change pages exceeded Workers Free request CPU even after bounded D1 queries. Request caching cannot make the first render or a private preview affordable. Content must remain in EmDash and interactive Blueprint components must remain available.",
+  "decision": "Replace per-request Change body rendering with automated full SSG on EmDash save and publication lifecycle events. Use the official Portable Text renderer and existing typed-block components, preserving client islands. Stage both public and private HTML in a dedicated private R2 bucket, bound to renderer digest, content identity and exact revision. Requests verify current lifecycle metadata and signed preview scope before streaming an artifact; missing or mismatched artifacts fail closed without SSR or legacy fallback. Read PR status and statistics through a separate compact endpoint backed by the existing GitHub cache. This replaces the request-time rendering and build-free publication assumption of ADR-0124, while retaining that record's migration, archive and retirement requirements.",
+  "alternatives": [
+    {
+      "option": "Keep request-time SSR behind a cache",
+      "reason": "A cold render and private preview still exceed the Free CPU limit."
+    },
+    {
+      "option": "Have an Agent manually render every update",
+      "reason": "Makes ordinary content editing depend on Agent availability."
+    },
+    {
+      "option": "Patch SDK internals for incremental builds",
+      "reason": "Measured builds did not reuse prerendered pages; maintaining an upstream override costs more than the current full build."
+    }
+  ],
+  "consequences": [
+    "Content updates require an automated build and artifact upload, but no Git content commit.",
+    "Publishing and preview may temporarily wait for a matching artifact; they never serve a different revision as a fallback.",
+    "Private artifacts require separate storage and must not enter public assets, media routes or CI caches.",
+    "Full local build success does not certify production Free CPU or account-wide resource quotas; activation remains separately authorized."
+  ],
+  "revisitTriggers": [
+    "Build latency or frequency exceeds the Free budget.",
+    "The installed CMS supports stable incremental rendering without overrides.",
+    "Native CMS administration or metadata delivery exceeds Workers Free CPU."
+  ],
+  "originChange": "emdash-blueprint-change-pages"
+}
