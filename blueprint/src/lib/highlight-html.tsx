@@ -23,7 +23,7 @@ export async function renderHighlightedLinesHtml(
     defaultColor: false,
     transformers: [
       {
-        name: "annotated-diff-lines",
+        name: "diff-lines",
         line(node, number) {
           const mark = lines[number - 1]?.mark;
           if (!mark) return;
@@ -54,6 +54,18 @@ export async function renderHighlightedLinesHtml(
   });
 
   return renderToStaticMarkup(markup);
+}
+
+export async function renderCodeHtml(
+  code: string,
+  lang?: string,
+  title?: string,
+) {
+  return renderHighlightedLinesHtml(
+    code.split("\n").map((text) => ({ text })),
+    lang,
+    title,
+  );
 }
 
 export async function renderAnnotatedDiffHtml(

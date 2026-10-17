@@ -1,6 +1,6 @@
 ---
 import type { AnnotatedDiffBlock } from "../lib/annotated-diff-block";
-import { renderHighlightedLinesHtml } from "../lib/annotated-diff-html";
+import { renderHighlightedLinesHtml } from "../lib/highlight-html";
 
 const { node } = Astro.props as { node: AnnotatedDiffBlock };
 const html = await renderHighlightedLinesHtml(
@@ -12,4 +12,9 @@ const html = await renderHighlightedLinesHtml(
 );
 ---
 
-<div class="not-prose my-6" aria-label="Annotated code diff" set:html={html} />
+<figure class="not-prose my-6">
+  <figcaption class="sr-only">
+    Code diff{node.language ? ` (${node.language})` : ""}
+  </figcaption>
+  <Fragment set:html={html} />
+</figure>

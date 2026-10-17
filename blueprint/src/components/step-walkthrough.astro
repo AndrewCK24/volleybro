@@ -1,6 +1,6 @@
 ---
 import type { StepWalkthroughBlock } from "../lib/step-walkthrough-block";
-import { renderHighlightedLinesHtml } from "../lib/annotated-diff-html";
+import { renderCodeHtml } from "../lib/highlight-html";
 
 const { node: block } = Astro.props as { node: StepWalkthroughBlock };
 const mainRow = block.flow.filter(({ branch }) => !branch);
@@ -21,13 +21,7 @@ for (const scenario of block.scenarios)
   for (const step of scenario.steps)
     for (const { code } of Object.values(step.actors))
       if (code && !codeHtml.has(code))
-        codeHtml.set(
-          code,
-          await renderHighlightedLinesHtml(
-            code.split("\n").map((text) => ({ text })),
-            block.codeLanguage,
-          ),
-        );
+        codeHtml.set(code, await renderCodeHtml(code, block.codeLanguage));
 const firstNode = block.scenarios[0].steps[0].node;
 ---
 
