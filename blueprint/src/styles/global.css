@@ -1,5 +1,4 @@
-@import "@fontsource-variable/saira";
-@import "@fontsource-variable/noto-sans-tc/wght.css";
+@import "./fonts/sarasa-mono-tc/sarasa-mono-tc.css";
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
@@ -12,8 +11,6 @@
    blocks. Re-copy when the app's tokens change. */
 :root,
 .light {
-  --font-saira: "Saira Variable";
-  --font-noto-sans-tc: "Noto Sans TC Variable";
   --background: hsl(230, 20%, 95.6%);
   --foreground: hsl(0, 0%, 0%);
   --card: hsl(330, 10%, 98.45%);
@@ -181,7 +178,10 @@
     var(--foreground)
   );
 
-  --font-sans: var(--font-saira), var(--font-noto-sans-tc), sans-serif;
+  /* Blueprint sets all text, prose and code alike, in Sarasa Mono TC: one CJK
+     glyph is exactly two Latin cells wide. */
+  --font-sans: "Sarasa Mono TC", ui-monospace, monospace;
+  --font-mono: var(--font-sans);
   --font-heading: var(--font-sans);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
