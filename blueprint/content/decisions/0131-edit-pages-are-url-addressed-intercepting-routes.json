@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "id": "0131",
+  "title": "Edit pages open as intercepting routes in an @modal parallel slot",
+  "capabilities": ["platform/design-system/overlays"],
+  "decision": "Team, player and lineup edit flows use Next.js intercepting routes rendered into an `@modal` parallel slot. A soft navigation to an edit URL opens the form over the tab content and updates the URL; a hard navigation falls through to the full workspace route. Every slot provides a `default.tsx` returning `null`.",
+  "context": "Edit pages rendered as parallel slots inside the tab shell, with the bottom navigation still visible.",
+  "alternatives": [
+    {
+      "option": "An inline modal without URL changes",
+      "reason": "Simpler, with no intercepting routes or parallel slots, but it breaks browser back and direct links and makes navigation state harder to test."
+    }
+  ],
+  "consequences": [
+    "Browser back, direct links and sharing work, and one route definition serves both the modal and the workspace.",
+    "Parallel and intercepting routes carry cache and hard-refresh edge cases; the workspace route is the hard-refresh fallback."
+  ],
+  "originChange": "contextual-edit-pages"
+}

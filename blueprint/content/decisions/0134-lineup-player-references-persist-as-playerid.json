@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "id": "0134",
+  "title": "Lineup player references persist as a nullable playerId that only repositories map",
+  "capabilities": ["game-recording/persistence", "platform/clean-architecture"],
+  "decision": "Lineup slots persist the player reference as a nullable ObjectId `playerId` instead of an explicit `_id` path, and an empty slot is stored as `{ playerId: null, position }`. Repositories are the sole translation boundary: reads map `playerId` to domain `id: string | null` and writes map it back, for team lineups and for every embedded game reference (set lineups, player and staff snapshots, rally details and substitution `players.in/out`). Domain entities, Zod schemas, Redux and React keep using `id` only.",
+  "context": "Lineup player subschemas disabled their own `_id` and then declared the player reference on an explicit `_id` ObjectId path. Because the `id` virtual is read-only, writes silently dropped the reference, and the game read path mapped only the top-level `_id`, leaving nested references unmapped.",
+  "alternatives": [
+    {
+      "option": "Transform `_id` in `toJSON`",
+      "reason": "Avoids a schema rename, but creates a second, fragile nested mapping path and does not fix the dropped writes."
+    },
+    {
+      "option": "Store a string `id`",
+      "reason": "Avoids ObjectId conversion, but diverges from the reference conventions and loses ObjectId validation and join semantics."
+    },
+    {
+      "option": "Keep `_id`",
+      "reason": "No migration, but it cannot represent an empty reference and keeps the write-drop bug."
+    }
+  ],
+  "consequences": [
+    "A one-time, audit-first and idempotent migration renames existing references and normalizes empty slots.",
+    "The shared lineup schema changes team and game documents together, so both repository mappings move in one change."
+  ],
+  "originChange": "team-routes-clean-architecture"
+}
