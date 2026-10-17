@@ -1,3 +1,4 @@
+import { blueprintStaticGeneration } from "./build/static-generation.mjs";
 import react from "@astrojs/react";
 import cloudflare from "@astrojs/cloudflare";
 import emdash from "emdash/astro";
@@ -42,9 +43,13 @@ const astroConfig = {
     }),
   },
   integrations: [
+    await blueprintStaticGeneration(
+      fileURLToPath(new URL("./", import.meta.url)),
+    ),
     react(),
     mdx({ extendMarkdownConfig: true, syntaxHighlight: false }),
     emdash({
+      toolbar: false,
       database: d1({ binding: "BLUEPRINT_DB" }),
       storage: r2({ binding: "BLUEPRINT_MEDIA" }),
       plugins: [

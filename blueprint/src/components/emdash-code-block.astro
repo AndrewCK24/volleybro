@@ -1,0 +1,10 @@
+---
+import { renderCodeHtml } from "../lib/highlight-html";
+
+const { node } = Astro.props as {
+  node: { code: string; language?: string; filename?: string };
+};
+const html = await renderCodeHtml(node.code, node.language, node.filename);
+---
+
+<div class="not-prose my-6" set:html={html} />

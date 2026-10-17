@@ -1,0 +1,28 @@
+---
+import ChangeDocument from "../src/components/change-document.astro";
+import { createChangesBreadcrumbTree } from "../src/lib/changes-tree";
+import { summarizeChange } from "../src/lib/github-change-data";
+import type { ChangeBuildEntry } from "./change-build-paths";
+export { getStaticPaths } from "./change-build-paths";
+export const prerender = true;
+
+const { entry } = Astro.props as { entry: ChangeBuildEntry };
+const summary = summarizeChange({
+  id: entry.slug,
+  data: { ...entry.data, scenarioCount: entry.scenarioCount },
+}, []);
+const tree = createChangesBreadcrumbTree({
+  name: "Changes",
+  children: [{ type: "page", name: entry.data.title, url: `/changes/${entry.slug}` }],
+});
+---
+<ChangeDocument
+  slug={entry.slug}
+  change={entry.data}
+  summary={summary}
+  tree={tree}
+  preview={entry.visibility === "preview" ? {
+    revisionId: entry.revisionId,
+    contentHash: entry.contentHash,
+  } : undefined}
+/>

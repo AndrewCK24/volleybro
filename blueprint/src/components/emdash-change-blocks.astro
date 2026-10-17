@@ -1,19 +1,24 @@
 ---
 import { PortableText } from "emdash/ui";
-import { z } from "zod";
-import { blockSchema } from "../lib/emdash-change-record";
+import type { ChangeBlock } from "../lib/emdash-change-record";
 import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
 import EmDashTypedBlock from "./emdash-typed-block.astro";
+import EmDashTldrBlock from "./emdash-tldr-block.astro";
+import EmDashDisclosureBlock from "./emdash-disclosure-block.astro";
+import EmDashAnnotatedDiff from "./emdash-annotated-diff.astro";
+import EmDashCodeBlock from "./emdash-code-block.astro";
+import StepWalkthrough from "./step-walkthrough.astro";
 
-const { blocks } = Astro.props as { blocks: unknown };
-const parsedBlocks = z.array(blockSchema).safeParse(blocks);
-if (!parsedBlocks.success) {
-  throw new Error("EmDash Change content contains an unsupported Portable Text block.");
-}
-const value = parsedBlocks.data;
+const { blocks: value, hasProseLayout = true } = Astro.props as {
+  blocks: ChangeBlock[];
+  hasProseLayout?: boolean;
+};
 ---
 
-<div class="prose flex-1" data-emdash-block-renderer="v2">
+<div
+  class:list={[hasProseLayout && "prose flex-1", "emdash-portable-text"]}
+  data-emdash-block-renderer="v2"
+>
   <PortableText
     value={value}
     components={{
@@ -28,6 +33,10 @@ const value = parsedBlocks.data;
         blockquote: EmDashPortableTextBlock,
       },
       type: {
+        code: EmDashCodeBlock,
+        tldr: EmDashTldrBlock,
+        disclosure: EmDashDisclosureBlock,
+        annotated_diff: EmDashAnnotatedDiff,
         decision_cards: EmDashTypedBlock,
         risk_table: EmDashTypedBlock,
         scenario: EmDashTypedBlock,
@@ -35,16 +44,16 @@ const value = parsedBlocks.data;
         interactive_flowchart: EmDashTypedBlock,
         diagram: EmDashTypedBlock,
         variant_gallery: EmDashTypedBlock,
+        step_walkthrough: StepWalkthrough,
       },
     }}
   />
 </div>
 
 <style>
-  .prose :global(.emdash-code code) {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
+  .emdash-portable-text {
+    --color-surface: var(--card);
+    --color-bg-subtle: var(--muted);
+    --emdash-caption-color: var(--muted-foreground);
   }
 </style>

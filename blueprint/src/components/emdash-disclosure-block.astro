@@ -1,0 +1,26 @@
+---
+import type { DisclosureBlock } from "../lib/emdash-change-record";
+import EmDashChangeBlocks from "./emdash-change-blocks.astro";
+
+const { node } = Astro.props as { node: DisclosureBlock };
+---
+
+<details
+  id={node.id}
+  class="emdash-disclosure rounded-md border border-border bg-card px-4 py-3"
+>
+  <summary class="cursor-pointer font-medium text-foreground">
+    {node.summary}
+  </summary>
+  <div class="pt-3 text-foreground">
+    <EmDashChangeBlocks blocks={node.blocks} hasProseLayout={false} />
+  </div>
+</details>
+
+<style>
+  .emdash-disclosure {
+    --color-surface: var(--card);
+    --color-bg-subtle: var(--muted);
+    --emdash-caption-color: var(--muted-foreground);
+  }
+</style>

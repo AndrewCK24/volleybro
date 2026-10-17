@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "id": "0133",
+  "title": "Team and player forms use React Hook Form with zodResolver",
+  "capabilities": ["platform/forms"],
+  "decision": "Team and player forms move to React Hook Form with `zodResolver`, reusing `FormProvider`, `FormField` and `FormMessage` as the game forms already do. The default `onSubmit` mode keeps the current validation timing.",
+  "context": "Team and player forms used raw `useState` with manually caught and stored Zod errors, unlike the game forms.",
+  "alternatives": [
+    {
+      "option": "Keep raw `useState` with manual Zod handling",
+      "reason": "No migration, but error handling grows with every field and stays inconsistent with the game forms."
+    }
+  ],
+  "consequences": ["Existing team and player forms must be migrated."],
+  "originChange": "contextual-edit-pages"
+}

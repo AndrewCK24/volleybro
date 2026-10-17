@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "node build/blueprint.mjs",
     "start": "astro preview",
     "type-check": "astro check",
     "test": "jest",
-    "test:persistence": "node --test test/integration/persistence/github-change-data.itest.mjs",
+    "test:persistence": "node --test test/integration/persistence/*.itest.mjs",
     "migration:finalize": "node scripts/finalize-legacy-migration-receipts.mjs",
-    "test:migration": "node --test scripts/*.test.mjs"
+    "test:migration": "node --test scripts/*.test.mjs",
+    "build:content": "node build/blueprint.mjs --remote",
+    "upload:pages": "node build/upload-pages.mjs",
+    "deploy:content": "node build/deploy-content.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.3.4",

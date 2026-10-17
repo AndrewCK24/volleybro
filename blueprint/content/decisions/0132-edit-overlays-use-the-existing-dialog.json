@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 2,
+  "id": "0132",
+  "title": "Edit overlays use the existing Dialog, not Sheet",
+  "capabilities": ["platform/design-system/overlays"],
+  "decision": "Edit overlays use the existing shadcn `Dialog`. Its styles already give a desktop modal and a mobile bottom sheet, a maximize control fits its header, and it adds no dependency.",
+  "alternatives": [
+    {
+      "option": "`Sheet`",
+      "reason": "It has explicit bottom-sheet semantics on mobile, but on desktop it always enters from a side, and maximize sits less naturally in its header."
+    }
+  ],
+  "consequences": ["No significant drawback was identified."],
+  "originChange": "contextual-edit-pages"
+}

@@ -1,11 +1,8 @@
 ---
-import { diagramBlockSchema } from "../lib/diagram-schema";
+import type { DiagramBlock } from "../lib/diagram-schema";
 import { Diagram } from "./diagram";
 
-const parsed = diagramBlockSchema.safeParse((Astro.props as { node: unknown }).node);
-if (!parsed.success) {
-  throw new Error("Variant gallery frame contains an unsupported diagram block.");
-}
+const { node } = Astro.props as { node: DiagramBlock };
 ---
 
-<Diagram diagram={parsed.data} />
+<Diagram diagram={node} />

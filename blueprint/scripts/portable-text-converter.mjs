@@ -36,6 +36,32 @@ function text(node) {
   return (node.childNodes ?? []).map(text).join("");
 }
 
+function hasOnlyElementsAndWhitespace(node) {
+  return (node.childNodes ?? []).every(
+    (child) =>
+      Boolean(child.tagName) ||
+      (child.nodeName === "#text" && !child.value.trim()),
+  );
+}
+
+function renderedTldrBody(node) {
+  if (node.tagName !== "div") return null;
+  const wrapperClasses = new Set((attr(node, "class") ?? "").split(/\s+/u));
+  if (!wrapperClasses.has("border-l-4") || !wrapperClasses.has("rounded-r-md"))
+    return null;
+  if (!hasOnlyElementsAndWhitespace(node)) return null;
+  const children = (node.childNodes ?? []).filter((child) => child.tagName);
+  if (children.length !== 2) return null;
+  const [label, body] = children;
+  if (
+    label.tagName !== "span" ||
+    text(label).trim() !== "TL;DR" ||
+    body.tagName !== "div"
+  )
+    return null;
+  return body;
+}
+
 function preformattedNodeText(node) {
   if (node.nodeName === "#text") return node.value;
   if (node.tagName === "br") return "\n";
@@ -1557,6 +1583,26 @@ export function convertRenderedHtmlToPortableText(
       throw new Error(
         `${slug}: unsupported rendered node nodeName=${nodeName} tagName=${String(tag)} path=${renderedNodePath(node)}.`,
       );
+    }
+    const tldrBody = renderedTldrBody(node);
+    if (tldrBody) {
+      const bodyStart = blocks.length;
+      for (const child of tldrBody.childNodes ?? []) pushNode(child);
+      const bodyBlocks = blocks.splice(bodyStart);
+      const nonNativeBlock = bodyBlocks.find(
+        (block) => !["block", "image", "code", "table"].includes(block._type),
+      );
+      if (nonNativeBlock)
+        throw new Error(
+          `${slug}: TL;DR wrapper contains a non-native Portable Text block: ${nonNativeBlock._type}.`,
+        );
+      blocks.push({
+        _type: "tldr",
+        _version: 1,
+        _key: stableKey("tldr", blocks.length),
+        blocks: bodyBlocks,
+      });
+      return;
     }
     if (tag === "svg") {
       if (attr(node, "aria-hidden") === "true") return;

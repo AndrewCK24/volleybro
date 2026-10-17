@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 2,
+  "id": "0130",
+  "title": "ObjectId path parameters are checked by a shared guard at the route boundary",
+  "capabilities": ["platform/clean-architecture", "platform/error-handling"],
+  "decision": "Every API handler that takes a MongoDB ObjectId path segment (`teamId`, `gameId`, `playerId`) calls the shared `assertObjectId(id, param)` from `src/lib/api/guards.ts` immediately after awaiting `props.params`, before `connectToMongoDB` and authorization. A value that does not match `/^[0-9a-fA-F]{24}$/` throws `ValidationError`, which `withErrorHandler` turns into a 400 naming the parameter (`Invalid teamId format`), so an invalid request reaches neither the database nor auth. `userId` is excluded: it is a Better Auth string identifier checked against the session user, not an ObjectId.",
+  "context": "Only `src/app/api/teams/[teamId]/route.ts` validated its path segment. Ten other handlers passed the raw string into the service, authorization and repository layers; an invalid value such as `\"undefined\"` made Mongoose throw a `BSONError` that `translateRepositoryError` does not recognise, so an input error surfaced as a generic 500.",
+  "alternatives": [
+    {
+      "option": "Catch `BSONError` in `translateRepositoryError`",
+      "reason": "No route call-site changes, but it puts request validation in the infrastructure layer, returns a generic error that does not name the malformed parameter, and still runs the database and authorization work first."
+    },
+    {
+      "option": "A `withValidatedParams(schema)` wrapper",
+      "reason": "It could enforce validation through a schema, but the wrapper must understand Next.js's async `props.params` destructuring; that complexity buys nothing over one explicit call."
+    }
+  ],
+  "consequences": [
+    "Every new ObjectId route must call the guard explicitly; nothing enforces it automatically.",
+    "The team route imports the shared guard instead of keeping a local copy."
+  ],
+  "originChange": "api-objectid-guards"
+}

@@ -1,5 +1,4 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { getEmDashCollection, type ContentEntry } from "emdash";
 import { structure, type StructuredData } from "fumadocs-core/mdx-plugins";
 import {
   loader,
@@ -8,11 +7,11 @@ import {
   type StaticSource,
 } from "fumadocs-core/source";
 import path from "node:path";
-import { changeDataSchema, type ChangeData } from "./emdash-change-record";
+import type { EmDashPage } from "./published-changes";
+import { readPublishedChanges } from "./published-changes";
 
 type FeaturePage = CollectionEntry<"featurePages">;
 type MetaEntry = CollectionEntry<"featureMeta">;
-type EmDashPage = ContentEntry<ChangeData>;
 type DesignPage = CollectionEntry<"designMeta">["data"]["pages"][number];
 type SourceRaw = FeaturePage | EmDashPage | DesignPage;
 
@@ -25,6 +24,7 @@ function buildContentSource(
   pages: FeaturePage[],
   metas: MetaEntry[],
   contentRoot: string,
+  isStructureEnabled: boolean,
 ): StaticSource<SourceConfig> {
   const files: StaticSource<SourceConfig>["files"] = [];
   for (const entry of pages) {
@@ -36,7 +36,9 @@ function buildContentSource(
       data: {
         ...entry.data,
         _raw: entry,
-        structuredData: structure(entry.body ?? ""),
+        structuredData: isStructureEnabled
+          ? structure(entry.body ?? "")
+          : { headings: [], contents: [] },
       },
     });
   }
@@ -68,31 +70,6 @@ function buildChangeSource(entries: EmDashPage[]): StaticSource<SourceConfig> {
   };
 }
 
-async function readPublishedChanges(): Promise<EmDashPage[]> {
-  const entries: EmDashPage[] = [];
-  let cursor: string | undefined;
-  do {
-    const result = await getEmDashCollection("blueprint_changes", {
-      limit: 100,
-      status: "published",
-      ...(cursor ? { cursor } : {}),
-      orderBy: { published_at: "desc" },
-    });
-    if (result.error)
-      throw new Error(
-        `Could not read published Blueprint Changes: ${result.error.message}`,
-      );
-    for (const entry of result.entries) {
-      const parsed = changeDataSchema.safeParse(entry.data);
-      if (!parsed.success)
-        throw new Error(`Published Change "${entry.id}" has invalid content.`);
-      entries.push({ id: entry.id, data: parsed.data, edit: entry.edit });
-    }
-    cursor = result.nextCursor;
-  } while (cursor);
-  return entries;
-}
-
 function buildDesignSource(pages: DesignPage[]): StaticSource<SourceConfig> {
   const ordered = pages.map((page) => page.slug || "index");
   const files: StaticSource<SourceConfig>["files"] = [
@@ -116,7 +93,10 @@ function buildDesignSource(pages: DesignPage[]): StaticSource<SourceConfig> {
 }
 
 export async function createBlueprintSources(
-  options: { includeChanges?: boolean } = {},
+  options: {
+    includeChanges?: boolean;
+    isFeatureStructureEnabled?: boolean;
+  } = {},
 ) {
   const [changes, features, featureMetas, designMetas] = await Promise.all([
     options.includeChanges === false
@@ -137,7 +117,12 @@ export async function createBlueprintSources(
     }),
     features: loader({
       baseUrl: "/features",
-      source: buildContentSource(features, featureMetas, featuresRoot),
+      source: buildContentSource(
+        features,
+        featureMetas,
+        featuresRoot,
+        options.isFeatureStructureEnabled !== false,
+      ),
     }),
     designSystem: loader({
       baseUrl: "/design-system",

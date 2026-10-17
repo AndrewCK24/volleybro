@@ -1,85 +1,53 @@
 ---
-import { getEmDashEntry } from "emdash";
-import { Docs } from "../../components/docs";
-import EmDashChangeBlocks from "../../components/emdash-change-blocks.astro";
-import { ChangeHeader } from "../../components/change-header";
-import Layout from "../../components/layout.astro";
-import { acceptedContentHash, changeDataSchema } from "../../lib/emdash-change-record";
-import { createChangesBreadcrumbTree, createChangesTree } from "../../lib/changes-tree";
-import { listPublishedChangeSummaries, summarizeChange } from "../../lib/github-change-data";
-import { createBlueprintSources } from "../../lib/source";
+import { getRequestContext } from "emdash";
+import { getDb } from "emdash/runtime";
+import { env } from "cloudflare:workers";
+import {
+  serveChangeArtifact,
+  type ChangeArtifactStore,
+} from "../../lib/change-artifact";
 
+type ArtifactRow = {
+  id: string;
+  slug: string;
+  status: string;
+  deleted_at: string | null;
+  live_revision_id: string | null;
+  draft_revision_id: string | null;
+};
 const slug = Astro.params.slug ?? "";
-const [source, result] = await Promise.all([
-  createBlueprintSources(),
-  getEmDashEntry("blueprint_changes", slug),
-]);
-if (result.error) throw new Error(`Could not load Change "${slug}": ${result.error.message}`);
-const entry = result.entry;
-const parsed = entry ? changeDataSchema.safeParse(entry.data) : undefined;
-if (entry && !parsed?.success) throw new Error(`Published Change "${slug}" has invalid content.`);
-const change = parsed?.success ? parsed.data : undefined;
-if (result.isPreview) {
-  Astro.response.headers.set("Cache-Control", "private, no-store, max-age=0");
-  Astro.response.headers.set("Vary", "Cookie");
+const db = (await getDb()).$extendTables<{
+  ec_blueprint_changes: ArtifactRow;
+}>();
+const rows = await db
+  .selectFrom("ec_blueprint_changes")
+  .select(["id", "slug", "status", "live_revision_id", "draft_revision_id"])
+  .where("slug", "=", slug)
+  .where("deleted_at", "is", null)
+  .limit(2)
+  .execute();
+if (rows.length > 1) {
+  return new Response("Change 路徑不唯一。", {
+    status: 503,
+    headers: { "Cache-Control": "private, no-store" },
+  });
 }
-if (!entry) Astro.response.status = 404;
-
-const summaries = entry && !result.isPreview
-  ? await listPublishedChangeSummaries(source.changeEntries)
-  : [];
-const summary = entry && change
-  ? result.isPreview
-    ? summarizeChange({ id: entry.id, data: change }, [])
-    : summaries.find((candidate) => candidate.slug === slug) ?? summarizeChange({ id: entry.id, data: change }, [])
-  : undefined;
-const visibleHrefs = summaries.map((item) => item.href);
-if (result.isPreview) visibleHrefs.unshift(`/changes/${slug}`);
-const changesTree = createChangesTree(source.changes.pageTree, visibleHrefs);
-const tree = createChangesBreadcrumbTree(changesTree);
-const revision = result.isPreview && typeof change?.draftRevisionId === "string"
-  ? change.draftRevisionId
-  : undefined;
-const contentHash = result.isPreview && change ? await acceptedContentHash(change) : undefined;
+const row = rows[0];
+const runtime = env as {
+  BLUEPRINT_PAGES: ChangeArtifactStore;
+};
+return serveChangeArtifact({
+  request: Astro.request,
+  slug,
+  entry: row ? {
+    id: row.id,
+    slug: row.slug,
+    status: row.status,
+    liveRevisionId: row.live_revision_id,
+    draftRevisionId: row.draft_revision_id,
+  } : null,
+  rendererId: import.meta.env.BLUEPRINT_RENDERER_ID ?? "",
+  store: runtime.BLUEPRINT_PAGES,
+  preview: getRequestContext()?.preview,
+});
 ---
-
-<Layout>
-  <title>{change?.title ?? "找不到 Change"} · Blueprint</title>
-  {result.isPreview && <meta name="robots" content="noindex, nofollow" />}
-  <Docs
-    client:load
-    tree={tree}
-    pathname={Astro.url.pathname.replace(/\.html$/u, "")}
-    params={Astro.params}
-    hasChanges={true}
-    page={{
-      tableOfContent: { enabled: false },
-      breadcrumb: { includeRoot: { url: "/changes" }, includePage: true },
-    }}
-  >
-    <main data-emdash-change={slug} data-emdash-preview={result.isPreview ? "true" : undefined} data-emdash-revision={revision} data-emdash-content-sha256={contentHash}>
-      {result.isPreview && <p class="mb-4 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">私密預覽 · 尚未發布</p>}
-      {change && summary ? (
-        <>
-          <ChangeHeader
-            title={change.title}
-            status={summary.status}
-            mergedAt={summary.mergedAt}
-            metrics={summary.metrics}
-            scenarioCount={summary.scenarioCount}
-          />
-          <EmDashChangeBlocks blocks={change.blocks} />
-        </>
-      ) : (
-        <section>
-          <h1>找不到這篇 Change</h1>
-          <p>文章不存在，或目前尚未公開。</p>
-        </section>
-      )}
-    </main>
-  </Docs>
-</Layout>
-
-<script>
-  import "../../scripts/change-disclosure";
-</script>

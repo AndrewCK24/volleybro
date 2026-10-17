@@ -213,6 +213,8 @@ Following HIG [Accessibility](https://developer.apple.com/design/human-interface
 
 Saira is the primary Latin heading/body face; Noto Sans TC is the CJK fallback in `--font-sans`. Saira Stencil One is reserved for the existing V mark. Use semantic roles and the Tailwind rem scale, never arbitrary `text-[Npx]` literals.
 
+Blueprint, the documentation site, sets code — code blocks, annotated diffs and inline code — in Sarasa Mono TC, Regular and Bold, so one CJK glyph is exactly two Latin cells wide; its prose and headings keep the faces above. It self-hosts the official release as `unicode-range` woff2 slices; a page downloads only the slices its characters need.
+
 The floor is `text-xs` (0.75rem); body and description copy is at least `text-sm`. Item rows follow HIG list type: `ItemTitle` is `text-body-list` (17px) and `ItemDescription` is `text-subheadline` (15px), both theme tokens in `globals.css`; global `body` stays `text-base`. Text directly on court or free-zone surfaces is at least `text-base`. Reserve `text-xs` for badges, meta labels and the Beta mark. App components retain their context-specific sizes. A digit in a fixed-size badge may be smaller only when the same number appears elsewhere.
 
 Following HIG [Typography](https://developer.apple.com/design/human-interface-guidelines/typography) and [Layout](https://developer.apple.com/design/human-interface-guidelines/layout), support text enlargement and adaptive layout. For the PWA, verify text at 200% enlargement: content and controls must remain readable and operable without clipping or overlap; rows may grow and horizontal groups may stack. Do not disable browser zoom. A repeated badge value does not waive legibility or resizing checks. Native correspondence is semantic text styles and Dynamic Type, not a CSS-pixel-to-point conversion.
@@ -298,6 +300,8 @@ Incumbent Landing examples: header shell 16/6/10, theme switcher 10/4/6, entry c
 Use the versioned `diagram` v1 block for static diagrams whose geometry, text, markers or layout must be preserved exactly. The block accepts typed numeric geometry and controlled paint values; its renderer escapes text and does not accept raw SVG, HTML, CSS, scripts, event attributes or URL paints. Add a new schema version when the stored contract changes.
 
 Use `interactive_flowchart` when readers need to select a node and inspect its authored details. It owns interaction state and its declared node/edge data. A static `diagram` does not infer graph topology or add interaction. Do not use `diagram` as a way to embed executable or arbitrary markup.
+
+Use `step_walkthrough` when a proposal compares paths through a flow: readers pick a scenario and step through it while a flow map highlights the current node and each actor's state is shown side by side. A static UI design can stay a screenshot; a path or flow comparison keeps this interaction, because a frame sequence alone loses which path the reader is on.
 
 ### Buttons and controls
 

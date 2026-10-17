@@ -6,6 +6,8 @@ import {
   summarizeChange,
   type PullRequestSummary,
 } from "./github-change-data";
+import { http, HttpResponse } from "msw";
+import { server } from "../../../test/support/msw/server";
 
 class MemoryD1 {
   rows = new Map<string, { payload: string; expires_at: number | null }>();
@@ -81,7 +83,11 @@ const openPullRequest = {
 };
 
 describe("GitHub derived Change status and metrics", () => {
-  const originalFetch = Object.getOwnPropertyDescriptor(globalThis, "fetch");
+  let originalFetch: PropertyDescriptor | undefined;
+
+  beforeAll(() => {
+    originalFetch = Object.getOwnPropertyDescriptor(globalThis, "fetch");
+  });
 
   afterEach(() => {
     jest.restoreAllMocks();
@@ -192,6 +198,12 @@ describe("GitHub derived Change status and metrics", () => {
   it("does not fail public Change status when the cache database is unavailable", async () => {
     const db = new MemoryD1();
     db.hasReadFailure = true;
+    server.use(
+      http.get(
+        "https://api.github.com/repos/andrewck24/volleybro/pulls/552",
+        () => HttpResponse.error(),
+      ),
+    );
     await expect(
       readPullRequestSummaries(
         ["https://github.com/andrewck24/volleybro/pull/552"],
@@ -391,7 +403,22 @@ describe("GitHub derived Change status and metrics", () => {
           title: "New Change",
           pull_requests: [],
           publishedAt: "2026-10-12T08:00:00Z",
-          blocks: [{ _type: "scenario", _version: 1 }],
+          blocks: [
+            { _type: "scenario", _version: 1 },
+            {
+              _type: "disclosure",
+              _version: 1,
+              summary: "Details",
+              blocks: [
+                { _type: "scenario", _version: 1 },
+                {
+                  _type: "scenario_cards",
+                  _version: 1,
+                  items: '[{"id":"nested-1"},{"id":"nested-2"}]',
+                },
+              ],
+            },
+          ],
         },
       },
       [],
@@ -401,7 +428,7 @@ describe("GitHub derived Change status and metrics", () => {
       slug: "new-change",
       status: "in-progress",
       publishedAt: "2026-10-12T08:00:00Z",
-      scenarioCount: 1,
+      scenarioCount: 4,
     });
     expect(summary.metrics).toBeUndefined();
   });
@@ -428,13 +455,29 @@ describe("GitHub derived Change status and metrics", () => {
     ]);
   });
 
-  it("derives scenarios only from the structured scenario blocks", () => {
+  it("counts scenarios in disclosure trees without scanning unrelated block data", () => {
     expect(
       scenarioCount([
         { _type: "scenario" },
         { _type: "scenario_cards", items: '[{"id":"S1"},{"id":"S2"}]' },
+        {
+          _type: "disclosure",
+          blocks: [
+            { _type: "scenario" },
+            { _type: "scenario_cards", items: '[{"id":"S3"}]' },
+            { _type: "code", code: '{"_type":"scenario"}' },
+            {
+              _type: "variant_gallery",
+              frames: [{ blocks: [{ _type: "scenario" }] }],
+            },
+            {
+              _type: "disclosure",
+              blocks: [{ _type: "scenario" }],
+            },
+          ],
+        },
         { _type: "scenario_cards", items: "not-json" },
       ]),
-    ).toBe(3);
+    ).toBe(6);
   });
 });

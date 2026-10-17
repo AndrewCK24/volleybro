@@ -1,0 +1,62 @@
+---
+import { Docs } from "./docs";
+import EmDashChangeBlocks from "./emdash-change-blocks.astro";
+import { ChangeHeader } from "./change-header";
+import Layout from "./layout.astro";
+import type { ChangeData } from "../lib/emdash-change-record";
+import type { ChangeSummary } from "../lib/github-change-data";
+import type { Root } from "fumadocs-core/page-tree";
+
+interface Props {
+  slug: string;
+  change: ChangeData;
+  summary: ChangeSummary;
+  tree: Root;
+  preview?: {
+    revisionId: string;
+    contentHash: string;
+  };
+}
+
+const { slug, change, summary, tree, preview } = Astro.props;
+---
+
+<Layout>
+  <title>{change.title} · Blueprint</title>
+  {preview && <meta name="robots" content="noindex, nofollow" />}
+  <Docs
+    client:load
+    tree={tree}
+    pathname={`/changes/${slug}`}
+    params={{ slug }}
+    hasChanges={true}
+    liveChanges={!preview}
+    page={{
+      tableOfContent: { enabled: false },
+      breadcrumb: { includeRoot: { url: "/changes" }, includePage: true },
+    }}
+  >
+    <main
+      data-emdash-change={slug}
+      data-emdash-preview={preview ? "true" : undefined}
+      data-emdash-revision={preview?.revisionId}
+      data-emdash-content-sha256={preview?.contentHash}
+    >
+      {preview && <p class="mb-4 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">私密預覽 · 尚未發布</p>}
+      <ChangeHeader
+        client:load
+        slug={preview ? undefined : slug}
+        title={change.title}
+        status={summary.status}
+        mergedAt={summary.mergedAt}
+        metrics={preview ? undefined : summary.metrics}
+        scenarioCount={summary.scenarioCount}
+      />
+      <EmDashChangeBlocks blocks={change.blocks} />
+    </main>
+  </Docs>
+</Layout>
+
+<script>
+  import "../scripts/change-disclosure";
+</script>

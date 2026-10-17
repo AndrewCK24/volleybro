@@ -1,0 +1,28 @@
+---
+import { PortableText } from "emdash/ui";
+import type { TldrBlock } from "../lib/emdash-change-record";
+import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
+import EmDashCodeBlock from "./emdash-code-block.astro";
+import { TLDR } from "./tldr";
+
+const { node } = Astro.props as { node: TldrBlock };
+---
+
+<TLDR>
+  <PortableText
+    value={node.blocks}
+    components={{
+      block: {
+        normal: EmDashPortableTextBlock,
+        h1: EmDashPortableTextBlock,
+        h2: EmDashPortableTextBlock,
+        h3: EmDashPortableTextBlock,
+        h4: EmDashPortableTextBlock,
+        h5: EmDashPortableTextBlock,
+        h6: EmDashPortableTextBlock,
+        blockquote: EmDashPortableTextBlock,
+      },
+      type: { code: EmDashCodeBlock },
+    }}
+  />
+</TLDR>

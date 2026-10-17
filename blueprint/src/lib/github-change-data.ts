@@ -46,6 +46,7 @@ export type ChangeEntryForSummary = {
     description?: string;
     pull_requests?: Array<{ url?: string }>;
     blocks?: unknown[];
+    scenarioCount?: number;
     publishedAt?: Date | string | null;
   };
 };
@@ -100,19 +101,32 @@ export function parseAllowedPullRequestUrl(value: string): number | null {
 }
 
 export function scenarioCount(blocks: unknown): number {
-  if (!Array.isArray(blocks)) return 0;
-  return blocks.reduce((count, block) => {
-    if (!block || typeof block !== "object") return count;
-    const record = block as Record<string, unknown>;
-    if (record._type === "scenario") return count + 1;
-    if (record._type !== "scenario_cards") return count;
-    try {
-      const items = JSON.parse(String(record.items ?? "")) as unknown;
-      return count + (Array.isArray(items) ? items.length : 0);
-    } catch {
-      return count;
+  const pending: unknown[] = [blocks];
+  let count = 0;
+  while (pending.length > 0) {
+    const current = pending.pop();
+    if (!Array.isArray(current)) continue;
+    for (const block of current) {
+      if (!block || typeof block !== "object") continue;
+      const record = block as Record<string, unknown>;
+      if (record._type === "scenario") {
+        count += 1;
+      } else if (record._type === "scenario_cards") {
+        try {
+          const items = JSON.parse(String(record.items ?? "")) as unknown;
+          if (Array.isArray(items)) count += items.length;
+        } catch {
+          // Malformed card metadata contributes no scenarios.
+        }
+      } else if (
+        record._type === "disclosure" &&
+        Array.isArray(record.blocks)
+      ) {
+        pending.push(record.blocks);
+      }
     }
-  }, 0);
+  }
+  return count;
 }
 
 function cacheKeyForPr(number: number) {
@@ -369,16 +383,7 @@ export async function readPullRequestSummaries(
 }
 
 export function summarizeChange(
-  input: {
-    id: string;
-    data: {
-      title?: string;
-      description?: string;
-      pull_requests?: Array<{ url?: string }>;
-      blocks?: unknown[];
-      publishedAt?: Date | string | null;
-    };
-  },
+  input: ChangeEntryForSummary,
   prs: PullRequestSummary[],
 ): ChangeSummary {
   const requiredIds = [
@@ -439,7 +444,7 @@ export function summarizeChange(
     publishedAt: publishedAt ?? undefined,
     mergedAt,
     metrics,
-    scenarioCount: scenarioCount(input.data.blocks),
+    scenarioCount: input.data.scenarioCount ?? scenarioCount(input.data.blocks),
   };
 }
 

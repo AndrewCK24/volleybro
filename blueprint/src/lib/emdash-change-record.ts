@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { diagramBlockSchema } from "./diagram-schema.ts";
+import { annotatedDiffBlockSchema } from "./annotated-diff-block.ts";
+import { stepWalkthroughBlockSchema } from "./step-walkthrough-block.ts";
 
 const portableSpanSchema = z.strictObject({
   _key: z.string().optional(),
@@ -16,6 +18,9 @@ const safeHrefSchema = z.string().refine((value) => {
     return false;
   }
 }, "Expected a safe link URL.");
+const documentAnchorIdSchema = z
+  .string()
+  .regex(/^[\p{L}\p{N}][\p{L}\p{M}\p{N}_:.-]*$/u);
 
 const markDefinitionSchema = z.strictObject({
   _key: z.string().min(1),
@@ -27,10 +32,7 @@ const markDefinitionSchema = z.strictObject({
 const textBlockSchema = z
   .strictObject({
     _key: z.string().optional(),
-    id: z
-      .string()
-      .regex(/^[\p{L}\p{N}][\p{L}\p{M}\p{N}_:.-]*$/u)
-      .optional(),
+    id: documentAnchorIdSchema.optional(),
     _type: z.literal("block"),
     children: z.array(portableSpanSchema),
     markDefs: z.array(markDefinitionSchema).optional(),
@@ -145,6 +147,8 @@ const standardBlockSchema = z.discriminatedUnion("_type", [
   tableBlockSchema,
 ]);
 
+export type PortableTextCoreBlock = z.infer<typeof standardBlockSchema>;
+
 const portableTextFrameBlockSchema = z.union([
   standardBlockSchema,
   diagramBlockSchema,
@@ -156,6 +160,81 @@ export type PortableTextFrameBlock = z.infer<
 
 const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
   z.strictObject({ ...shape, _key: z.string().min(1).optional() });
+
+const tldrBlockSchema = versionedBlock({
+  _type: z.literal("tldr"),
+  _version: z.literal(1),
+  blocks: z.array(standardBlockSchema),
+});
+
+export type TldrBlock = z.infer<typeof tldrBlockSchema>;
+
+const MAX_DISCLOSURE_DEPTH = 8;
+
+export interface DisclosureBlock {
+  _type: "disclosure";
+  _version: 1;
+  _key?: string;
+  id?: string;
+  summary: string;
+  blocks: ChangeBlock[];
+}
+
+function hasExcessiveDisclosureDepth(input: unknown): boolean {
+  const pending: Array<{ value: unknown; depth: number }> = [
+    { value: input, depth: 1 },
+  ];
+  while (pending.length > 0) {
+    const current = pending.pop();
+    if (
+      !current ||
+      !current.value ||
+      typeof current.value !== "object" ||
+      Array.isArray(current.value)
+    )
+      continue;
+    const candidate = current.value as Record<string, unknown>;
+    if (candidate._type !== "disclosure") continue;
+    if (current.depth > MAX_DISCLOSURE_DEPTH) return true;
+    if (!Array.isArray(candidate.blocks)) continue;
+    for (const child of candidate.blocks) {
+      if (
+        child &&
+        typeof child === "object" &&
+        (child as Record<string, unknown>)._type === "disclosure"
+      )
+        pending.push({ value: child, depth: current.depth + 1 });
+    }
+  }
+  return false;
+}
+
+const disclosureBlockSchema: z.ZodType<DisclosureBlock> = z.preprocess(
+  (input, context) => {
+    if (
+      !input ||
+      typeof input !== "object" ||
+      Array.isArray(input) ||
+      (input as Record<string, unknown>)._type !== "disclosure"
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Expected a disclosure block.",
+      });
+      return z.NEVER;
+    }
+    return input;
+  },
+  z.lazy(() =>
+    versionedBlock({
+      _type: z.literal("disclosure"),
+      _version: z.literal(1),
+      id: documentAnchorIdSchema.optional(),
+      summary: z.string().trim().min(1),
+      blocks: z.array(blockSchema),
+    }),
+  ),
+);
 
 const variantChoiceSchema = z.strictObject({
   id: z
@@ -324,10 +403,14 @@ const taxonomyTermSchema: z.ZodType = z.lazy(() =>
   }),
 );
 
-export const blockSchema = z.union([
+const blockSchemaBase = z.union([
   standardBlockSchema,
   diagramBlockSchema,
   variantGalleryBlockSchema,
+  tldrBlockSchema,
+  disclosureBlockSchema,
+  annotatedDiffBlockSchema,
+  stepWalkthroughBlockSchema,
   versionedBlock({
     _type: z.literal("decision_cards"),
     _version: z.literal(1),
@@ -359,6 +442,17 @@ export const blockSchema = z.union([
     details: z.string(),
   }),
 ]);
+
+export const blockSchema = z.preprocess((input, context) => {
+  if (hasExcessiveDisclosureDepth(input)) {
+    context.addIssue({
+      code: "custom",
+      message: `Disclosures cannot be nested more than ${MAX_DISCLOSURE_DEPTH} levels.`,
+    });
+    return z.NEVER;
+  }
+  return input;
+}, blockSchemaBase);
 
 const changeDataBaseSchema = z.strictObject({
   title: z.string().trim().min(1),
@@ -487,28 +581,35 @@ export function canonicalizeContentValue(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 
+async function hashValidatedAcceptedContent(
+  value: z.infer<typeof acceptedContentSchema>,
+): Promise<string> {
+  const content = acceptedHashProjection(value);
+  const bytes = new TextEncoder().encode(canonicalizeContentValue(content));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function acceptedContentHashFromValidatedChange(
+  value: ChangeData,
+): Promise<string> {
+  return hashValidatedAcceptedContent({
+    title: value.title,
+    description: value.description ?? undefined,
+    linear_issue: value.linear_issue,
+    blocks: value.blocks,
+  });
+}
+
 export async function acceptedContentHash(value: unknown): Promise<string> {
   const stored = changeDataSchema.safeParse(value);
   if (!stored.success)
     throw new Error(
       "Change content does not match the accepted EmDash schema.",
     );
-  const parsed = acceptedContentSchema.safeParse({
-    title: stored.data.title,
-    description: stored.data.description ?? undefined,
-    linear_issue: stored.data.linear_issue,
-    blocks: stored.data.blocks,
-  });
-  if (!parsed.success)
-    throw new Error(
-      "Change content does not match the accepted EmDash schema.",
-    );
-  const content = acceptedHashProjection(parsed.data);
-  const bytes = new TextEncoder().encode(canonicalizeContentValue(content));
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
+  return acceptedContentHashFromValidatedChange(stored.data);
 }
 
 export function parseJsonField<T>(

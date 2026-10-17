@@ -1,3 +1,5 @@
+import { useChangeSummaries } from "@/lib/change-summary-client";
+import { createChangesBreadcrumbTree } from "@/lib/changes-tree";
 import { navigate } from "astro:transitions/client";
 import type { AstroProviderProps } from "fumadocs-core/framework/astro";
 import type { Root } from "fumadocs-core/page-tree";
@@ -17,6 +19,7 @@ export function Docs({
   params,
   page,
   hasChanges,
+  liveChanges = false,
 }: {
   children: ReactNode;
   tree: Root;
@@ -24,7 +27,19 @@ export function Docs({
   params: AstroProviderProps["params"];
   page?: DocsPageProps;
   hasChanges: boolean;
+  liveChanges?: boolean;
 }) {
+  const remote = useChangeSummaries(liveChanges);
+  const visibleTree = remote.changes
+    ? createChangesBreadcrumbTree({
+        name: "Changes",
+        children: remote.changes.map((change) => ({
+          type: "page" as const,
+          name: change.title,
+          url: change.href,
+        })),
+      })
+    : tree;
   return (
     <RootProvider
       pathname={pathname}
@@ -33,7 +48,7 @@ export function Docs({
       search={{ options: { type: "static" } }}
     >
       <DocsLayout
-        tree={tree}
+        tree={visibleTree}
         nav={{ title: "Blueprint" }}
         sidebar={{
           tabs: [

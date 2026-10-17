@@ -13,6 +13,9 @@ CHANGELOG.md
 blueprint/dist/
 blueprint/.astro/
 blueprint/.wrangler/
+blueprint/.emdash/page-artifacts/
+blueprint/.emdash/page-artifacts.previous/
+blueprint/.emdash/.page-artifacts-*/
 blueprint/.emdash/migrations.json
 blueprint/emdash-env.d.ts
 

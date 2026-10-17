@@ -108,6 +108,8 @@ Integration tests run against a disposable instance of the production database e
 
 Blueprint's Cloudflare D1 cache has its own persistence contract test at `blueprint/test/integration/persistence/`; it runs against Node's real in-memory SQLite engine, applies the checked-in EmDash D1 migration, and is included in the Blueprint verification lane. This keeps SQL, migration schema, cache expiry and permanent merge-SHA behavior on a real SQL boundary without involving the app's MongoDB topology.
 
+For Blueprint query-cost verification, capture SQL from actual built-Worker requests using the pinned EmDash query recorder in an isolated local D1 environment. Exercise summaries, search and page/preview lifecycle lookup, then compare costs while increasing body size, unrelated revision history and article count. Record the query plan and distinguish SQLite VM steps from D1 `rows_read`; never label one as the other. A negative control must catch the former request-time JSON scan. Source-string checks or copied SQL alone do not prove the runtime path. Production measurements are bounded and require the separate activation gate.
+
 The directory says what a test proves (ADR-0088):
 
 - **`test/integration/api/`** — assertions that depend on a real database read or write reached through a route. Arrange and read data only through routes and repository interfaces, never through the driver, a Mongoose schema, or a helper that writes through them.

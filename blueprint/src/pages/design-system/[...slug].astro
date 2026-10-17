@@ -15,7 +15,7 @@ import RadiusPage, { toc as radiusToc } from "../../../content/design-system/rad
 import ElevationDepthPage, { toc as elevationDepthToc } from "../../../content/design-system/elevation-depth/index";
 import ComponentLibraryShowcase, { annotatedDiffCode, toc as componentsToc } from "../../../content/design-system/components/index";
 import DiagramShowcase, { toc as diagramsToc } from "../../../content/design-system/diagrams/index";
-import { renderAnnotatedDiffHtml } from "../../lib/annotated-diff-html";
+import { renderAnnotatedDiffHtml } from "../../lib/highlight-html";
 
 const sources = await createBlueprintSources({ includeChanges: false });
 const slug = (Astro.props as { slug: string }).slug;
