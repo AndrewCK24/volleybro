@@ -3,6 +3,7 @@ import { PortableText } from "emdash/ui";
 import type { PortableTextFrameBlock, VariantGalleryBlock } from "../lib/emdash-change-record";
 import EmDashPortableTextBlock from "./emdash-portable-text-block.astro";
 import EmDashDiagramBlock from "./emdash-diagram-block.astro";
+import EmDashCodeBlock from "./emdash-code-block.astro";
 
 const { gallery } = Astro.props as { gallery: VariantGalleryBlock };
 const defaultKey = JSON.stringify(
@@ -56,7 +57,7 @@ const frameKey = (selections: Record<string, string>) =>
             h6: EmDashPortableTextBlock,
             blockquote: EmDashPortableTextBlock,
           },
-          type: { diagram: EmDashDiagramBlock },
+          type: { code: EmDashCodeBlock, diagram: EmDashDiagramBlock },
         }}
       />
     </div>

@@ -1,0 +1,14 @@
+---
+import { renderHighlightedLinesHtml } from "../lib/annotated-diff-html";
+
+const { node } = Astro.props as {
+  node: { code: string; language?: string; filename?: string };
+};
+const html = await renderHighlightedLinesHtml(
+  node.code.split("\n").map((text) => ({ text })),
+  node.language,
+  node.filename,
+);
+---
+
+<div class="not-prose my-6" set:html={html} />

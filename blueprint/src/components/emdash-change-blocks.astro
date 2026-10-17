@@ -6,6 +6,7 @@ import EmDashTypedBlock from "./emdash-typed-block.astro";
 import EmDashTldrBlock from "./emdash-tldr-block.astro";
 import EmDashDisclosureBlock from "./emdash-disclosure-block.astro";
 import EmDashAnnotatedDiff from "./emdash-annotated-diff.astro";
+import EmDashCodeBlock from "./emdash-code-block.astro";
 
 const { blocks: value, hasProseLayout = true } = Astro.props as {
   blocks: ChangeBlock[];
@@ -31,6 +32,7 @@ const { blocks: value, hasProseLayout = true } = Astro.props as {
         blockquote: EmDashPortableTextBlock,
       },
       type: {
+        code: EmDashCodeBlock,
         tldr: EmDashTldrBlock,
         disclosure: EmDashDisclosureBlock,
         annotated_diff: EmDashAnnotatedDiff,
@@ -51,12 +53,5 @@ const { blocks: value, hasProseLayout = true } = Astro.props as {
     --color-surface: var(--card);
     --color-bg-subtle: var(--muted);
     --emdash-caption-color: var(--muted-foreground);
-  }
-
-  .prose :global(.emdash-code code) {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
   }
 </style>
