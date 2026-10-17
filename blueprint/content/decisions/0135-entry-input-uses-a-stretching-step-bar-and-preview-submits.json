@@ -22,5 +22,5 @@
       "reason": "The three-state score Figures plus the pulse are the existing Entry and GamePreview vocabulary, so labels add nothing."
     }
   ],
-  "originChange": "entry-ui"
+  "originChange": "sync-recording"
 }

@@ -20,7 +20,7 @@
     }
   ],
   "consequences": [
-    "A one-time, audit-first and idempotent migration renames existing references and normalizes empty slots.",
+    "Existing references move through the audit-first migration of ADR-0139.",
     "The shared lineup schema changes team and game documents together, so both repository mappings move in one change."
   ],
   "originChange": "team-routes-clean-architecture"
