@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "id": "0139",
+  "title": "Lineup references migrate audit-first and idempotently",
+  "capabilities": ["game-recording/persistence"],
+  "decision": "A dry-run audit first counts legacy `_id` references, resolvable references and empty slots without writing. The migration then renames `_id` to `playerId`, normalizes empty slots to `{ playerId: null, position }`, is idempotent, and leaves already-correct substitution `players.in/out` unchanged.",
+  "context": "Production data may already have lost references, so migration decisions rest on the audit's observed data. Renaming the shared lineup schema affects team and game persistence together.",
+  "consequences": [
+    "One idempotent script migrates both team and game document shapes; running it twice reports zero modifications the second time."
+  ],
+  "originChange": "team-routes-clean-architecture"
+}

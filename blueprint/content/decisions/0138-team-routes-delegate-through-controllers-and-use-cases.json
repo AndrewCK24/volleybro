@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 2,
+  "id": "0138",
+  "title": "Team routes delegate through thin controllers to use cases",
+  "capabilities": ["platform/clean-architecture"],
+  "decision": "`GET`/`PATCH /api/teams/[teamId]` and `PATCH /api/teams/[teamId]/lineups` delegate through thin controllers to `GetTeamUseCase`, `UpdateTeamUseCase` and `UpdateTeamLineupsUseCase`, following `createTeamController` and registering the corresponding DI symbols. Authorization and input validation stay in the route layer.",
+  "consequences": [
+    "The thin pass-through team use cases add ceremony, accepted for consistent Clean Architecture layering: three small files mirror `CreateTeamUseCase`."
+  ],
+  "originChange": "team-routes-clean-architecture"
+}
