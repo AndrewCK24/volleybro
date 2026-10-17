@@ -22,5 +22,5 @@
     "Spec-driven acceptance tests are adopted: they are classified by this same rule, which may call for a directory of their own."
   ],
   "originChange": "testing-tiers",
-  "supersededBy": "0129"
+  "supersededBy": "0140"
 }

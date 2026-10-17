@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "id": "0129",
+  "id": "0140",
   "title": "Tests have three tiers, and the production smoke test is a subset of end-to-end",
   "capabilities": ["platform/testing"],
   "context": "ADR-0085 defined a fourth tier, the API smoke test, that called a deployed backend with no client, and made both it and end-to-end tests wait on a test-only sign-in path. Planning the production smoke test showed that an HTTP-only check cannot see the cookie behaviour that differs between WebKit and Chromium, which is where sign-in on the iOS app most often fails, and that the production smoke test needs no test-only sign-in path: it signs in for real once and reuses that session.",
