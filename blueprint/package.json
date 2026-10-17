@@ -19,6 +19,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "14.3.4",
     "@emdash-cms/cloudflare": "1.2.0",
+    "@fontsource-variable/noto-sans-tc": "^5.3.1",
     "@shikijs/transformers": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -40,10 +41,10 @@
     "@astrojs/markdown-remark": "^7.3.2",
     "@astrojs/mdx": "^8.0.3",
     "@astrojs/react": "^7.0.1",
-    "@babel/core": "^8.0.7",
     "@babel/preset-env": "^8.0.7",
     "@babel/preset-react": "^8.0.1",
     "@babel/preset-typescript": "^8.0.7",
+    "@fontsource-variable/saira": "^5.3.0",
     "@playwright/test": "1.64.0",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
@@ -52,12 +53,13 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "astro": "^7.3.8",
-    "babel-jest": "^30.5.2",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "parse5": "7.3.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "wrangler": "4.150.0"
+    "wrangler": "4.150.0",
+    "@babel/core": "^8.0.7",
+    "babel-jest": "^30.5.2"
   }
 }
