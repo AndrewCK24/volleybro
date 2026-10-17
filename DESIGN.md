@@ -301,6 +301,8 @@ Use the versioned `diagram` v1 block for static diagrams whose geometry, text, m
 
 Use `interactive_flowchart` when readers need to select a node and inspect its authored details. It owns interaction state and its declared node/edge data. A static `diagram` does not infer graph topology or add interaction. Do not use `diagram` as a way to embed executable or arbitrary markup.
 
+Use `step_walkthrough` when a proposal compares paths through a flow: readers pick a scenario and step through it while a flow map highlights the current node and each actor's state is shown side by side. A static UI design can stay a screenshot; a path or flow comparison keeps this interaction, because a frame sequence alone loses which path the reader is on.
+
 ### Buttons and controls
 
 Actions use medium radius (`rounded-md`) and a clear label. Height follows the size rule below: 44px under touch, 36 or 40 under a fine pointer. Elevated variants use an outer ring rather than a solid border; non-outline variants may use a transparent ring and shadow.

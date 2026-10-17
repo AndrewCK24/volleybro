@@ -18,15 +18,19 @@ G2 reviews the code PR only. The G2 PR links the accepted EmDash revision/hash; 
 
 ## Blocks and rendering
 
-Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards` and `interactive_flowchart`, mapped to existing Astro components after strict schema validation. The renderer accepts only an explicit registry of known block types and versions. There is no legacy HTML block, sanitizer or fallback renderer in the current runtime.
+Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards`, `interactive_flowchart` and `step_walkthrough`, mapped to existing Astro components after strict schema validation. The renderer accepts only an explicit registry of known block types and versions. There is no legacy HTML block, sanitizer or fallback renderer in the current runtime.
 
 `tldr` version 1 wraps a `blocks` array of native Portable Text content in the Blueprint TLDR component. `disclosure` version 1 stores a non-empty `summary`, an optional document anchor `id`, and a `blocks` array from the same closed registry. It renders semantic `details` and `summary`, preserving nested review/shard groups up to eight disclosure levels. Raw HTML and executable content are rejected. Draft decision discussion may use a disclosure without creating or accepting an ADR.
 
 `annotated_diff` version 1 stores ordered `{ kind, text }` lines, where `kind` is `context`, `add` or `remove`. The renderer escapes code as text and displays visible plus/minus marks, accessible added/removed labels, and semantic colors. It does not parse Markdown, annotations or HTML at runtime.
 
+Portable Text `code` blocks and `annotated_diff` are syntax-highlighted with Shiki during the static build, using the `github-light` and `github-dark` themes through CSS variables. A missing or unknown language renders as plain text. No highlighting runs at request time.
+
 `diagram` version 1 preserves static diagram viewBox, source IDs, typed shapes and numeric paths, positioned text runs, nested groups/transforms and typed marker geometry. Paint accepts controlled Blueprint tokens, strict hex colors, `none` or `currentColor`. Labels are escaped text; raw SVG, arbitrary attributes, CSS, scripts and URL paints are rejected. Authored interactive flowcharts retain the existing `interactive_flowchart` block and complete node details.
 
 `variant_gallery` version 1 is a reusable finite selector for data-authored visual variants. It declares labeled choices, a default selection, and exactly one pre-rendered Portable Text frame for every Cartesian choice combination. Frames contain only standard Portable Text blocks and `diagram` v1; they cannot contain nested galleries or scenario-counting blocks. The server renders every frame with the native Portable Text and typed-diagram renderers. Native buttons switch which existing frame is visible and transfer authored anchor IDs to the active frame, keeping deep links unique. Button labels remain fixed as `aria-pressed` communicates the selection. Authored data never supplies HTML, CSS, JavaScript, or component names.
+
+`step_walkthrough` version 1 presents scenarios that step through a declared flow. It stores a flow map (main-row nodes plus branches under them, each a terminal, process or decision), up to four actors, a system label and, per scenario, ordered steps. Each step names its flow node, gives every actor's state — headline, optional toned status, text lines, optional code and an optional highlight — and a system note. The server renders every step with native markup and build-time highlighted code; native buttons switch scenario and step, and the flow map follows the visible step. Authored data never supplies HTML, CSS, JavaScript, or component names.
 
 ## PR-derived metrics
 

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { diagramBlockSchema } from "./diagram-schema.ts";
 import { annotatedDiffBlockSchema } from "./annotated-diff-block.ts";
+import { stepWalkthroughBlockSchema } from "./step-walkthrough-block.ts";
 
 const portableSpanSchema = z.strictObject({
   _key: z.string().optional(),
@@ -409,6 +410,7 @@ const blockSchemaBase = z.union([
   tldrBlockSchema,
   disclosureBlockSchema,
   annotatedDiffBlockSchema,
+  stepWalkthroughBlockSchema,
   versionedBlock({
     _type: z.literal("decision_cards"),
     _version: z.literal(1),

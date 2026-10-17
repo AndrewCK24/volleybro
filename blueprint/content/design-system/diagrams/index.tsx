@@ -91,6 +91,18 @@ export default function DiagramShowcase() {
         pattern when readers need to compare multiple authored alternatives.
       </p>
 
+      <h2 id="step-walkthrough">Step walkthrough</h2>
+      <p>
+        A versioned step_walkthrough block compares paths through a flow.
+        Readers choose a scenario and step through it with native buttons; a
+        flow map highlights the current node while each actor&apos;s state and
+        the system note appear beside it. Every step is rendered ahead of time.
+      </p>
+      <p>
+        Use it when a proposal&apos;s meaning depends on which path the reader
+        is on. A static UI design can remain a screenshot.
+      </p>
+
       <h2 id="typed-example">Typed data example</h2>
       <p>
         Authored content uses a versioned object. The line below shows the
@@ -114,5 +126,6 @@ export default function DiagramShowcase() {
 export const toc = [
   { title: "Live specimen", url: "#live-specimen", depth: 2 },
   { title: "Variant gallery", url: "#variant-gallery", depth: 2 },
+  { title: "Step walkthrough", url: "#step-walkthrough", depth: 2 },
   { title: "Typed data example", url: "#typed-example", depth: 2 },
 ];

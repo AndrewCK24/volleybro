@@ -7,6 +7,7 @@ import EmDashTldrBlock from "./emdash-tldr-block.astro";
 import EmDashDisclosureBlock from "./emdash-disclosure-block.astro";
 import EmDashAnnotatedDiff from "./emdash-annotated-diff.astro";
 import EmDashCodeBlock from "./emdash-code-block.astro";
+import StepWalkthrough from "./step-walkthrough.astro";
 
 const { blocks: value, hasProseLayout = true } = Astro.props as {
   blocks: ChangeBlock[];
@@ -43,6 +44,7 @@ const { blocks: value, hasProseLayout = true } = Astro.props as {
         interactive_flowchart: EmDashTypedBlock,
         diagram: EmDashTypedBlock,
         variant_gallery: EmDashTypedBlock,
+        step_walkthrough: StepWalkthrough,
       },
     }}
   />
