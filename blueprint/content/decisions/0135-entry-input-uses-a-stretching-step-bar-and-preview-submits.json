@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "id": "0135",
+  "title": "Entry input uses a three-step stretching progress bar, and the Preview submits",
+  "capabilities": ["game-recording/rally-recording"],
+  "decision": "The progress bar covers the whole flow — player → our side → their side; an opponent error belongs to their score, so choosing it collapses the flow to one submittable step. It uses the stretching-segment style: the current segment stretches, segments carry no text, and one unnumbered caption below rotates with an animation. A step cannot advance before the previous one is complete. Steps change by tapping the bar or swiping: the gesture is captured only on drag intent, aria-disabled replaces disabled, and a click right after a swipe is suppressed. The Preview, laid out like an Entry, carries submission: its left score Figures show the previous entry when idle, the current score muted while the result is undecided, and the result score with the winner coloured once decided; it pulses while input is in progress, shows a ring and a send icon when complete, and submitting freezes it with one background flash. The mockup settled display logic, animation and position only; visual styling was refined in the proposal.",
+  "alternatives": [
+    {
+      "option": "Progress bar styles 1–4 (segmented fill, connected dots, numbered badges, thin line)",
+      "reason": "Compared side by side in the Q0 mockup; style 5's stretching animation also serves collapsing an opponent error into a single step."
+    },
+    {
+      "option": "Previous and next buttons",
+      "reason": "Swiping and tapping the progress bar already cover navigation, and buttons take panel space."
+    },
+    {
+      "option": "Double-tap the same button on the third step to submit (the current behaviour)",
+      "reason": "An implicit confirmation is undiscoverable; submission moves to the Preview, the one highlight in the interface."
+    },
+    {
+      "option": "Text labels (in progress / previous) for the Preview state",
+      "reason": "The three-state score Figures plus the pulse are the existing Entry and GamePreview vocabulary, so labels add nothing."
+    }
+  ],
+  "originChange": "entry-ui"
+}
