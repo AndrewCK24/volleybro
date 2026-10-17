@@ -43,6 +43,13 @@ export const stepWalkthroughBlockSchema = z
       .array(z.strictObject({ id: idSchema, label: z.string().min(1).max(60) }))
       .min(1)
       .max(4),
+    legend: z
+      .strictObject({
+        terminal: z.string().min(1).max(40).optional(),
+        process: z.string().min(1).max(40).optional(),
+        decision: z.string().min(1).max(40).optional(),
+      })
+      .optional(),
     systemLabel: z.string().min(1).max(60),
     codeLanguage: z.string().min(1).max(40).optional(),
     scenarios: z

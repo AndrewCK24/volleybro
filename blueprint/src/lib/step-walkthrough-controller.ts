@@ -29,6 +29,11 @@ export function installStepWalkthroughController(root: ParentNode) {
         '[data-step-nav="next"]',
       )!.disabled = index === steps.length - 1;
       panel.dataset.currentStep = String(index);
+      const status =
+        walkthrough.querySelector<HTMLElement>("[data-step-status]");
+      const title =
+        steps[index].querySelector<HTMLElement>("[data-step-title]");
+      if (status && title) status.textContent = title.textContent?.trim() ?? "";
       const activeNode = steps[index].dataset.node;
       for (const flowNode of flowNodes) {
         if (flowNode.dataset.flowNode === activeNode)

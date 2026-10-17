@@ -59,7 +59,7 @@ function Harness() {
       data-node={node}
       hidden={index !== 0}
     >
-      {title}
+      <p data-step-title>{title}</p>
     </div>
   );
   const panel = (id: string, titles: [string, string][], hidden: boolean) => (
@@ -83,6 +83,7 @@ function Harness() {
   );
   return (
     <section data-step-walkthrough>
+      <p data-step-status data-testid="status" />
       <span data-flow-node="compose" data-testid="compose" />
       <span data-flow-node="check" data-testid="check" />
       <span data-flow-node="conflict" data-testid="conflict" />
@@ -112,20 +113,23 @@ function Harness() {
   );
 }
 
+const title = (text: string) =>
+  screen.getByText(text, { selector: "[data-step-title]" });
+
 describe("step walkthrough", () => {
   it("steps through a scenario and highlights each step's flow node", () => {
     render(<Harness />);
     installStepWalkthroughController(document);
 
-    expect(screen.getByText("Happy compose")).toBeVisible();
+    expect(title("Happy compose")).toBeVisible();
     expect(screen.getByTestId("compose")).toHaveAttribute(
       "data-active",
       "true",
     );
 
     fireEvent.click(screen.getByText("next happy"));
-    expect(screen.getByText("Happy check")).toBeVisible();
-    expect(screen.getByText("Happy compose")).not.toBeVisible();
+    expect(title("Happy check")).toBeVisible();
+    expect(title("Happy compose")).not.toBeVisible();
     expect(screen.getByTestId("check")).toHaveAttribute("data-active", "true");
     expect(screen.getByTestId("compose")).not.toHaveAttribute("data-active");
     expect(screen.getByText("next happy")).toBeDisabled();
@@ -134,8 +138,10 @@ describe("step walkthrough", () => {
       "step",
     );
 
+    expect(screen.getByTestId("status")).toHaveTextContent("Happy check");
+
     fireEvent.click(screen.getByLabelText("happy step 1"));
-    expect(screen.getByText("Happy compose")).toBeVisible();
+    expect(title("Happy compose")).toBeVisible();
     expect(screen.getByText("previous happy")).toBeDisabled();
   });
 
@@ -154,11 +160,12 @@ describe("step walkthrough", () => {
       "aria-pressed",
       "false",
     );
-    expect(screen.getByText("Happy check")).not.toBeVisible();
-    expect(screen.getByText("Race check")).toBeVisible();
+    expect(title("Happy check")).not.toBeVisible();
+    expect(title("Race check")).toBeVisible();
     expect(screen.getByTestId("check")).toHaveAttribute("data-active", "true");
     fireEvent.click(screen.getByText("next race"));
-    expect(screen.getByText("Race conflict")).toBeVisible();
+    expect(title("Race conflict")).toBeVisible();
+    expect(screen.getByTestId("status")).toHaveTextContent("Race conflict");
     expect(screen.getByTestId("conflict")).toHaveAttribute(
       "data-active",
       "true",
