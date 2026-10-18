@@ -202,6 +202,8 @@ async function getJson<T>(
   const headers = new Headers({
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    // GitHub rejects requests without one with 403, and Workers fetch sends none.
+    "User-Agent": "volleybro-blueprint",
   });
   if (env.GITHUB_TOKEN)
     headers.set("Authorization", `Bearer ${env.GITHUB_TOKEN}`);

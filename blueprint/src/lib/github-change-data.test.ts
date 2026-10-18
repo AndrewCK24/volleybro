@@ -212,6 +212,27 @@ describe("GitHub derived Change status and metrics", () => {
     ).resolves.toEqual([]);
   });
 
+  it("identifies itself with a User-Agent, which GitHub requires of every API request", async () => {
+    server.use(
+      http.get(
+        "https://api.github.com/repos/andrewck24/volleybro/pulls/552*",
+        ({ request }) =>
+          request.headers.get("User-Agent") === "volleybro-blueprint"
+            ? HttpResponse.json(
+                request.url.includes("/files")
+                  ? [{ filename: "src/example.ts" }]
+                  : openPullRequest,
+              )
+            : new HttpResponse(null, { status: 403 }),
+      ),
+    );
+    const summaries = await readPullRequestSummaries(
+      ["https://github.com/andrewck24/volleybro/pull/552"],
+      { env: { BLUEPRINT_DB: new MemoryD1() } },
+    );
+    expect(summaries).toEqual([expect.objectContaining({ number: 552 })]);
+  });
+
   it("serves verified GitHub data even when writing the cache fails", async () => {
     const db = new MemoryD1();
     db.hasWriteFailure = true;
