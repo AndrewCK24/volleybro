@@ -71,7 +71,9 @@ The gates that must pass before a pull request are listed in `WORKFLOW.md`'s Rep
 
 ### Working in a git worktree
 
-A worktree starts without `node_modules`. Run `pnpm install --frozen-lockfile --prefer-offline` in it rather than symlinking the main checkout's `node_modules`, which pnpm's dependency check and Turbopack both reject.
+A worktree starts without `node_modules`. The [pnpm version update policy](docs/maintenance-policy.md#pnpm-version-updates) defines the repository version pin and how to update it.
+
+Run `pnpm install --frozen-lockfile --prefer-offline` in it rather than symlinking the main checkout's `node_modules`, which pnpm's dependency check and Turbopack both reject.
 
 Until it is installed, the worktree also has no git hooks: husky's `prepare` script creates them, so commits skip commitlint and lint-staged without a warning and only CI catches the message. `scripts/worktree-setup.sh` installs when `node_modules` is missing and does nothing otherwise; have agent tools run it whenever they create a worktree:
 
