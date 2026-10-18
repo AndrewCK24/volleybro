@@ -6,7 +6,7 @@ Blueprint presents current capability knowledge and published Change pages. `WOR
 
 Each Blueprint Change is one EmDash entry at `/changes/<slug>`. The entry holds the complete G1 specification, reader-facing Change content, the associated Linear issue key, an allowlisted GitHub PR URL list, Portable Text and versioned typed blocks. It is the only editable specification/page source. Do not copy the full specification into a Team Doc, Git, or the PR.
 
-Authors and Agents write Portable Text and typed blocks directly through EmDash MCP. Portable Text is the sole article body format; do not add a Markdown-to-Portable Text converter, Markdown or Rich Text renderer, legacy runtime path or sanitizer. Reject raw HTML, HTML/CSS/JavaScript blocks, executable TSX, MDX imports and arbitrary component names. New reusable typed blocks and renderers go through a GitHub code PR.
+Authors and Agents write Portable Text and typed blocks directly through EmDash MCP. Portable Text is the sole article body format. Reject raw HTML, HTML/CSS/JavaScript blocks, executable TSX, MDX imports and arbitrary component names. New reusable typed blocks and renderers go through a GitHub code PR.
 
 Before G1, use EmDash's signed private preview at the same Blueprint route. The page must identify the exact saved draft revision and accepted-content SHA-256. After the developer accepts G1, record the revision and hash on the Linear issue; the publication policy checks Linear and blocks on missing or mismatched evidence. G1 publication makes the accepted entry public. A later G1 content change needs a new draft, preview and acceptance. Updating only the PR URL list does not change the accepted content hash.
 
@@ -18,7 +18,7 @@ G2 reviews the code PR only. The G2 PR links the accepted EmDash revision/hash; 
 
 ## Blocks and rendering
 
-Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards`, `interactive_flowchart` and `step_walkthrough`, mapped to existing Astro components after strict schema validation. The renderer accepts only an explicit registry of known block types and versions. There is no legacy HTML block, sanitizer or fallback renderer in the current runtime.
+Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards`, `interactive_flowchart` and `step_walkthrough`, mapped to existing Astro components after strict schema validation. The renderer accepts only an explicit registry of known block types and versions.
 
 `tldr` version 1 wraps a `blocks` array of native Portable Text content in the Blueprint TLDR component. `disclosure` version 1 stores a non-empty `summary`, an optional document anchor `id`, and a `blocks` array from the same closed registry. It renders semantic `details` and `summary`, preserving nested review/shard groups up to eight disclosure levels. Raw HTML and executable content are rejected. Draft decision discussion may use a disclosure without creating or accepting an ADR.
 
@@ -34,21 +34,13 @@ Portable Text `code` blocks and `annotated_diff` are syntax-highlighted with Shi
 
 ## PR-derived metrics
 
-Store required GitHub PR URLs as a lookup index, one URL for each required shard. Validate the exact repository and PR URL shape. Derive status, merge date, commits, files changed, insertions, deletions and `src` files from GitHub's PR API; derive scenario count from structured scenario blocks. Store no manual status, merge date, statistics or `facts.json` copy.
+Store required GitHub PR URLs as a lookup index, one URL for each required shard. Validate the exact repository and PR URL shape. Derive status, merge date, commits, files changed, insertions, deletions and `src` files from GitHub's PR API; derive scenario count from structured scenario blocks. Store no manual status, merge date or statistics.
 
 Cache unmerged PR data for at most five minutes. Cache merged responses permanently by merge commit SHA. If GitHub is unavailable, use a still-valid verified cache; otherwise omit metrics and keep the status at **進行中**. Do not infer merge from content, commit prose or Linear status. GitHub read token is an optional Worker secret; do not commit credentials. Stay within Cloudflare Free quotas and do not enable paid overage.
 
 For the pinned EmDash/Cloudflare 1.2.0 media route, a GET performs one R2 `GetObject`; a failed range read may retry once. Workers Free limits requests to 100,000 per day, bounding this route at 6.2 million Class B operations in a 31-day month, below the 10 million R2 Standard free allowance. Keep media behind that Worker route, keep Workers on Free and check shared-account R2 usage before activation; do not enable public-bucket delivery or paid overage. Recheck this bound when upgrading the media adapter. See [Workers limits](https://developers.cloudflare.com/workers/platform/limits/) and [R2 pricing](https://developers.cloudflare.com/r2/pricing/).
 
-## Historical migration and retirement
-
-Convert the fixed `blueprint-changes` snapshot completely on the local machine. Import all 45 pages into an isolated EmDash environment and read them back. Before G2, review every page for semantic and visual fidelity, including text, block order, anchors, links, media bytes and alt text, reviews, shards and structured scenario data. Preserve complete page content and incorporate only the latest effective accepted G1 spec for each slug. A page with no lossless supported representation fails; do not skip content or use a fallback. Keep superseded Team Docs in Linear and respect explicit exemptions from Blueprint Change pages.
-
-The verified conversion/import artifact is sealed for promotion. Formal production import uses that same artifact without reconversion; environment-specific media references may be rebound and verified. Retain the original snapshot and archive evidence. The protected archive tag preserves every commit reachable from the fixed snapshot; earlier commits already unreachable at that snapshot are not guaranteed. Require archive and rollback evidence before G2. Retire the remote branch only after migration, read-back, archive and rollback evidence pass and the retirement step is authorized.
-
-Do not import old `facts.json` values as editable fields or use them as current status/statistics. `record-flows` and `sync-recording` remain public historical entries marked **進行中**, with no invented PRs or PR-derived metrics; that migration exception does not accept or implement either Change.
-
-Keep one-time conversion/import scripts, source inputs and tool tests until production import, read-back, formal cutover and rollback evidence are accepted. Then remove them while retaining final receipts and the protected archive. Migration content and audit output do not become a second Git content store.
+## Deployment
 
 Cloudflare activation is a separate, explicit post-G2 approval. At that point, connect Workers Builds to the repository in the Cloudflare Dashboard, create the Free-tier D1, R2 and session KV resources with the pinned Wrangler CLI, and set their IDs in deployment configuration. Store the read-only GitHub API token as the Worker secret `GITHUB_TOKEN`; set EmDash's `linearApiKey` through its plugin admin settings. Do not enable a paid plan or paid overage.
 
@@ -74,7 +66,7 @@ Stage HTML only in ignored `.emdash/page-artifacts/`. Build-only preview routes 
 
 Configure Workers Builds with the repository root and `pnpm --filter blueprint deploy:content` as its deployment command (the ordinary validation build is not the deployment step). This command requires a successful content build and artifact upload before `wrangler deploy`; a renderer-only validation build is not deployable content evidence. Local validation uses `node build/blueprint.mjs --database-file <isolated-sqlite>` and `node build/upload-pages.mjs --local --persist-to <isolated-state>` from `blueprint/`. It never requires production D1 access.
 
-At request time, select lifecycle metadata without loading article blocks. Public access requires published status and the exact current live revision; signed private preview requires EmDash's verified content scope and the current draft/live revision. Verify artifact metadata before streaming. A missing or mismatched artifact returns 503 with `Retry-After`; invalid previews return 403 and deleted/unpublished public pages return 404. Never fall back to SSR, an old revision or legacy content. Private preview remains `no-store` and `noindex`.
+At request time, select lifecycle metadata without loading article blocks. Public access requires published status and the exact current live revision; signed private preview requires EmDash's verified content scope and the current draft/live revision. Verify artifact metadata before streaming. A missing or mismatched artifact returns 503 with `Retry-After`; invalid previews return 403 and deleted/unpublished public pages return 404. Never fall back to SSR or an old revision. Private preview remains `no-store` and `noindex`.
 
 Public article headers and navigation load `/api/change-summaries`. This endpoint reads compact published metadata and catalog scenario counts, then reuses the existing GitHub PR cache. It does not parse article bodies, traverse JSON blocks, poll or stack another browser TTL. GitHub merges therefore do not rebuild article HTML. Build failure or an unfinished build cannot expose a draft; publishing a new revision may temporarily return 503 until its artifact is ready.
 
