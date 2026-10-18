@@ -473,6 +473,14 @@ const changeDataBaseSchema = z.strictObject({
     )
     .max(12)
     .default([]),
+  capabilities: z
+    .array(
+      z
+        .string()
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/u),
+    )
+    .max(12)
+    .default([]),
   blocks: z.array(blockSchema),
   id: z.string().optional(),
   slug: z.string().optional(),

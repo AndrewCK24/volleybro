@@ -1,16 +1,19 @@
 ---
+import { getCollection } from "astro:content";
 import ChangeDocument from "../src/components/change-document.astro";
 import { createChangesBreadcrumbTree } from "../src/lib/changes-tree";
 import { summarizeChange } from "../src/lib/github-change-data";
+import { featureTitlesFromEntries } from "../src/lib/feature-capabilities";
 import type { ChangeBuildEntry } from "./change-build-paths";
 export { getStaticPaths } from "./change-build-paths";
 export const prerender = true;
 
 const { entry } = Astro.props as { entry: ChangeBuildEntry };
+const featureEntries = await getCollection("featurePages");
 const summary = summarizeChange({
   id: entry.slug,
   data: { ...entry.data, scenarioCount: entry.scenarioCount },
-}, []);
+}, [], featureTitlesFromEntries(featureEntries));
 const tree = createChangesBreadcrumbTree({
   name: "Changes",
   children: [{ type: "page", name: entry.data.title, url: `/changes/${entry.slug}` }],
