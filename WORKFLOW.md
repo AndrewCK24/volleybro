@@ -120,7 +120,7 @@ Installed Matt skills and their `skills-lock.json` entries are vendor-managed. D
 
 - Linear owns intake and current operational state. Issues may be archived or deleted after the development lifecycle, so durable repository knowledge must not depend on Linear URLs or IDs. Name other work by its Change slug, or by a short description of it when it has no slug yet.
 - Linear owns execution state and the accepted EmDash revision/hash receipt. The EmDash entry is the complete G1 specification and Change page; do not create a parallel Team Doc spec. Research uses separate Team Docs. Read `docs/agents/issue-tracker.md` before producing or consuming these artifacts.
-- GitHub PRs own G2 code review and acceptance evidence. EmDash holds the G1 specification and published page; the page derives delivery status and statistics from GitHub. Historical store pages are migrated to EmDash, then the protected archive tag preserves the reachable source history.
+- GitHub PRs own G2 code review and acceptance evidence. EmDash holds the G1 specification and published page; the page derives delivery status and statistics from GitHub.
 - Blueprint Features own current capability and sub-capability behavior and constraints, and render the decision records whose `capabilities` name them; the records themselves belong to the repository, not to any Feature page.
 - Code and tests own actual system behavior.
 - Changesets own semantic version and changelog evidence.
@@ -172,7 +172,7 @@ Every Change has a stable kebab-case slug and each batch has one integration bra
 2. Invoke `domain-modeling` through `docs/agents/domain.md` for resolved vocabulary and adopted decisions. Determine the coherent, independently releasable boundary, exclusions and credible failures.
 3. Invoke `to-spec` through `docs/agents/issue-tracker.md`. Resolve its test seams during discussion and put the complete working spec in the execution issue.
 4. Create one EmDash Change entry as a draft and read it back through the signed private preview at the same Blueprint route. Bind the preview to its exact draft revision and canonical accepted-content hash. Do not create a parallel Team Doc specification or Git content copy.
-5. Obtain explicit human acceptance of that complete EmDash revision. Record the exact revision/hash on the execution issue; the publication policy reads it back and blocks publication on mismatch. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance. For the legacy-store migration, G2 also requires a complete local conversion and isolated EmDash import/read-back of all 45 pages, with per-page semantic and visual review plus archive and rollback evidence; every page must pass before G2.
+5. Obtain explicit human acceptance of that complete EmDash revision. Record the exact revision/hash on the execution issue; the publication policy reads it back and blocks publication on mismatch. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance.
 
 G1 accepts the design, scope, batch boundaries and acceptance criteria. It authorizes ticket decomposition and implementation through the next G2; it does not arm unattended execution or authorize platform activation.
 
@@ -228,7 +228,7 @@ The root agent owns ticket granularity and may merge, split or reorder slices du
 
 A slice handed to a subagent travels through context pointers to its ticket, accepted specification and relevant commits, plus the applicable rules from `CONTRIBUTING.md` and `CODING_STANDARDS.md`, the exclusions and the report format. Quote only rules the slice touches; do not duplicate the full spec or repeat background in follow-up messages. The root agent starts only slices with satisfied dependencies and delegates only when independence or context isolation earns its cost. A fresh context must be able to resolve every pointer.
 
-Every Change uses one EmDash entry for its G1 specification and reader-facing page. Authors and Agents write Portable Text and versioned typed blocks directly through EmDash MCP. Read `docs/agents/blueprint.md` for block, publication and migration contracts. Accepted specifications remain in EmDash, not Git or a parallel Team Doc. Decision records remain flat repository-wide files at `blueprint/content/decisions/<nnnn>-<slug>.json`.
+Every Change uses one EmDash entry for its G1 specification and reader-facing page. Authors and Agents write Portable Text and versioned typed blocks directly through EmDash MCP. Read `docs/agents/blueprint.md` for block and publication contracts. Accepted specifications remain in EmDash, not Git or a parallel Team Doc. Decision records remain flat repository-wide files at `blueprint/content/decisions/<nnnn>-<slug>.json`.
 
 ### Change scope
 
@@ -262,7 +262,7 @@ One delivery batch uses one integration branch from the first slice commit throu
 
 Every commit on a Change branch carries a `Blueprint-Change: <slug>` trailer naming that Change; a slice commit also carries `Implements: S0X`, the stable slice ID recorded on its Linear sub-issue. A Sharded Change's commits use the shared slug and add `Shard: <N>` (see Change scope), and a Fast-path commit carries its own trailers instead (see Fast path). `CONTRIBUTING.md` covers how to write a trailer so git parses it.
 
-Change-page content lives in EmDash, not the Change branch. Git contains the Astro renderer, block schemas, publication policy, tests and migration tooling. EmDash content events request an automated SSG build without a Git commit. The build stages revision-bound public and private HTML in a separate private R2 bucket before deploying its matching renderer; requests stream only the currently authorized revision. Push the Change branch when another session or Symphony must resume it.
+Change-page content lives in EmDash, not the Change branch. Git contains the Astro renderer, block schemas, publication policy and tests. EmDash content events request an automated SSG build without a Git commit. The build stages revision-bound public and private HTML in a separate private R2 bucket before deploying its matching renderer; requests stream only the currently authorized revision. Push the Change branch when another session or Symphony must resume it.
 
 Merge a Change into `main` with a merge commit. Squashing collapses the per-slice commits and discards the `Implements` and `Blueprint-Change` trailers that make delivery traceable, which is exactly the evidence Pre-PR code review and Archive depend on. Squash only work that carries no slice history — a single-commit fix or a tooling change — and say so in the pull request.
 
@@ -310,11 +310,9 @@ A manual run keeps a lighter workpad: every field above except `blockers` and `n
 
 Every Change has one EmDash entry. New content is a draft before G1 and the published public page afterward. The build reads published content and current drafts through a bounded read-only snapshot. Content events trigger automated SSG without a Git commit; requests read only lifecycle metadata and stream the matching private R2 artifact. The EmDash entry contains the accepted specification, Portable Text and typed page blocks, Linear issue key and required GitHub PR URL list. Linear records the accepted draft revision/hash; GitHub PRs record G2 code review. An empty PR list is valid for a newly published Change and displays **進行中** without PR-derived metrics.
 
-Portable Text is the sole article body format; typed blocks use versioned, strict allowlisted schemas and existing Astro components. Authors write them directly through EmDash MCP. No Markdown converter, Markdown or Rich Text renderer, legacy runtime path or sanitizer remains. Arbitrary HTML, TSX and JavaScript are rejected. New components and schema versions go through code PRs. GitHub API data derives public status, merge date and PR statistics; typed scenario blocks derive scenario count. No `facts.json`, manual status or manual metrics remain in the current page path.
+Portable Text is the sole article body format; typed blocks use versioned, strict allowlisted schemas and existing Astro components. Authors write them directly through EmDash MCP. Arbitrary HTML, TSX and JavaScript are rejected. New components and schema versions go through code PRs. GitHub API data derives public status, merge date and PR statistics; typed scenario blocks derive scenario count. Status and metrics are derived rather than manually stored.
 
 Blueprint uses Astro server output on the Cloudflare Worker with EmDash, D1 and R2. Restrict all Cloudflare services to Free quotas; do not enable paid overage or a paid plan. A code merge to `main` deploys the renderer. Content events also trigger an automated SSG build and deployment; GitHub status changes use the summary API without rebuilding article HTML. Local development and preview use the pinned project Wrangler CLI and local bindings; production secrets and resource IDs are configured only during separately authorized activation.
-
-The legacy store branch is retired: its 45 pages live in EmDash with no legacy blocks, the protected tag `archive/blueprint-changes-f010a9e020be` preserves the history reachable from the frozen snapshot, and the one-time conversion and import tools are removed.
 
 Provider-native subagents remain within one root session and Change workspace. They never poll or claim the external queue, arm unattended execution, reprioritize intake, or create a parallel lifecycle authority.
 
