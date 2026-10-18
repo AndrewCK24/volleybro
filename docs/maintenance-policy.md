@@ -37,6 +37,12 @@ The executable auto-merge policy is `scripts/dependency-controls.js`, used by `d
 
 Keep pnpm's default environment/project multi-document lockfile and version management. Generate project dependency submissions with native `pnpm sbom --lockfile-only --split`; separate root and Blueprint submissions use their package.json manifest paths so the environment lockfile graph is not replaced. No custom lockfile parser or `pmOnFail: ignore` workaround. After activation, verify GitHub graph coverage and alert visibility against the generated SBOM; a successful upload alone does not prove alerts or updater compatibility. Before adding another workspace, add its native split submission and verify coverage.
 
+### pnpm Version Updates
+
+`package.json`'s exact `packageManager` pin is the sole pnpm version authority. To update it, run `pnpm self-update <version>` from the repository root with the trusted launcher honoring that pin; do not use `pmOnFail: ignore` or synchronize other repositories. pnpm must natively update the environment document at the start of `pnpm-lock.yaml`. Keep the project document's resolved dependencies unchanged unless their update is separately authorized. Then run `pnpm install --frozen-lockfile` and `pnpm verify:all`.
+
+GitHub Actions `pnpm/setup` and Vercel Corepack must read the repository pin. For Cloudflare Workers Builds, set `SKIP_DEPENDENCY_INSTALL=1` and make custom install and build commands select pnpm from the root `packageManager` pin. The local trusted launcher must honor that pin as well.
+
 For a manual assessment with the same policy, use `node scripts/dependency-controls.js validate-files <payload.json>`; the JSON contains `before` (base package.json, pnpm-lock.yaml, pnpm-workspace.yaml, blueprint/package.json text) and `after` (candidate package.json and lockfile text). This does not grant merge permission.
 
 ### Progressive allowlist admission
