@@ -491,6 +491,7 @@ export function InteractiveFlowchart({
   }
 
   const activeDetail = activeId ? details[activeId] : null;
+  const hasDetails = layoutNodes.some((node) => details[node.id]?.body.trim());
   const nodeById = new Map(layoutNodes.map((n) => [n.id, n]));
   const rightmostNode = Math.max(
     0,
@@ -599,21 +600,26 @@ export function InteractiveFlowchart({
   const maxY = Math.max(0, ...ys, ...edgeYs) + pad;
   const vbW = maxX - minX;
   const vbH = maxY - minY;
+  const minimumDiagramWidth = (vbW * 12) / NODE_LABEL_FONT_SIZE;
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-start">
+    <div className="flex flex-wrap items-start gap-4">
       {isMounted ? (
         <span hidden data-blueprint-mockup-mounted="true" />
       ) : (
         <span hidden>載入設計稿…</span>
       )}
-      <div className="min-w-0 flex-1">
+      <div
+        className="min-w-0 overflow-x-auto"
+        style={{ flex: `999 1 ${minimumDiagramWidth}px` }}
+      >
         <svg
           viewBox={`${minX} ${minY} ${vbW} ${vbH}`}
           role="img"
           style={{
             aspectRatio: `${vbW} / ${vbH}`,
             width: "100%",
+            minWidth: minimumDiagramWidth,
             height: "auto",
           }}
           preserveAspectRatio="xMidYMid meet"
@@ -839,20 +845,22 @@ export function InteractiveFlowchart({
         </svg>
       </div>
 
-      <div className="w-full shrink-0 self-start rounded-lg border bg-card p-4 [overflow-wrap:anywhere] md:w-64">
-        {activeDetail ? (
-          <>
-            <strong>{renderInline(activeDetail.title)}</strong>
+      {hasDetails && (
+        <div className="min-w-0 flex-[1_0_16rem] self-start rounded-lg border bg-card p-4 [overflow-wrap:anywhere]">
+          {activeDetail ? (
+            <>
+              <strong>{renderInline(activeDetail.title)}</strong>
+              <p className="text-sm text-muted-foreground">
+                {renderInline(activeDetail.body)}
+              </p>
+            </>
+          ) : (
             <p className="text-sm text-muted-foreground">
-              {renderInline(activeDetail.body)}
+              Click a step to see what it does.
             </p>
-          </>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Click a step to see what it does.
-          </p>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
