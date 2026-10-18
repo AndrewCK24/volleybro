@@ -42,13 +42,11 @@ For the pinned EmDash/Cloudflare 1.2.0 media route, a GET performs one R2 `GetOb
 
 ## Historical migration and retirement
 
-Convert the fixed `blueprint-changes` snapshot completely on the local machine. Import all 45 pages into an isolated EmDash environment and read them back. Before G2, review every page for semantic and visual fidelity, including text, block order, anchors, links, media bytes and alt text, reviews, shards and structured scenario data. Preserve complete page content and incorporate only the latest effective accepted G1 spec for each slug. A page with no lossless supported representation fails; do not skip content or use a fallback. Keep superseded Team Docs in Linear and respect explicit exemptions from Blueprint Change pages.
-
-The verified conversion/import artifact is sealed for promotion. Formal production import uses that same artifact without reconversion; environment-specific media references may be rebound and verified. Retain the original snapshot and archive evidence. The protected archive tag preserves every commit reachable from the fixed snapshot; earlier commits already unreachable at that snapshot are not guaranteed. Require archive and rollback evidence before G2. Retire the remote branch only after migration, read-back, archive and rollback evidence pass and the retirement step is authorized.
+The legacy `blueprint-changes` store is retired. Its 45 pages were converted from a fixed snapshot, read back and reviewed page by page, then imported into production EmDash from the same sealed artifact. The remote branch is deleted; the protected tag `archive/blueprint-changes-f010a9e020be` preserves every commit reachable from that snapshot. Earlier commits that were already unreachable are not guaranteed. Superseded Team Docs remain in Linear.
 
 Do not import old `facts.json` values as editable fields or use them as current status/statistics. `record-flows` and `sync-recording` remain public historical entries marked **進行中**, with no invented PRs or PR-derived metrics; that migration exception does not accept or implement either Change.
 
-Keep one-time conversion/import scripts, source inputs and tool tests until production import, read-back, formal cutover and rollback evidence are accepted. Then remove them while retaining final receipts and the protected archive. Migration content and audit output do not become a second Git content store.
+The one-time conversion and import tools have been removed; publication receipts live in the owning Linear issues. Migration content and audit output never become a second Git content store.
 
 Cloudflare activation is a separate, explicit post-G2 approval. At that point, connect Workers Builds to the repository in the Cloudflare Dashboard, create the Free-tier D1, R2 and session KV resources with the pinned Wrangler CLI, and set their IDs in deployment configuration. Store the read-only GitHub API token as the Worker secret `GITHUB_TOKEN`; set EmDash's `linearApiKey` through its plugin admin settings. Do not enable a paid plan or paid overage.
 
