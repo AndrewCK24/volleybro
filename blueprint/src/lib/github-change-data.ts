@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   featureCapabilityLinks,
   type FeatureCapabilityLink,
-} from "./feature-capabilities";
+} from "./feature-capabilities.ts";
 
 const PR_URL =
   /^https:\/\/github\.com\/andrewck24\/volleybro\/pull\/([1-9]\d*)$/u;
