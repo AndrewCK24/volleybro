@@ -188,6 +188,7 @@ export function InteractiveFlowchart(props: InteractiveFlowchartProps) {
       limit: MAX_FLOWCHART_SOURCE_LENGTH,
       maxEdges: MAX_FLOWCHART_EDGES,
       outputLimit: 120_000,
+      responsive: false,
       onError(error) {
         setRenderFailure({
           source: chart.source,
@@ -250,7 +251,7 @@ export function InteractiveFlowchart(props: InteractiveFlowchartProps) {
       <div className="min-w-0 overflow-x-auto rounded-lg border border-border bg-card p-3">
         <div
           ref={hostRef}
-          className="min-h-40 w-full min-w-0 [&_.pele]:mx-auto [&_.pele]:max-w-full [&_.pele-node:focus-visible]:outline [&_.pele-node:focus-visible]:outline-2 [&_.pele-node:focus-visible]:outline-offset-4 [&_.pele-node:focus-visible]:outline-primary [&_.pele-node:hover_circle]:stroke-primary [&_.pele-node:hover_polygon]:stroke-primary [&_.pele-node:hover_rect]:stroke-primary"
+          className="min-h-40 w-full min-w-0 [&_.pele]:mx-auto [&_.pele]:max-w-none [&_.pele-node:focus-visible]:outline [&_.pele-node:focus-visible]:outline-2 [&_.pele-node:focus-visible]:outline-offset-4 [&_.pele-node:focus-visible]:outline-primary [&_.pele-node:hover_circle]:stroke-primary [&_.pele-node:hover_polygon]:stroke-primary [&_.pele-node:hover_rect]:stroke-primary"
           style={
             {
               "--pele-bg": "var(--background)",
