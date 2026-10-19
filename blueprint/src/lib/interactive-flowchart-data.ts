@@ -9,7 +9,7 @@ export const MAX_FLOWCHART_NODES = 100;
 export const MAX_FLOWCHART_EDGES = 200;
 const MAX_DETAILS_JSON_LENGTH = 64_000;
 const MAX_PATHS_JSON_LENGTH = 16_000;
-const nodeIdPattern = /^[A-Za-z][A-Za-z0-9_-]{0,47}$/u;
+const NODE_ID_PATTERN = /^[A-Za-z][A-Za-z0-9_-]{0,47}$/u;
 
 function parseFlowchartModel(source: string) {
   try {
@@ -21,7 +21,7 @@ function parseFlowchartModel(source: string) {
     if (
       model.nodes.size === 0 ||
       model.nodes.size > MAX_FLOWCHART_NODES ||
-      [...model.nodes.keys()].some((nodeId) => !nodeIdPattern.test(nodeId)) ||
+      [...model.nodes.keys()].some((nodeId) => !NODE_ID_PATTERN.test(nodeId)) ||
       model.edges.length > MAX_FLOWCHART_EDGES ||
       model.classes.size > 0 ||
       model.defaultEdgeStyle?.length ||
@@ -93,7 +93,7 @@ export const interactiveFlowchartSourceSchema = z
   });
 
 export const interactiveFlowchartDetailsSchema = z.record(
-  z.string().regex(nodeIdPattern),
+  z.string().regex(NODE_ID_PATTERN),
   z.strictObject({
     title: z.string().max(240),
     body: z.string().max(8_000),
@@ -103,9 +103,9 @@ export const interactiveFlowchartDetailsSchema = z.record(
 export const interactiveFlowchartPathsSchema = z
   .array(
     z.strictObject({
-      id: z.string().regex(nodeIdPattern),
+      id: z.string().regex(NODE_ID_PATTERN),
       label: z.string().trim().min(1).max(160),
-      nodeIds: z.array(z.string().regex(nodeIdPattern)).min(1).max(200),
+      nodeIds: z.array(z.string().regex(NODE_ID_PATTERN)).min(1).max(200),
     }),
   )
   .max(40);
@@ -133,6 +133,9 @@ export const interactiveFlowchartPropsSchema = z
 
     if (!paths) return;
 
+    const connections = new Set(
+      model.edges.map((edge) => `${edge.start}\u0000${edge.end}`),
+    );
     const pathIds = new Set<string>();
     paths.forEach((path, index) => {
       if (pathIds.has(path.id)) {
@@ -144,6 +147,19 @@ export const interactiveFlowchartPropsSchema = z
       }
       pathIds.add(path.id);
       path.nodeIds.forEach((nodeId, nodeIndex) => {
+        const previous = path.nodeIds[nodeIndex - 1];
+        if (
+          previous &&
+          nodeIds.has(previous) &&
+          nodeIds.has(nodeId) &&
+          !connections.has(`${previous}\u0000${nodeId}`)
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["paths", index, "nodeIds", nodeIndex],
+            message: "Path steps must follow an existing flowchart edge.",
+          });
+        }
         if (!nodeIds.has(nodeId)) {
           context.addIssue({
             code: "custom",

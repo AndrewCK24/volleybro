@@ -117,6 +117,24 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
+  it.each([
+    { nodeIds: ["A", "B", "C"], accepted: true },
+    { nodeIds: ["A", "C"], accepted: false },
+  ])(
+    "requires connected steps in a named path ($nodeIds)",
+    ({ nodeIds, accepted }) => {
+      expect(
+        blockSchema.safeParse({
+          _type: "interactive_flowchart",
+          _version: 2,
+          source: 'flowchart LR\n  A["Start"] --> B["Work"] --> C["Done"]',
+          details: "{}",
+          paths: JSON.stringify([{ id: "route", label: "Route", nodeIds }]),
+        }).success,
+      ).toBe(accepted);
+    },
+  );
+
   it("rejects source node IDs outside the shared node ID contract", () => {
     expect(
       blockSchema.safeParse({
