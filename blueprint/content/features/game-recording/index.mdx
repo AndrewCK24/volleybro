@@ -4,7 +4,7 @@ description: The rally-by-rally recording flow — lineup, live rally input, aut
 ---
 
 export const source =
-  'flowchart LR\n  lineup["Lineup"]\n  rally["Rally"]\n  score["Score"]\n  rotation["Rotation"]\n  end-set["End Set"]\n  lineup --> rally\n  rally --> score\n  rally --> rotation\n  score --> end-set';
+  'flowchart LR\n  lineup["Lineup"]\n  rally["Rally"]\n  score["Score"]\n  rotation["Rotation"]\n  set_end["End Set"]\n  lineup --> rally\n  rally --> score\n  rally --> rotation\n  score --> set_end';
 
 export const details = {
   lineup: {
@@ -23,7 +23,7 @@ export const details = {
     title: "Rotation Tracking",
     body: "After a side-out win the positions rotate clockwise and the libero swaps in for the middle blocker.",
   },
-  "end-set": {
+  set_end: {
     title: "Set End & Summary",
     body: "A set is won at 25 points (the deciding set at its own target) with a two-point lead. The server records the result and the next set begins.",
   },
