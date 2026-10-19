@@ -31,7 +31,6 @@ cache-mode: read
 
 env:
   RELEASE_OWNER_LOGIN: ${{ vars.RELEASE_OWNER_LOGIN }}
-  PRODUCTION_DB_ACTIVE: ${{ vars.PRODUCTION_DB_ACTIVE }}
 
 jobs:
   authorize:
