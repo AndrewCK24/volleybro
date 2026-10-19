@@ -65,6 +65,88 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
+  it("accepts bounded interactive flowchart v2 and rejects the retired v1 contract", () => {
+    const block = {
+      _type: "interactive_flowchart",
+      _version: 2,
+      source: 'flowchart LR\n  A["Node A"]',
+      details: JSON.stringify({ A: { title: "Node A", body: "Details" } }),
+    };
+    const parsed = blockSchema.safeParse(block);
+    expect(parsed.success).toBe(true);
+    if (parsed.success && parsed.data._type === "interactive_flowchart") {
+      expect(parsed.data.paths).toBe("[]");
+    }
+
+    expect(
+      blockSchema.safeParse({
+        _type: "interactive_flowchart",
+        _version: 1,
+        nodes: "[]",
+        edges: "[]",
+        details: "{}",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects unsafe flowchart directives and path IDs outside the source", () => {
+    const block = {
+      _type: "interactive_flowchart",
+      _version: 2,
+      source: 'flowchart LR\n  A["Node A"]',
+      details: "{}",
+      paths: JSON.stringify([
+        { id: "route", label: "Route", nodeIds: ["missing"] },
+      ]),
+    };
+    expect(blockSchema.safeParse(block).success).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        ...block,
+        details: JSON.stringify({ missing: { title: "Missing", body: "" } }),
+        paths: "[]",
+      }).success,
+    ).toBe(false);
+    expect(
+      blockSchema.safeParse({
+        ...block,
+        source:
+          'flowchart LR\n  %%{init: {"flowchart": {"htmlLabels": true}}}%%\n  A["Node A"]',
+        paths: "[]",
+      }).success,
+    ).toBe(false);
+  });
+
+  it.each([
+    { nodeIds: ["A", "B", "C"], accepted: true },
+    { nodeIds: ["A", "C"], accepted: false },
+  ])(
+    "requires connected steps in a named path ($nodeIds)",
+    ({ nodeIds, accepted }) => {
+      expect(
+        blockSchema.safeParse({
+          _type: "interactive_flowchart",
+          _version: 2,
+          source: 'flowchart LR\n  A["Start"] --> B["Work"] --> C["Done"]',
+          details: "{}",
+          paths: JSON.stringify([{ id: "route", label: "Route", nodeIds }]),
+        }).success,
+      ).toBe(accepted);
+    },
+  );
+
+  it("rejects source node IDs outside the shared node ID contract", () => {
+    expect(
+      blockSchema.safeParse({
+        _type: "interactive_flowchart",
+        _version: 2,
+        source: 'flowchart LR\n  "bad id"["Node"]',
+        details: "{}",
+        paths: "[]",
+      }).success,
+    ).toBe(false);
+  });
+
   it.each([undefined, ""])(
     "rejects a scenario without a nonempty ID (%s)",
     (id) => {

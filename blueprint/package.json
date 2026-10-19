@@ -25,6 +25,7 @@
     "fumadocs-core": "^16.17.2",
     "fumadocs-ui": "^16.17.2",
     "lucide-react": "^1.56.0",
+    "pele": "1.6.0",
     "radix-ui": "^1.8.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

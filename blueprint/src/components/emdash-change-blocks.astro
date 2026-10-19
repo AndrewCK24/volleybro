@@ -56,4 +56,10 @@ const { blocks: value, hasProseLayout = true } = Astro.props as {
     --color-bg-subtle: var(--muted);
     --emdash-caption-color: var(--muted-foreground);
   }
+
+  .emdash-portable-text :global(.emdash-table) {
+    --color-surface: transparent;
+    --color-bg-subtle: transparent;
+    background: transparent;
+  }
 </style>

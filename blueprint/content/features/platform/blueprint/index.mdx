@@ -41,6 +41,7 @@ flowchart LR
 - Code and tests define runtime behavior. EmDash defines accepted Change specifications and public article content; Linear holds operational status and the accepted revision/hash; GitHub PRs prove G2 and provide merge status and metrics.
 - Portable Text and allowlisted, versioned typed blocks are the only content path. Reject raw HTML and executable content. Represent proposal interactions as typed data; static UI designs may use developer-approved screenshots.
 - `diagram` v1 stores SVG geometry, positioned text, source IDs and markers as typed data; labels are escaped, with no raw SVG, CSS, script or URL paint.
+- Interactive flowcharts use Mermaid source, node-ID details and optional named paths through Pele. Node selection and path exploration stay interactive; empty detail panels are omitted. Authors cannot supply raw HTML, rendering options, custom CSS or network links. Layout is derived rather than stored as coordinates.
 - Derivable values are not manually duplicated. A missing or unavailable source must not be replaced by a guess.
 - Decision records remain flat, repository-wide files at `blueprint/content/decisions/NNNN-<slug>.json`, with one schema definition. A record is adopted when written and is never copied, promoted or renumbered.
 - Blueprint Change prose uses zh-TW with English technical terms. Feature and Design System prose, scenario strings, decision records and agent-facing documents use English.

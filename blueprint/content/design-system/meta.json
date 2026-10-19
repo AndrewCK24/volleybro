@@ -114,7 +114,7 @@
     {
       "slug": "diagrams",
       "title": "Diagrams",
-      "description": "Static, typed diagrams for authored geometry and the interactive flowchart for user-controlled exploration.",
+      "description": "Typed static diagrams and interactive Mermaid flowcharts rendered by Pele, with node details and explicitly authored paths.",
       "sections": ["Diagrams"],
       "showcase": "diagrams",
       "searchTerms": [
@@ -122,6 +122,8 @@
         "viewBox",
         "marker",
         "InteractiveFlowchart",
+        "Mermaid",
+        "flowchart source",
         "typed geometry"
       ]
     }

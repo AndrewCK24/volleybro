@@ -44,7 +44,7 @@ const sections = [
   {
     href: "/design-system/diagrams",
     title: "Diagrams",
-    body: "Strict typed static geometry for authored diagrams, with InteractiveFlowchart reserved for selectable nodes and details.",
+    body: "Typed geometry for static diagrams, plus direct Mermaid flowchart source with selectable nodes, details and explicitly authored paths.",
   },
 ];
 

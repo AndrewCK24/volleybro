@@ -34,7 +34,7 @@ This file is VolleyBro's canonical provider-neutral delivery contract. A develop
 
 | Responsibility                         | VolleyBro binding                                                                                                                                               |
 | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Integration branch and default PR base | `main` after cutover; during transition use the verified remote default branch                                                                                  |
+| Integration branch and default PR base | `main`; verify the remote default before branching                                                                                                              |
 | Change branches                        | `feat/<slug>`, `fix/<slug>`, or `refactor/<slug>`                                                                                                               |
 | Fast path branch                       | `fast/<slug>`, whatever the commit type                                                                                                                         |
 | Targeted repository gate               | Narrowest applicable tests, lint, and type checks                                                                                                               |
@@ -51,9 +51,9 @@ This file is VolleyBro's canonical provider-neutral delivery contract. A develop
 
 The delivery profile selects responsibilities, not a fixed skill suite. Matt Pocock skills are the current engineering playbooks; a future compatible skill may replace them without changing the artifact authority or human gates defined here.
 
-### Integration and release cutover
+### Integration and release
 
-`main` is the target integration trunk, not a production branch. Ordinary Change and `fast/*` pull requests target it; production is an explicitly selected deployment, not the current branch tip. During the transition, the remote default remains the actual integration base until the developer accepts the cutover at G2. Refresh `origin/HEAD` with `git remote set-head origin --auto` after changing the default. Never rewrite shared history just to rename the integration branch.
+`main` is the integration trunk. Ordinary Change and `fast/*` pull requests target the verified remote default; production is an explicitly selected deployment, not the branch tip. Refresh `origin/HEAD` after changing the default. Never rewrite shared history to rename the integration branch.
 
 Normal release uses the rolling `changeset-release/main` version PR with title `release: update versions`. Its merge authorizes its fixed merge SHA, containing all integrated work up to that revision. Later main commits do not replace it. The version bot requires a PAT/App-backed `RELEASE_TOKEN`, so PR checks actually run; `RELEASE_BOT_LOGIN` must match that token's authenticated author. The title exception validates identity, same-repository base/head and metadata-only changes, never a branch name alone. `Verify` and `Vercel` must pass on the latest authorized PR revision. Vercel's preview build is not production smoke.
 
@@ -100,11 +100,11 @@ After successful hotfix publication, open an ordinary merge-back pull request to
 
 Synchronization does not redeploy. A normal candidate must include the deployed repair by ancestry, pass fresh validation and receive renewed version-PR authorization; a candidate prepared against the previous production baseline remains stale.
 
-After the release-tooling Change's final shard is accepted and merged, execute its consolidated activation checklist, not separate setup requests at each tooling shard. Inventory refs, open PRs and active worktrees again. Preserve the complete dev history, disable the old direct-production path first, integrate dev into main, then switch GitHub default/required checks and Blueprint production hosting/deploy hook together. Rehearse and read back aliases, OAuth callbacks and environment targets. The first release uses the version Changesets calculates from pending work, rather than forcing a number. Delete dev only after successful release, ancestry proof and no active references; do not modify other devices or active worktrees. Until then, `dev` remains a transition branch and the new workflow remains dormant. Credential authorization and real candidate/post-deployment authenticated QA remain mandatory at activation/release; deferral does not waive them. Each shard still requires its own G2 and green PR checks before merge.
+Platform activation follows the owning Change’s accepted checklist and requires separate authorization, configuration read-back and recovery verification. Each delivery batch still requires G2 and green PR checks before merge.
 
 ## Repository adapters
 
-The release-train Shard 4 Review owns its one-time platform cutover and activation checklist. The [release runbook](docs/release-runbook.md) owns recurring operating steps; the configuration and authorization contract above remains canonical.
+The [release runbook](docs/release-runbook.md) owns recurring operating steps; the configuration and authorization contract above remains canonical.
 
 Apply installed Matt Pocock playbooks through the repository policies in:
 
@@ -236,7 +236,7 @@ A Change targets soft limits before it needs splitting: at most 5 slices and at 
 
 A Change is either a **structure** change (a behavior-preserving refactor, whose acceptance is the existing test suite plus a dependency-direction check) or a **behavior** change, never both.
 
-A **Sharded Change** has one complete accepted specification and one G1, covering the shared design, shard list, order, per-batch verification and completion criteria. Every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice sub-issues. Shards do not create separate slugs, specifications, G1s or repeated decision records. The format originally introduced for Migration in ADR-0093 now applies to any such shared-design delivery; migration remains a use case, not a separate mode.
+A **Sharded Change** has one complete accepted specification and one G1, covering the shared design, shard list, order, per-batch verification and completion criteria. Every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice sub-issues. Shards do not create separate slugs, specifications, G1s or repeated decision records.
 
 ### Fast path
 
@@ -308,7 +308,7 @@ A manual run keeps a lighter workpad: every field above except `blockers` and `n
 
 ## Blueprint knowledge contract
 
-Every Change has one EmDash entry. New content is a draft before G1 and the published public page afterward. The build reads published content and current drafts through a bounded read-only snapshot. Content events trigger automated SSG without a Git commit; requests read only lifecycle metadata and stream the matching private R2 artifact. The EmDash entry contains the accepted specification, Portable Text and typed page blocks, Linear issue key and required GitHub PR URL list. Linear records the accepted draft revision/hash; GitHub PRs record G2 code review. An empty PR list is valid for a newly published Change and displays **進行中** without PR-derived metrics.
+Every Change has one EmDash entry. New content is a draft before G1 and the published public page afterward. The build reads published content and current drafts through a bounded read-only snapshot. Content events trigger automated SSG without a Git commit; requests read only lifecycle metadata and stream the matching private R2 artifact. The EmDash entry contains the accepted specification, Portable Text and typed page blocks, Linear issue key, required GitHub PR URL list and canonical Feature paths in `capabilities`. The paths are navigation metadata; the accepted body defines scope and acceptance. Linear records the accepted draft revision/hash; GitHub PRs record G2 code review. An empty PR list is valid for a newly published Change and displays **進行中** without PR-derived metrics.
 
 Portable Text is the sole article body format; typed blocks use versioned, strict allowlisted schemas and existing Astro components. Authors write them directly through EmDash MCP. Arbitrary HTML, TSX and JavaScript are rejected. New components and schema versions go through code PRs. GitHub API data derives public status, merge date and PR statistics; typed scenario blocks derive scenario count. Status and metrics are derived rather than manually stored.
 

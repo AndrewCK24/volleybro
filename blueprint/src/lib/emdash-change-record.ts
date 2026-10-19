@@ -2,6 +2,10 @@ import { z } from "zod";
 import { diagramBlockSchema } from "./diagram-schema.ts";
 import { annotatedDiffBlockSchema } from "./annotated-diff-block.ts";
 import { stepWalkthroughBlockSchema } from "./step-walkthrough-block.ts";
+import {
+  interactiveFlowchartBlockFieldsSchema,
+  interactiveFlowchartBlockFieldsShape,
+} from "./interactive-flowchart-data.ts";
 
 const portableSpanSchema = z.strictObject({
   _key: z.string().optional(),
@@ -436,10 +440,19 @@ const blockSchemaBase = z.union([
   }),
   versionedBlock({
     _type: z.literal("interactive_flowchart"),
-    _version: z.literal(1),
-    nodes: z.string(),
-    edges: z.string(),
-    details: z.string(),
+    _version: z.literal(2),
+    ...interactiveFlowchartBlockFieldsShape,
+  }).superRefine((block, context) => {
+    const parsed = interactiveFlowchartBlockFieldsSchema.safeParse({
+      source: block.source,
+      details: block.details,
+      paths: block.paths,
+    });
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        context.addIssue({ ...issue, path: issue.path });
+      }
+    }
   }),
 ]);
 
@@ -470,6 +483,14 @@ const changeDataBaseSchema = z.strictObject({
             /^https:\/\/github\.com\/andrewck24\/volleybro\/pull\/[1-9]\d*$/u,
           ),
       }),
+    )
+    .max(12)
+    .default([]),
+  capabilities: z
+    .array(
+      z
+        .string()
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/u),
     )
     .max(12)
     .default([]),

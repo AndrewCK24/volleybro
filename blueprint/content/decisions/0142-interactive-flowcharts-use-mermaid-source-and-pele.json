@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "id": "0142",
+  "title": "Interactive flowcharts use Mermaid source and Pele",
+  "capabilities": ["platform/blueprint", "platform/design-system/components"],
+  "context": "Manual node coordinates and edge routing make authored interactive diagrams costly to maintain. The accepted comparison showed that Pele can lay out the same flow, retain selectable nodes and authored paths, and adapt to the available width.",
+  "decision": "Author interactive flowcharts as Mermaid source with node-ID details and optional named paths. Use a fixed, version-pinned Pele flowchart renderer on the client, with Blueprint theme tokens and disabled links, images and author-supplied rendering configuration. Convert existing coordinate-authored callers and CMS blocks once. A disposable transition deployment may accept both versions for native save/publish; verify migration and immediately replace it with the final v2-only renderer. Do not retain a nodes/edges adapter or old-format fallback in the final delivery. Keep meaningful node and path interaction, hide empty detail panels, and match arrowheads to their connector colors.",
+  "alternatives": [
+    {
+      "option": "Keep the coordinate renderer",
+      "reason": "Retains manual text measurement, collision avoidance and edge-routing code for authoring concerns the layout engine already solves."
+    },
+    {
+      "option": "Convert nodes and edges to Mermaid at runtime",
+      "reason": "Preserves two authoring contracts and a permanent translation layer."
+    },
+    {
+      "option": "Replace interactive comparisons with screenshots",
+      "reason": "Loses path and node exploration needed to understand a proposal."
+    }
+  ],
+  "consequences": [
+    "Diagram layout can change while labels, edges, IDs and meaningful details remain intact.",
+    "New content uses the target format directly; production activation requires verified conversion of existing data.",
+    "The renderer remains client-side and does not add request-time SSR or D1 work."
+  ],
+  "revisitTriggers": [
+    "Pele cannot express a required interactive flow without a permanent compatibility layer.",
+    "The fixed rendering boundary cannot reject executable content or unintended network access."
+  ],
+  "originChange": "emdash-blueprint-change-pages"
+}

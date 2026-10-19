@@ -6,7 +6,7 @@ import { changeArtifactMetadata } from "./change-artifact";
 
 type ChangeListData = Pick<
   ChangeData,
-  "title" | "description" | "pull_requests" | "publishedAt"
+  "title" | "description" | "pull_requests" | "capabilities" | "publishedAt"
 > & {
   scenarioCount: number;
 };
@@ -19,6 +19,7 @@ type BlueprintChangeRow = {
   linear_issue: string | null;
   description: string | null;
   pull_requests: string | Array<{ url: string }> | null;
+  capabilities: string | string[] | null;
   published_at: string | null;
   live_revision_id: string | null;
   status: string;
@@ -31,6 +32,7 @@ const changeListDataSchema = z
     description: changeDataSchema.in.shape.description,
     linear_issue: changeDataSchema.in.shape.linear_issue.unwrap(),
     pull_requests: changeDataSchema.in.shape.pull_requests,
+    capabilities: changeDataSchema.in.shape.capabilities,
     publishedAt: changeDataSchema.in.shape.publishedAt,
     scenarioCount: z.number().int().nonnegative(),
   })
@@ -78,6 +80,7 @@ export async function readPublishedChanges(): Promise<EmDashPage[]> {
       "linear_issue",
       "description",
       "pull_requests",
+      "capabilities",
       "published_at",
       "live_revision_id",
     ])
@@ -111,11 +114,22 @@ export async function readPublishedChanges(): Promise<EmDashPage[]> {
         );
       }
     }
+    let capabilities: unknown = entry.capabilities;
+    if (typeof capabilities === "string") {
+      try {
+        capabilities = JSON.parse(capabilities) as unknown;
+      } catch {
+        throw new Error(
+          `Published Change "${entry.slug}" has invalid capability metadata.`,
+        );
+      }
+    }
     const parsed = changeListDataSchema.safeParse({
       title: entry.title,
       linear_issue: entry.linear_issue,
       description: entry.description,
       pull_requests: pullRequests ?? [],
+      capabilities: capabilities ?? [],
       publishedAt: entry.published_at,
       scenarioCount: metadata.scenarioCount,
     });

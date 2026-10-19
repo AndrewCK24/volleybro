@@ -51,6 +51,8 @@ const { slug, change, summary, tree, preview } = Astro.props;
         mergedAt={summary.mergedAt}
         metrics={preview ? undefined : summary.metrics}
         scenarioCount={summary.scenarioCount}
+        pullRequests={summary.pullRequests}
+        capabilities={summary.capabilities}
       />
       <EmDashChangeBlocks blocks={change.blocks} />
     </main>
