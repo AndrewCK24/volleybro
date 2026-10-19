@@ -3,20 +3,8 @@ title: Analytics
 description: Match overview, team statistics by skill, set-by-set scoring, and planned per-player analysis.
 ---
 
-export const nodes = [
-  { id: "record", label: "Recorded Match", x: 100, y: 70, w: 150 },
-  { id: "overview", label: "Match Overview", x: 330, y: 70, w: 150 },
-  { id: "team", label: "Team Stats", x: 330, y: 180, w: 130 },
-  { id: "sets", label: "Set Scores", x: 540, y: 70, w: 130 },
-  { id: "player", label: "Player Stats", x: 540, y: 180, w: 130 },
-];
-
-export const edges = [
-  { from: "record", to: "overview" },
-  { from: "overview", to: "team" },
-  { from: "overview", to: "sets" },
-  { from: "team", to: "player", dashed: true },
-];
+export const source =
+  'flowchart LR\n  record["Recorded Match"]\n  overview["Match Overview"]\n  team["Team Stats"]\n  sets["Set Scores"]\n  player["Player Stats"]\n  record --> overview\n  overview --> team\n  overview --> sets\n  team -.-> player';
 
 export const details = {
   record: {
@@ -43,7 +31,7 @@ export const details = {
 
 Analysis is built entirely from recorded rallies. The dashed edge marks work that is planned but not yet built.
 
-<InteractiveFlowchart nodes={nodes} edges={edges} details={details} />
+<InteractiveFlowchart source={source} details={details} />
 
 ## Status
 

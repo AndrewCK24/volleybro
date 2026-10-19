@@ -3,18 +3,8 @@ title: Notifications
 description: The in-app notification system — designed but not yet built. Pending invitations are currently surfaced in the user area.
 ---
 
-export const nodes = [
-  { id: "event", label: "Event", x: 90, y: 70, sublabel: "e.g. invite" },
-  { id: "notify", label: "Notification", x: 290, y: 70, w: 130 },
-  { id: "centre", label: "Centre", x: 490, y: 70 },
-  { id: "navdot", label: "Nav Unread", x: 290, y: 180, w: 130 },
-];
-
-export const edges = [
-  { from: "event", to: "notify" },
-  { from: "notify", to: "centre" },
-  { from: "notify", to: "navdot" },
-];
+export const source =
+  'flowchart LR\n  event["Event\\ne.g. invite"]\n  notify["Notification"]\n  centre["Centre"]\n  navdot["Nav Unread"]\n  event --> notify\n  notify --> centre\n  notify --> navdot';
 
 export const details = {
   event: {
@@ -39,7 +29,7 @@ Notifications are a **planned** system. Today the only user-facing signal — a 
 
 > **Not built yet.** There is no notification entity, use case, or API, and the notifications tab is currently a placeholder. See the status table below.
 
-<InteractiveFlowchart nodes={nodes} edges={edges} details={details} />
+<InteractiveFlowchart source={source} details={details} />
 
 ## Status
 

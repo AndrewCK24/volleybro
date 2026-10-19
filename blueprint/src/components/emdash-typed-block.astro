@@ -9,6 +9,10 @@ import VariantGallery from "./variant-gallery.astro";
 import { parseJsonField, type ChangeBlock } from "../lib/emdash-change-record";
 import { decisionCardsFor } from "../lib/decision-cards";
 import { allDecisions } from "../lib/decisions-index";
+import {
+  interactiveFlowchartDetailsSchema,
+  interactiveFlowchartPathsSchema,
+} from "../lib/interactive-flowchart-data";
 import { z } from "zod";
 
 type TypedChangeBlock = Exclude<
@@ -31,40 +35,13 @@ const scenarioSchema = z.array(
     then: z.string(),
   }),
 );
-const nodeSchema = z.array(
-  z.strictObject({
-    id: z.string(),
-    label: z.string(),
-    x: z.number(),
-    y: z.number(),
-    sublabel: z.string().optional(),
-    w: z.number().optional(),
-    h: z.number().optional(),
-    shape: z.enum(["box", "diamond"]).optional(),
-  }),
-);
-const edgeSchema = z.array(
-  z.strictObject({
-    from: z.string(),
-    to: z.string(),
-    label: z.string().optional(),
-    dashed: z.boolean().optional(),
-    route: z.enum(["curve"]).optional(),
-  }),
-);
-const detailsSchema = z.record(
-  z.string(),
-  z.strictObject({ title: z.string(), body: z.string() }),
-);
-
 const block = (Astro.props as { node: TypedChangeBlock }).node;
 
 let decisionCards;
 let risks;
 let scenarios;
-let flowchartNodes;
-let flowchartEdges;
 let flowchartDetails;
+let flowchartPaths;
 if (block._type === "decision_cards") {
   const ids = parseJsonField(
     block.records,
@@ -85,20 +62,15 @@ if (block._type === "decision_cards") {
     "scenario_cards.items",
   );
 } else if (block._type === "interactive_flowchart") {
-  flowchartNodes = parseJsonField(
-    block.nodes,
-    nodeSchema,
-    "interactive_flowchart.nodes",
-  );
-  flowchartEdges = parseJsonField(
-    block.edges,
-    edgeSchema,
-    "interactive_flowchart.edges",
-  );
   flowchartDetails = parseJsonField(
     block.details,
-    detailsSchema,
+    interactiveFlowchartDetailsSchema,
     "interactive_flowchart.details",
+  );
+  flowchartPaths = parseJsonField(
+    block.paths,
+    interactiveFlowchartPathsSchema,
+    "interactive_flowchart.paths",
   );
 }
 ---
@@ -122,9 +94,9 @@ if (block._type === "decision_cards") {
 {
   block._type === "interactive_flowchart" && (
     <InteractiveFlowchart
-      nodes={flowchartNodes!}
-      edges={flowchartEdges!}
+      source={block.source}
       details={flowchartDetails!}
+      paths={flowchartPaths!}
       client:load
     />
   )

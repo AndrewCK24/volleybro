@@ -1,7 +1,7 @@
 ---
 import { InteractiveFlowchart } from "./interactive-flowchart";
 
-const { nodes, edges, details } = Astro.props;
+const { source, details, paths } = Astro.props;
 ---
 
-<InteractiveFlowchart nodes={nodes} edges={edges} details={details} client:load />
+<InteractiveFlowchart source={source} details={details} paths={paths} client:load />

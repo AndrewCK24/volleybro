@@ -3,20 +3,8 @@ title: Game Recording
 description: The rally-by-rally recording flow — lineup, live rally input, automatic rotation, and set completion.
 ---
 
-export const nodes = [
-  { id: "lineup", label: "Lineup", x: 80, y: 70 },
-  { id: "rally", label: "Rally", x: 260, y: 70 },
-  { id: "score", label: "Score", x: 440, y: 70 },
-  { id: "rotation", label: "Rotation", x: 260, y: 180 },
-  { id: "end-set", label: "End Set", x: 440, y: 180 },
-];
-
-export const edges = [
-  { from: "lineup", to: "rally" },
-  { from: "rally", to: "score" },
-  { from: "rally", to: "rotation" },
-  { from: "score", to: "end-set" },
-];
+export const source =
+  'flowchart LR\n  lineup["Lineup"]\n  rally["Rally"]\n  score["Score"]\n  rotation["Rotation"]\n  end-set["End Set"]\n  lineup --> rally\n  rally --> score\n  rally --> rotation\n  score --> end-set';
 
 export const details = {
   lineup: {
@@ -43,7 +31,7 @@ export const details = {
 
 The recording flow guides the scorer through lineup setup, rally-by-rally input, and automatic rotation. Click a node to see what it does.
 
-<InteractiveFlowchart nodes={nodes} edges={edges} details={details} />
+<InteractiveFlowchart source={source} details={details} />
 
 Set and game completion are **derived by the server, then written once** — a fold over the append-only entry list decides whether a set is in progress, at set point, or won, and the result is recorded at the moment it changes rather than accumulated per rally. Nothing has to be manually closed out.
 
