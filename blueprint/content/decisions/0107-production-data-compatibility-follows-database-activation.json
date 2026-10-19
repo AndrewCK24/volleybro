@@ -24,5 +24,6 @@
     "The production data retention or recovery-target policy changes.",
     "Evidence proves that no legacy-format production records remain, allowing the legacy-read obligation to retire."
   ],
-  "originChange": "release-evidence-policy"
+  "originChange": "release-evidence-policy",
+  "supersededBy": "0141"
 }
