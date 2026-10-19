@@ -11,7 +11,12 @@ export function ChangeLinkBadges({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {prs.map((pr) => (
-        <Badge key={pr.url} variant="outline" asChild>
+        <Badge
+          key={pr.url}
+          variant="outline"
+          className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
+          asChild
+        >
           <a href={pr.url} target="_blank" rel="noreferrer">
             PR #{pr.number}
           </a>
