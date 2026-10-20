@@ -283,10 +283,11 @@ async function runLane(laneName, children) {
   mkdirSync(LOG_DIR, { recursive: true });
   const logPath = `${LOG_DIR}/${laneName}.log`;
   const log = createWriteStream(logPath);
-  const { attempt, retried } = await withSegfaultRerun(laneName, () =>
-    runAttempt(laneName, children, log),
-  );
-  if (retried) log.write("\n--- the lane above was a rerun ---\n");
+  let runs = 0;
+  const { attempt, retried } = await withSegfaultRerun(laneName, () => {
+    if (runs++ > 0) log.write("\n--- rerun after a Jest worker SIGSEGV ---\n");
+    return runAttempt(laneName, children, log);
+  });
   await new Promise((resolve) => log.end(resolve));
   return {
     lane: laneName,

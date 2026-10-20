@@ -69,7 +69,8 @@ async function ghJson(args) {
   try {
     return parseGhOutput((await execFileAsync("gh", args)).stdout);
   } catch (error) {
-    if (typeof error.stdout === "string") return parseGhOutput(error.stdout);
+    const noChecksYet = /no checks reported/.test(error.stderr ?? "");
+    if (error.stdout || noChecksYet) return parseGhOutput(error.stdout ?? "");
     throw error;
   }
 }
