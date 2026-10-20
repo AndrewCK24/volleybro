@@ -7,6 +7,7 @@ import {
   LANE_NAMES,
   laneStages,
   planLanes,
+  withSegfaultRerun,
 } from "../verify.js";
 
 test("full run requested runs every lane", () => {
@@ -175,4 +176,41 @@ test("only a Jest lane whose worker died with SIGSEGV counts as a worker crash",
   assert.equal(isWorkerSegfault("blueprint", crash), true);
   assert.equal(isWorkerSegfault("static", crash), false);
   assert.equal(isWorkerSegfault("app-test", "Expected 2, received 3"), false);
+});
+
+function attempts(...results) {
+  let calls = 0;
+  const runOnce = async () => results[calls++];
+  return { runOnce, calls: () => calls };
+}
+
+test("a Jest lane that died with a worker SIGSEGV reruns exactly once", async () => {
+  const crash = {
+    ok: false,
+    output: "terminated by another process: signal=SIGSEGV",
+  };
+  const passing = attempts(crash, { ok: true, output: "" });
+  const result = await withSegfaultRerun("app-test", passing.runOnce);
+  assert.deepEqual(result, {
+    attempt: { ok: true, output: "" },
+    retried: true,
+  });
+  assert.equal(passing.calls(), 2);
+
+  const crashesTwice = attempts(crash, crash);
+  const failed = await withSegfaultRerun("app-test", crashesTwice.runOnce);
+  assert.equal(failed.attempt.ok, false);
+  assert.equal(crashesTwice.calls(), 2);
+});
+
+test("an ordinary failure or a pass does not rerun the lane", async () => {
+  for (const first of [
+    { ok: false, output: "Expected 2, received 3" },
+    { ok: true, output: "signal=SIGSEGV" },
+  ]) {
+    const run = attempts(first);
+    const result = await withSegfaultRerun("app-test", run.runOnce);
+    assert.equal(result.retried, false);
+    assert.equal(run.calls(), 1);
+  }
 });

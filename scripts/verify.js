@@ -250,6 +250,17 @@ function runCommand(command, laneName, children, sink) {
   });
 }
 
+export async function withSegfaultRerun(laneName, runOnce) {
+  const first = await runOnce();
+  if (first.ok || !isWorkerSegfault(laneName, first.output)) {
+    return { attempt: first, retried: false };
+  }
+  process.stderr.write(
+    `[${laneName}] a Jest worker died with SIGSEGV; rerunning the lane once\n`,
+  );
+  return { attempt: await runOnce(), retried: true };
+}
+
 async function runAttempt(laneName, children, log) {
   let output = "";
   const sink = (chunk) => {
@@ -272,15 +283,10 @@ async function runLane(laneName, children) {
   mkdirSync(LOG_DIR, { recursive: true });
   const logPath = `${LOG_DIR}/${laneName}.log`;
   const log = createWriteStream(logPath);
-  let attempt = await runAttempt(laneName, children, log);
-  const retried = !attempt.ok && isWorkerSegfault(laneName, attempt.output);
-  if (retried) {
-    process.stderr.write(
-      `[${laneName}] a Jest worker died with SIGSEGV; rerunning the lane once\n`,
-    );
-    log.write("\n--- rerun after a Jest worker SIGSEGV ---\n");
-    attempt = await runAttempt(laneName, children, log);
-  }
+  const { attempt, retried } = await withSegfaultRerun(laneName, () =>
+    runAttempt(laneName, children, log),
+  );
+  if (retried) log.write("\n--- the lane above was a rerun ---\n");
   await new Promise((resolve) => log.end(resolve));
   return {
     lane: laneName,

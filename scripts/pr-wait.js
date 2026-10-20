@@ -28,10 +28,13 @@ export function assessReadiness({ checks, pr, head }) {
       reason: `head moved from ${head} to ${pr.headRefOid}`,
     };
   }
+  // A rerun can list a name twice; any failed entry fails it.
   for (const name of REQUIRED_CHECKS) {
-    const check = checks.find((c) => c.name === name);
-    if (check && FAILED_STATES.has(check.state)) {
-      return { status: "fail", reason: `${name} is ${check.state}` };
+    const failed = checks.find(
+      (c) => c.name === name && FAILED_STATES.has(c.state),
+    );
+    if (failed) {
+      return { status: "fail", reason: `${name} is ${failed.state}` };
     }
   }
   if (pr.mergeStateStatus === "BEHIND") {
@@ -43,9 +46,10 @@ export function assessReadiness({ checks, pr, head }) {
   if (pr.mergeStateStatus === "DIRTY") {
     return { status: "fail", reason: "merge conflicts with its base" };
   }
-  const pending = REQUIRED_CHECKS.filter(
-    (name) => checks.find((c) => c.name === name)?.state !== "SUCCESS",
-  );
+  const pending = REQUIRED_CHECKS.filter((name) => {
+    const entries = checks.filter((c) => c.name === name);
+    return entries.length === 0 || entries.some((c) => c.state !== "SUCCESS");
+  });
   if (pending.length > 0) {
     return { status: "wait", reason: `waiting for ${pending.join(", ")}` };
   }
@@ -55,13 +59,17 @@ export function assessReadiness({ checks, pr, head }) {
   return { status: "ready" };
 }
 
+// `gh pr checks` exits non-zero while checks are pending or failing but still
+// prints the JSON, and prints nothing before the first check is reported.
+export function parseGhOutput(stdout) {
+  return stdout.trim() === "" ? [] : JSON.parse(stdout);
+}
+
 async function ghJson(args) {
   try {
-    return JSON.parse((await execFileAsync("gh", args)).stdout);
+    return parseGhOutput((await execFileAsync("gh", args)).stdout);
   } catch (error) {
-    // `gh pr checks` exits non-zero while checks are pending or failing but
-    // still prints the JSON.
-    if (error.stdout) return JSON.parse(error.stdout);
+    if (typeof error.stdout === "string") return parseGhOutput(error.stdout);
     throw error;
   }
 }
@@ -95,18 +103,28 @@ async function main() {
     process.exit(2);
   }
   const interval = Number(option(argv, "--interval", "30")) * 1000;
-  const deadline =
-    Date.now() + Number(option(argv, "--timeout", "1800")) * 1000;
+  const timeout = Number(option(argv, "--timeout", "1800")) * 1000;
+  if (!(interval > 0) || !(timeout > 0)) {
+    console.error("--interval and --timeout take positive seconds");
+    process.exit(2);
+  }
+  const deadline = Date.now() + timeout;
   const head = option(argv, "--head", (await readPr(number)).headRefOid);
   console.log(`PR #${number} head ${head}`);
 
   let last = "";
   for (;;) {
-    const [pr, checks] = await Promise.all([
-      readPr(number),
-      readChecks(number),
-    ]);
-    const result = assessReadiness({ checks, pr, head });
+    let result;
+    try {
+      const [pr, checks] = await Promise.all([
+        readPr(number),
+        readChecks(number),
+      ]);
+      result = assessReadiness({ checks, pr, head });
+    } catch (error) {
+      // A transient gh or network error is retried until the deadline.
+      result = { status: "wait", reason: `gh failed: ${error.message}` };
+    }
     if (result.status === "ready" || result.status === "merged") {
       console.log(`${result.status}: ${head}`);
       return;

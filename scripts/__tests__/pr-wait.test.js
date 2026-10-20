@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { assessReadiness } from "../pr-wait.js";
+import { assessReadiness, parseGhOutput } from "../pr-wait.js";
 
 const head = "abc123";
 const open = { state: "OPEN", headRefOid: head, mergeStateStatus: "CLEAN" };
@@ -55,4 +55,38 @@ test("a branch behind main fails with the step that unblocks it", () => {
 test("a merged pull request needs no wait", () => {
   const pr = { ...open, state: "MERGED" };
   assert.equal(assessReadiness({ checks: [], pr, head }).status, "merged");
+});
+
+test("a failed Vercel check, a conflict or a closed PR fails closed", () => {
+  const vercelFailed = [
+    { name: "Verify", state: "SUCCESS" },
+    { name: "Vercel", state: "FAILURE" },
+  ];
+  assert.equal(
+    assessReadiness({ checks: vercelFailed, pr: open, head }).status,
+    "fail",
+  );
+  for (const pr of [
+    { ...open, mergeStateStatus: "DIRTY" },
+    { ...open, state: "CLOSED" },
+  ]) {
+    assert.equal(assessReadiness({ checks: passing, pr, head }).status, "fail");
+  }
+});
+
+test("a rerun's stale entry for a required check is not taken as success", () => {
+  const checks = [...passing, { name: "Verify", state: "IN_PROGRESS" }];
+  assert.equal(assessReadiness({ checks, pr: open, head }).status, "wait");
+  const rerunFailed = [...passing, { name: "Verify", state: "FAILURE" }];
+  assert.equal(
+    assessReadiness({ checks: rerunFailed, pr: open, head }).status,
+    "fail",
+  );
+});
+
+test("gh output before the first check is reported reads as no checks", () => {
+  assert.deepEqual(parseGhOutput(""), []);
+  assert.deepEqual(parseGhOutput('[{"name":"Verify","state":"PENDING"}]\n'), [
+    { name: "Verify", state: "PENDING" },
+  ]);
 });
