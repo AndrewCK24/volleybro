@@ -229,9 +229,7 @@ New components in `ui/` and `custom/` must include a Storybook story before the 
 
 CI runs every check on every pull request and is the authority (ADR-0092). Locally, `pnpm verify` runs format, lint, type checks, workflow conformance and unit tests. `pnpm verify:all` runs each other lane — the app build and unit tests, the workflow tests, the integration tests, the Blueprint tests — only when the diff against the remote default integration branch reaches it, and every lane when root configuration changed; `pnpm verify:all --full` runs everything. No local gate builds the Blueprint site. The integration tests download a `mongodb-memory-server` binary on first run.
 
-Pipe gate output into a log before filtering it (`pnpm verify:all 2>&1 | tee <log> | grep …`), so a failing lane's message survives; read the log before rerunning, and keep it when a lane fails.
-
-A suite that intermittently fails to run with `A jest worker process (pid=…) was terminated by another process: signal=SIGSEGV`, on a different suite each time, is a V8 crash in the Node 24.15 binary (likely [nodejs/node#64841](https://github.com/nodejs/node/issues/64841)), not a test failure. Rerun once and note the rerun in the gate result. Changing the Node version or `NODE_OPTIONS` is the developer's environment decision; recheck this note after a Node upgrade.
+Each lane's full output is written to `.verify-logs/<lane>.log`; read it rather than rerunning a failed gate. A Jest lane whose worker crashes with `SIGSEGV` reruns once on its own, and the summary says so.
 
 ---
 

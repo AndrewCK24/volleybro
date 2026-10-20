@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { LANE_COMMANDS, LANE_NAMES, laneStages, planLanes } from "../verify.js";
+import {
+  isWorkerSegfault,
+  LANE_COMMANDS,
+  LANE_NAMES,
+  laneStages,
+  planLanes,
+} from "../verify.js";
 
 test("full run requested runs every lane", () => {
   const plan = planLanes(["src/foo.ts"], { all: true, full: true });
@@ -160,4 +166,13 @@ test("pnpm verify runs static analysis and unit tests, and static no longer runs
     LANE_COMMANDS.static.some((command) => command.includes("test:workflow")),
     false,
   );
+});
+
+test("only a Jest lane whose worker died with SIGSEGV counts as a worker crash", () => {
+  const crash =
+    "A jest worker process (pid=4242) was terminated by another process: signal=SIGSEGV";
+  assert.equal(isWorkerSegfault("app-test", crash), true);
+  assert.equal(isWorkerSegfault("blueprint", crash), true);
+  assert.equal(isWorkerSegfault("static", crash), false);
+  assert.equal(isWorkerSegfault("app-test", "Expected 2, received 3"), false);
 });
