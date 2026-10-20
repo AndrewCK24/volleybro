@@ -231,7 +231,7 @@ CI runs every check on every pull request and is the authority (ADR-0092). Local
 
 Pipe gate output into a log before filtering it (`pnpm verify:all 2>&1 | tee <log> | grep …`), so a failing lane's message survives; read the log before rerunning, and keep it when a lane fails.
 
-A suite that fails to run with `A jest worker process (pid=…) was terminated by another process: signal=SIGSEGV` is a V8 crash in the Node 24.15 binary (likely [nodejs/node#64841](https://github.com/nodejs/node/issues/64841)), not a test failure: about one full run in 15–20 hits it, on a different suite each time. Rerun once and say so in the gate result. Changing the Node version or adding `NODE_OPTIONS=--no-maglev` is the developer's environment decision.
+A suite that intermittently fails to run with `A jest worker process (pid=…) was terminated by another process: signal=SIGSEGV`, on a different suite each time, is a V8 crash in the Node 24.15 binary (likely [nodejs/node#64841](https://github.com/nodejs/node/issues/64841)), not a test failure. Rerun once and note the rerun in the gate result. Changing the Node version or `NODE_OPTIONS` is the developer's environment decision; recheck this note after a Node upgrade.
 
 ---
 
