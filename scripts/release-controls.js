@@ -11,7 +11,7 @@ const execFile = promisify(execFileCallback);
 const VERCEL_API = "https://api.vercel.com";
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const DIGEST_PATTERN = /^sha256:([0-9a-f]{64})$/;
-const RELEASE_STATE_VERSION = 3;
+const RELEASE_STATE_VERSION = 4;
 const PUSH_LOOKUP_ATTEMPTS = 12;
 const PUSH_LOOKUP_DELAY_MS = 5_000;
 const PRODUCTION_WORKFLOW = ".github/workflows/production-release.yml";
@@ -203,22 +203,6 @@ function validateStateSchema(state) {
     fail("Release state is missing its platform binding");
   if (!["normal", "normal-retry", "hotfix"].includes(state.releaseMode))
     fail("Release state has no trusted release mode");
-  if (typeof state.productionDatabaseActive !== "boolean")
-    fail("Release state has no production database lifecycle marker");
-}
-
-function configuredProductionDatabaseMode() {
-  const value = process.env.PRODUCTION_DB_ACTIVE;
-  if (value !== "true" && value !== "false")
-    fail("PRODUCTION_DB_ACTIVE must be explicitly set to true or false");
-  return value === "true";
-}
-
-function assertProductionDatabaseMode(state) {
-  if (state.productionDatabaseActive !== configuredProductionDatabaseMode())
-    fail(
-      "Production database lifecycle changed; start a fresh authorized release",
-    );
 }
 
 function validateConfiguredPlatform(state) {
@@ -642,12 +626,11 @@ async function sourcePathExists(sha, sourcePath) {
 async function recoveryCompatibilityPlan(state) {
   const { changedPaths, contractPaths, unclassifiedPaths } =
     await persistedContractChanges(state);
-  if (state.productionDatabaseActive && unclassifiedPaths.length > 0)
+  if (unclassifiedPaths.length > 0)
     fail(
       `Cannot classify changed paths for production-data compatibility: ${unclassifiedPaths.join(", ")}`,
     );
-  const isCompatibilityRequired =
-    state.productionDatabaseActive && contractPaths.length > 0;
+  const isCompatibilityRequired = contractPaths.length > 0;
   if (isCompatibilityRequired) {
     if (!(await sourcePathExists(state.sha, RECOVERY_COMPATIBILITY_TEST)))
       fail(
@@ -858,20 +841,13 @@ async function recoveryReceiptFacts(state) {
       "Recovery proof requires unit and integration receipts for one source tree",
     );
 
-  let policy, canRollback, compatibilityTest;
-  if (!state.productionDatabaseActive) {
-    policy = "pre-production-forward-only";
-    canRollback = contractPaths.length === 0 && unclassifiedPaths.length === 0;
-  } else if (contractPaths.length === 0) {
-    policy = "production-contract-unchanged";
-    canRollback = true;
-  } else {
-    policy = "production-targeted-integration-proof";
-    canRollback = true;
-    if (!isCompatibilityRequired)
-      fail(
-        "Production compatibility test is required for this contract change",
-      );
+  const policy =
+    contractPaths.length === 0
+      ? "production-contract-unchanged"
+      : "production-targeted-integration-proof";
+  const canRollback = true;
+  let compatibilityTest;
+  if (isCompatibilityRequired) {
     compatibilityTest = await verifyCompatibilityTestStep(
       state,
       state.compatibilityTest,
@@ -912,7 +888,7 @@ async function recoveryReceiptFacts(state) {
       projectId: state.projectId,
     },
     database: {
-      productionActive: state.productionDatabaseActive,
+      productionActive: true,
       policy,
       changedContractPaths: contractPaths,
       unclassifiedPaths,
@@ -931,7 +907,6 @@ async function verifyRecoveryEvidence(
   state,
   expectedRunId = state.releaseRunId,
 ) {
-  assertProductionDatabaseMode(state);
   assertSourceQAReceipt(state, expectedRunId);
   const receipt = state.recoveryEvidence;
   if (
@@ -965,9 +940,7 @@ async function assertRollbackAllowed(
 ) {
   const receipt = await verifyRecoveryEvidence(state, expectedRunId);
   if (!receipt.facts.database.rollbackAllowed)
-    fail(
-      "The pre-production database has a forward-only contract change; do not restore old code against it. Use a forward fix",
-    );
+    fail("Production code rollback is not supported by the recovery receipt");
 }
 
 function assertTagSha(actual, expected, tag) {
@@ -1455,7 +1428,6 @@ async function stage() {
   const releaseMode = required("RELEASE_MODE");
   if (!["normal", "normal-retry", "hotfix"].includes(releaseMode))
     fail("Unsupported release mode");
-  const productionDatabaseActive = configuredProductionDatabaseMode();
   const authorization = process.env.RELEASE_AUTHORIZATION
     ? json(process.env.RELEASE_AUTHORIZATION, "manual release authorization")
     : undefined;
@@ -1535,7 +1507,6 @@ async function stage() {
       "Release run attempt",
     ),
     releaseMode,
-    productionDatabaseActive,
     baseline,
     ...(reviewedSource && { reviewedSource }),
     ...(authorization && { authorization }),
@@ -1914,7 +1885,6 @@ async function rollbackIfCompatible() {
 async function recordRecoveryEvidence() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  assertProductionDatabaseMode(state);
   await verifySourceQANative(state);
   const plan = await recoveryCompatibilityPlan(state);
   state.compatibilityTest = await recordCompatibilityTest(state, plan);
@@ -1946,7 +1916,6 @@ async function recordRecoveryEvidence() {
 async function planRecoveryCompatibility() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  assertProductionDatabaseMode(state);
   const plan = await recoveryCompatibilityPlan(state);
   await appendOutputs({
     required: String(plan.required),

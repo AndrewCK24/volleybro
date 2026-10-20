@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 2,
+  "id": "0141",
+  "title": "Production data is isolated before v1.0 with all existing records retained",
+  "capabilities": ["platform/delivery-workflow"],
+  "context": "The production database was activated before v1.0. All existing records were retained as real team data.",
+  "decision": "Production and test are isolated behind separate database-scoped users, with auth secrets separated by environment. Production activation retained every existing record and is permanent. Continue the established production-data policy: support remaining legacy records, prove candidate writes readable by the exact permitted recovery baseline, block promotion when proof is missing or uncertain, recover code only, and never roll back production data.",
+  "alternatives": [
+    {
+      "option": "Keep sharing one database until the v1.0 cutover",
+      "reason": "Preview code and sessions would keep reaching live data, and the production smoke test would keep waiting for a database it can check."
+    },
+    {
+      "option": "Copy only explicitly selected records into the production database",
+      "reason": "Every record was real use; selecting a subset would have discarded data the developer and their teams still need."
+    },
+    {
+      "option": "Keep the release controller's activation switch",
+      "reason": "Activation cannot be undone, so the pre-activation branch could never run again and the switch would only be a setting that can be misconfigured."
+    }
+  ],
+  "consequences": [
+    "Releases follow the post-activation policy; unclassified changes stop promotion and persisted-contract risks require exact-source compatibility proof.",
+    "Pre-activation deployments are not valid recovery targets."
+  ],
+  "revisitTriggers": [
+    "The production data retention or recovery-target policy changes.",
+    "Evidence proves that no legacy-format production records remain, allowing the legacy-read obligation to retire."
+  ],
+  "originChange": "production-database-activated"
+}
