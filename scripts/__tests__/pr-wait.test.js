@@ -118,14 +118,12 @@ test("a failed Verify from a run that a newer run of its workflow replaced does 
       state: "FAILURE",
       workflow: "CI",
       startedAt: "2026-10-21T04:12:22Z",
-      workflow: "CI",
     },
     {
       name: "Test",
       state: "IN_PROGRESS",
       workflow: "CI",
       startedAt: "2026-10-21T04:12:35Z",
-      workflow: "CI",
     },
     {
       name: "Vercel",
