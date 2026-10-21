@@ -152,9 +152,9 @@ async function validateSkillAdapters(root, agentsContent) {
     );
   }
   const tablePath = path.join(root, SKILL_ADAPTERS);
-  const table = (await exists(tablePath))
-    ? await readFile(tablePath, "utf8")
-    : "";
+  // A missing map is reported once, as a required file.
+  if (!(await exists(tablePath))) return diagnostics;
+  const table = await readFile(tablePath, "utf8");
   const rows = new Map();
   for (const line of table.split(/\r?\n/)) {
     const match = line.match(SKILL_ADAPTER_ROW);
