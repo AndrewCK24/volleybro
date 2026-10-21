@@ -13,7 +13,6 @@ const config: StorybookConfig = {
     name: "@storybook/nextjs",
     options: { builder: { useSWC: true } },
   },
-  staticDirs: ["../public"],
 };
 
 export default config;
