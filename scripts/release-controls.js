@@ -47,7 +47,19 @@ const KNOWN_UNRELATED_PATTERNS = [
   /^(?:README|CONTRIBUTING|CODING_STANDARDS|WORKFLOW|LICENSE)(?:\.|$)/,
   /^(?:eslint|jest|next|postcss|prettier|tailwind|tsconfig)[^.]*\.config\./,
   /^\.?(?:editorconfig|gitignore|prettierignore)$/,
+  /^\.(?:agents|claude|storybook|husky|impeccable)\//,
+  /^(?:AGENTS|CLAUDE|DESIGN|GLOSSARY|PRODUCT)\.md$/,
+  /^README\.zh-TW\.md$/,
+  /^skills-lock\.json$/,
+  /^commitlint[^.]*\.config\./,
+  /^knip\.json$/,
+  /^\.(?:worktreeinclude|markdownlint[^/]*|diagram-design)$/,
 ];
+// Top-level keys that cannot affect persisted production data, per JSON manifest.
+const UNRELATED_MANIFEST_KEYS = {
+  "package.json": ["version", "devDependencies", "scripts", "packageManager"],
+  "vercel.json": ["git"],
+};
 const CANDIDATE_LEGACY_ASSERTION = "candidate reads legacy persisted records";
 const BASELINE_CANDIDATE_ASSERTION = (baselineSha) =>
   `production baseline ${baselineSha} reads candidate-written records`;
@@ -547,7 +559,7 @@ function assertBaseline(actual, expected) {
     fail("Production baseline changed while candidate was being reviewed");
 }
 
-async function persistedContractChanges(state) {
+export async function persistedContractChanges(state) {
   const changedPaths = (
     await command("git", [
       "diff",
@@ -562,15 +574,15 @@ async function persistedContractChanges(state) {
   const contractPaths = changedPaths.filter((file) =>
     PERSISTED_CONTRACT_PATTERNS.some((pattern) => pattern.test(file)),
   );
-  let packageManifestClass = "unrelated";
-  if (changedPaths.includes("package.json")) {
+  const manifestClass = {};
+  for (const file of Object.keys(UNRELATED_MANIFEST_KEYS)) {
+    if (!changedPaths.includes(file)) continue;
     try {
-      const manifests = await Promise.all(
+      const [baseline, candidate] = await Promise.all(
         [state.baseline.sha, state.sha].map(async (sha) =>
-          JSON.parse(await command("git", ["show", `${sha}:package.json`])),
+          JSON.parse(await command("git", ["show", `${sha}:${file}`])),
         ),
       );
-      const [baseline, candidate] = manifests;
       const keys = new Set([
         ...Object.keys(baseline),
         ...Object.keys(candidate),
@@ -580,11 +592,11 @@ async function persistedContractChanges(state) {
       for (const key of keys) {
         if (
           JSON.stringify(baseline[key]) === JSON.stringify(candidate[key]) ||
-          key === "version" ||
-          key === "devDependencies"
+          UNRELATED_MANIFEST_KEYS[file].includes(key)
         )
           continue;
         if (
+          file === "package.json" &&
           [
             "dependencies",
             "optionalDependencies",
@@ -595,19 +607,20 @@ async function persistedContractChanges(state) {
           hasDependencyChange = true;
         else hasUnknownChange = true;
       }
-      packageManifestClass = hasUnknownChange
+      manifestClass[file] = hasUnknownChange
         ? "unclassified"
         : hasDependencyChange
           ? "contract"
           : "unrelated";
     } catch {
-      packageManifestClass = "unclassified";
+      manifestClass[file] = "unclassified";
     }
   }
-  if (packageManifestClass === "contract") contractPaths.push("package.json");
+  if (manifestClass["package.json"] === "contract")
+    contractPaths.push("package.json");
   const unclassifiedPaths = changedPaths.filter(
     (file) =>
-      !(file === "package.json" && packageManifestClass !== "unclassified") &&
+      !(file in manifestClass && manifestClass[file] !== "unclassified") &&
       !contractPaths.includes(file) &&
       !KNOWN_UNRELATED_PATTERNS.some((pattern) => pattern.test(file)),
   );
