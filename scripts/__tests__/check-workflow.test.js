@@ -59,7 +59,8 @@ delivery:
 const REPOSITORY_FILES = {
   "WORKFLOW.md": validWorkflow,
   "CLAUDE.md": "@AGENTS.md\n",
-  "AGENTS.md": "Read [WORKFLOW.md](WORKFLOW.md).\n",
+  "AGENTS.md":
+    "Read [WORKFLOW.md](WORKFLOW.md).\n\n## Skill adapters\n\n| Skill | Adapters |\n| --- | --- |\n| `to-spec` | `docs/agents/issue-tracker.md` |\n",
   "docs/agents/issue-tracker.md": "# Issue tracker adapter\n",
   "docs/agents/domain.md": "# Domain documentation adapter\n",
   "docs/agents/blueprint.md": "# Blueprint adapter\n",
@@ -198,6 +199,28 @@ test("reports a broken provider skill bridge", async () => {
   const root = await makeRepository();
   await rm(path.join(root, ".agents/skills/to-spec"), { recursive: true });
   assert.match((await checkWorkflow(root)).join("\n"), /missing or broken/i);
+});
+
+test("reports an installed skill without an adapter row", async () => {
+  const root = await makeRepository({
+    ".agents/skills/local-skill/SKILL.md": "# Local skill\n",
+  });
+  assert.match(
+    (await checkWorkflow(root)).join("\n"),
+    /\[skill-adapter\]: local-skill has no row/,
+  );
+});
+
+test("reports an adapter row naming a missing file or no installed skill", async () => {
+  const agents = REPOSITORY_FILES["AGENTS.md"].replace(
+    "`docs/agents/issue-tracker.md`",
+    "`docs/agents/missing.md`",
+  );
+  const diagnostics = (
+    await messages({ "AGENTS.md": agents + "| `removed` | no adapter |\n" })
+  ).join("\n");
+  assert.match(diagnostics, /to-spec names docs\/agents\/missing\.md/);
+  assert.match(diagnostics, /row removed names no installed skill/);
 });
 
 test("accepts each test tier in its own home", async () => {

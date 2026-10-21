@@ -121,6 +121,66 @@ async function validateSharedSkills(root) {
   return diagnostics;
 }
 
+const SKILL_ADAPTERS_HEADING = /^## Skill adapters\s*$/m;
+const SKILL_ADAPTER_ROW = /^\|\s*`([^`]+)`\s*\|(.*)\|\s*$/;
+
+async function validateSkillAdapters(root, agentsContent) {
+  const lockPath = path.join(root, "skills-lock.json");
+  let locked = [];
+  try {
+    locked = Object.keys(JSON.parse(await readFile(lockPath, "utf8")).skills);
+  } catch {
+    // validateSharedSkills reports a missing or invalid lock.
+  }
+  const skillsDirectory = path.join(root, ".agents", "skills");
+  const installed = (await exists(skillsDirectory))
+    ? (await readdir(skillsDirectory, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name)
+    : [];
+  const skills = new Set([...locked, ...installed]);
+
+  const heading = agentsContent.search(SKILL_ADAPTERS_HEADING);
+  const section = heading === -1 ? "" : agentsContent.slice(heading);
+  const rows = new Map();
+  for (const line of section.split(/\r?\n/).slice(1)) {
+    if (line.startsWith("#")) break;
+    const match = line.match(SKILL_ADAPTER_ROW);
+    if (match) rows.set(match[1], match[2].trim());
+  }
+
+  const diagnostics = [];
+  for (const skill of skills) {
+    if (!rows.has(skill)) {
+      diagnostics.push(
+        `AGENTS.md [skill-adapter]: ${skill} has no row under "## Skill adapters"; name its adapters or write "no adapter"`,
+      );
+    }
+  }
+  for (const [skill, cell] of rows) {
+    if (!skills.has(skill)) {
+      diagnostics.push(
+        `AGENTS.md [skill-adapter]: row ${skill} names no installed skill`,
+      );
+    }
+    if (cell === "no adapter") continue;
+    const adapters = [...cell.matchAll(/`([^`]+)`/g)].map((m) => m[1]);
+    if (adapters.length === 0) {
+      diagnostics.push(
+        `AGENTS.md [skill-adapter]: row ${skill} must list adapter paths in backticks or say "no adapter"`,
+      );
+    }
+    for (const adapter of adapters) {
+      if (!(await exists(path.join(root, adapter)))) {
+        diagnostics.push(
+          `AGENTS.md [skill-adapter]: ${skill} names ${adapter}, which does not exist`,
+        );
+      }
+    }
+  }
+  return diagnostics;
+}
+
 async function exists(filePath) {
   // stat, not access: on Windows access succeeds on a dangling symlink.
   try {
@@ -417,6 +477,7 @@ export async function checkWorkflow(root = process.cwd()) {
     const content = await readFile(agentsPath, "utf8");
     diagnostics.push(...validateBridge("AGENTS.md", content));
     diagnostics.push(...validateSectionReferences("AGENTS.md", content));
+    diagnostics.push(...(await validateSkillAdapters(root, content)));
   }
 
   diagnostics.push(...(await validateTestTiers(root)));
