@@ -1,14 +1,14 @@
-import { ContentSaveRejectedError, definePlugin } from "emdash";
+import { definePlugin } from "emdash";
 import type { PluginContext, PluginDescriptor } from "emdash";
 import { z } from "astro/zod";
 import { acceptedContentHash, changeDataSchema } from "./emdash-change-record";
 import { publicationReceiptProblem } from "./publication-receipt";
-import { reserveBlueprintMediaUpload } from "./media-upload-budget";
 import { triggerCloudflareDeployHook } from "./cloudflare-deploy-hook";
 
 const PLUGIN_ID = "volleybro-blueprint-publication-policy";
 const PLUGIN_VERSION = "1.0.0";
 const BUILD_HOOK_SETTING = "cloudflareBuildDeployHookUrl";
+export const MAX_MEDIA_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 export function emdashPublicationPolicy(entrypoint: string): PluginDescriptor {
   return {
@@ -60,7 +60,6 @@ export function createPlugin() {
       "content:read",
       "hooks.content-policy:register",
       "network:request",
-      "media:read",
       "media:write",
     ],
     allowedHosts: ["api.linear.app", "api.cloudflare.com"],
@@ -80,22 +79,7 @@ export function createPlugin() {
         },
       },
     },
-    storage: {
-      mediaBudget: {
-        indexes: ["month", "reservedBytes", "uploadRequests"],
-      },
-    },
     hooks: {
-      "content:beforeSave": async (event) => {
-        if (event.collection !== "blueprint_changes") return;
-
-        const parsed = changeDataSchema.safeParse(event.content);
-        if (!parsed.success) {
-          throw new ContentSaveRejectedError(
-            "Change content does not match the canonical Blueprint schema.",
-          );
-        }
-      },
       "content:afterSave": async (event, context) => {
         await requestBlueprintBuild(event.collection, context);
       },
@@ -108,23 +92,9 @@ export function createPlugin() {
       "content:afterUnpublish": async (event, context) => {
         await requestBlueprintBuild(event.collection, context);
       },
-      "media:beforeUpload": async (event, context) => {
-        if (!context.media)
-          throw new Error("Media access is unavailable; uploads are blocked.");
-        await reserveBlueprintMediaUpload(
-          { size: event.file.size },
-          {
-            store: context.storage.mediaBudget,
-            list: async (cursor) => {
-              const page = await context.media!.list({ limit: 100, cursor });
-              return {
-                items: page.items.map(({ size }) => ({ size })),
-                cursor: page.cursor,
-                hasMore: page.hasMore,
-              };
-            },
-          },
-        );
+      "media:beforeUpload": async (event) => {
+        if (event.file.size > MAX_MEDIA_UPLOAD_BYTES)
+          throw new Error("Upload exceeds the 20 MiB Blueprint media limit.");
         return event.file;
       },
       "content:beforePublish": async (event, context) => {

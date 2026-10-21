@@ -3,6 +3,7 @@ import { Docs } from "./docs";
 import EmDashChangeBlocks from "./emdash-change-blocks.astro";
 import { ChangeHeader } from "./change-header";
 import Layout from "./layout.astro";
+import { withHeadingAnchors } from "../lib/heading-anchors";
 import type { ChangeData } from "../lib/emdash-change-record";
 import type { ChangeSummary } from "../lib/github-change-data";
 import type { Root } from "fumadocs-core/page-tree";
@@ -54,7 +55,7 @@ const { slug, change, summary, tree, preview } = Astro.props;
         pullRequests={summary.pullRequests}
         capabilities={summary.capabilities}
       />
-      <EmDashChangeBlocks blocks={change.blocks} />
+      <EmDashChangeBlocks blocks={withHeadingAnchors(change.blocks)} />
     </main>
   </Docs>
 </Layout>

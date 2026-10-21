@@ -34,22 +34,12 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
-  it("fails closed on an unknown block type or version", () => {
+  it("fails closed on an unknown block type", () => {
     expect(
       blockSchema.safeParse({
         _type: "custom-script",
         _version: 1,
         source: "alert(1)",
-      }).success,
-    ).toBe(false);
-    expect(
-      blockSchema.safeParse({
-        _type: "scenario",
-        _version: 2,
-        id: "S1",
-        given: "A",
-        when: "B",
-        then: "C",
       }).success,
     ).toBe(false);
     expect(
@@ -199,7 +189,22 @@ describe("EmDash Change schema", () => {
     ).toBe(true);
   });
 
-  it("rejects raw, unknown, and unsupported-version TL;DR content", () => {
+  it("accepts typed blocks with or without _version and keeps a stored key", () => {
+    const scenario = {
+      _type: "scenario",
+      id: "S1",
+      given: "A",
+      when: "B",
+      then: "C",
+    };
+    expect(blockSchema.safeParse(scenario).success).toBe(true);
+    const stored = { ...scenario, _version: 1 };
+    const parsed = blockSchema.safeParse(stored);
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data).toEqual(stored);
+  });
+
+  it("rejects raw and unknown TL;DR content", () => {
     const tldr = {
       _type: "tldr",
       _version: 1,
@@ -211,12 +216,6 @@ describe("EmDash Change schema", () => {
       ],
     };
 
-    expect(
-      blockSchema.safeParse({
-        ...tldr,
-        _version: 2,
-      }).success,
-    ).toBe(false);
     expect(
       blockSchema.safeParse({
         ...tldr,
@@ -312,7 +311,7 @@ describe("EmDash Change schema", () => {
     }
   });
 
-  it("rejects unknown, raw, unsafe-link, and unsupported disclosure content", () => {
+  it("rejects unknown, raw, and unsafe-link disclosure content", () => {
     const disclosure = {
       _type: "disclosure",
       _version: 1,
@@ -338,9 +337,6 @@ describe("EmDash Change schema", () => {
         false,
       );
     }
-    expect(blockSchema.safeParse({ ...disclosure, _version: 2 }).success).toBe(
-      false,
-    );
     expect(
       blockSchema.safeParse({ ...disclosure, id: "bad anchor" }).success,
     ).toBe(false);
@@ -533,18 +529,28 @@ describe("EmDash Change schema", () => {
     expect(
       blockSchema.safeParse({
         _type: "block",
-        children: [{ _type: "span", text: "unsafe", marks: ["missing-link"] }],
-      }).success,
-    ).toBe(false);
-    expect(
-      blockSchema.safeParse({
-        _type: "block",
         children: [{ _type: "span", text: "unsafe", marks: ["link-1"] }],
         markDefs: [
           { _key: "link-1", _type: "link", href: "javascript:alert(1)" },
         ],
       }).success,
     ).toBe(false);
+  });
+
+  it("accepts EmDash-owned keys and unknown marks on core blocks", () => {
+    const parsed = blockSchema.safeParse({
+      _type: "block",
+      _key: "k1",
+      style: "normal",
+      listItem: "number",
+      level: 1,
+      listId: "legacy:x",
+      listStart: 1,
+      children: [{ _type: "span", text: "item", marks: ["future-mark"] }],
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success)
+      expect(parsed.data).toMatchObject({ listId: "legacy:x", listStart: 1 });
   });
 
   it("rejects unknown content fields instead of dropping them before hashing", async () => {
@@ -633,17 +639,6 @@ describe("EmDash Change schema", () => {
         ],
       }).success,
     ).toBe(false);
-    expect(
-      changeDataSchema.safeParse({
-        ...mediaContent,
-        blocks: [
-          {
-            ...mediaContent.blocks[0],
-            asset: { ...mediaContent.blocks[0].asset, legacyId: "old-id" },
-          },
-        ],
-      }).success,
-    ).toBe(false);
     await expect(
       acceptedContentHash({
         ...mediaContent,
@@ -674,7 +669,7 @@ describe("EmDash Change schema", () => {
     if (parsed.success) expect(parsed.data).toEqual(diff);
   });
 
-  it("rejects invalid annotated diff kinds, versions, and raw HTML fields", () => {
+  it("rejects invalid annotated diff kinds and raw HTML fields", () => {
     const diff = {
       _type: "annotated_diff",
       _version: 1,
@@ -682,7 +677,6 @@ describe("EmDash Change schema", () => {
     };
     for (const invalid of [
       { ...diff, lines: [{ kind: "script", text: "unsafe" }] },
-      { ...diff, _version: 2 },
       { ...diff, html: "<script>unsafe()</script>" },
     ]) {
       expect(blockSchema.safeParse(invalid).success).toBe(false);

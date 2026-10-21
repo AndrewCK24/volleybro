@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { getPlatformProxy, unstable_readConfig } from "wrangler";
 import { blueprintRendererId } from "./renderer-id.mjs";
-import { reserveArtifactUpload } from "./artifact-upload-budget.mjs";
 import { uploadArtifacts } from "./upload-artifacts.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -30,11 +29,6 @@ const source = unstable_readConfig({
 const binding = source.r2_buckets?.find(
   (item) => item.binding === "BLUEPRINT_PAGES",
 );
-const database = source.d1_databases?.find(
-  (item) => item.binding === "BLUEPRINT_DB",
-);
-if (!database?.database_id)
-  throw new Error("Artifact budget database is not configured.");
 const media = source.r2_buckets?.find(
   (item) => item.binding === "BLUEPRINT_MEDIA",
 );
@@ -54,7 +48,6 @@ try {
       compatibility_date: source.compatibility_date,
       ...(source.account_id ? { account_id: source.account_id } : {}),
       r2_buckets: [{ ...binding, remote }],
-      d1_databases: [{ ...database, remote }],
     }),
     { mode: 0o600 },
   );
@@ -65,27 +58,6 @@ try {
     persist: local ? { path: path.resolve(args[2], "v3") } : false,
   });
   const bucket = proxy.env.BLUEPRINT_PAGES;
-  await reserveArtifactUpload(
-    {
-      bytes: manifest.totalBytes + 4096 * (manifest.files.length + 1),
-      classARequests: manifest.files.length + 1,
-    },
-    {
-      execute: async (sql, params) => {
-        const statement = proxy.env.BLUEPRINT_DB.prepare(sql).bind(...params);
-        const result = await statement.all();
-        return { rows: result.results, changes: Number(result.meta.changes) };
-      },
-      listBucket: async (cursor) => {
-        const page = await bucket.list({ cursor, limit: 1000 });
-        return {
-          items: page.objects.map(({ size }) => ({ size })),
-          hasMore: page.truncated,
-          cursor: page.truncated ? page.cursor : undefined,
-        };
-      },
-    },
-  );
   const result = await uploadArtifacts({
     root: directory,
     manifest,
