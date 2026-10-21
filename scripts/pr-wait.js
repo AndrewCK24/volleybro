@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// Waits until a pull request's pinned head is mergeable, or fails closed.
 // `gh pr checks --watch --required` can return before the aggregate Verify
 // check exists, so this polls the named checks and GitHub's merge state.
 import { execFile } from "node:child_process";

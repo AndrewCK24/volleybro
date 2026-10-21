@@ -2,7 +2,7 @@
 // Any change to root configuration runs every lane, because those files feed
 // all of them.
 import { execFileSync, spawn } from "node:child_process";
-import { createWriteStream, mkdirSync } from "node:fs";
+import { createWriteStream, mkdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolveScopeBase } from "./git-scope.js";
 
@@ -32,13 +32,13 @@ export const LANE_NAMES = Object.keys(LANE_COMMANDS);
 const SOLO_LANES = ["blueprint", "app-test"];
 
 // Each lane's full output lands here, so a filtered terminal view never loses
-// a failure message.
+// a failure message. Cleared per run so no log outlives the run it describes.
 const LOG_DIR = ".verify-logs";
 const JEST_LANES = new Set(["app-test", "integration", "blueprint"]);
 
-// Node 24.15's V8 intermittently crashes a Jest worker (likely
-// nodejs/node#64841), failing whichever suite it ran. That is not a test
-// failure, so the lane reruns once; recheck after a Node upgrade.
+// Node 24.15's V8 intermittently crashes a Jest worker, failing whichever
+// suite it ran: not a test failure, so the lane reruns once. Recheck after a
+// Node upgrade.
 export function isWorkerSegfault(laneName, output) {
   return (
     JEST_LANES.has(laneName) &&
@@ -323,6 +323,7 @@ async function main() {
 
   printPlan(plan);
   if (options.dryRun) return;
+  rmSync(LOG_DIR, { recursive: true, force: true });
 
   const children = new Set();
   const onSigint = () => {
