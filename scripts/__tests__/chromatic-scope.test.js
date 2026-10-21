@@ -62,6 +62,7 @@ function lockfile({
   malformed = false,
   alias = false,
   pnpmIntegrity = "sha512-pnpm",
+  pnpmVersion = "12.9.1",
 } = {}) {
   const importers = `  .:\n    dependencies:\n      app-lib:\n        specifier: ^1.0.0\n        version: 1.0.0\n${
     alias
@@ -78,14 +79,15 @@ function lockfile({
   })}${snapshot("eslint", eslint)}${snapshot("color-lib", color)}${
     alias ? snapshot("real-lib", "1.0.0") : ""
   }`;
-  const packageManager = `lockfileVersion: '9.0'\nimporters:\n  .:\n    packageManagerDependencies:\n      pnpm:\n        specifier: 12.9.1\n        version: 12.9.1\npackages:\n  pnpm@12.9.1:\n    resolution: {integrity: ${pnpmIntegrity}}\nsnapshots:\n  pnpm@12.9.1:\n    resolution: {integrity: ${pnpmIntegrity}}\n`;
+  const packageManager = `lockfileVersion: '9.0'\nimporters:\n  .:\n    packageManagerDependencies:\n      pnpm:\n        specifier: ${pnpmVersion}\n        version: ${pnpmVersion}\npackages:\n  pnpm@${pnpmVersion}:\n    resolution: {integrity: ${pnpmIntegrity}}\nsnapshots:\n  pnpm@${pnpmVersion}:\n    resolution: {integrity: ${pnpmIntegrity}}\n`;
   const resolution = `lockfileVersion: '9.0'\nsettings:\n  autoInstallPeers: true\noverrides: {}\nimporters:\n${importers}packages:\n${packages}snapshots:\n${snapshots}`;
   return `---\n${packageManager}---\n${resolution}`;
 }
 
-const manifest = (eslint = "^9.0.0", alias = false) =>
+const manifest = (eslint = "^9.0.0", alias = false, extra = {}) =>
   JSON.stringify({
     name: "fixture",
+    ...extra,
     dependencies: {
       "app-lib": "^1.0.0",
       ...(alias ? { "alias-lib": "npm:real-lib@^1.0.0" } : {}),
@@ -323,5 +325,87 @@ test("runs when a visual file is renamed or deleted", async (t) => {
     const result = await classify(cwd, compareArgs(base, head));
     assert.match(result.stdout, /skip=false reason=/, change);
     assert.equal(result.output, "skip=false\n", change);
+  }
+});
+
+test("skips manifest metadata and package manager pin changes", async (t) => {
+  const pnpm = lockfile({
+    pnpmVersion: "12.14.0",
+    pnpmIntegrity: "sha512-pnpm-next",
+  });
+  for (const [firstLock, secondLock, base, head] of [
+    [
+      lockfile(),
+      lockfile(),
+      manifest("^9.0.0", false, { version: "1.0.0" }),
+      manifest("^9.0.0", false, { version: "1.1.0" }),
+    ],
+    [
+      lockfile(),
+      lockfile(),
+      manifest("^9.0.0", false, { scripts: { test: "a" } }),
+      manifest("^9.0.0", false, { scripts: { test: "b" } }),
+    ],
+    [
+      lockfile(),
+      pnpm.replace(/^---\n[\s\S]*?---\n/, (first) => first) &&
+        lockfile({ pnpmVersion: "12.14.0", pnpmIntegrity: "sha512-pnpm-next" }),
+      manifest("^9.0.0", false, { packageManager: "pnpm@12.9.1" }),
+      manifest("^9.0.0", false, { packageManager: "pnpm@12.14.0" }),
+    ],
+  ]) {
+    const {
+      cwd,
+      base: b,
+      head: h,
+    } = await lockPair(t, firstLock, secondLock, base, head);
+    const result = await classify(cwd, compareArgs(b, h));
+    assert.equal(result.output, "skip=true\n", result.stdout);
+  }
+});
+
+test("runs when dependencies or overrides change", async (t) => {
+  for (const [base, head] of [
+    [
+      manifest(),
+      JSON.stringify({
+        ...JSON.parse(manifest()),
+        dependencies: { "app-lib": "^2.0.0" },
+      }),
+    ],
+    [
+      manifest("^9.0.0", false, { overrides: { "color-lib": "1.0.0" } }),
+      manifest("^9.0.0", false, { overrides: { "color-lib": "1.1.0" } }),
+    ],
+  ]) {
+    const {
+      cwd,
+      base: b,
+      head: h,
+    } = await lockPair(t, lockfile(), lockfile(), base, head);
+    const result = await classify(cwd, compareArgs(b, h));
+    assert.match(result.stdout, /skip=false reason=protected package manifest/);
+  }
+});
+
+test("chromatic workflow skips only non-Chromatic action pin bumps", async (t) => {
+  const workflow = (pin, chromatic = "chromaui/action@latest", input = "a") =>
+    `steps:\n  - uses: actions/checkout@${pin}\n  - uses: ${chromatic}\n    with:\n      skip: ${input}\n`;
+  for (const [head, skip] of [
+    [workflow("v8"), true],
+    [workflow("v7", "chromaui/action@v2"), false],
+    [workflow("v7", undefined, "b"), false],
+  ]) {
+    const {
+      cwd,
+      base,
+      head: h,
+    } = await commitPair(
+      t,
+      { ".github/workflows/chromatic.yml": workflow("v7") },
+      { ".github/workflows/chromatic.yml": head },
+    );
+    const result = await classify(cwd, compareArgs(base, h));
+    assert.equal(result.output, `skip=${skip}\n`, head);
   }
 });

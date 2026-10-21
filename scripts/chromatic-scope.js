@@ -144,7 +144,7 @@ function parseLockfile(content) {
 }
 
 function rootProtectedImporter(importer) {
-  const result = { ...importer };
+  const { packageManagerDependencies: _pm, ...result } = importer;
   const dev = { ...(result.devDependencies ?? {}) };
   const specifiers = { ...(result.specifiers ?? {}) };
   for (const name of NON_VISUAL_DEV_DEPENDENCIES) {
@@ -227,17 +227,28 @@ function protectedGraph(lock) {
   });
 }
 
+// Only these manifest fields can change what Storybook bundles; everything
+// else (version, scripts, packageManager, engines, metadata) is ignored.
+const BUNDLE_MANIFEST_FIELDS = [
+  "dependencies",
+  "optionalDependencies",
+  "peerDependencies",
+  "overrides",
+  "pnpm",
+  "resolutions",
+  "type",
+  "imports",
+  "exports",
+  "browserslist",
+];
+
 function parseManifest(content) {
   const manifest = JSON.parse(content);
   if (!manifest || typeof manifest !== "object" || !manifest.dependencies) {
     throw new Error("invalid root package manifest");
   }
-  const filtered = {
-    ...manifest,
-    devDependencies: {},
-    dependencies: manifest.dependencies,
-    optionalDependencies: manifest.optionalDependencies ?? {},
-  };
+  const filtered = { devDependencies: {} };
+  for (const field of BUNDLE_MANIFEST_FIELDS) filtered[field] = manifest[field];
   for (const [name, version] of Object.entries(
     manifest.devDependencies ?? {},
   )) {
@@ -246,6 +257,25 @@ function parseManifest(content) {
   }
   return stable(filtered);
 }
+
+// The first lockfile document pins the package manager itself. Its pin is not
+// bundled; when the pin changes, its own package graph changes with it.
+function lockEnvironment({ firstDocument, resolutionEnvironment }, pinChanged) {
+  const { packageManagerDependencies: _pm, ...importer } =
+    firstDocument.importers?.["."] ?? {};
+  const first = {
+    ...firstDocument,
+    importers: { ...firstDocument.importers, ".": importer },
+  };
+  if (pinChanged) {
+    delete first.packages;
+    delete first.snapshots;
+  }
+  return stable({ firstDocument: first, resolutionEnvironment });
+}
+
+const pmPin = ({ firstDocument }) =>
+  stable(firstDocument.importers?.["."]?.packageManagerDependencies);
 
 function parseNameStatus(output) {
   const fields = output.split("\0").filter(Boolean);
@@ -265,6 +295,26 @@ function parseNameStatus(output) {
 
 function isSafePath(file) {
   return SAFE_PATHS.some((pattern) => pattern.test(file));
+}
+
+const CHROMATIC_WORKFLOW = ".github/workflows/chromatic.yml";
+
+// shortcut: line-based check, so a pin bump is recognised only as paired
+// `uses:` lines; any other edit or an added/removed step runs the build.
+function isActionPinOnly(base, head, cwd) {
+  const lines = runGit(
+    ["diff", "-U0", "--no-renames", base, head, "--", CHROMATIC_WORKFLOW],
+    cwd,
+  )
+    .split("\n")
+    .filter((line) => /^[+-]/.test(line) && !/^(?:\+\+\+|---) /.test(line));
+  const uses = /^[+-]\s*(?:-\s+)?uses:\s*(?!chromaui\/action@)\S+/;
+  return (
+    lines.length > 0 &&
+    lines.every((line) => uses.test(line)) &&
+    lines.filter((l) => l[0] === "+").length ===
+      lines.filter((l) => l[0] === "-").length
+  );
 }
 
 function runGit(args, cwd) {
@@ -296,7 +346,9 @@ function assess({ base, head, force = false }) {
     if (paths.length === 0) return { skip: true, reason: "no changed files" };
     const unknown = paths.filter(
       (file) =>
-        !isSafePath(file) && !["package.json", "pnpm-lock.yaml"].includes(file),
+        !isSafePath(file) &&
+        !["package.json", "pnpm-lock.yaml"].includes(file) &&
+        !(file === CHROMATIC_WORKFLOW && isActionPinOnly(base, head, cwd)),
     );
     if (unknown.length)
       return {
@@ -311,7 +363,12 @@ function assess({ base, head, force = false }) {
       const headManifest = parseManifest(manifestAt(head));
       const baseLock = parseLockfile(lockAt(base));
       const headLock = parseLockfile(lockAt(head));
-      if (stable(baseLock.environment) !== stable(headLock.environment)) {
+      const pinChanged =
+        pmPin(baseLock.environment) !== pmPin(headLock.environment);
+      if (
+        lockEnvironment(baseLock.environment, pinChanged) !==
+        lockEnvironment(headLock.environment, pinChanged)
+      ) {
         return { skip: false, reason: "pnpm lockfile environment changed" };
       }
       if (baseManifest !== headManifest)
