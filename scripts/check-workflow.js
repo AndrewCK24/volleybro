@@ -27,6 +27,7 @@ const REQUIRED_FILES = [
   "docs/agents/domain.md",
   "docs/agents/blueprint.md",
   "docs/agents/artifact-lifecycle.md",
+  "docs/agents/skill-adapters.md",
 ];
 const FEATURE_CONTENT = "blueprint/content/features";
 const CHANGE_SCOPE_SOFT_LIMIT = 30;
@@ -118,6 +119,78 @@ async function validateSharedSkills(root) {
     }
   }
 
+  return diagnostics;
+}
+
+const SKILL_ADAPTERS = "docs/agents/skill-adapters.md";
+const SKILL_ADAPTER_ROW = /^\|\s*`([^`]+)`\s*\|(.*)\|\s*$/;
+const BACKTICKED = /`([^`]+)`/g;
+const NO_ADAPTER = "no adapter";
+
+async function validateSkillAdapters(root, agentsContent) {
+  const lockPath = path.join(root, "skills-lock.json");
+  let locked = [];
+  try {
+    locked = Object.keys(
+      JSON.parse(await readFile(lockPath, "utf8")).skills ?? {},
+    );
+  } catch {
+    // validateSharedSkills reports a missing or invalid lock.
+  }
+  const skillsDirectory = path.join(root, ".agents", "skills");
+  const installed = (await exists(skillsDirectory))
+    ? (await readdir(skillsDirectory, { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name)
+    : [];
+  const skills = new Set([...locked, ...installed]);
+
+  const diagnostics = [];
+  if (!agentsContent.includes(SKILL_ADAPTERS)) {
+    diagnostics.push(
+      `AGENTS.md [skill-adapter]: must point to ${SKILL_ADAPTERS}, so every agent finds a skill's adapters`,
+    );
+  }
+  const tablePath = path.join(root, SKILL_ADAPTERS);
+  // A missing map is reported once, as a required file.
+  if (!(await exists(tablePath))) return diagnostics;
+  const table = await readFile(tablePath, "utf8");
+  const rows = new Map();
+  for (const line of table.split(/\r?\n/)) {
+    const match = line.match(SKILL_ADAPTER_ROW);
+    if (match) rows.set(match[1], match[2].trim());
+  }
+
+  for (const skill of skills) {
+    if (!rows.has(skill)) {
+      diagnostics.push(
+        `${SKILL_ADAPTERS} [skill-adapter]: ${skill} has no row; name its adapters or write "${NO_ADAPTER}"`,
+      );
+    }
+  }
+  for (const [skill, cell] of rows) {
+    if (!skills.has(skill)) {
+      diagnostics.push(
+        `${SKILL_ADAPTERS} [skill-adapter]: row ${skill} names no installed skill`,
+      );
+    }
+    if (cell === NO_ADAPTER) continue;
+    const adapters = [...cell.matchAll(BACKTICKED)].map(
+      ([, adapter]) => adapter,
+    );
+    if (adapters.length === 0) {
+      diagnostics.push(
+        `${SKILL_ADAPTERS} [skill-adapter]: row ${skill} must list adapter paths in backticks or say "${NO_ADAPTER}"`,
+      );
+    }
+    for (const adapter of adapters) {
+      if (!(await exists(path.join(root, adapter)))) {
+        diagnostics.push(
+          `${SKILL_ADAPTERS} [skill-adapter]: ${skill} names ${adapter}, which does not exist`,
+        );
+      }
+    }
+  }
   return diagnostics;
 }
 
@@ -417,6 +490,7 @@ export async function checkWorkflow(root = process.cwd()) {
     const content = await readFile(agentsPath, "utf8");
     diagnostics.push(...validateBridge("AGENTS.md", content));
     diagnostics.push(...validateSectionReferences("AGENTS.md", content));
+    diagnostics.push(...(await validateSkillAdapters(root, content)));
   }
 
   diagnostics.push(...(await validateTestTiers(root)));

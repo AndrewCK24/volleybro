@@ -46,7 +46,7 @@ flowchart TB
 
 ## Test Value
 
-A test earns its maintenance cost only by protecting observable behaviour, a credible regression, or an independent contract. The `test-audit` skill (`.agents/skills/test-audit/`) holds the method; this section is the rule it serves.
+A test earns its maintenance cost only by protecting observable behaviour, a credible regression, or an independent contract. The `test-audit` skill (`.agents/skills/test-audit/`) holds the method, read through [its adapter](agents/test-audit.md); this section is the rule it serves.
 
 **Before writing a test,** answer five questions; a missing answer means the test is not written yet:
 
