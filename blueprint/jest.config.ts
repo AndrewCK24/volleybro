@@ -16,7 +16,7 @@ export default async function jestConfig(): Promise<Config> {
     testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
     transform: nextResolved.transform,
     transformIgnorePatterns: [
-      "/node_modules/(?!.*(msw|@mswjs|rettime|until-async|@open-draft|cookie|pele)/)",
+      "/node_modules/(?!.*(msw|@mswjs|rettime|until-async|@open-draft|cookie|pele|github-slugger)/)",
       "^.+\\.module\\.(css|sass|scss)$",
     ],
     setupFilesAfterEnv: [path.join(blueprintRoot, "test/setup.ts")],

@@ -10,24 +10,26 @@ const heading = (text: string, id?: string) =>
   }) as ChangeBlock;
 
 describe("withHeadingAnchors", () => {
-  it("slugs headings without id, suffixes duplicates and keeps explicit ids", () => {
-    const tldr = { _type: "tldr", blocks: [heading("Setup")] } as ChangeBlock;
+  it("produces GitHub-style slugs, numbers duplicates from -1 and keeps explicit ids", () => {
+    const tldr = {
+      _type: "tldr",
+      blocks: [heading("Decisions")],
+    } as ChangeBlock;
     const out = withHeadingAnchors([
-      heading("Setup Guide"),
-      heading("Setup Guide"),
-      heading("Custom", "kept"),
-      heading("Kept"),
-      heading("Setup"),
+      heading("Before / After"),
+      heading("Decisions"),
+      heading("Decisions"),
+      heading("決策 Notes"),
+      heading("Other", "custom"),
       tldr,
     ]) as unknown as Array<{ id?: string; blocks?: Array<{ id?: string }> }>;
-    expect(out.map((block) => block.id)).toEqual([
-      "setup-guide",
-      "setup-guide-2",
-      "kept",
-      "kept-2",
-      "setup",
-      undefined,
+    expect(out.slice(0, 5).map((block) => block.id)).toEqual([
+      "before--after",
+      "decisions",
+      "decisions-1",
+      "決策-notes",
+      "custom",
     ]);
-    expect(out[5].blocks?.[0].id).toBe("setup-2");
+    expect(out[5].blocks?.[0].id).toBe("decisions-2");
   });
 });
