@@ -60,7 +60,9 @@ const REPOSITORY_FILES = {
   "WORKFLOW.md": validWorkflow,
   "CLAUDE.md": "@AGENTS.md\n",
   "AGENTS.md":
-    "Read [WORKFLOW.md](WORKFLOW.md).\n\n## Skill adapters\n\n| Skill | Adapters |\n| --- | --- |\n| `to-spec` | `docs/agents/issue-tracker.md` |\n",
+    "Read [WORKFLOW.md](WORKFLOW.md) and docs/agents/skill-adapters.md.\n",
+  "docs/agents/skill-adapters.md":
+    "| Skill | Adapters |\n| --- | --- |\n| `to-spec` | `docs/agents/issue-tracker.md` |\n",
   "docs/agents/issue-tracker.md": "# Issue tracker adapter\n",
   "docs/agents/domain.md": "# Domain documentation adapter\n",
   "docs/agents/blueprint.md": "# Blueprint adapter\n",
@@ -212,24 +214,35 @@ test("reports an installed skill without an adapter row", async () => {
   );
 });
 
+test("reports an AGENTS.md that does not point to the skill adapter map", async () => {
+  assert.match(
+    (
+      await messages({ "AGENTS.md": "Read [WORKFLOW.md](WORKFLOW.md).\n" })
+    ).join("\n"),
+    /AGENTS\.md \[skill-adapter\]: must point to/,
+  );
+});
+
 test("reports an adapter row that names neither paths nor no adapter", async () => {
-  const agents = REPOSITORY_FILES["AGENTS.md"].replace(
+  const agents = REPOSITORY_FILES["docs/agents/skill-adapters.md"].replace(
     "`docs/agents/issue-tracker.md`",
     "issue tracker",
   );
   assert.match(
-    (await messages({ "AGENTS.md": agents })).join("\n"),
+    (await messages({ "docs/agents/skill-adapters.md": agents })).join("\n"),
     /row to-spec must list adapter paths/,
   );
 });
 
 test("reports an adapter row naming a missing file or no installed skill", async () => {
-  const agents = REPOSITORY_FILES["AGENTS.md"].replace(
+  const agents = REPOSITORY_FILES["docs/agents/skill-adapters.md"].replace(
     "`docs/agents/issue-tracker.md`",
     "`docs/agents/missing.md`",
   );
   const diagnostics = (
-    await messages({ "AGENTS.md": agents + "| `removed` | no adapter |\n" })
+    await messages({
+      "docs/agents/skill-adapters.md": agents + "| `removed` | no adapter |\n",
+    })
   ).join("\n");
   assert.match(diagnostics, /to-spec names docs\/agents\/missing\.md/);
   assert.match(diagnostics, /row removed names no installed skill/);

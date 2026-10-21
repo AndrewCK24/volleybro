@@ -27,6 +27,7 @@ const REQUIRED_FILES = [
   "docs/agents/domain.md",
   "docs/agents/blueprint.md",
   "docs/agents/artifact-lifecycle.md",
+  "docs/agents/skill-adapters.md",
 ];
 const FEATURE_CONTENT = "blueprint/content/features";
 const CHANGE_SCOPE_SOFT_LIMIT = 30;
@@ -121,7 +122,7 @@ async function validateSharedSkills(root) {
   return diagnostics;
 }
 
-const SKILL_ADAPTERS_HEADING = /^## Skill adapters\s*$/m;
+const SKILL_ADAPTERS = "docs/agents/skill-adapters.md";
 const SKILL_ADAPTER_ROW = /^\|\s*`([^`]+)`\s*\|(.*)\|\s*$/;
 const BACKTICKED = /`([^`]+)`/g;
 const NO_ADAPTER = "no adapter";
@@ -144,27 +145,33 @@ async function validateSkillAdapters(root, agentsContent) {
     : [];
   const skills = new Set([...locked, ...installed]);
 
-  const heading = agentsContent.search(SKILL_ADAPTERS_HEADING);
-  const section = heading === -1 ? "" : agentsContent.slice(heading);
+  const diagnostics = [];
+  if (!agentsContent.includes(SKILL_ADAPTERS)) {
+    diagnostics.push(
+      `AGENTS.md [skill-adapter]: must point to ${SKILL_ADAPTERS}, so every agent finds a skill's adapters`,
+    );
+  }
+  const tablePath = path.join(root, SKILL_ADAPTERS);
+  const table = (await exists(tablePath))
+    ? await readFile(tablePath, "utf8")
+    : "";
   const rows = new Map();
-  for (const line of section.split(/\r?\n/).slice(1)) {
-    if (line.startsWith("#")) break;
+  for (const line of table.split(/\r?\n/)) {
     const match = line.match(SKILL_ADAPTER_ROW);
     if (match) rows.set(match[1], match[2].trim());
   }
 
-  const diagnostics = [];
   for (const skill of skills) {
     if (!rows.has(skill)) {
       diagnostics.push(
-        `AGENTS.md [skill-adapter]: ${skill} has no row under "## Skill adapters"; name its adapters or write "${NO_ADAPTER}"`,
+        `${SKILL_ADAPTERS} [skill-adapter]: ${skill} has no row; name its adapters or write "${NO_ADAPTER}"`,
       );
     }
   }
   for (const [skill, cell] of rows) {
     if (!skills.has(skill)) {
       diagnostics.push(
-        `AGENTS.md [skill-adapter]: row ${skill} names no installed skill`,
+        `${SKILL_ADAPTERS} [skill-adapter]: row ${skill} names no installed skill`,
       );
     }
     if (cell === NO_ADAPTER) continue;
@@ -173,13 +180,13 @@ async function validateSkillAdapters(root, agentsContent) {
     );
     if (adapters.length === 0) {
       diagnostics.push(
-        `AGENTS.md [skill-adapter]: row ${skill} must list adapter paths in backticks or say "${NO_ADAPTER}"`,
+        `${SKILL_ADAPTERS} [skill-adapter]: row ${skill} must list adapter paths in backticks or say "${NO_ADAPTER}"`,
       );
     }
     for (const adapter of adapters) {
       if (!(await exists(path.join(root, adapter)))) {
         diagnostics.push(
-          `AGENTS.md [skill-adapter]: ${skill} names ${adapter}, which does not exist`,
+          `${SKILL_ADAPTERS} [skill-adapter]: ${skill} names ${adapter}, which does not exist`,
         );
       }
     }
