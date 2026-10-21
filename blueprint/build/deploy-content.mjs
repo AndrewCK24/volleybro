@@ -1,6 +1,5 @@
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { wranglerDeployArgs } from "./wrangler-deploy-args.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 if (process.argv.length !== 2)
@@ -21,4 +20,10 @@ async function run(command, args) {
 // Each failure stops the pipeline before the matching renderer can be deployed.
 await run(process.execPath, ["build/blueprint.mjs", "--remote"]);
 await run(process.execPath, ["build/upload-pages.mjs", "--remote"]);
-await run("pnpm", wranglerDeployArgs(process.env));
+await run("pnpm", [
+  "exec",
+  "wrangler",
+  "deploy",
+  "--config",
+  "dist/server/wrangler.json",
+]);
