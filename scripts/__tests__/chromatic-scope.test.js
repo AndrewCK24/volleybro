@@ -329,10 +329,6 @@ test("runs when a visual file is renamed or deleted", async (t) => {
 });
 
 test("skips manifest metadata and package manager pin changes", async (t) => {
-  const pnpm = lockfile({
-    pnpmVersion: "12.14.0",
-    pnpmIntegrity: "sha512-pnpm-next",
-  });
   for (const [firstLock, secondLock, base, head] of [
     [
       lockfile(),
@@ -348,18 +344,19 @@ test("skips manifest metadata and package manager pin changes", async (t) => {
     ],
     [
       lockfile(),
-      pnpm.replace(/^---\n[\s\S]*?---\n/, (first) => first) &&
-        lockfile({ pnpmVersion: "12.14.0", pnpmIntegrity: "sha512-pnpm-next" }),
+      lockfile(),
+      manifest("^9.0.0", false, { engines: { node: ">=22" } }),
+      manifest("^9.0.0", false, { engines: { node: ">=24" } }),
+    ],
+    [
+      lockfile(),
+      lockfile({ pnpmVersion: "12.14.0", pnpmIntegrity: "sha512-pnpm-next" }),
       manifest("^9.0.0", false, { packageManager: "pnpm@12.9.1" }),
       manifest("^9.0.0", false, { packageManager: "pnpm@12.14.0" }),
     ],
   ]) {
-    const {
-      cwd,
-      base: b,
-      head: h,
-    } = await lockPair(t, firstLock, secondLock, base, head);
-    const result = await classify(cwd, compareArgs(b, h));
+    const pair = await lockPair(t, firstLock, secondLock, base, head);
+    const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
     assert.equal(result.output, "skip=true\n", result.stdout);
   }
 });
@@ -377,35 +374,47 @@ test("runs when dependencies or overrides change", async (t) => {
       manifest("^9.0.0", false, { overrides: { "color-lib": "1.0.0" } }),
       manifest("^9.0.0", false, { overrides: { "color-lib": "1.1.0" } }),
     ],
+    [
+      manifest("^9.0.0", false, { sideEffects: false }),
+      manifest("^9.0.0", false, { sideEffects: true }),
+    ],
+    [
+      manifest("^9.0.0", false, { futureField: 1 }),
+      manifest("^9.0.0", false, { futureField: 2 }),
+    ],
   ]) {
-    const {
-      cwd,
-      base: b,
-      head: h,
-    } = await lockPair(t, lockfile(), lockfile(), base, head);
-    const result = await classify(cwd, compareArgs(b, h));
+    const pair = await lockPair(t, lockfile(), lockfile(), base, head);
+    const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
     assert.match(result.stdout, /skip=false reason=protected package manifest/);
   }
 });
 
 test("chromatic workflow skips only non-Chromatic action pin bumps", async (t) => {
-  const workflow = (pin, chromatic = "chromaui/action@latest", input = "a") =>
-    `steps:\n  - uses: actions/checkout@${pin}\n  - uses: ${chromatic}\n    with:\n      skip: ${input}\n`;
+  const workflow = ({
+    checkout = "actions/checkout@v7",
+    chromatic = "chromaui/action@latest",
+    input = "a",
+    swap = false,
+  } = {}) => {
+    const steps = [`  - uses: ${checkout}\n`, `  - uses: ${chromatic}\n`];
+    if (swap) steps.reverse();
+    return `steps:\n${steps.join("")}    with:\n      skip: ${input}\n`;
+  };
   for (const [head, skip] of [
-    [workflow("v8"), true],
-    [workflow("v7", "chromaui/action@v2"), false],
-    [workflow("v7", undefined, "b"), false],
+    [workflow({ checkout: "actions/checkout@v8" }), true],
+    [workflow({ chromatic: "chromaui/action@v2" }), false],
+    [workflow({ chromatic: '"chromaui/action@v2"' }), false],
+    [workflow({ chromatic: "ChromaUI/action@v2" }), false],
+    [workflow({ checkout: "evil/action@v1" }), false],
+    [workflow({ input: "b" }), false],
+    [workflow({ swap: true }), false],
   ]) {
-    const {
-      cwd,
-      base,
-      head: h,
-    } = await commitPair(
+    const pair = await commitPair(
       t,
-      { ".github/workflows/chromatic.yml": workflow("v7") },
+      { ".github/workflows/chromatic.yml": workflow() },
       { ".github/workflows/chromatic.yml": head },
     );
-    const result = await classify(cwd, compareArgs(base, h));
+    const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
     assert.equal(result.output, `skip=${skip}\n`, head);
   }
 });

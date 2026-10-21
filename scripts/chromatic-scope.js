@@ -143,8 +143,13 @@ function parseLockfile(content) {
   };
 }
 
+function withoutPackageManager(importer) {
+  const { packageManagerDependencies: _pin, ...rest } = importer;
+  return rest;
+}
+
 function rootProtectedImporter(importer) {
-  const { packageManagerDependencies: _pm, ...result } = importer;
+  const result = withoutPackageManager(importer);
   const dev = { ...(result.devDependencies ?? {}) };
   const specifiers = { ...(result.specifiers ?? {}) };
   for (const name of NON_VISUAL_DEV_DEPENDENCIES) {
@@ -227,19 +232,24 @@ function protectedGraph(lock) {
   });
 }
 
-// Only these manifest fields can change what Storybook bundles; everything
-// else (version, scripts, packageManager, engines, metadata) is ignored.
-const BUNDLE_MANIFEST_FIELDS = [
-  "dependencies",
-  "optionalDependencies",
-  "peerDependencies",
-  "overrides",
-  "pnpm",
-  "resolutions",
-  "type",
-  "imports",
-  "exports",
-  "browserslist",
+// Known metadata that cannot change what Storybook bundles. Any other field,
+// including unknown ones, is compared so the check stays fail-open.
+const IGNORED_MANIFEST_FIELDS = [
+  "name",
+  "version",
+  "private",
+  "description",
+  "keywords",
+  "author",
+  "contributors",
+  "license",
+  "repository",
+  "homepage",
+  "bugs",
+  "funding",
+  "scripts",
+  "packageManager",
+  "engines",
 ];
 
 function parseManifest(content) {
@@ -247,8 +257,8 @@ function parseManifest(content) {
   if (!manifest || typeof manifest !== "object" || !manifest.dependencies) {
     throw new Error("invalid root package manifest");
   }
-  const filtered = { devDependencies: {} };
-  for (const field of BUNDLE_MANIFEST_FIELDS) filtered[field] = manifest[field];
+  const filtered = { ...manifest, devDependencies: {} };
+  for (const field of IGNORED_MANIFEST_FIELDS) delete filtered[field];
   for (const [name, version] of Object.entries(
     manifest.devDependencies ?? {},
   )) {
@@ -258,24 +268,25 @@ function parseManifest(content) {
   return stable(filtered);
 }
 
-// The first lockfile document pins the package manager itself. Its pin is not
-// bundled; when the pin changes, its own package graph changes with it.
-function lockEnvironment({ firstDocument, resolutionEnvironment }, pinChanged) {
-  const { packageManagerDependencies: _pm, ...importer } =
-    firstDocument.importers?.["."] ?? {};
-  const first = {
-    ...firstDocument,
-    importers: { ...firstDocument.importers, ".": importer },
+// The first lockfile document pins the package manager itself. The pin is not
+// bundled; the graph beside it moves with the pin, so it is compared apart.
+function lockEnvironment({ firstDocument, resolutionEnvironment }) {
+  const { packages, snapshots, ...document } = firstDocument;
+  return {
+    pin: stable(firstDocument.importers?.["."]?.packageManagerDependencies),
+    pinGraph: stable({ packages, snapshots }),
+    rest: stable({
+      firstDocument: {
+        ...document,
+        importers: {
+          ...document.importers,
+          ".": withoutPackageManager(document.importers?.["."] ?? {}),
+        },
+      },
+      resolutionEnvironment,
+    }),
   };
-  if (pinChanged) {
-    delete first.packages;
-    delete first.snapshots;
-  }
-  return stable({ firstDocument: first, resolutionEnvironment });
 }
-
-const pmPin = ({ firstDocument }) =>
-  stable(firstDocument.importers?.["."]?.packageManagerDependencies);
 
 function parseNameStatus(output) {
   const fields = output.split("\0").filter(Boolean);
@@ -299,22 +310,23 @@ function isSafePath(file) {
 
 const CHROMATIC_WORKFLOW = ".github/workflows/chromatic.yml";
 
-// shortcut: line-based check, so a pin bump is recognised only as paired
-// `uses:` lines; any other edit or an added/removed step runs the build.
+const usesLine = /^(\s*(?:-\s+)?uses:\s*)(\S+)[^\n]*/gm;
+
+// Reduces every non-Chromatic `uses:` line to its action name, dropping the pin
+// and trailing comment, so two files that differ only in pins compare equal.
+function withoutActionPins(workflow) {
+  return workflow.replace(usesLine, (line, prefix, value) => {
+    const action = value.replace(/^["']|["']$/g, "").toLowerCase();
+    return action.startsWith("chromaui/action@")
+      ? line
+      : prefix + action.split("@")[0];
+  });
+}
+
 function isActionPinOnly(base, head, cwd) {
-  const lines = runGit(
-    ["diff", "-U0", "--no-renames", base, head, "--", CHROMATIC_WORKFLOW],
-    cwd,
-  )
-    .split("\n")
-    .filter((line) => /^[+-]/.test(line) && !/^(?:\+\+\+|---) /.test(line));
-  const uses = /^[+-]\s*(?:-\s+)?uses:\s*(?!chromaui\/action@)\S+/;
-  return (
-    lines.length > 0 &&
-    lines.every((line) => uses.test(line)) &&
-    lines.filter((l) => l[0] === "+").length ===
-      lines.filter((l) => l[0] === "-").length
-  );
+  const workflowAt = (sha) =>
+    withoutActionPins(runGit(["show", `${sha}:${CHROMATIC_WORKFLOW}`], cwd));
+  return workflowAt(base) === workflowAt(head);
 }
 
 function runGit(args, cwd) {
@@ -363,11 +375,12 @@ function assess({ base, head, force = false }) {
       const headManifest = parseManifest(manifestAt(head));
       const baseLock = parseLockfile(lockAt(base));
       const headLock = parseLockfile(lockAt(head));
-      const pinChanged =
-        pmPin(baseLock.environment) !== pmPin(headLock.environment);
+      const baseEnvironment = lockEnvironment(baseLock.environment);
+      const headEnvironment = lockEnvironment(headLock.environment);
+      const isPinChanged = baseEnvironment.pin !== headEnvironment.pin;
       if (
-        lockEnvironment(baseLock.environment, pinChanged) !==
-        lockEnvironment(headLock.environment, pinChanged)
+        baseEnvironment.rest !== headEnvironment.rest ||
+        (!isPinChanged && baseEnvironment.pinGraph !== headEnvironment.pinGraph)
       ) {
         return { skip: false, reason: "pnpm lockfile environment changed" };
       }
