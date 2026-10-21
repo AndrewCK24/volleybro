@@ -4,12 +4,6 @@ jest.mock(
   "emdash",
   () => ({
     definePlugin: (descriptor: unknown) => descriptor,
-    ContentSaveRejectedError: class ContentSaveRejectedError extends Error {
-      constructor(message: string) {
-        super(message);
-        this.name = "ContentSaveRejectedError";
-      }
-    },
   }),
   { virtual: true },
 );
@@ -20,7 +14,10 @@ jest.mock(
 );
 
 import { publicationReceiptProblem } from "./publication-receipt";
-import { createPlugin } from "./emdash-publication-policy";
+import {
+  createPlugin,
+  MAX_MEDIA_UPLOAD_BYTES,
+} from "./emdash-publication-policy";
 
 const hash = "a".repeat(64);
 const receipt = (revision: string, acceptedHash = hash) =>
@@ -111,39 +108,20 @@ describe("publicationReceiptProblem", () => {
   });
 });
 
-describe("canonical content save policy", () => {
+describe("canonical content publish policy", () => {
   const plugin = createPlugin() as unknown as {
-    hooks: Record<string, (event: unknown) => Promise<unknown>>;
+    hooks: Record<string, (...args: unknown[]) => Promise<unknown>>;
   };
-  const beforeSave = plugin.hooks["content:beforeSave"];
+  const beforePublish = plugin.hooks["content:beforePublish"];
   const content = {
     title: "Canonical Change",
     linear_issue: "ATE-306",
     pull_requests: [],
-    blocks: [
-      {
-        _type: "block",
-        children: [{ _type: "span", text: "Canonical prose." }],
-      },
-      {
-        _type: "scenario",
-        _version: 1,
-        id: "scenario-1",
-        given: "a team",
-        when: "it records a match",
-        then: "the match appears",
-      },
-    ],
+    blocks: [],
   };
 
-  it("allows canonical Portable Text and typed blocks with an empty PR list", async () => {
-    await expect(
-      beforeSave({
-        collection: "blueprint_changes",
-        content,
-        isNew: true,
-      }),
-    ).resolves.toBeUndefined();
+  it("does not validate drafts on save, so incomplete drafts autosave", () => {
+    expect(plugin.hooks["content:beforeSave"]).toBeUndefined();
   });
 
   it.each([
@@ -154,27 +132,37 @@ describe("canonical content save policy", () => {
     ["raw HTML blocks", { _type: "html", html: "<script>alert(1)</script>" }],
     ["iframes", { _type: "iframe", url: "https://example.com" }],
     ["unknown blocks", { _type: "unknown_block", value: "payload" }],
-  ])("rejects %s before save", async (_label, block) => {
+  ])("blocks publication of %s", async (_label, block) => {
     await expect(
-      beforeSave({
-        collection: "blueprint_changes",
-        content: { ...content, blocks: [block] },
-        isNew: false,
-        id: "existing-entry",
-      }),
-    ).rejects.toMatchObject({
-      name: "ContentSaveRejectedError",
-      message: "Change content does not match the canonical Blueprint schema.",
+      beforePublish(
+        {
+          collection: "blueprint_changes",
+          content: {
+            data: { ...content, blocks: [block] },
+            draftRevisionId: "revision-1",
+          },
+        },
+        {},
+      ),
+    ).resolves.toEqual({
+      cancel: true,
+      reason: "Change content does not match the published EmDash schema.",
     });
   });
+});
 
-  it("does not reject writes to unrelated collections", async () => {
+describe("media upload size cap", () => {
+  const plugin = createPlugin() as unknown as {
+    hooks: Record<string, (event: unknown) => Promise<unknown>>;
+  };
+  const beforeUpload = plugin.hooks["media:beforeUpload"];
+  const file = (size: number) => ({ name: "a.png", type: "image/png", size });
+
+  it("passes a file at the cap and rejects one above it", async () => {
+    const atCap = file(MAX_MEDIA_UPLOAD_BYTES);
+    await expect(beforeUpload({ file: atCap })).resolves.toBe(atCap);
     await expect(
-      beforeSave({
-        collection: "other_collection",
-        content: { arbitrary: true },
-        isNew: true,
-      }),
-    ).resolves.toBeUndefined();
+      beforeUpload({ file: file(MAX_MEDIA_UPLOAD_BYTES + 1) }),
+    ).rejects.toThrow("20 MiB");
   });
 });
