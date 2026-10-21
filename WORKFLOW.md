@@ -105,18 +105,9 @@ Platform activation follows the owning Change’s accepted checklist and require
 
 The [release runbook](docs/release-runbook.md) owns recurring operating steps; the configuration and authorization contract above remains canonical.
 
-Apply installed skills through the repository policies in:
+Apply installed skills through the repository policies in `docs/agents/`. The Skill adapters table in `AGENTS.md` names which of them each skill reads, and `pnpm check:workflow` keeps it complete.
 
-- `docs/agents/issue-tracker.md`;
-- `docs/agents/triage-labels.md`;
-- `docs/agents/domain.md`;
-- `docs/agents/blueprint.md`;
-- `docs/agents/artifact-lifecycle.md`; and
-- `docs/agents/test-audit.md`.
-
-The Skill adapters table in `AGENTS.md` names which of them each skill reads, and `pnpm check:workflow` keeps it complete.
-
-Vendored skills and their `skills-lock.json` entries are vendor-managed. Do not edit them to encode VolleyBro policy. Provider bridges point to this contract and the adapters; they do not copy the lifecycle. When a developer invokes a vendored skill directly inside this repository, these higher- level repository policies still apply. Lifecycle sequencing and human gates come from this file, not from an additional workflow skill.
+Vendored skills and their `skills-lock.json` entries are vendor-managed. Do not edit them to encode VolleyBro policy. Provider bridges point to this contract and the adapters; they do not copy the lifecycle. When a developer invokes a vendored skill directly inside this repository, these higher-level repository policies still apply. Lifecycle sequencing and human gates come from this file, not from an additional workflow skill.
 
 ## Authority and retention
 

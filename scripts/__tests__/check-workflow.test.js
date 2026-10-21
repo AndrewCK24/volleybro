@@ -202,12 +202,24 @@ test("reports a broken provider skill bridge", async () => {
 });
 
 test("reports an installed skill without an adapter row", async () => {
-  const root = await makeRepository({
-    ".agents/skills/local-skill/SKILL.md": "# Local skill\n",
-  });
   assert.match(
-    (await checkWorkflow(root)).join("\n"),
+    (
+      await messages({
+        ".agents/skills/local-skill/SKILL.md": "# Local skill\n",
+      })
+    ).join("\n"),
     /\[skill-adapter\]: local-skill has no row/,
+  );
+});
+
+test("reports an adapter row that names neither paths nor no adapter", async () => {
+  const agents = REPOSITORY_FILES["AGENTS.md"].replace(
+    "`docs/agents/issue-tracker.md`",
+    "issue tracker",
+  );
+  assert.match(
+    (await messages({ "AGENTS.md": agents })).join("\n"),
+    /row to-spec must list adapter paths/,
   );
 });
 

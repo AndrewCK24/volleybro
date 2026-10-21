@@ -123,12 +123,16 @@ async function validateSharedSkills(root) {
 
 const SKILL_ADAPTERS_HEADING = /^## Skill adapters\s*$/m;
 const SKILL_ADAPTER_ROW = /^\|\s*`([^`]+)`\s*\|(.*)\|\s*$/;
+const BACKTICKED = /`([^`]+)`/g;
+const NO_ADAPTER = "no adapter";
 
 async function validateSkillAdapters(root, agentsContent) {
   const lockPath = path.join(root, "skills-lock.json");
   let locked = [];
   try {
-    locked = Object.keys(JSON.parse(await readFile(lockPath, "utf8")).skills);
+    locked = Object.keys(
+      JSON.parse(await readFile(lockPath, "utf8")).skills ?? {},
+    );
   } catch {
     // validateSharedSkills reports a missing or invalid lock.
   }
@@ -153,7 +157,7 @@ async function validateSkillAdapters(root, agentsContent) {
   for (const skill of skills) {
     if (!rows.has(skill)) {
       diagnostics.push(
-        `AGENTS.md [skill-adapter]: ${skill} has no row under "## Skill adapters"; name its adapters or write "no adapter"`,
+        `AGENTS.md [skill-adapter]: ${skill} has no row under "## Skill adapters"; name its adapters or write "${NO_ADAPTER}"`,
       );
     }
   }
@@ -163,11 +167,13 @@ async function validateSkillAdapters(root, agentsContent) {
         `AGENTS.md [skill-adapter]: row ${skill} names no installed skill`,
       );
     }
-    if (cell === "no adapter") continue;
-    const adapters = [...cell.matchAll(/`([^`]+)`/g)].map((m) => m[1]);
+    if (cell === NO_ADAPTER) continue;
+    const adapters = [...cell.matchAll(BACKTICKED)].map(
+      ([, adapter]) => adapter,
+    );
     if (adapters.length === 0) {
       diagnostics.push(
-        `AGENTS.md [skill-adapter]: row ${skill} must list adapter paths in backticks or say "no adapter"`,
+        `AGENTS.md [skill-adapter]: row ${skill} must list adapter paths in backticks or say "${NO_ADAPTER}"`,
       );
     }
     for (const adapter of adapters) {

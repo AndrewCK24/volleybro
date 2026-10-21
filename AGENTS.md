@@ -17,9 +17,9 @@ Most skills in `.agents/skills/` are vendored and written for any repository; an
 | Skill                           | Adapters                                                                                                                                                 |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ask-matt`                      | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`                                                                  |
-| `code-review`                   | `docs/agents/issue-tracker.md`                                                                                                                           |
+| `code-review`                   | `docs/agents/issue-tracker.md`, `docs/agents/artifact-lifecycle.md`, `docs/agents/test-audit.md`                                                         |
 | `codebase-design`               | `docs/agents/domain.md`                                                                                                                                  |
-| `diagnosing-bugs`               | `docs/agents/domain.md`                                                                                                                                  |
+| `diagnosing-bugs`               | `docs/agents/domain.md`, `docs/agents/test-audit.md`                                                                                                     |
 | `domain-modeling`               | `docs/agents/domain.md`                                                                                                                                  |
 | `grill-me`                      | no adapter                                                                                                                                               |
 | `grill-with-docs`               | `docs/agents/domain.md`                                                                                                                                  |
@@ -29,7 +29,7 @@ Most skills in `.agents/skills/` are vendored and written for any repository; an
 | `implement`                     | `docs/agents/issue-tracker.md`, `docs/agents/artifact-lifecycle.md`, `docs/agents/test-audit.md`                                                         |
 | `implement-spec`                | `docs/agents/issue-tracker.md`                                                                                                                           |
 | `improve-codebase-architecture` | `docs/agents/domain.md`                                                                                                                                  |
-| `pr`                            | `docs/agents/domain.md`                                                                                                                                  |
+| `pr`                            | `docs/agents/domain.md`, `docs/agents/artifact-lifecycle.md`                                                                                             |
 | `prototype`                     | no adapter                                                                                                                                               |
 | `research`                      | `docs/agents/artifact-lifecycle.md`                                                                                                                      |
 | `retro`                         | no adapter                                                                                                                                               |
@@ -39,7 +39,7 @@ Most skills in `.agents/skills/` are vendored and written for any repository; an
 | `test-audit`                    | `docs/agents/test-audit.md`                                                                                                                              |
 | `to-questionnaire`              | `docs/agents/artifact-lifecycle.md`                                                                                                                      |
 | `to-spec`                       | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/artifact-lifecycle.md`, `docs/agents/blueprint.md` |
-| `to-tickets`                    | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`                                                                  |
+| `to-tickets`                    | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/artifact-lifecycle.md`                             |
 | `triage`                        | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`                                                                  |
 | `wait-what`                     | `docs/agents/domain.md`                                                                                                                                  |
 | `wayfinder`                     | `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`                                                                                           |
