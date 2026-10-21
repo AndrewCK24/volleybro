@@ -165,7 +165,8 @@ Every Change has a stable kebab-case slug and each batch has one integration bra
 2. Invoke `domain-modeling` through `docs/agents/domain.md` for resolved vocabulary and adopted decisions. Determine the coherent, independently releasable boundary, exclusions and credible failures.
 3. Invoke `to-spec` through `docs/agents/issue-tracker.md`. Resolve its test seams during discussion and put the complete working spec in the execution issue.
 4. Create one EmDash Change entry as a draft and read it back through the signed private preview at the same Blueprint route. Bind the preview to its exact draft revision and canonical accepted-content hash. Do not create a parallel Team Doc specification or Git content copy.
-5. Obtain explicit human acceptance of that complete EmDash revision. Record the exact revision/hash on the execution issue; the publication policy reads it back and blocks publication on mismatch. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance.
+5. For a Change or Sharded Change (not Fast path), run one pre-G1 plan review before asking for acceptance: a single fresh-context agent (sonnet, medium effort) reads the draft once and returns at most 5 findings, each tagged `cut`, `simplify`, `add` or `conflict`. It checks, in priority order: (1) conflicts with ADRs, Features, glossary terms, in-flight issues and branches, and between the Change's own slices; (2) missed reach — callers, tests, data and docs; (3) scope, YAGNI and reuse; (4) never-cut items — trust-boundary validation, data loss, security and accessibility; (5) acceptance criteria that can be verified. The review does not rewrite the draft and does not loop to a fixed point; the developer decides at G1 which findings to adopt.
+6. Obtain explicit human acceptance of that complete EmDash revision. Record the exact revision/hash on the execution issue; the publication policy reads it back and blocks publication on mismatch. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance.
 
 G1 accepts the design, scope, batch boundaries and acceptance criteria. It authorizes ticket decomposition and implementation through the next G2; it does not arm unattended execution or authorize platform activation.
 
@@ -176,6 +177,8 @@ G1 accepts the design, scope, batch boundaries and acceptance criteria. It autho
 3. Complete and verify eligible slices, committing each slice's code and tests together under the branch/commit contract below. Run the whole-batch independent review at the Pre-PR gate, rather than adding a full gate per slice.
 
 Commit bodies own the slice-to-commit mapping and retain it through rebases. For work committed before this contract existed, preserve valid history and explain bootstrap deviations and slice evidence in the PR; do not rewrite history solely to manufacture compliance.
+
+For auth, session, production-gate or secrets work in any delivery mode, settle scope, risks and acceptance criteria on the issue, then run `security-review` before implementation starts.
 
 Fix implementation defects inside Apply. Sweep all affected identifiers, prose, tests and criteria when a term is redefined. Deleting files beyond accepted scope remains a judgement for the human gate: list paths and rationale, and preserve them pending authorization.
 
@@ -244,6 +247,7 @@ Fast path sits beside Change and Sharded Change for work with bounded scope and 
 7. Escalate to a normal Change — write the complete specification and pass G1 — when scope or risk is no longer bounded, new architecture or a product decision is required, or the result cannot be independently accepted in one pull request. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
 8. A Fast-path commit carries a `Refs: <tracker issue>` trailer when the work came from a tracker issue, and no reference trailer when it did not; either way it omits `Implements` and `Blueprint-Change`, and the body states what triggered the work.
 9. A single-commit Fast-path change may squash as usual. A multi-commit change merges with a merge commit, the same as a normal Change; if it is squashed, the squash commit keeps whatever reference trailer the original commits carried.
+10. A bug found while working on something else is fixed through its own Fast-path pull request rather than parked, unless the fix needs a developer judgement. A choice that follows established practice — atomic or idempotent writes, a retryable failure order, Clean Architecture layering, matching the existing pattern — needs no confirmation; the pull request names the practice.
 
 ## Decision-record contract
 

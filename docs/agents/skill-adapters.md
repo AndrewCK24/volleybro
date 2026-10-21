@@ -34,3 +34,5 @@ Most skills in `.agents/skills/` are vendored and written for any repository; an
 | `wizard`                        | no adapter                                                                                                                                               |
 | `writing-changesets`            | no adapter                                                                                                                                               |
 | `writing-for-agents`            | no adapter                                                                                                                                               |
+
+Some skills are user-only commands: `to-spec`, `to-tickets`, `implement` and `grill-with-docs`. When grilling converges, ask the developer once, naming every user-only command the next step needs in a single message, instead of asking before each.

@@ -21,3 +21,11 @@ The execution issue holds the working state and accepted EmDash revision/hash. A
 `to-tickets` publishes slice sub-issues under the execution issue according to `WORKFLOW.md`. G1 already authorizes decomposition; the root performs granularity and dependency assessment without another approval stop. Fetch referenced issue bodies and comments when needed, and use native parent/blocking relationships as their source of truth. Preserve the parent and completed evidence; mark work complete only after merge.
 
 Ticket creation adds no dispatch label. `ready-for-agent` remains separate developer authorization. `implement-spec` draft-PR, concurrency and cleanup defaults defer to repository gates, delegation and worktree ownership. Explicitly invoke `implement` for Apply. Skill outputs keep their full relevant contents.
+
+## Estimation and capacity
+
+Estimate in points: a Fast path issue is 1, a Change is its slice count plus 1 capped at 8, and a wayfinder decision ticket is 1. A cycle holds 20 points (cycles 2–4 averaged about 23; the figure is lowered for weekly dev-notes and articles); revisit it after a few more cycles. A Change whose slices landed in an earlier cycle counts only its remaining point.
+
+## Grill decisions
+
+When a grilling session settles a decision, record it on the issue immediately, one decision at a time, rather than batching them at the end. Create dependency links only from relationships the discussion established; never invent one.
