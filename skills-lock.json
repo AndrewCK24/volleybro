@@ -115,6 +115,12 @@
       "skillPath": "skills/productivity/teach/SKILL.md",
       "computedHash": "81c196426808c270a9d4688be291405c038bba11f020b9fe10098ad0f1d8c132"
     },
+    "test-audit": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/test-audit/SKILL.md",
+      "computedHash": "2b203b479ebf0c524fe5a2a91461300c327b3179df2b92b48d0503663a6423c0"
+    },
     "to-questionnaire": {
       "source": "mattpocock/skills",
       "sourceType": "github",
