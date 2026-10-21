@@ -8,7 +8,7 @@ value bar, retention bar, candidate evidence, and validation in
 the lessons of a full campaign. Each step ends on its completion criterion; do
 not start the next step early.
 
-The ledger and preservation review below feed the PR body's deletion table
+The ledger and preservation review below feed the PR body's deleted-path list
 (`WORKFLOW.md`), which is what the reviewer accepts at G2.
 
 ## 1. Baseline
