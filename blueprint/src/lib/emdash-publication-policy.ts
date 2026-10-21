@@ -1,4 +1,4 @@
-import { ContentSaveRejectedError, definePlugin } from "emdash";
+import { definePlugin } from "emdash";
 import type { PluginContext, PluginDescriptor } from "emdash";
 import { z } from "astro/zod";
 import { acceptedContentHash, changeDataSchema } from "./emdash-change-record";
@@ -86,16 +86,6 @@ export function createPlugin() {
       },
     },
     hooks: {
-      "content:beforeSave": async (event) => {
-        if (event.collection !== "blueprint_changes") return;
-
-        const parsed = changeDataSchema.safeParse(event.content);
-        if (!parsed.success) {
-          throw new ContentSaveRejectedError(
-            "Change content does not match the canonical Blueprint schema.",
-          );
-        }
-      },
       "content:afterSave": async (event, context) => {
         await requestBlueprintBuild(event.collection, context);
       },
