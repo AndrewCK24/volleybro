@@ -12,6 +12,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { persistedContractChanges } from "../release-controls.js";
 import { fileURLToPath } from "node:url";
 
 const cli =
@@ -2020,4 +2021,122 @@ test("promotion and publication require accepted receipts, not only a healthy al
   assert.notEqual(publication.status, 0);
   assert.match(publication.stderr, /production QA/i);
   assert.equal(f.git(["tag", "--list", "v1.0.1"]), "");
+});
+
+async function classifyDiff(t, before, after) {
+  const root = await mkdtemp(path.join(os.tmpdir(), "release-classify-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const git = (args) =>
+    execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+  git(["init", "-b", "main"]);
+  git(["config", "user.email", "test@example.invalid"]);
+  git(["config", "user.name", "Test"]);
+  const commit = async (files) => {
+    for (const [file, content] of Object.entries(files)) {
+      await mkdir(path.dirname(path.join(root, file)), { recursive: true });
+      await writeFile(path.join(root, file), content);
+    }
+    git(["add", "."]);
+    git(["commit", "-m", "c", "--allow-empty"]);
+    return git(["rev-parse", "HEAD"]);
+  };
+  const baseline = await commit(before);
+  const sha = await commit(after);
+  const prev = process.cwd();
+  process.chdir(root);
+  try {
+    return await persistedContractChanges({ baseline: { sha: baseline }, sha });
+  } finally {
+    process.chdir(prev);
+  }
+}
+
+const json = (value) => `${JSON.stringify(value)}\n`;
+
+test("tooling-only paths are unrelated to production data", async (t) => {
+  const paths = [
+    ".agents/skills/x/SKILL.md",
+    ".claude/settings.json",
+    ".storybook/main.ts",
+    ".husky/pre-commit",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "DESIGN.md",
+    "skills-lock.json",
+    "commitlint.config.js",
+    ".worktreeinclude",
+    ".markdownlint.jsonc",
+  ];
+  const result = await classifyDiff(
+    t,
+    { "a.txt": "1" },
+    Object.fromEntries(paths.map((p) => [p, "x"])),
+  );
+  assert.deepEqual(result.unclassifiedPaths, []);
+  assert.deepEqual(result.contractPaths, []);
+});
+
+test("pnpm-workspace.yaml stays a persisted contract path", async (t) => {
+  const result = await classifyDiff(
+    t,
+    { "a.txt": "1" },
+    { "pnpm-workspace.yaml": "x" },
+  );
+  assert.deepEqual(result.contractPaths, ["pnpm-workspace.yaml"]);
+});
+
+test("vercel.json is unrelated only when just the git key changed", async (t) => {
+  const base = {
+    git: { deploymentEnabled: { main: false, b: false } },
+    crons: [],
+  };
+  const git = await classifyDiff(
+    t,
+    { "vercel.json": json(base) },
+    {
+      "vercel.json": json({
+        ...base,
+        git: { deploymentEnabled: { main: false } },
+      }),
+    },
+  );
+  assert.deepEqual(git.unclassifiedPaths, []);
+  const other = await classifyDiff(
+    t,
+    { "vercel.json": json(base) },
+    {
+      "vercel.json": json({
+        ...base,
+        crons: [{ path: "/x", schedule: "* * * * *" }],
+      }),
+    },
+  );
+  assert.deepEqual(other.unclassifiedPaths, ["vercel.json"]);
+});
+
+test("package.json scripts and packageManager changes are unrelated; unknown keys are not", async (t) => {
+  const base = {
+    version: "1.0.0",
+    scripts: { a: "a" },
+    packageManager: "pnpm@9.0.0",
+  };
+  const tooling = await classifyDiff(
+    t,
+    { "package.json": json(base) },
+    {
+      "package.json": json({
+        version: "1.0.1",
+        scripts: { a: "a", b: "b" },
+        packageManager: "pnpm@10.0.0",
+      }),
+    },
+  );
+  assert.deepEqual(tooling.unclassifiedPaths, []);
+  assert.deepEqual(tooling.contractPaths, []);
+  const unknown = await classifyDiff(
+    t,
+    { "package.json": json(base) },
+    { "package.json": json({ ...base, engines: { node: "22" } }) },
+  );
+  assert.deepEqual(unknown.unclassifiedPaths, ["package.json"]);
 });
