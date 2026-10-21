@@ -17,21 +17,30 @@ const FAILED_STATES = new Set([
   "STARTUP_FAILURE",
 ]);
 
-// A cancelled or rerun workflow leaves an older entry under the same name; its
-// aggregate Verify even reports FAILURE. An entry counts only while no check
-// of the same workflow started after it; otherwise it is treated as pending.
-function current(checks, name) {
+const RUN_ID = /\/actions\/runs\/(\d+)\//;
+
+function runId(check) {
+  return Number(check.link?.match(RUN_ID)?.[1] ?? 0);
+}
+
+// A cancelled or rerun workflow leaves the old run's checks beside the new
+// run's, and its aggregate Verify reports FAILURE; a dispatched run of the same
+// workflow can share the head. Only the newest pull_request run of a workflow
+// counts, so a required check that run has not created yet is still pending.
+// A check outside Actions has no run to compare, so any failed entry counts.
+function currentEntry(checks, name) {
   const entries = checks.filter((c) => c.name === name);
-  const newest = entries.reduce(
-    (best, c) => (!best || c.startedAt > best.startedAt ? c : best),
-    undefined,
+  const fromRuns = entries.filter((c) => runId(c) > 0);
+  if (fromRuns.length === 0) {
+    return entries.find((c) => FAILED_STATES.has(c.state)) ?? entries[0];
+  }
+  const { workflow } = fromRuns[0];
+  const latestRun = Math.max(
+    ...checks
+      .filter((c) => c.workflow === workflow && c.event === "pull_request")
+      .map(runId),
   );
-  const superseded =
-    newest?.workflow &&
-    checks.some(
-      (c) => c.workflow === newest.workflow && c.startedAt > newest.startedAt,
-    );
-  return superseded ? undefined : newest;
+  return fromRuns.find((c) => runId(c) === latestRun);
 }
 
 export function assessReadiness({ checks, pr, head }) {
@@ -44,7 +53,10 @@ export function assessReadiness({ checks, pr, head }) {
       reason: `head moved from ${head} to ${pr.headRefOid}`,
     };
   }
-  const required = REQUIRED_CHECKS.map((name) => [name, current(checks, name)]);
+  const required = REQUIRED_CHECKS.map((name) => [
+    name,
+    currentEntry(checks, name),
+  ]);
   for (const [name, check] of required) {
     if (check && FAILED_STATES.has(check.state)) {
       return { status: "fail", reason: `${name} is ${check.state}` };
@@ -103,7 +115,7 @@ function readChecks(number) {
     "checks",
     number,
     "--json",
-    "name,state,startedAt,workflow",
+    "name,state,workflow,event,link",
   ]);
 }
 

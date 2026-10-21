@@ -74,67 +74,55 @@ test("a failed Vercel check, a conflict or a closed PR fails closed", () => {
   }
 });
 
-test("only the latest-started entry of a required check counts", () => {
-  const cancelledRun = {
-    name: "Verify",
-    state: "FAILURE",
-    startedAt: "2026-10-21T04:12:22Z",
-  };
-  const rerun = {
-    name: "Verify",
-    state: "IN_PROGRESS",
-    startedAt: "2026-10-21T04:12:35Z",
-  };
-  const vercel = { name: "Vercel", state: "SUCCESS" };
-  assert.equal(
-    assessReadiness({ checks: [cancelledRun, rerun, vercel], pr: open, head })
-      .status,
-    "wait",
-  );
-  const rerunPassed = { ...rerun, state: "SUCCESS" };
-  assert.equal(
-    assessReadiness({
-      checks: [rerunPassed, cancelledRun, vercel],
-      pr: open,
-      head,
-    }).status,
-    "ready",
-  );
-  const rerunFailed = { ...rerun, state: "FAILURE" };
-  assert.equal(
-    assessReadiness({
-      checks: [cancelledRun, rerunFailed, vercel],
-      pr: open,
-      head,
-    }).status,
-    "fail",
-  );
+const ciCheck = (run, name, state, event = "pull_request") => ({
+  name,
+  state,
+  event,
+  workflow: "CI",
+  link: `https://github.com/o/r/actions/runs/${run}/job/${run}${name.length}`,
 });
+const vercel = { name: "Vercel", state: "SUCCESS", workflow: "", link: "" };
 
-test("a failed Verify from a run that a newer run of its workflow replaced does not fail", () => {
+test("a cancelled run's failed Verify waits while the new run is queued", () => {
   const checks = [
-    {
-      name: "Verify",
-      state: "FAILURE",
-      workflow: "CI",
-      startedAt: "2026-10-21T04:12:22Z",
-    },
-    {
-      name: "Test",
-      state: "IN_PROGRESS",
-      workflow: "CI",
-      startedAt: "2026-10-21T04:12:35Z",
-    },
-    {
-      name: "Vercel",
-      state: "SUCCESS",
-      workflow: "",
-      startedAt: "0001-01-01T00:00:00Z",
-    },
+    ciCheck(100, "Verify", "FAILURE"),
+    ciCheck(101, "Test", "QUEUED"),
+    vercel,
   ];
   const result = assessReadiness({ checks, pr: open, head });
   assert.equal(result.status, "wait");
   assert.match(result.reason, /Verify/);
+});
+
+test("only the newest pull_request run's Verify decides", () => {
+  const cancelled = ciCheck(100, "Verify", "FAILURE");
+  for (const [state, status] of [
+    ["SUCCESS", "ready"],
+    ["FAILURE", "fail"],
+  ]) {
+    const checks = [cancelled, ciCheck(101, "Verify", state), vercel];
+    assert.equal(assessReadiness({ checks, pr: open, head }).status, status);
+  }
+});
+
+test("a dispatched run on the same head does not replace the pull_request run", () => {
+  const checks = [
+    ciCheck(100, "Verify", "FAILURE"),
+    ciCheck(101, "Verify", "SUCCESS", "workflow_dispatch"),
+    vercel,
+  ];
+  assert.equal(assessReadiness({ checks, pr: open, head }).status, "fail");
+});
+
+test("any failed Vercel entry fails whatever order gh lists them in", () => {
+  const failed = { ...vercel, state: "FAILURE" };
+  const verify = ciCheck(100, "Verify", "SUCCESS");
+  for (const checks of [
+    [vercel, failed, verify],
+    [failed, vercel, verify],
+  ]) {
+    assert.equal(assessReadiness({ checks, pr: open, head }).status, "fail");
+  }
 });
 
 test("gh output before the first check is reported reads as no checks", () => {
