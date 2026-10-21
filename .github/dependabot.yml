@@ -11,6 +11,10 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    groups:
+      minor-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -22,3 +26,7 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    groups:
+      minor-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
