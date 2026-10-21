@@ -17,6 +17,23 @@ const FAILED_STATES = new Set([
   "STARTUP_FAILURE",
 ]);
 
+// A cancelled or rerun workflow leaves an older entry under the same name; its
+// aggregate Verify even reports FAILURE. An entry counts only while no check
+// of the same workflow started after it; otherwise it is treated as pending.
+function current(checks, name) {
+  const entries = checks.filter((c) => c.name === name);
+  const newest = entries.reduce(
+    (best, c) => (!best || c.startedAt > best.startedAt ? c : best),
+    undefined,
+  );
+  const superseded =
+    newest?.workflow &&
+    checks.some(
+      (c) => c.workflow === newest.workflow && c.startedAt > newest.startedAt,
+    );
+  return superseded ? undefined : newest;
+}
+
 export function assessReadiness({ checks, pr, head }) {
   if (pr.state === "MERGED") return { status: "merged" };
   if (pr.state !== "OPEN")
@@ -27,13 +44,10 @@ export function assessReadiness({ checks, pr, head }) {
       reason: `head moved from ${head} to ${pr.headRefOid}`,
     };
   }
-  // A rerun can list a name twice; any failed entry fails it.
-  for (const name of REQUIRED_CHECKS) {
-    const failed = checks.find(
-      (c) => c.name === name && FAILED_STATES.has(c.state),
-    );
-    if (failed) {
-      return { status: "fail", reason: `${name} is ${failed.state}` };
+  const required = REQUIRED_CHECKS.map((name) => [name, current(checks, name)]);
+  for (const [name, check] of required) {
+    if (check && FAILED_STATES.has(check.state)) {
+      return { status: "fail", reason: `${name} is ${check.state}` };
     }
   }
   if (pr.mergeStateStatus === "BEHIND") {
@@ -45,10 +59,9 @@ export function assessReadiness({ checks, pr, head }) {
   if (pr.mergeStateStatus === "DIRTY") {
     return { status: "fail", reason: "merge conflicts with its base" };
   }
-  const pending = REQUIRED_CHECKS.filter((name) => {
-    const entries = checks.filter((c) => c.name === name);
-    return entries.length === 0 || entries.some((c) => c.state !== "SUCCESS");
-  });
+  const pending = required
+    .filter(([, check]) => check?.state !== "SUCCESS")
+    .map(([name]) => name);
   if (pending.length > 0) {
     return { status: "wait", reason: `waiting for ${pending.join(", ")}` };
   }
@@ -85,7 +98,13 @@ function readPr(number) {
 }
 
 function readChecks(number) {
-  return ghJson(["pr", "checks", number, "--json", "name,state"]);
+  return ghJson([
+    "pr",
+    "checks",
+    number,
+    "--json",
+    "name,state,startedAt,workflow",
+  ]);
 }
 
 function option(argv, name, fallback) {

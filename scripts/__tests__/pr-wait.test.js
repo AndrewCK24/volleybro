@@ -74,14 +74,69 @@ test("a failed Vercel check, a conflict or a closed PR fails closed", () => {
   }
 });
 
-test("a rerun's stale entry for a required check is not taken as success", () => {
-  const checks = [...passing, { name: "Verify", state: "IN_PROGRESS" }];
-  assert.equal(assessReadiness({ checks, pr: open, head }).status, "wait");
-  const rerunFailed = [...passing, { name: "Verify", state: "FAILURE" }];
+test("only the latest-started entry of a required check counts", () => {
+  const cancelledRun = {
+    name: "Verify",
+    state: "FAILURE",
+    startedAt: "2026-10-21T04:12:22Z",
+  };
+  const rerun = {
+    name: "Verify",
+    state: "IN_PROGRESS",
+    startedAt: "2026-10-21T04:12:35Z",
+  };
+  const vercel = { name: "Vercel", state: "SUCCESS" };
   assert.equal(
-    assessReadiness({ checks: rerunFailed, pr: open, head }).status,
+    assessReadiness({ checks: [cancelledRun, rerun, vercel], pr: open, head })
+      .status,
+    "wait",
+  );
+  const rerunPassed = { ...rerun, state: "SUCCESS" };
+  assert.equal(
+    assessReadiness({
+      checks: [rerunPassed, cancelledRun, vercel],
+      pr: open,
+      head,
+    }).status,
+    "ready",
+  );
+  const rerunFailed = { ...rerun, state: "FAILURE" };
+  assert.equal(
+    assessReadiness({
+      checks: [cancelledRun, rerunFailed, vercel],
+      pr: open,
+      head,
+    }).status,
     "fail",
   );
+});
+
+test("a failed Verify from a run that a newer run of its workflow replaced does not fail", () => {
+  const checks = [
+    {
+      name: "Verify",
+      state: "FAILURE",
+      workflow: "CI",
+      startedAt: "2026-10-21T04:12:22Z",
+      workflow: "CI",
+    },
+    {
+      name: "Test",
+      state: "IN_PROGRESS",
+      workflow: "CI",
+      startedAt: "2026-10-21T04:12:35Z",
+      workflow: "CI",
+    },
+    {
+      name: "Vercel",
+      state: "SUCCESS",
+      workflow: "",
+      startedAt: "0001-01-01T00:00:00Z",
+    },
+  ];
+  const result = assessReadiness({ checks, pr: open, head });
+  assert.equal(result.status, "wait");
+  assert.match(result.reason, /Verify/);
 });
 
 test("gh output before the first check is reported reads as no checks", () => {
