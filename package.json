@@ -24,6 +24,7 @@
     "format:check": "prettier --check .",
     "verify": "node scripts/verify.js",
     "verify:all": "node scripts/verify.js --all",
+    "pr:wait": "node scripts/pr-wait.js",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "knip": "knip",
