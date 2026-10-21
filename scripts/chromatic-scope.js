@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { parseAllDocuments } from "yaml";
+import { parse, parseAllDocuments } from "yaml";
 
 const NON_VISUAL_DEV_DEPENDENCIES = new Set([
   "husky",
@@ -143,8 +143,13 @@ function parseLockfile(content) {
   };
 }
 
+function withoutPackageManager(importer) {
+  const { packageManagerDependencies: _pin, ...rest } = importer;
+  return rest;
+}
+
 function rootProtectedImporter(importer) {
-  const result = { ...importer };
+  const result = withoutPackageManager(importer);
   const dev = { ...(result.devDependencies ?? {}) };
   const specifiers = { ...(result.specifiers ?? {}) };
   for (const name of NON_VISUAL_DEV_DEPENDENCIES) {
@@ -227,17 +232,33 @@ function protectedGraph(lock) {
   });
 }
 
+// Known metadata that cannot change what Storybook bundles. Any other field,
+// including unknown ones, is compared so the check stays fail-open.
+const IGNORED_MANIFEST_FIELDS = [
+  "name",
+  "version",
+  "private",
+  "description",
+  "keywords",
+  "author",
+  "contributors",
+  "license",
+  "repository",
+  "homepage",
+  "bugs",
+  "funding",
+  "scripts",
+  "packageManager",
+  "engines",
+];
+
 function parseManifest(content) {
   const manifest = JSON.parse(content);
   if (!manifest || typeof manifest !== "object" || !manifest.dependencies) {
     throw new Error("invalid root package manifest");
   }
-  const filtered = {
-    ...manifest,
-    devDependencies: {},
-    dependencies: manifest.dependencies,
-    optionalDependencies: manifest.optionalDependencies ?? {},
-  };
+  const filtered = { ...manifest, devDependencies: {} };
+  for (const field of IGNORED_MANIFEST_FIELDS) delete filtered[field];
   for (const [name, version] of Object.entries(
     manifest.devDependencies ?? {},
   )) {
@@ -245,6 +266,26 @@ function parseManifest(content) {
       filtered.devDependencies[name] = version;
   }
   return stable(filtered);
+}
+
+// The first lockfile document pins the package manager itself. The pin is not
+// bundled; the graph beside it moves with the pin, so it is compared apart.
+function lockEnvironment({ firstDocument, resolutionEnvironment }) {
+  const { packages, snapshots, ...document } = firstDocument;
+  return {
+    pin: stable(firstDocument.importers?.["."]?.packageManagerDependencies),
+    pinGraph: stable({ packages, snapshots }),
+    rest: stable({
+      firstDocument: {
+        ...document,
+        importers: {
+          ...document.importers,
+          ".": withoutPackageManager(document.importers?.["."] ?? {}),
+        },
+      },
+      resolutionEnvironment,
+    }),
+  };
 }
 
 function parseNameStatus(output) {
@@ -265,6 +306,36 @@ function parseNameStatus(output) {
 
 function isSafePath(file) {
   return SAFE_PATHS.some((pattern) => pattern.test(file));
+}
+
+const CHROMATIC_WORKFLOW = ".github/workflows/chromatic.yml";
+
+function isChromaticAction(uses) {
+  return uses
+    .replace(/^["']|["']$/g, "")
+    .toLowerCase()
+    .startsWith("chromaui/action@");
+}
+
+// Reduces every non-Chromatic step's `uses` to its action name, so two
+// workflows that differ only in pins, comments or formatting compare equal.
+function withoutActionPins(workflow) {
+  const document = parse(workflow, { uniqueKeys: true });
+  for (const job of Object.values(document?.jobs ?? {})) {
+    for (const step of job?.steps ?? []) {
+      if (typeof step?.uses === "string" && !isChromaticAction(step.uses)) {
+        step.uses = step.uses.split("@")[0];
+      }
+    }
+  }
+  return stable(document);
+}
+
+// An unparseable workflow throws, and assess() treats that as "run the build".
+function isActionPinOnly(base, head, cwd) {
+  const workflowAt = (sha) =>
+    withoutActionPins(runGit(["show", `${sha}:${CHROMATIC_WORKFLOW}`], cwd));
+  return workflowAt(base) === workflowAt(head);
 }
 
 function runGit(args, cwd) {
@@ -296,7 +367,9 @@ function assess({ base, head, force = false }) {
     if (paths.length === 0) return { skip: true, reason: "no changed files" };
     const unknown = paths.filter(
       (file) =>
-        !isSafePath(file) && !["package.json", "pnpm-lock.yaml"].includes(file),
+        !isSafePath(file) &&
+        !["package.json", "pnpm-lock.yaml"].includes(file) &&
+        !(file === CHROMATIC_WORKFLOW && isActionPinOnly(base, head, cwd)),
     );
     if (unknown.length)
       return {
@@ -311,7 +384,13 @@ function assess({ base, head, force = false }) {
       const headManifest = parseManifest(manifestAt(head));
       const baseLock = parseLockfile(lockAt(base));
       const headLock = parseLockfile(lockAt(head));
-      if (stable(baseLock.environment) !== stable(headLock.environment)) {
+      const baseEnvironment = lockEnvironment(baseLock.environment);
+      const headEnvironment = lockEnvironment(headLock.environment);
+      const isPinChanged = baseEnvironment.pin !== headEnvironment.pin;
+      if (
+        baseEnvironment.rest !== headEnvironment.rest ||
+        (!isPinChanged && baseEnvironment.pinGraph !== headEnvironment.pinGraph)
+      ) {
         return { skip: false, reason: "pnpm lockfile environment changed" };
       }
       if (baseManifest !== headManifest)
