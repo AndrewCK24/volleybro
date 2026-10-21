@@ -170,9 +170,9 @@ checkout.
 ## Landing and continuation
 
 Commit, push, open a PR, or land only when authorized. Follow `WORKFLOW.md`: a
-Change's deletions are listed in its PR body (paths and rationale) and accepted at
-G2; Fast-path work follows `WORKFLOW.md` Fast path. Land one coherent change at a
-time; after landing, refresh from current `main` and rerun read-only discovery
+Change's deletions are listed in its Review tab's deletion table and accepted
+at G2; Fix-path work follows `CONTRIBUTING.md`. Land one coherent change at a
+time; after landing, refresh from current `dev` and rerun read-only discovery
 for the next high-confidence batch.
 
 Coverage comparison per file against the starting point is this repository's

@@ -8,13 +8,13 @@ value bar, retention bar, candidate evidence, and validation in
 the lessons of a full campaign. Each step ends on its completion criterion; do
 not start the next step early.
 
-The ledger and preservation review below feed the PR body's deleted-path list
+The ledger and preservation review below feed the Review tab's deletion table
 (`WORKFLOW.md`), which is what the reviewer accepts at G2.
 
 ## 1. Baseline
 
 Record the subsystem's test and support line counts and every test file's
-pass/fail state at a pinned `main` SHA. Keep baseline failures in their own
+pass/fail state at a pinned `dev` SHA. Keep baseline failures in their own
 list: in a messaging-integration campaign, all three were real delivery bugs,
 not stale tests.
 
@@ -104,10 +104,10 @@ on the same harness.
 
 ## 8. Reconcile and hand off
 
-Campaigns outlive many `main` commits. Merge `main` rather than rebasing a
-long, many-commit campaign. When `main` modified a file the campaign
+Campaigns outlive many `dev` commits. Merge `dev` rather than rebasing a
+long, many-commit campaign. When `dev` modified a file the campaign
 deleted, keep the deletion. Port the new contract into the keeper instead, and
-confirm every new regression `main` added still has a home. Rerun the whole
+confirm every new regression `dev` added still has a home. Rerun the whole
 subsystem suite, `pnpm verify:all`, and any live proof on the merged head.
 
 Expect review tooling to see a truncated file list on a diff this large.
