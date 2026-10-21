@@ -23,7 +23,7 @@ const actorStateSchema = z.strictObject({
 export const stepWalkthroughBlockSchema = z
   .strictObject({
     _type: z.literal("step_walkthrough"),
-    _version: z.literal(1),
+    _version: z.number().optional(),
     _key: z.string().min(1).optional(),
     title: z.string().min(1).max(200),
     flow: z

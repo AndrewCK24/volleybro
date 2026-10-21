@@ -91,12 +91,16 @@ export type PortableTextFrameBlock = z.infer<
   typeof portableTextFrameBlockSchema
 >;
 
-const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
-  z.strictObject({ ...shape, _key: z.string().min(1).optional() });
+// Stored content may still carry _version; it is accepted and never read.
+const typedBlock = <S extends z.ZodRawShape>(shape: S) =>
+  z.strictObject({
+    ...shape,
+    _key: z.string().min(1).optional(),
+    _version: z.number().optional(),
+  });
 
-const tldrBlockSchema = versionedBlock({
+const tldrBlockSchema = typedBlock({
   _type: z.literal("tldr"),
-  _version: z.literal(1),
   blocks: z.array(standardBlockSchema),
 });
 
@@ -106,7 +110,7 @@ const MAX_DISCLOSURE_DEPTH = 8;
 
 export interface DisclosureBlock {
   _type: "disclosure";
-  _version: 1;
+  _version?: number;
   _key?: string;
   id?: string;
   summary: string;
@@ -159,9 +163,8 @@ const disclosureBlockSchema: z.ZodType<DisclosureBlock> = z.preprocess(
     return input;
   },
   z.lazy(() =>
-    versionedBlock({
+    typedBlock({
       _type: z.literal("disclosure"),
-      _version: z.literal(1),
       id: documentAnchorIdSchema.optional(),
       summary: z.string().trim().min(1),
       blocks: z.array(blockSchema),
@@ -192,7 +195,7 @@ const variantChoiceSchema = z.strictObject({
     ),
 });
 
-export const variantGalleryBlockSchema = versionedBlock({
+export const variantGalleryBlockSchema = typedBlock({
   _type: z.literal("variant_gallery"),
   version: z.literal(1),
   title: z.string().min(1).max(200),
@@ -344,32 +347,27 @@ const blockSchemaBase = z.union([
   disclosureBlockSchema,
   annotatedDiffBlockSchema,
   stepWalkthroughBlockSchema,
-  versionedBlock({
+  typedBlock({
     _type: z.literal("decision_cards"),
-    _version: z.literal(1),
     records: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("risk_table"),
-    _version: z.literal(1),
     risks: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("scenario"),
-    _version: z.literal(1),
     id: z.string().min(1),
     given: z.string(),
     when: z.string(),
     then: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("scenario_cards"),
-    _version: z.literal(1),
     items: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("interactive_flowchart"),
-    _version: z.literal(2),
     ...interactiveFlowchartBlockFieldsShape,
   }).superRefine((block, context) => {
     const parsed = interactiveFlowchartBlockFieldsSchema.safeParse({

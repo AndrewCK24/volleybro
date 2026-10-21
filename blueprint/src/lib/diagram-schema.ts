@@ -410,7 +410,7 @@ const diagramElementSchema: z.ZodType<DiagramElement> = z.lazy(() =>
 export const diagramBlockSchema = z
   .strictObject({
     _type: z.literal("diagram"),
-    _version: z.literal(1),
+    _version: z.number().optional(),
     _key: z.string().min(1).optional(),
     title: z.string().max(2_000).optional(),
     description: z.string().max(4_000).optional(),

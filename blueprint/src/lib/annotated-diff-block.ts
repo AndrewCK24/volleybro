@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const annotatedDiffBlockSchema = z.strictObject({
   _type: z.literal("annotated_diff"),
-  _version: z.literal(1),
+  _version: z.number().optional(),
   _key: z.string().min(1).optional(),
   language: z.string().min(1).optional(),
   lines: z
