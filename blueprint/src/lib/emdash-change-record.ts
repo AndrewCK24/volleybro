@@ -7,8 +7,9 @@ import {
   interactiveFlowchartBlockFieldsShape,
 } from "./interactive-flowchart-data.ts";
 
-const portableSpanSchema = z.strictObject({
-  _key: z.string().optional(),
+// Core Portable Text blocks are owned by EmDash, whose editor adds keys such as
+// listId and listStart. They stay loose: only the fields our renderer reads are checked.
+const portableSpanSchema = z.looseObject({
   _type: z.literal("span"),
   marks: z.array(z.string().min(1)).optional(),
   text: z.string(),
@@ -26,122 +27,50 @@ const documentAnchorIdSchema = z
   .string()
   .regex(/^[\p{L}\p{N}][\p{L}\p{M}\p{N}_:.-]*$/u);
 
-const markDefinitionSchema = z.strictObject({
-  _key: z.string().min(1),
-  _type: z.literal("link"),
-  href: safeHrefSchema,
-  blank: z.boolean().optional(),
-});
-
-const textBlockSchema = z
-  .strictObject({
-    _key: z.string().optional(),
-    id: documentAnchorIdSchema.optional(),
-    _type: z.literal("block"),
-    children: z.array(portableSpanSchema),
-    markDefs: z.array(markDefinitionSchema).optional(),
-    style: z
-      .enum(["normal", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"])
-      .optional(),
-    textAlign: z.enum(["left", "center", "right", "justify"]).optional(),
-    listItem: z.enum(["bullet", "number"]).optional(),
-    level: z.number().int().min(1).optional(),
-  })
-  .superRefine((block, context) => {
-    const linkKeys = new Set(
-      (block.markDefs ?? []).map((definition) => definition._key),
-    );
-    for (const [spanIndex, span] of block.children.entries()) {
-      for (const mark of span.marks ?? []) {
-        if (
-          [
-            "strong",
-            "em",
-            "code",
-            "underline",
-            "strike-through",
-            "superscript",
-            "subscript",
-          ].includes(mark)
-        )
-          continue;
-        if (!linkKeys.has(mark)) {
-          context.addIssue({
-            code: "custom",
-            path: ["children", spanIndex, "marks"],
-            message: "Unknown Portable Text mark.",
-          });
-        }
-      }
-    }
-  });
-
-const imageBlockSchema = z.strictObject({
-  _key: z.string().min(1).optional(),
-  _type: z.literal("image"),
-  asset: z.strictObject({
-    _type: z.literal("reference"),
-    _ref: z.string().min(1),
-    url: z.string().regex(/^\/_emdash\/api\/media\/file\/[A-Za-z0-9._-]+$/u),
-    provider: z.literal("local").optional(),
-  }),
-  alt: z.string().optional(),
-  caption: z.string().optional(),
-  title: z.string().optional(),
-  width: z.number().positive().optional(),
-  height: z.number().positive().optional(),
-  displayWidth: z.number().positive().optional(),
-  displayHeight: z.number().positive().optional(),
-  alignment: z.enum(["left", "center", "right", "wide", "full"]).optional(),
-  link: z
-    .union([
-      safeHrefSchema,
-      z.strictObject({
-        href: safeHrefSchema,
-        blank: z.boolean().optional(),
-      }),
-    ])
-    .optional(),
-});
-
-const codeBlockSchema = z.strictObject({
-  _key: z.string().min(1).optional(),
-  _type: z.literal("code"),
-  code: z.string(),
-  language: z.string().optional(),
-  filename: z.string().optional(),
-});
-
-const tableMarkDefinitionSchema = z.looseObject({
+const markDefinitionSchema = z.looseObject({
   _key: z.string().min(1),
   _type: z.string().min(1),
   href: safeHrefSchema.optional(),
 });
 
-const tableCellSchema = z.strictObject({
-  _type: z.literal("tableCell"),
-  _key: z.string().min(1),
-  content: z.array(portableSpanSchema),
-  markDefs: z.array(tableMarkDefinitionSchema).optional(),
-  isHeader: z.boolean().optional(),
-  colspan: z.number().int().min(1).optional(),
-  rowspan: z.number().int().min(1).optional(),
-  colwidth: z.array(z.number().positive()).optional(),
-  textAlign: z.enum(["left", "center", "right", "justify"]).optional(),
+const textBlockSchema = z.looseObject({
+  id: documentAnchorIdSchema.optional(),
+  _type: z.literal("block"),
+  children: z.array(portableSpanSchema),
+  markDefs: z.array(markDefinitionSchema).optional(),
 });
 
-const tableBlockSchema = z.strictObject({
-  _key: z.string().min(1).optional(),
+const imageBlockSchema = z.looseObject({
+  _type: z.literal("image"),
+  asset: z.looseObject({
+    _ref: z.string().min(1),
+    url: z
+      .string()
+      .regex(/^\/_emdash\/api\/media\/file\/[A-Za-z0-9._-]+$/u)
+      .optional(),
+  }),
+  link: z
+    .union([safeHrefSchema, z.looseObject({ href: safeHrefSchema })])
+    .optional(),
+});
+
+const codeBlockSchema = z.looseObject({
+  _type: z.literal("code"),
+  code: z.string(),
+});
+
+const tableBlockSchema = z.looseObject({
   _type: z.literal("table"),
   rows: z.array(
-    z.strictObject({
-      _type: z.literal("tableRow"),
-      _key: z.string().min(1),
-      cells: z.array(tableCellSchema),
+    z.looseObject({
+      cells: z.array(
+        z.looseObject({
+          content: z.array(portableSpanSchema),
+          markDefs: z.array(markDefinitionSchema).optional(),
+        }),
+      ),
     }),
   ),
-  hasHeaderRow: z.boolean().optional(),
-  markDefs: z.array(tableMarkDefinitionSchema).optional(),
 });
 
 const standardBlockSchema = z.discriminatedUnion("_type", [

@@ -18,7 +18,7 @@ G2 reviews the code PR only. The G2 PR links the accepted EmDash revision/hash; 
 
 ## Blocks and rendering
 
-Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards`, `interactive_flowchart` and `step_walkthrough`, mapped to existing Astro components after strict schema validation. The renderer accepts only an explicit registry of known block types and versions.
+Portable Text supplies ordinary prose, headings, lists, quotes, links, code, tables and media. Blueprint-specific semantics use versioned typed blocks such as `decision_cards`, `risk_table`, `scenario`, `scenario_cards`, `interactive_flowchart` and `step_walkthrough`, mapped to existing Astro components after strict schema validation. Text, image, code and table blocks, with their spans and mark definitions, are owned by EmDash and validated loosely: unknown keys and marks pass, and only the fields the renderer reads are required. The renderer accepts only an explicit registry of known block types and versions.
 
 `tldr` version 1 wraps a `blocks` array of native Portable Text content in the Blueprint TLDR component. `disclosure` version 1 stores a non-empty `summary`, an optional document anchor `id`, and a `blocks` array from the same closed registry. It renders semantic `details` and `summary`, preserving nested review/shard groups up to eight disclosure levels. Raw HTML and executable content are rejected. Draft decision discussion may use a disclosure without creating or accepting an ADR.
 
