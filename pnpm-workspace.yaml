@@ -2,10 +2,11 @@ packages:
   - "."
   - blueprint
 
-# Only the Zod resolver is used. Revisit before enabling the AJV resolver.
+# Only the Zod resolver is used. The resolvers package still lists ajv and ajv-formats as peers
+# (optional since 5.x), which these overrides strip. Revisit before enabling the AJV resolver.
 overrides:
-  "@hookform/resolvers@5.9.2>ajv": "-"
-  "@hookform/resolvers@5.9.2>ajv-formats": "-"
+  "@hookform/resolvers@6.0.0>ajv": "-"
+  "@hookform/resolvers@6.0.0>ajv-formats": "-"
   proxy-addr@>=1.1.0 <2.0.8: ^2.0.8
 
 allowBuilds:
