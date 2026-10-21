@@ -20,7 +20,7 @@ If a normal release run failed, the version PR was merged by someone else, or a 
 
 ## Dependency maintenance
 
-Follow [maintenance-policy.md](maintenance-policy.md) for schedules, allowlist admission and Agent collaboration. Treat graph coverage, alert visibility, native updater compatibility and exact-head auto-merge as separate proofs; local SBOM generation or upload success alone is insufficient. Keep the relevant automation flag false when its proof fails or is unavailable. New workspaces require submission mapping and graph read-back.
+Follow [maintenance-policy.md](maintenance-policy.md) for schedules and Agent collaboration. Treat graph coverage, alert visibility and native updater compatibility as separate proofs; local SBOM generation or upload success alone is insufficient. Keep the relevant automation flag false when its proof fails or is unavailable. New workspaces require submission mapping and graph read-back.
 
 ## Hotfix and recovery
 
