@@ -14,7 +14,10 @@ jest.mock(
 );
 
 import { publicationReceiptProblem } from "./publication-receipt";
-import { createPlugin } from "./emdash-publication-policy";
+import {
+  createPlugin,
+  MAX_MEDIA_UPLOAD_BYTES,
+} from "./emdash-publication-policy";
 
 const hash = "a".repeat(64);
 const receipt = (revision: string, acceptedHash = hash) =>
@@ -145,5 +148,21 @@ describe("canonical content publish policy", () => {
       cancel: true,
       reason: "Change content does not match the published EmDash schema.",
     });
+  });
+});
+
+describe("media upload size cap", () => {
+  const plugin = createPlugin() as unknown as {
+    hooks: Record<string, (event: unknown) => Promise<unknown>>;
+  };
+  const beforeUpload = plugin.hooks["media:beforeUpload"];
+  const file = (size: number) => ({ name: "a.png", type: "image/png", size });
+
+  it("passes a file at the cap and rejects one above it", async () => {
+    const atCap = file(MAX_MEDIA_UPLOAD_BYTES);
+    await expect(beforeUpload({ file: atCap })).resolves.toBe(atCap);
+    await expect(
+      beforeUpload({ file: file(MAX_MEDIA_UPLOAD_BYTES + 1) }),
+    ).rejects.toThrow("20 MiB");
   });
 });
