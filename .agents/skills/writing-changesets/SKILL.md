@@ -1,6 +1,6 @@
 ---
 name: writing-changesets
-description: Use when creating a changeset file during Archive, writing or editing changeset body content, running release:version, reviewing a CHANGELOG.md entry, or asking how the release workflow works
+description: Use when creating a changeset file at the Pre-PR gate, writing or editing changeset body content, running release:version, reviewing a CHANGELOG.md entry, or asking how the release workflow works
 ---
 
 # Writing Changesets
@@ -18,10 +18,10 @@ This project uses `@changesets/cli` with a custom verbatim formatter and a postp
 
 ## When to Create a Changeset
 
-Assess Changeset applicability during Archive for each delivery batch, including each Sharded Change shard. Include the applicable changeset in that batch's branch and pull request to the current integration branch defined in `WORKFLOW.md`, never deferred to release time:
+Assess Changeset applicability at the Pre-PR gate for each delivery batch, including each Sharded Change shard. Include the applicable changeset in that batch's branch and pull request to the current integration branch defined in `WORKFLOW.md`, never deferred to release time:
 
 ```
-implement -> Archive assessment -> pnpm changeset when applicable -> same batch PR
+implement -> Pre-PR Changeset assessment -> pnpm changeset when applicable -> same batch PR
 ```
 
 Every delivery batch with user-visible or contributor-setup impact carries its own changeset. A tracking parent receives no extra changeset just for grouping its shards. Do not duplicate earlier batches' entries. Lifecycle, human gates, integration branch and release authorization are owned by `WORKFLOW.md`, not this skill.
@@ -32,7 +32,7 @@ Skip the changeset only if the change has zero user-visible impact (pure refacto
 
 | Command                  | When                                                     | What it does                                                     |
 | ------------------------ | -------------------------------------------------------- | ---------------------------------------------------------------- |
-| `pnpm changeset`         | After archive, on feat branch                            | Interactive: pick bump type, write body                          |
+| `pnpm changeset`         | At the Pre-PR gate, on the batch branch                  | Interactive: pick bump type, write body                          |
 | `pnpm changeset --empty` | CI requires changeset but no user impact                 | Creates empty changeset                                          |
 | `pnpm changeset status`  | Anytime                                                  | Shows pending changesets                                         |
 | `pnpm release:version`   | Authorized version preparation, not deployment | Bumps version, updates CHANGELOG.md, deletes consumed changesets |
@@ -51,9 +51,9 @@ When in doubt, prefer `minor` for features, `patch` for fixes.
 
 ## Deriving Body from a Change
 
-When writing the body at Archive, pull from the Change's own artifacts:
+When writing the body at the Pre-PR gate, pull from the Change's own artifacts:
 
-1. Read the Proposal page for scope and motivation
+1. Read the accepted EmDash Change page for scope and motivation
 2. Read the batch's commits against the current integration base for what was actually implemented; their bodies carry the outcome and verification per slice
 3. Map each user-visible change to a bullet under the correct `###` heading (see `body-format.md`)
 4. Ignore internal work (refactors, test infra, CI plumbing) unless it affects contributors
@@ -68,4 +68,4 @@ When writing the body at Archive, pull from the Change's own artifacts:
 | "Skipping `####` domains is fine for a short list or one scope"   | Every entry sits under a `####` domain; the release merges changesets.        |
 | "The dep upgrade is worth mentioning even with no visible change" | Only include if it changes observable behavior or removes deprecated options. |
 | "This change is too small for a changeset"                        | If it has user-visible impact, it needs a changeset. Size doesn't matter.     |
-| "I'll create the changeset later"                                 | Create at archive time. Context is freshest then.                             |
+| "I'll create the changeset later"                                 | Create at the Pre-PR gate. Context is freshest then.                          |
