@@ -29,6 +29,7 @@ async function fixture(
     removeCompatibilityTest = false,
     hotfixPath = "repair.js",
     hotfixDependency = "2.0.0",
+    changelogEntry = true,
   } = {},
 ) {
   const root = await mkdtemp(path.join(os.tmpdir(), "release-cli-"));
@@ -105,7 +106,9 @@ async function fixture(
   );
   await writeFile(
     path.join(repo, "CHANGELOG.md"),
-    "# Changes\n\n## [1.0.1]\n\n- Release changes\n",
+    changelogEntry
+      ? "# Changes\n\n## [1.0.1]\n\n- Release changes\n"
+      : "# Changes\n",
   );
   await rm(path.join(repo, ".changeset", "one.md"));
   git(["add", "-A"]);
@@ -2017,6 +2020,117 @@ test("finalize tags only the promoted exact SHA and repeats without duplicate Re
   result = run(f, "finalize", env);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /different commit/);
+});
+
+async function finalizeRelease(f) {
+  const { finalState } = await prepareFinalRelease(f);
+  const env = { RELEASE_STATE_FILE: finalState };
+  const withProduction = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    jobs: {
+      ...withProduction.jobs,
+      9: withProduction.jobs[9].map((job) =>
+        job.id === 504
+          ? { ...job, status: "completed", conclusion: "success" }
+          : job,
+      ),
+    },
+  });
+  const result = run(f, "finalize", env);
+  assert.equal(result.status, 0, result.stderr);
+  const state = JSON.parse(await readFile(f.statePath, "utf8"));
+  return state.calls.find(
+    (args) => args[0] === "release" && args[1] === "create",
+  );
+}
+
+test("finalize without changelog notes falls back to generated notes only", async (t) => {
+  const create = await finalizeRelease(
+    await fixture(t, { changelogEntry: false }),
+  );
+  assert.equal(create.includes("--notes"), false);
+  assert.equal(create.includes("--generate-notes"), true);
+});
+
+test("finalize states a forward-only release in the GitHub Release notes", async (t) => {
+  const f = await fixture(t, { persistedContract: true });
+  const create = await finalizeRelease(f);
+  assert.match(
+    create[create.indexOf("--notes") + 1],
+    new RegExp(
+      `^- Release changes\\n\\nForward-only: no rollback to ${f.deployed}$`,
+    ),
+  );
+  assert.equal(create.includes("--generate-notes"), false);
+});
+
+test("owner recovery refuses a forward-only release without touching the alias", async (t) => {
+  const f = await fixture(t, { persistedContract: true });
+  const { accepted } = await prepareAcceptedRelease(f);
+  await updateApi(f, { alias: "dpl_cand" });
+  const stateFile = path.join(f.root, "artifact", "release-state.json");
+  const archive = path.join(f.root, "accepted.zip");
+  await mkdir(path.dirname(stateFile));
+  await writeFile(stateFile, await readFile(accepted));
+  execFileSync("zip", ["-q", "-j", archive, stateFile]);
+  const digest = createHash("sha256")
+    .update(await readFile(archive))
+    .digest("hex");
+  const api = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    runs: {
+      ...api.runs,
+      10: {
+        ...api.runs[9],
+        id: 10,
+        event: "workflow_dispatch",
+        head_branch: "main",
+        head_sha: f.merge,
+        run_attempt: 1,
+        status: "in_progress",
+        actor: { login: "release-owner", id: 201 },
+        triggering_actor: { login: "release-owner", id: 201 },
+      },
+    },
+    artifacts: {
+      ...api.artifacts,
+      9: [
+        {
+          id: 700,
+          name: "production-release-accepted-state",
+          expired: false,
+          expires_at: "2099-01-01T00:00:00Z",
+          digest: `sha256:${digest}`,
+          archive_download_url:
+            "https://api.github.com/repos/owner/repo/actions/artifacts/700/zip",
+          workflow_run: {
+            id: 9,
+            repository_id: 101,
+            head_repository_id: 101,
+            head_sha: f.merge,
+          },
+        },
+      ],
+    },
+    artifactArchives: { 700: archive },
+  });
+  const recovery = path.join(f.root, "recovery.json");
+  const result = run(f, "recover-verify", {
+    GITHUB_RUN_ID: "10",
+    GITHUB_RUN_ATTEMPT: "1",
+    GITHUB_EVENT_NAME: "workflow_dispatch",
+    GITHUB_SHA: f.merge,
+    GITHUB_JOB: "recover",
+    ORIGINAL_RELEASE_RUN_ID: "9",
+    RELEASE_RECOVERY_STATE_FILE: recovery,
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /forward-only/);
+  assert.equal(await readFile(recovery, "utf8").catch(() => ""), "");
+  assert.equal(
+    JSON.parse(await readFile(f.statePath, "utf8")).alias,
+    "dpl_cand",
+  );
 });
 
 test("recovery receipt cannot be created without trusted source CI receipts", async (t) => {

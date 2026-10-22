@@ -2041,6 +2041,8 @@ async function finalize() {
       version,
     );
     // Keep the fallback: a version released without changesets has no entry.
+    const forwardOnly = forwardOnlyNotice(state.recoveryEvidence.facts).trim();
+    const text = [notes, forwardOnly].filter(Boolean).join("\n\n");
     await command("gh", [
       "release",
       "create",
@@ -2049,10 +2051,7 @@ async function finalize() {
       state.sha,
       "--title",
       tag,
-      "--notes",
-      [notes, forwardOnlyNotice(state.recoveryEvidence.facts).trim()]
-        .filter(Boolean)
-        .join("\n\n"),
+      ...(text ? ["--notes", text] : []),
       ...(notes ? [] : ["--generate-notes"]),
     ]);
   }
