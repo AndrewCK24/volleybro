@@ -643,12 +643,11 @@ async function recoveryCompatibilityPlan(state) {
     fail(
       `Cannot classify changed paths for production-data compatibility: ${unclassifiedPaths.join(", ")}`,
     );
-  const isCompatibilityRequired = contractPaths.length > 0;
+  const isForwardOnly =
+    contractPaths.length > 0 &&
+    !(await sourcePathExists(state.sha, RECOVERY_COMPATIBILITY_TEST));
+  const isCompatibilityRequired = contractPaths.length > 0 && !isForwardOnly;
   if (isCompatibilityRequired) {
-    if (!(await sourcePathExists(state.sha, RECOVERY_COMPATIBILITY_TEST)))
-      fail(
-        `Persisted contract changed after production DB activation; ${RECOVERY_COMPATIBILITY_TEST} must exist in the exact release source`,
-      );
     const sourceTree = await command("git", [
       "rev-parse",
       `${exactSha(state.sha, "Release source SHA")}^{tree}`,
@@ -663,6 +662,7 @@ async function recoveryCompatibilityPlan(state) {
     contractPaths,
     unclassifiedPaths,
     required: isCompatibilityRequired,
+    forwardOnly: isForwardOnly,
   };
 }
 
@@ -844,6 +844,7 @@ async function recoveryReceiptFacts(state) {
     contractPaths,
     unclassifiedPaths,
     required: isCompatibilityRequired,
+    forwardOnly: isForwardOnly,
   } = await recoveryCompatibilityPlan(state);
   const integration = state.sourceQA?.scopes?.integration;
   if (
@@ -854,11 +855,11 @@ async function recoveryReceiptFacts(state) {
       "Recovery proof requires unit and integration receipts for one source tree",
     );
 
-  const policy =
-    contractPaths.length === 0
+  const policy = isForwardOnly
+    ? "production-forward-only"
+    : contractPaths.length === 0
       ? "production-contract-unchanged"
       : "production-targeted-integration-proof";
-  const canRollback = true;
   let compatibilityTest;
   if (isCompatibilityRequired) {
     compatibilityTest = await verifyCompatibilityTestStep(
@@ -907,7 +908,7 @@ async function recoveryReceiptFacts(state) {
       unclassifiedPaths,
       compatibilityTest,
       integration: scope(integration),
-      rollbackAllowed: canRollback,
+      rollbackAllowed: !isForwardOnly,
     },
     ci: {
       unit: scope(state.sourceQA.scopes.unit),
@@ -953,7 +954,9 @@ async function assertRollbackAllowed(
 ) {
   const receipt = await verifyRecoveryEvidence(state, expectedRunId);
   if (!receipt.facts.database.rollbackAllowed)
-    fail("Production code rollback is not supported by the recovery receipt");
+    fail(
+      "Production code rollback is not supported by the recovery receipt: forward-only release, unknown or incompatible database state",
+    );
 }
 
 function assertTagSha(actual, expected, tag) {
@@ -1895,6 +1898,12 @@ async function rollbackIfCompatible() {
   assertHealthySmoke(response.status, "Rolled-back production baseline");
 }
 
+function forwardOnlyNotice(facts) {
+  return facts.database.rollbackAllowed
+    ? ""
+    : ` Forward-only: no rollback to ${facts.baseline.sha}`;
+}
+
 async function recordRecoveryEvidence() {
   const state = await loadState();
   validateConfiguredPlatform(state);
@@ -1918,7 +1927,8 @@ async function recordRecoveryEvidence() {
     `Machine-verified recovery receipt created for ${facts.repository} ` +
     `run ${facts.release.runId}/${facts.release.runAttempt}, source ${facts.release.sourceSha}, ` +
     `baseline ${facts.baseline.deploymentId}, candidate ${facts.candidate.deploymentId}; ` +
-    `database policy ${facts.database.policy}, valid until ${state.recoveryEvidence.expiresAt}.`;
+    `database policy ${facts.database.policy}, valid until ${state.recoveryEvidence.expiresAt}.` +
+    forwardOnlyNotice(facts);
   if (process.env.GITHUB_STEP_SUMMARY)
     await (
       await import("node:fs/promises")
@@ -2039,7 +2049,11 @@ async function finalize() {
       state.sha,
       "--title",
       tag,
-      ...(notes ? ["--notes", notes] : ["--generate-notes"]),
+      "--notes",
+      [notes, forwardOnlyNotice(state.recoveryEvidence.facts).trim()]
+        .filter(Boolean)
+        .join("\n\n"),
+      ...(notes ? [] : ["--generate-notes"]),
     ]);
   }
 }
