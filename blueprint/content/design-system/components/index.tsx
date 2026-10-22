@@ -66,7 +66,7 @@ export default function ComponentLibraryShowcase({
       <section>
         <h3>Change content and PR review</h3>
         <p>
-          An EmDash Change entry holds the accepted G1 specification. Ordinary
+          An EmDash Change entry holds the reader-facing Change page. Ordinary
           content uses Portable Text; Blueprint typed blocks present decisions,
           risks, scenarios and diagrams.
         </p>

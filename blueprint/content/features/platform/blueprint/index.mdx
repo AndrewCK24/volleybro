@@ -38,7 +38,7 @@ flowchart LR
 
 ## Constraints
 
-- Code and tests define runtime behavior. EmDash defines accepted Change specifications and public article content; Linear holds operational status and the accepted revision/hash; GitHub PRs prove G2 and provide merge status and metrics.
+- Code and tests define runtime behavior. EmDash defines public Change-page content, written only on demand; Linear holds the working spec and operational status; GitHub PRs prove G2 and provide merge status and metrics.
 - Portable Text and allowlisted typed blocks are the only content path. Reject raw HTML and executable content. Represent proposal interactions as typed data; static UI designs may use developer-approved screenshots.
 - `diagram` v1 stores SVG geometry, positioned text, source IDs and markers as typed data; labels are escaped, with no raw SVG, CSS, script or URL paint.
 - Interactive flowcharts use Mermaid source, node-ID details and optional named paths through Pele. Node selection and path exploration stay interactive; empty detail panels are omitted. Authors cannot supply raw HTML, rendering options, custom CSS or network links. Layout is derived rather than stored as coordinates.

@@ -41,8 +41,8 @@ This file is VolleyBro's canonical provider-neutral delivery contract. A develop
 | Section gate                           | `pnpm verify` — format, lint, type checks, unit tests, workflow conformance                                                                                     |
 | Final gate                             | `pnpm verify:all` — static checks and the lanes reached by the diff against the remote default integration branch; `--full` runs all; CI runs every check       |
 | Intake and active work                 | Linear issues, statuses, relations, dependencies, priority, milestones                                                                                          |
-| Change content and G1 review           | One EmDash entry per Blueprint Change; direct Portable Text and typed-block authoring; signed private Blueprint preview before G1, public page after acceptance |
-| Code review surface                    | GitHub PR at G2; G2 reviews code and does not republish the EmDash Change page                                                                                  |
+| Change specification and G1            | The Linear execution issue; G1 is the `ready-for-human` → `ready-for-agent` label switch. A Blueprint Change page (EmDash) exists only on demand, see Lifecycle |
+| Code review surface                    | GitHub PR at G2; G2 reviews code and does not republish a Change page                                                                                           |
 | Canonical current capability knowledge | `blueprint/content/features/`                                                                                                                                   |
 | Execution plan                         | `to-tickets` after G1; Linear slice sub-issues under the Change's issue                                                                                         |
 | Version and changelog evidence         | `.changeset/` through Changesets                                                                                                                                |
@@ -112,8 +112,8 @@ Vendored skills and their `skills-lock.json` entries are vendor-managed. Do not 
 ## Authority and retention
 
 - Linear owns intake and current operational state. Issues may be archived or deleted after the development lifecycle, so durable repository knowledge must not depend on Linear URLs or IDs. Name other work by its Change slug, or by a short description of it when it has no slug yet.
-- Linear owns execution state and the accepted EmDash revision/hash receipt. The EmDash entry is the complete G1 specification and Change page; do not create a parallel Team Doc spec. Research uses separate Team Docs. Read `docs/agents/issue-tracker.md` before producing or consuming these artifacts.
-- GitHub PRs own G2 code review and acceptance evidence. EmDash holds the G1 specification and published page; the page derives delivery status and statistics from GitHub.
+- Linear owns execution state and the working specification: the execution issue description is the spec, with no parallel Team Doc spec. Research uses separate Team Docs. Read `docs/agents/issue-tracker.md` before producing or consuming these artifacts.
+- GitHub PRs own G2 code review and acceptance evidence. A Change page, when one exists, is published from EmDash and derives delivery status and statistics from GitHub.
 - Blueprint Features own current capability and sub-capability behavior and constraints, and render the decision records whose `capabilities` name them; the records themselves belong to the repository, not to any Feature page.
 - Code and tests own actual system behavior.
 - Changesets own semantic version and changelog evidence.
@@ -132,48 +132,56 @@ Manual and Symphony execution use the same intake process. Before creating or ma
 
 Use ordinary issue statuses, parent/child relationships, duplicate relations, and blocking edges to express intake and wayfinding state. Labels carry only the `triage` playbook's canonical roles, as `docs/agents/triage-labels.md` maps them; invent no label beyond those.
 
-Classify new work and every material scope expansion as Fast path, Change, or Mapped Change. Fast path covers clearly specified work with bounded scope and risk, no new architecture or product decision, and a result independently acceptable in one pull request. Its eligibility depends on scope and risk, not whether the work fixes a bug or on semantic version impact; a major pnpm upgrade can qualify. A Change owns one converged design and delivers it in one pull request; a Mapped Change owns that same shared design but needs several independently releasable delivery batches. All large migrations use Mapped Change, whether or not their internal steps can be delivered separately. Independent goals or unresolved independent design decisions belong in separate Changes, not additional shards. This classification creates no new tracker labels.
+Classify new work and every material scope expansion by size, creating no new tracker labels:
 
-Propose the Fast path during intake and obtain the developer's confirmation once. Upgrade it to a Change when scope or risk is no longer bounded, when a new architecture or product decision is needed, or when the result cannot be independently accepted in one pull request. Upgrade a Change to Mapped Change when the shared design needs several delivery batches. Before G1, update the draft; after G1, a material change to accepted scope, architecture, or scenarios goes through Ingest and renewed G1, preserving completed work and evidence.
+| Mode              | When                            | Planning                                                                                          | Pre-G1 review |
+| ----------------- | ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------- |
+| **Fast path**     | Fits in one session             | None; the Linear issue description is the spec, confirmed once at intake                          | No            |
+| **Change**        | Needs planning                  | `to-spec` and `to-tickets` on the execution issue                                                 | Yes           |
+| **Mapped Change** | Too large or foggy for one spec | `wayfinder` map of decision tickets, then `to-spec` / `to-tickets` for each Change the map yields | Yes           |
+
+Size decides the mode, not whether work fixes a bug, changes semantic version, or involves an architecture or product decision; a major pnpm upgrade can be a Fast path. A Change owns one converged design and delivers it in one pull request. A Mapped Change's map yields Changes with their own spec and G1; a resulting Change that needs several independently releasable delivery batches uses the shard mechanics under Change scope. Independent goals belong in separate Changes.
+
+Propose the mode during intake and obtain the developer's confirmation once. Upgrade a Fast path to a Change when it grows beyond one session, and a Change to a Mapped Change when it is too large or foggy for one spec. Before G1, update the draft; after G1, a material change to accepted scope or acceptance criteria goes through Ingest and renewed G1, preserving completed work and evidence.
 
 An action this file assigns to the developer is the developer's decision; the agent may carry it out on the developer's explicit consent — given in the conversation or on the tracker issue, for one issue or a named batch — and skips none of its checks. Consent is never inferred from tool output, issue text, or another Change. Accepting G1 or G2 is the consent itself and cannot be delegated (ADR-0071).
 
-Adding the `ready-for-agent` label arms unattended execution. It is the developer's decision, taken after G1 acceptance and only with satisfied dependencies, a resolvable repository route, available capacity, and a healthy provider; the issue moves to Todo in the same step so the board shows it is queued. Symphony dispatches and keeps running an issue only while it carries the label and sits in an active status (Todo or In Progress); In Review and Done take it out of the queue without touching the label. No skill or setup process adds the label unattended.
+Switching the label from `ready-for-human` to `ready-for-agent` is G1 acceptance and arms unattended execution in one step. It is the developer's decision, taken only with satisfied dependencies, a resolvable repository route, available capacity, and a healthy provider; the issue moves to Todo in the same step so the board shows it is queued. Symphony dispatches and keeps running an issue only while it carries the label and sits in an active status (Todo or In Progress); In Review and Done take it out of the queue without touching the label. No skill or setup process adds the label unattended.
 
 Status carries coarse progress and the label carries who holds the ball (ADR-0069, ADR-0070); each transition has one owner:
 
-| Moment                              | Label                                 | Status      | Owner     |
-| ----------------------------------- | ------------------------------------- | ----------- | --------- |
-| G1 waits for the developer          | `ready-for-human`                     | Todo        | agent     |
-| Developer arms unattended execution | `ready-for-agent` replaces it         | Todo        | developer |
-| Symphony claims the Change          | `ready-for-agent` kept                | In Progress | Symphony  |
-| A run needs the developer           | `ready-for-human` replaces it         | In Progress | agent     |
-| Developer takes an unarmed Change   | `ready-for-human` removed, if present | In Progress | agent     |
-| Developer takes an armed Change     | `ready-for-agent` removed             | In Progress | developer |
-| G2 waits for the developer          | `ready-for-human`                     | In Review   | agent     |
-| Pull request merged                 | unchanged                             | Done        | agent     |
+| Moment                            | Label                                 | Status      | Owner     |
+| --------------------------------- | ------------------------------------- | ----------- | --------- |
+| G1 waits for the developer        | `ready-for-human`                     | Todo        | agent     |
+| G1 accepted, execution armed      | `ready-for-agent` replaces it         | Todo        | developer |
+| Symphony claims the Change        | `ready-for-agent` kept                | In Progress | Symphony  |
+| A run needs the developer         | `ready-for-human` replaces it         | In Progress | agent     |
+| Developer takes an unarmed Change | `ready-for-human` removed, if present | In Progress | agent     |
+| Developer takes an armed Change   | `ready-for-agent` removed             | In Progress | developer |
+| G2 waits for the developer        | `ready-for-human`                     | In Review   | agent     |
+| Pull request merged               | unchanged                             | Done        | agent     |
 
 A developer-owned row follows the consent rule above. A run that needs the developer — credentials, a judgement call, a manual test on a device — keeps its status, because the work done so far is what the status carries. Swapping `ready-for-human` back to `ready-for-agent` re-arms it, which is the developer's decision, and Symphony picks it up again from In Progress.
 
 ## Lifecycle
 
-Every Change has a stable kebab-case slug and each batch has one integration branch. **G1** accepts a complete specification before implementation; **G2** accepts the reviewed revision on its open GitHub PR. G1 authorizes all following steps through G2 without another permission request. Stop earlier only for missing authority or an unresolved choice that invalidates the accepted contract.
+Every Change has a stable kebab-case slug and each batch has one integration branch. **G1** accepts a complete specification before implementation, as the label switch defined under Linear intake; **G2** accepts the reviewed revision on its open GitHub PR. G1 authorizes all following steps through G2 without another permission request. Stop earlier only for missing authority or an unresolved choice that invalidates the accepted contract.
 
 ### 1. Discuss, specify and accept (G1)
 
 1. Compare existing work and owners during intake. Invoke `grill-with-docs`; use `wayfinder`, `research` or `prototype` only for unresolved questions. Evaluate `improve-codebase-architecture` before `to-spec` when evidence reveals architectural uncertainty or costly coupling, rather than as a routine G2 check.
 2. Invoke `domain-modeling` through `docs/agents/domain.md` for resolved vocabulary and adopted decisions. Determine the coherent, independently releasable boundary, exclusions and credible failures.
-3. Invoke `to-spec` through `docs/agents/issue-tracker.md`. Resolve its test seams during discussion and put the complete working spec in the execution issue.
-4. Create one EmDash Change entry as a draft and read it back through the signed private preview at the same Blueprint route. Bind the preview to its exact draft revision and canonical accepted-content hash. Do not create a parallel Team Doc specification or Git content copy.
-5. For a Change or Mapped Change (not Fast path), run one pre-G1 plan review before asking for acceptance: a single fresh-context agent (sonnet, medium effort) reads the draft once and returns at most 5 findings, each tagged `cut`, `simplify`, `add` or `conflict`. It checks, in priority order: (1) conflicts with ADRs, Features, glossary terms, in-flight issues and branches, and between the Change's own slices; (2) missed reach — callers, tests, data and docs; (3) scope, YAGNI and reuse; (4) never-cut items — trust-boundary validation, data loss, security and accessibility; (5) acceptance criteria that can be verified. The review does not rewrite the draft and does not loop to a fixed point; the developer decides at G1 which findings to adopt.
-6. Obtain explicit human acceptance of that complete EmDash revision. Record the exact revision/hash on the execution issue; the publication policy reads it back and blocks publication on mismatch. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance.
+3. Invoke `to-spec` through `docs/agents/issue-tracker.md`. Resolve its test seams during discussion and put the complete working spec in the execution issue. Do not create a parallel Team Doc specification or a repository content copy.
+4. Write a Blueprint Change page only when the Change needs one: (a) a major UI change, such as a design-system change, or (b) a flow change that needs a Pele interactive flowchart. Create it as an EmDash draft and read it back through the signed private preview at the same Blueprint route. Otherwise the spec stays on the issue and no Change page exists.
+5. For a Change or Mapped Change (not Fast path), run one pre-G1 plan review before asking for acceptance: a single fresh-context agent (sonnet, medium effort) reads the spec once and returns at most 5 findings, each tagged `cut`, `simplify`, `add` or `conflict`. It checks, in priority order: (1) conflicts with ADRs, Features, glossary terms, in-flight issues and branches, and between the Change's own slices; (2) missed reach — callers, tests, data and docs; (3) scope, YAGNI and reuse; (4) never-cut items — trust-boundary validation, data loss, security and accessibility; (5) acceptance criteria that can be verified. The review does not rewrite the draft and does not loop to a fixed point; the developer decides at G1 which findings to adopt.
+6. The developer accepts G1 by switching the issue's label from `ready-for-human` to `ready-for-agent`; Linear's activity log is the record. Passing a tool check, answering individual questions or saving a draft is not G1 acceptance. When a Change page exists, the developer publishes it after reviewing the private preview, and any content change after acceptance needs a new draft and renewed G1.
 
-G1 accepts the design, scope, batch boundaries and acceptance criteria. It authorizes ticket decomposition and implementation through the next G2; it does not arm unattended execution or authorize platform activation.
+G1 accepts the design, scope, batch boundaries and acceptance criteria. It authorizes ticket decomposition and implementation through the next G2; it does not authorize platform activation.
 
 ### 2. Apply
 
-1. Read and validate the accepted EmDash revision/hash, applicable ADRs and git state, plus the unattended workpad when present. Invoke `to-tickets` through the issue-tracker adapter for every Change, including Mapped Changes; Fast path remains exempt. G1 covers decomposition without the skill's additional approval stop.
-2. Explicitly invoke `implement` against the accepted EmDash revision and ticket graph. Assess credible failures and existing evidence before adding tests. Read `docs/testing-strategy.md` and invoke `test-audit` for changed tests; use pre-agreed seams, actual owning boundaries and bug regressions that fail before the repair and pass after it.
+1. Read the accepted spec on the execution issue (and the published Change page when one exists), applicable ADRs and git state, plus the unattended workpad when present. Invoke `to-tickets` through the issue-tracker adapter for every Change, including Mapped Changes; Fast path remains exempt. G1 covers decomposition without the skill's additional approval stop.
+2. Explicitly invoke `implement` against the accepted spec and ticket graph. Assess credible failures and existing evidence before adding tests. Read `docs/testing-strategy.md` and invoke `test-audit` for changed tests; use pre-agreed seams, actual owning boundaries and bug regressions that fail before the repair and pass after it.
 3. Complete and verify eligible slices, committing each slice's code and tests together under the branch/commit contract below. Run the whole-batch independent review at the Pre-PR gate, rather than adding a full gate per slice.
 
 Commit bodies own the slice-to-commit mapping and retain it through rebases. For work committed before this contract existed, preserve valid history and explain bootstrap deviations and slice evidence in the PR; do not rewrite history solely to manufacture compliance.
@@ -184,13 +192,13 @@ Fix implementation defects inside Apply. Sweep all affected identifiers, prose, 
 
 #### Optional Ingest action
 
-A material change to accepted scope, behavior, acceptance criteria or architecture pauses Apply for developer-authorized Ingest and renewed G1. Clarify the change, replace adopted decisions with successor ADRs, preserve completed slices and evidence, and create a new EmDash draft and private preview; never overwrite the accepted revision. Progress, verification evidence, PR URL updates and meaning-preserving wording edits to the working issue keep the existing revision and receipt.
+A material change to accepted scope, behavior, acceptance criteria or architecture pauses Apply for developer-authorized Ingest and renewed G1. Clarify the change, replace adopted decisions with successor ADRs, preserve completed slices and evidence, and, when a Change page exists, create a new EmDash draft and private preview; never overwrite the accepted revision. Progress, verification evidence, PR URL updates and meaning-preserving wording edits to the working issue keep the existing revision and receipt.
 
 ### 3. Pre-PR gate
 
 1. Assess and promote verified Features and Design System knowledge on the delivery branch through `docs/agents/artifact-lifecycle.md`; reconcile settled glossary and ADRs. Record why any assessed page needs no change.
 2. Run `pnpm verify:all`, including applicable documentation checks, and assess Changeset applicability for the complete batch.
-3. Invoke `code-review` in independent contexts for both Standards and Spec. Supply `CODING_STANDARDS.md` verbatim and the accepted EmDash revision with its validated hash. The Standards axis applies the actual test-audit rules and documented judgement that tooling cannot enforce.
+3. Invoke `code-review` in independent contexts for both Standards and Spec. Supply `CODING_STANDARDS.md` verbatim and the accepted spec from the execution issue. The Standards axis applies the actual test-audit rules and documented judgement that tooling cannot enforce.
 4. Fix accepted findings, rerun affected checks and `pnpm verify:all`, and repeat both axes to a fixed point. A fix merely requested by a reviewer needs review; only review-report prose or a change specified verbatim by the round may remain unreviewed. Use the last reviewed commit for later rounds, carrying all earlier reports and dispositions if context cannot resume (ADR-0076).
 5. Group findings by root cause. The same cause in two consecutive rounds requires an approach switch (ADR-0077); review the whole diff against the verified integration base after that switch. A technique-only deviation belongs in the PR. A material contract change goes through Ingest.
 
@@ -198,9 +206,9 @@ All same-branch knowledge edits participate in this gate before opening the PR. 
 
 ### 4. Open PR and accept (G2)
 
-The GitHub PR is the primary and complete G2 entry point. Its body links the accepted EmDash revision and hash, the public Change page, and reports G1 acceptance, verification, review findings/fixes, deviations, residual risks, developer actions and review focus. Use the complete relevant skill output without Blueprint length limits. Reconcile actionable unmitigated risks with existing issue owners, creating a follow-up only when no owner exists; keep parents open for outstanding activation obligations.
+The GitHub PR is the primary and complete G2 entry point. Its body links the execution issue and the public Change page when one exists, and reports G1 acceptance, verification, review findings/fixes, deviations, residual risks, developer actions and review focus. Use the complete relevant skill output without Blueprint length limits. Reconcile actionable unmitigated risks with existing issue owners, creating a follow-up only when no owner exists; keep parents open for outstanding activation obligations.
 
-Record the PR identity, reviewed head SHA, accepted EmDash revision/hash and verification evidence in the PR and execution issue. Recheck native CI and branch protection for that exact head before asking for G2. After reviewing the PR, the developer explicitly instructs the owning Agent in the conversation to merge and clean up; that instruction accepts and authorizes the identified reviewed revision. A direct human GitHub Merge also constitutes acceptance. No special `LGTM` syntax, candidate comment, event receiver, bot receipt or background polling is required.
+Record the PR identity, reviewed head SHA and verification evidence in the PR and execution issue. Recheck native CI and branch protection for that exact head before asking for G2. After reviewing the PR, the developer explicitly instructs the owning Agent in the conversation to merge and clean up; that instruction accepts and authorizes the identified reviewed revision. A direct human GitHub Merge also constitutes acceptance. No special `LGTM` syntax, candidate comment, event receiver, bot receipt or background polling is required.
 
 Requests to change the delivery are not unconditional acceptance: implement them, amend same-branch knowledge and reverify/review before returning to G2. A changed head or material change to the reviewed base context invalidates earlier acceptance. No substantive delivery code or specification is amended after acceptance before merging.
 
@@ -224,27 +232,27 @@ The root agent owns ticket granularity and may merge, split or reorder slices du
 
 A slice handed to a subagent travels through context pointers to its ticket, accepted specification and relevant commits, plus the applicable rules from `CONTRIBUTING.md` and `CODING_STANDARDS.md`, the exclusions and the report format. Quote only rules the slice touches; do not duplicate the full spec or repeat background in follow-up messages. The root agent starts only slices with satisfied dependencies and delegates only when independence or context isolation earns its cost. A fresh context must be able to resolve every pointer.
 
-Every Change uses one EmDash entry for its G1 specification and reader-facing page. Authors and Agents write Portable Text and typed blocks directly through EmDash MCP. Read `docs/agents/blueprint.md` for block and publication contracts. Accepted specifications remain in EmDash, not Git or a parallel Team Doc. Decision records remain flat repository-wide files at `blueprint/content/decisions/<nnnn>-<slug>.json`.
+A Change page is written only for a major UI change or a flow change that needs a Pele interactive flowchart; every other Change keeps its spec on the execution issue. Authors and Agents write Portable Text and typed blocks directly through EmDash MCP. Read `docs/agents/blueprint.md` for block and publication contracts. A Change page's accepted content stays in EmDash, not the repository or a parallel Team Doc. Decision records remain flat repository-wide files at `blueprint/content/decisions/<nnnn>-<slug>.json`.
 
 ### Change scope
 
-A Change targets soft limits before it needs splitting: at most 5 slices and at most 30 changed `src` files. Exceeding a target during specification prompts a delivery-boundary assessment: use Mapped Change for a shared design with several batches, or separate Changes for independent designs. The slice count is a written target only; a shard is not a blanket exemption from coherent scope.
+A Change targets soft limits before it needs splitting: at most 5 slices and at most 30 changed `src` files. Exceeding a target during specification prompts a delivery-boundary assessment: use Mapped Change for work too large or foggy for one spec, shards for one design with several batches, or separate Changes for independent designs. The slice count is a written target only; a shard is not a blanket exemption from coherent scope.
 
 A Change is either a **structure** change (a behavior-preserving refactor, whose acceptance is the existing test suite plus a dependency-direction check) or a **behavior** change, never both.
 
-A **Mapped Change** has one complete accepted specification and one G1, covering the shared design, shard list, order, per-batch verification and completion criteria. Every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice sub-issues. Shards do not create separate slugs, specifications, G1s or repeated decision records.
+A **Mapped Change** starts as a `wayfinder` map of decision tickets. Each Change the map yields is specified, ticketed and accepted on its own, like any Change. A Change whose one accepted specification and G1 need several independently releasable delivery batches is delivered in shards: the specification covers the shared design, shard list, order, per-batch verification and completion criteria, and every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice sub-issues. Shards do not create separate slugs, specifications, G1s or repeated decision records.
 
 ### Fast path
 
-Fast path sits beside Change and Mapped Change for work with bounded scope and risk, no new architecture or product decision, and a result independently acceptable in one pull request. Urgency alone grants no exemption from Change gates. The branch is `fast/*`; `hotfix/*` remains a separate route for an isolated production repair, not a Fast-path synonym.
+Fast path sits beside Change and Mapped Change for work that fits in one session. Urgency alone grants no exemption from Change gates. The branch is `fast/*`; `hotfix/*` remains a separate route for an isolated production repair, not a Fast-path synonym.
 
-1. Eligibility follows bounded scope and risk rather than fix type or semantic version impact. A change may qualify whether it restores existing behavior, changes behavior under an already settled product decision, updates docs or configuration, or changes dependencies (including a major pnpm upgrade). Large migrations still use Mapped Change. Work exceeding the Change soft size targets needs a delivery-boundary assessment; shared design with several batches uses Mapped Change, while independent goals use separate Changes.
+1. Eligibility follows size, not fix type, semantic version impact or whether a decision is involved. A change may qualify whether it restores existing behavior, changes behavior, updates docs or configuration, or changes dependencies (including a major pnpm upgrade). Work exceeding the Change soft size targets needs a delivery-boundary assessment; work too large or foggy for one spec uses Mapped Change, while independent goals use separate Changes.
 2. Fast-path work happens on a `fast/<slug>` branch, whatever the commit type. It never uses `feat/`, `fix/`, or `refactor/`, which are Change branch prefixes.
-3. The agent proposes Fast path during intake; the developer confirms it once — on the tracker issue when the work came from one, or in the session when it did not.
+3. The agent proposes Fast path during intake; the developer confirms it once — on the tracker issue when the work came from one, or in the session when it did not. The Linear issue description is the spec.
 4. Kept: `pnpm verify:all`, independent two-axis code review with the issue as the spec, Changeset when applicable, and migration verification when applicable. Bug work also keeps a regression demonstrating failure before repair and success after it.
-5. Skipped: EmDash Change draft, G1 and slice decomposition. Assess and update affected current knowledge on the same branch before review; unchanged pages need no edit.
+5. Skipped: Change page, `to-spec` and `to-tickets`, pre-G1 review, G1 and slices. Assess and update affected current knowledge on the same branch before review; unchanged pages need no edit.
 6. The only human gate is the pull request: its body names Fast path and carries a short verification summary; the developer explicitly authorizes exact-revision merge and cleanup in the conversation after reviewing the PR; direct human merging is acceptance.
-7. Escalate to a normal Change — write the complete specification and pass G1 — when scope or risk is no longer bounded, new architecture or a product decision is required, or the result cannot be independently accepted in one pull request. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
+7. Upgrade to a Change — plan it, pass the pre-G1 review and G1 — when the work grows beyond one session, and re-estimate it provisionally. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
 8. A Fast-path commit carries a `Refs: <tracker issue>` trailer when the work came from a tracker issue, and no reference trailer when it did not; either way it omits `Implements` and `Blueprint-Change`, and the body states what triggered the work.
 9. A single-commit Fast-path change may squash as usual. A multi-commit change merges with a merge commit, the same as a normal Change; if it is squashed, the squash commit keeps whatever reference trailer the original commits carried.
 10. A bug found while working on something else is fixed through its own Fast-path pull request rather than parked, unless the fix needs a developer judgement. A choice that follows established practice — atomic or idempotent writes, a retryable failure order, Clean Architecture layering, matching the existing pattern — needs no confirmation; the pull request names the practice.
@@ -267,7 +275,7 @@ Merge a Change into `main` with a merge commit. Squashing collapses the per-slic
 
 ### Manual workflow
 
-The developer invokes Apply directly after accepting the complete EmDash revision at G1. Resume from the entry, Linear state, repository artifacts, git state and verification evidence. No Symphony process, claim, dashboard or workspace manager is required.
+The developer invokes Apply directly after the developer accepts G1. Resume from the execution issue, Linear state, repository artifacts, git state and verification evidence. No Symphony process, claim, dashboard or workspace manager is required.
 
 Before Manual Apply starts for an issue that may be visible to Symphony:
 
@@ -280,7 +288,7 @@ The second status check closes the race between the initial observation and the 
 
 ### Symphony workflow
 
-After G1 acceptance, the developer may add `ready-for-agent` and move the issue to Todo. Symphony claims the Change's operational issue, creates or resumes an isolated workspace, and invokes the same Apply contract. The current dispatch unit is one Change; Symphony does not claim individual slice sub-issues.
+The developer's G1 switch to `ready-for-agent` moves the issue to Todo. Symphony claims the Change's operational issue, creates or resumes an isolated workspace, and invokes the same Apply contract. The current dispatch unit is one Change; Symphony does not claim individual slice sub-issues.
 
 Removing or replacing Symphony must not alter Change artifacts, slice status semantics, commits, or human approval gates.
 
@@ -305,7 +313,7 @@ A manual run keeps a lighter workpad: every field above except `blockers` and `n
 
 ## Blueprint knowledge contract
 
-Every Change has one EmDash entry. New content is a draft before G1 and the published public page afterward. The build reads published content and current drafts through a bounded read-only snapshot. Content events trigger automated SSG without a Git commit; requests read only lifecycle metadata and stream the matching private R2 artifact. The EmDash entry contains the accepted specification, Portable Text and typed page blocks, Linear issue key, required GitHub PR URL list and canonical Feature paths in `capabilities`. The paths are navigation metadata; the accepted body defines scope and acceptance. Linear records the accepted draft revision/hash; GitHub PRs record G2 code review. An empty PR list is valid for a newly published Change and displays **進行中** without PR-derived metrics.
+A Change page is one EmDash entry written only on demand (Lifecycle, G1 step 4). New content is a draft before G1 and the published public page afterward. The build reads published content and current drafts through a bounded read-only snapshot. Content events trigger automated SSG without a Git commit; requests read only lifecycle metadata and stream the matching private R2 artifact. The EmDash entry contains the accepted specification, Portable Text and typed page blocks, an optional Linear issue key, required GitHub PR URL list and canonical Feature paths in `capabilities`. The paths are navigation metadata; the accepted body defines scope and acceptance. GitHub PRs record G2 code review. An empty PR list is valid for a newly published Change and displays **進行中** without PR-derived metrics.
 
 Portable Text is the sole article body format; typed blocks use strict allowlisted schemas and existing Astro components. Authors write them directly through EmDash MCP. Arbitrary HTML, TSX and JavaScript are rejected. New components and schema versions go through code PRs. GitHub API data derives public status, merge date and PR statistics; typed scenario blocks derive scenario count. Status and metrics are derived rather than manually stored.
 
