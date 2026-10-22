@@ -37,7 +37,7 @@ const SAFE_PATHS = [
   /^docs\//,
   /^blueprint\//,
   /^\.(?:agents|claude|codex|impeccable|diagram-design)\//,
-  /^(?:AGENTS|CLAUDE|WORKFLOW|CONTRIBUTING|CODING_STANDARDS|CONTEXT|PRODUCT|DESIGN|CHANGELOG|README(?:\.[^/]+)?)\.md$/,
+  /^(?:AGENTS|CLAUDE|WORKFLOW|CONTRIBUTING|CODING_STANDARDS|CONTEXT|PRODUCT|DESIGN|GLOSSARY|CHANGELOG|README(?:\.[^/]+)?)\.md$/,
   /^\.changeset\//,
   // The classifier and its workflow must still run when they change.
   /^scripts\/(?!chromatic-scope\.js$)/,
