@@ -14,6 +14,7 @@ import path from "node:path";
 import test from "node:test";
 import { persistedContractChanges } from "../release-controls.js";
 import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
 
 const cli =
   process.env.RELEASE_TEST_CLI ||
@@ -2780,4 +2781,227 @@ test("finalize requires exactly one acceptance job to succeed and the other to b
   });
   const accepted = run(human, "finalize", { RELEASE_STATE_FILE: finalState });
   assert.equal(accepted.status, 0, accepted.stderr);
+});
+
+const workflowDir = new URL("../../.github/workflows/", import.meta.url);
+const loadWorkflow = async (name) =>
+  parseYaml(await readFile(new URL(name, workflowDir), "utf8"));
+
+// Evaluates the `needs`-only subset of GitHub expressions used by job `if` conditions.
+function evalIf(expression, needs) {
+  const n = Object.fromEntries(
+    Object.entries(needs).map(([id, { result, outputs = {} }]) => [
+      id,
+      {
+        result,
+        outputs: new Proxy(outputs, { get: (o, key) => o[key] ?? "" }),
+      },
+    ]),
+  );
+  const js = String(expression)
+    .replace(/needs\.([\w-]+)\./g, (_, id) => `n["${id}"].`)
+    .replace(/always\(\)/g, "true")
+    .replace(/cancelled\(\)/g, "false");
+  return new Function("n", `return (${js});`)(n);
+}
+
+test("production release routes each smoke outcome to exactly one path", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const classify = (outcome, auto_accept = "false") => ({
+    candidate: { result: "success" },
+    "promote-and-smoke": { result: "success" },
+    "production-smoke": { result: "success" },
+    "classify-production-smoke": {
+      result: "success",
+      outputs: { outcome, auto_accept },
+    },
+    "production-acceptance": { result: "skipped" },
+    "accept-production-smoke": { result: "skipped" },
+  });
+  const runs = (needs) =>
+    [
+      "recover-after-production-qa-failure",
+      "production-acceptance",
+      "accept-production-smoke",
+    ].filter((id) => evalIf(jobs[id].if, needs));
+  assert.deepEqual(runs(classify("regression")), [
+    "recover-after-production-qa-failure",
+  ]);
+  assert.deepEqual(runs(classify("infrastructure")), ["production-acceptance"]);
+  assert.deepEqual(runs(classify("pass", "false")), ["production-acceptance"]);
+  assert.deepEqual(runs(classify("pass", "true")), ["accept-production-smoke"]);
+  // Unclassifiable or failed classification neither accepts nor rolls back on its own.
+  assert.deepEqual(
+    runs({
+      ...classify("pass", "true"),
+      "classify-production-smoke": { result: "failure" },
+    }),
+    [],
+  );
+  // A failed human gate still rolls back; a skipped one does not.
+  const gate = (result) => ({
+    ...classify("pass", "false"),
+    "production-acceptance": { result },
+  });
+  const recover = jobs["recover-after-production-qa-failure"].if;
+  assert.equal(evalIf(recover, gate("failure")), true);
+  assert.equal(evalIf(recover, gate("success")), false);
+  assert.equal(evalIf(recover, gate("skipped")), false);
+});
+
+test("classification runs after a promote even when the smoke job failed", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const job = jobs["classify-production-smoke"];
+  for (const smoke of ["success", "failure", "skipped"])
+    assert.equal(
+      evalIf(job.if, {
+        candidate: { result: "success" },
+        "promote-and-smoke": { result: "success" },
+        "production-smoke": { result: smoke },
+      }),
+      true,
+    );
+  assert.equal(
+    evalIf(job.if, {
+      candidate: { result: "success" },
+      "promote-and-smoke": { result: "failure" },
+      "production-smoke": { result: "skipped" },
+    }),
+    false,
+  );
+  assert.match(
+    job.steps.find((step) => step.id === "classify").env.SMOKE_RESULTS,
+    /\|\| '\[\]'/,
+  );
+});
+
+test("finalize needs both acceptance jobs and runs only when exactly one succeeded", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const job = jobs["finalize-release"];
+  assert.ok(job.needs.includes("production-acceptance"));
+  assert.ok(job.needs.includes("accept-production-smoke"));
+  const finalize = (human, smoke) =>
+    evalIf(job.if, {
+      candidate: { result: "success" },
+      "production-acceptance": { result: human },
+      "accept-production-smoke": { result: smoke },
+    });
+  assert.equal(finalize("success", "skipped"), true);
+  assert.equal(finalize("skipped", "success"), true);
+  assert.equal(finalize("success", "success"), false);
+  assert.equal(finalize("skipped", "skipped"), false);
+  assert.equal(finalize("failure", "skipped"), false);
+  assert.equal(finalize("skipped", "failure"), false);
+  for (const id of ["production-acceptance", "accept-production-smoke"]) {
+    const upload = jobs[id].steps.find((step) =>
+      step.uses?.startsWith("actions/upload-artifact"),
+    );
+    assert.equal(upload.with.name, "production-release-final-state");
+    assert.equal(upload.with["retention-days"], 31);
+  }
+  assert.deepEqual(
+    [
+      "Accept production QA",
+      "Accept production smoke",
+      "Production smoke",
+      "Classify production smoke",
+    ],
+    [
+      jobs["production-acceptance"].name,
+      jobs["accept-production-smoke"].name,
+      jobs["production-smoke"].name,
+      jobs["classify-production-smoke"].name,
+    ],
+  );
+});
+
+test("every job referenced by a condition or output is declared in needs", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  for (const [id, job] of Object.entries(jobs)) {
+    const used = new Set(
+      [
+        ...JSON.stringify({ ...job, needs: undefined }).matchAll(
+          /needs\.([\w-]+)\./g,
+        ),
+      ].map((match) => match[1]),
+    );
+    for (const dep of used)
+      assert.ok([].concat(job.needs ?? []).includes(dep), `${id} uses ${dep}`);
+  }
+  const summary = jobs["failure-summary"].needs;
+  for (const id of Object.keys(jobs).filter((id) => id !== "failure-summary"))
+    assert.ok(summary.includes(id), `failure-summary needs ${id}`);
+});
+
+test("the in-job curl smoke, its rollback and the postdeploy summary job are gone", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  assert.equal(jobs["postdeploy-summary"], undefined);
+  const promote = jobs["promote-and-smoke"];
+  assert.deepEqual(Object.keys(promote.outputs).sort(), [
+    "production_deployment_id",
+    "production_sha",
+  ]);
+  const commands = promote.steps.map((step) => step.run ?? "").join("\n");
+  assert.doesNotMatch(commands, /curl|rollback-if-compatible/);
+  assert.ok(promote.steps.some((step) => step.id === "promote"));
+  assert.match(promote.steps.at(-1).run, /GITHUB_STEP_SUMMARY/);
+});
+
+test("jobs in the production-smoke environment hold no artifact, deploy token or credentials", async () => {
+  let checked = 0;
+  for (const file of [
+    "production-release.yml",
+    "production-smoke-keepalive.yml",
+  ]) {
+    const workflow = await loadWorkflow(file);
+    for (const [id, job] of Object.entries(workflow.jobs)) {
+      if ((job.environment?.name ?? job.environment) !== "production-smoke")
+        continue;
+      checked += 1;
+      const text = JSON.stringify(job);
+      const where = `${file}:${id}`;
+      assert.doesNotMatch(text, /upload-artifact/, where);
+      assert.doesNotMatch(
+        text,
+        /VERCEL_TOKEN|GH_TOKEN|github\.token|RELEASE_TOKEN/,
+        where,
+      );
+      assert.equal(job.concurrency, undefined, where);
+      assert.ok(
+        Object.keys(job.permissions ?? {}).every((k) => k === "contents"),
+        where,
+      );
+      for (const step of job.steps.filter((s) =>
+        s.uses?.startsWith("actions/checkout"),
+      ))
+        assert.equal(step.with?.["persist-credentials"], false, where);
+    }
+    assert.doesNotMatch(
+      JSON.stringify(workflow.env ?? {}),
+      /VERCEL_TOKEN/,
+      file,
+    );
+  }
+  assert.equal(checked, 2);
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const checkout = jobs["production-smoke"].steps.find((s) =>
+    s.uses?.startsWith("actions/checkout"),
+  );
+  assert.equal(checkout.with.ref, "${{ github.workflow_sha }}");
+  const cookieMask = jobs["production-smoke"].steps.findIndex((s) =>
+    s.run?.includes("::add-mask::"),
+  );
+  const smoke = jobs["production-smoke"].steps.findIndex(
+    (s) => s.id === "smoke",
+  );
+  assert.ok(cookieMask >= 0 && cookieMask < smoke);
+  assert.equal(
+    jobs["production-smoke"].steps[smoke]["continue-on-error"],
+    true,
+  );
+  assert.ok(
+    jobs["classify-production-smoke"].steps.some((s) =>
+      JSON.stringify(s).includes("VERCEL_TOKEN"),
+    ),
+  );
 });

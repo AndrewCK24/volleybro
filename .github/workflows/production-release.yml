@@ -326,6 +326,9 @@ jobs:
     permissions:
       contents: read
       actions: read
+    outputs:
+      production_deployment_id: ${{ steps.promote.outputs.production_deployment_id }}
+      production_sha: ${{ steps.promote.outputs.production_sha }}
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -346,7 +349,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
-      - name: Recheck baseline and promote candidate
+      - id: promote
+        name: Recheck baseline and promote candidate
         env:
           GH_TOKEN: ${{ github.token }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -356,37 +360,7 @@ jobs:
           RELEASE_SHA: ${{ needs.candidate.outputs.sha }}
           RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
         run: node "$RUNNER_TEMP/release-controls.js" promote
-      - name: Smoke production
-        id: smoke
-        continue-on-error: true
-        env:
-          PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
-        run: curl --fail --show-error --silent --retry 5 --retry-delay 3 "https://$PRODUCTION_ALIAS/" >/dev/null
-      - name: Roll back only with explicit compatibility evidence
-        if: steps.smoke.outcome == 'failure'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
-          PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
-          RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
-          GITHUB_RUN_ID: ${{ github.run_id }}
-        run: node "$RUNNER_TEMP/release-controls.js" rollback-if-compatible
-      - name: Fail after smoke failure
-        if: steps.smoke.outcome == 'failure'
-        run: exit 1
-
-  postdeploy-summary:
-    needs: [candidate, promote-and-smoke]
-    if: >-
-      always() && !cancelled() && needs.candidate.result == 'success' &&
-      needs.promote-and-smoke.result == 'success'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Bind live authentication smoke to the promoted candidate
+      - name: Summarize production acceptance
         env:
           CANDIDATE_ID: ${{ needs.candidate.outputs.candidate_id }}
           BASELINE: ${{ needs.candidate.outputs.baseline }}
@@ -394,20 +368,180 @@ jobs:
           PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
         run: |
           {
-            echo '### Production post-deployment acceptance'
+            echo '### Production promoted'
             echo "- Promoted candidate: \`$CANDIDATE_ID\`"
             echo "- Authorized source SHA: \`$RELEASE_SHA\`"
             echo "- Previous production baseline: \`$BASELINE\`"
             echo "- Live alias: https://$PRODUCTION_ALIAS"
-            echo 'The automated smoke verified only that the production homepage responds. The protected reviewer must verify sign-in/session and the core read-only team flow on this live alias before the release is tagged.'
+            echo 'Automated production smoke now checks OAuth configuration, the test-account session and the read-only test team page. A manual review gate appears only when WORKFLOW.md requires it; smoke does not replace full OAuth or end-to-end verification.'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  production-smoke:
+    name: Production smoke
+    needs: [candidate, promote-and-smoke]
+    if: >-
+      always() && !cancelled() && needs.candidate.result == 'success' &&
+      needs.promote-and-smoke.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    environment: production-smoke
+    outputs:
+      smoke_results: ${{ steps.summary.outputs.smoke_results }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3
+        with:
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium webkit
+      - name: Mask session cookie values
+        env:
+          SMOKE_STORAGE_STATE: ${{ secrets.SMOKE_STORAGE_STATE }}
+        run: |
+          jq -r '.cookies[].value' <<<"$SMOKE_STORAGE_STATE" | while IFS= read -r value; do
+            [ -n "$value" ] && echo "::add-mask::$value"
+          done
+          exit 0
+      - id: smoke
+        name: Run production smoke
+        continue-on-error: true
+        env:
+          PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
+          AUTH_GOOGLE_ID: ${{ vars.AUTH_GOOGLE_ID }}
+          SMOKE_STORAGE_STATE: ${{ secrets.SMOKE_STORAGE_STATE }}
+          SMOKE_USER_EMAIL: ${{ vars.SMOKE_USER_EMAIL }}
+          SMOKE_TEAM_ID: ${{ vars.SMOKE_TEAM_ID }}
+          PLAYWRIGHT_JSON_OUTPUT_NAME: ${{ runner.temp }}/smoke-report.json
+        run: pnpm test:smoke
+      - id: summary
+        name: Summarize smoke results
+        if: always()
+        env:
+          SMOKE_REPORT_FILE: ${{ runner.temp }}/smoke-report.json
+        run: node scripts/release-controls.js summarize-smoke
+
+  classify-production-smoke:
+    name: Classify production smoke
+    needs: [candidate, promote-and-smoke, production-smoke]
+    if: >-
+      always() && !cancelled() && needs.candidate.result == 'success' &&
+      needs.promote-and-smoke.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      outcome: ${{ steps.classify.outputs.outcome }}
+      auto_accept: ${{ steps.classify.outputs.auto_accept }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: trusted-release-controller
+          path: ${{ runner.temp }}
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.candidate.outputs.sha }}
+          fetch-depth: 0
+      - uses: actions/download-artifact@v8
+        with:
+          name: production-release-accepted-state
+          path: ${{ runner.temp }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - id: classify
+        name: Classify smoke result against the promoted deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
+          # An empty report is a regression: fail closed when the smoke job never reported.
+          SMOKE_RESULTS: ${{ needs.production-smoke.outputs.smoke_results || '[]' }}
+          SMOKE_BEFORE_DEPLOYMENT_ID: ${{ needs.promote-and-smoke.outputs.production_deployment_id }}
+          SMOKE_BEFORE_SHA: ${{ needs.promote-and-smoke.outputs.production_sha }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
+        run: node "$RUNNER_TEMP/release-controls.js" classify-smoke
+      - name: Explain the manual gate
+        if: steps.classify.outputs.outcome == 'infrastructure'
+        run: |
+          echo '::warning::Production smoke session was invalid before any check ran. The release is not rolled back; the manual review gate follows. Re-login the smoke test account and refresh the SMOKE_STORAGE_STATE secret per docs/release-runbook.md (Smoke session).'
+          echo 'Infrastructure failure: see docs/release-runbook.md, Smoke session, to re-login and refresh the session secret.' >> "$GITHUB_STEP_SUMMARY"
+
+  accept-production-smoke:
+    name: Accept production smoke
+    needs:
+      [
+        candidate,
+        promote-and-smoke,
+        production-smoke,
+        classify-production-smoke,
+      ]
+    if: >-
+      always() && !cancelled() && needs.candidate.result == 'success' &&
+      needs.classify-production-smoke.result == 'success' &&
+      needs.classify-production-smoke.outputs.outcome == 'pass' &&
+      needs.classify-production-smoke.outputs.auto_accept == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: trusted-release-controller
+          path: ${{ runner.temp }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: production-release-accepted-state
+          path: ${{ runner.temp }}
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.candidate.outputs.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Record smoke acceptance receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
+          RELEASE_FINAL_STATE_FILE: ${{ runner.temp }}/release-final-state.json
+          SMOKE_RESULTS: ${{ needs.production-smoke.outputs.smoke_results }}
+          SMOKE_BEFORE_DEPLOYMENT_ID: ${{ needs.promote-and-smoke.outputs.production_deployment_id }}
+          SMOKE_BEFORE_SHA: ${{ needs.promote-and-smoke.outputs.production_sha }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
+        run: node "$RUNNER_TEMP/release-controls.js" record-smoke-acceptance
+      - uses: actions/upload-artifact@v7
+        with:
+          name: production-release-final-state
+          path: ${{ runner.temp }}/release-final-state.json
+          if-no-files-found: error
+          retention-days: 31
 
   production-acceptance:
     name: Accept production QA
-    needs: [candidate, postdeploy-summary]
+    needs: [candidate, classify-production-smoke]
     if: >-
       always() && !cancelled() && needs.candidate.result == 'success' &&
-      needs.postdeploy-summary.result == 'success'
+      needs.classify-production-smoke.result == 'success' &&
+      (needs.classify-production-smoke.outputs.outcome == 'infrastructure' ||
+      (needs.classify-production-smoke.outputs.outcome == 'pass' &&
+      needs.classify-production-smoke.outputs.auto_accept != 'true'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -453,8 +587,12 @@ jobs:
       group: production-release
       cancel-in-progress: false
       queue: max
-    needs: [candidate, production-acceptance]
-    if: always() && !cancelled() && needs.candidate.result == 'success' && needs.production-acceptance.result == 'failure'
+    needs: [candidate, classify-production-smoke, production-acceptance]
+    if: >-
+      always() && !cancelled() && needs.candidate.result == 'success' &&
+      ((needs.classify-production-smoke.result == 'success' &&
+      needs.classify-production-smoke.outputs.outcome == 'regression') ||
+      needs.production-acceptance.result == 'failure')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -496,10 +634,13 @@ jobs:
       group: production-release
       cancel-in-progress: false
       queue: max
-    needs: [candidate, production-acceptance]
+    needs: [candidate, production-acceptance, accept-production-smoke]
     if: >-
       always() && !cancelled() && needs.candidate.result == 'success' &&
-      needs.production-acceptance.result == 'success'
+      ((needs.production-acceptance.result == 'success' &&
+      needs.accept-production-smoke.result == 'skipped') ||
+      (needs.accept-production-smoke.result == 'success' &&
+      needs.production-acceptance.result == 'skipped'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -605,6 +746,9 @@ jobs:
       - candidate
       - recovery-evidence
       - promote-and-smoke
+      - production-smoke
+      - classify-production-smoke
+      - accept-production-smoke
       - production-acceptance
       - recover-after-production-qa-failure
       - finalize-release
