@@ -177,6 +177,17 @@ test("skips non-visual directories and tests but runs for the classifier, its wo
   }
 });
 
+test("skips a .nvmrc-only change because Node only affects the Storybook build host", async (t) => {
+  const { cwd, base, head } = await commitPair(
+    t,
+    { ".nvmrc": "24\n" },
+    { ".nvmrc": "24.22.1\n" },
+  );
+  const result = await classify(cwd, compareArgs(base, head));
+  assert.match(result.stdout, /skip=true reason=/);
+  assert.equal(result.output, "skip=true\n");
+});
+
 test("skips an allowlisted devDependency-only update, including a real npm alias graph", async (t) => {
   const { cwd, base, head } = await lockPair(
     t,

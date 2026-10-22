@@ -45,7 +45,7 @@ const SAFE_PATHS = [
   // Storybook loads src/**/*.stories and never imports tests or test/.
   /^test\//,
   /^src\/(?:.*\/__tests__\/|.*\.test\.[jt]sx?$)/,
-  /^(?:jest\.config\.ts|knip\.json|commitlint\.title\.config\.js|\.markdownlint\.jsonc|vercel\.json|\.gitignore|\.worktreeinclude|\.env\.example|skills-lock\.json|LICENSE)$/,
+  /^(?:jest\.config\.ts|knip\.json|\.nvmrc|commitlint\.title\.config\.js|\.markdownlint\.jsonc|vercel\.json|\.gitignore|\.worktreeinclude|\.env\.example|skills-lock\.json|LICENSE)$/,
   /^\.eslintrc(?:\.[^/]+)?$/,
   /^eslint\.config\.[^/]+$/,
   /^\.prettier(?:rc(?:\.[^/]+)?|ignore)$/,
