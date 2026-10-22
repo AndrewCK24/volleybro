@@ -83,7 +83,7 @@ jobs:
           name: trusted-release-controller
           path: ${{ runner.temp }}/release-controls.js
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 31
       - name: Verify release authorization
         id: authorize
         env:
@@ -310,7 +310,7 @@ jobs:
           name: production-release-accepted-state
           path: ${{ runner.temp }}/release-state.json
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 31
 
   promote-and-smoke:
     concurrency:
@@ -446,7 +446,7 @@ jobs:
           name: production-release-final-state
           path: ${{ runner.temp }}/release-final-state.json
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 31
 
   recover-after-production-qa-failure:
     concurrency:

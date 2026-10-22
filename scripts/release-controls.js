@@ -935,7 +935,9 @@ async function verifyRecoveryEvidence(
     Date.parse(receipt.expiresAt) - Date.parse(receipt.issuedAt) >
       RECOVERY_RECEIPT_TTL_MS
   )
-    fail("Recovery receipt is missing or bound to another release run");
+    fail(
+      "Recovery receipt is missing, malformed, or bound to another release run",
+    );
   if (!ignoreExpiry && Date.parse(receipt.expiresAt) <= Date.now())
     fail("Recovery receipt expired");
   const facts = await recoveryReceiptFacts(state);
