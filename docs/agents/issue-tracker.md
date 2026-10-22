@@ -14,7 +14,7 @@ GitHub is the source for status, merge dates and PR statistics; EmDash stores no
 
 ## Tickets and execution
 
-`to-tickets` writes the slice checklist on the execution issue according to `WORKFLOW.md`; slices are not sub-issues and carry no native blocking relations. The root performs granularity and dependency assessment. Fetch referenced issue bodies and comments when needed. Preserve completed evidence.
+`plan-tickets` (wrapping `to-tickets`) writes the slice checklist on the execution issue according to `WORKFLOW.md`; slices are not sub-issues and carry no native blocking relations. The root performs granularity and dependency assessment. Fetch referenced issue bodies and comments when needed. Preserve completed evidence.
 
 Ticket creation adds no dispatch label. `ready-for-agent` remains the developer's G1 switch. `implement-spec` draft-PR, concurrency and cleanup defaults defer to repository gates, delegation and worktree ownership. Explicitly invoke `implement` for Apply. Skill outputs keep their full relevant contents.
 
@@ -38,7 +38,18 @@ The checklist in the execution issue description is the single source of slice s
 
 ## Estimation and capacity
 
-Estimate in points: a Fast path issue is 1, a Change is its slice count plus 1 capped at 8, and a wayfinder decision ticket is 1. A cycle holds 20 points (cycles 2–4 averaged about 23; the figure is lowered for weekly dev-notes and articles); revisit it after a few more cycles. A Change whose slices landed in an earlier cycle counts only its remaining point.
+Estimate in points, set in two steps:
+
+| Step            | When                                                                   | Value                                                                                                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Provisional** | Intake, from the classification only (no code exploration, no slicing) | Fast path 1. Change: small (one layer, rule settled) 3, medium (cross-layer or one new decision) 5, large (near the slice cap) 8. Mapped Change: each wayfinder decision ticket 1; the Changes it yields are estimated at their own intake |
+| **Final**       | `plan-tickets`                                                         | Slice count plus 1, capped at 8; a one-session Change without slices is 2. Not changed afterwards                                                                                                                                          |
+
+- Estimate again provisionally when a Fast path is upgraded to a Change.
+- A slice that turns out larger than expected does not change the final value; the gap stays in Linear's activity log for calibration.
+- After two cycles, compare provisional and final values and adjust the tiers if they drift.
+
+A cycle holds 20 points (cycles 2–4 averaged about 23; the figure is lowered for weekly dev-notes and articles); revisit it after a few more cycles. A Change whose slices landed in an earlier cycle counts only its remaining point.
 
 ## Grill decisions
 
