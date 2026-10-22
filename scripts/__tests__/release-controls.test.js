@@ -2308,10 +2308,10 @@ test("package.json scripts and packageManager changes are unrelated; unknown key
 async function expireRecoveryReceipt(file, mutate = () => {}) {
   const state = JSON.parse(await readFile(file, "utf8"));
   const week = 7 * 24 * 60 * 60 * 1000;
-  state.recoveryEvidence.issuedAt = new Date(
-    Date.now() - 2 * week,
-  ).toISOString();
-  state.recoveryEvidence.expiresAt = new Date(Date.now() - week).toISOString();
+  // One clock read: two reads can drift 1 ms and break the exact TTL span.
+  const now = Date.now();
+  state.recoveryEvidence.issuedAt = new Date(now - 2 * week).toISOString();
+  state.recoveryEvidence.expiresAt = new Date(now - week).toISOString();
   mutate(state);
   await writeFile(file, JSON.stringify(state));
 }
