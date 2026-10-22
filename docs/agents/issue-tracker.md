@@ -14,9 +14,27 @@ GitHub is the source for status, merge dates and PR statistics; EmDash stores no
 
 ## Tickets and execution
 
-`to-tickets` publishes slice sub-issues under the execution issue according to `WORKFLOW.md`. G1 already authorizes decomposition; the root performs granularity and dependency assessment without another approval stop. Fetch referenced issue bodies and comments when needed, and use native parent/blocking relationships as their source of truth. Preserve the parent and completed evidence; mark work complete only after merge.
+`to-tickets` writes the slice checklist on the execution issue according to `WORKFLOW.md`; slices are not sub-issues and carry no native blocking relations. The root performs granularity and dependency assessment. Fetch referenced issue bodies and comments when needed. Preserve completed evidence.
 
-Ticket creation adds no dispatch label. `ready-for-agent` remains separate developer authorization. `implement-spec` draft-PR, concurrency and cleanup defaults defer to repository gates, delegation and worktree ownership. Explicitly invoke `implement` for Apply. Skill outputs keep their full relevant contents.
+Ticket creation adds no dispatch label. `ready-for-agent` remains the developer's G1 switch. `implement-spec` draft-PR, concurrency and cleanup defaults defer to repository gates, delegation and worktree ownership. Explicitly invoke `implement` for Apply. Skill outputs keep their full relevant contents.
+
+### Slice checklist
+
+The checklist in the execution issue description is the single source of slice status. One item per slice:
+
+```markdown
+- [ ] **S01 — <title>** · pending
+  - Capabilities: `platform/delivery-workflow`
+  - Outcome: <the narrow complete behavior>
+  - Acceptance: <criteria that prove it>
+  - Verification: <commands or checks>
+  - Depends on: none
+```
+
+- IDs are stable (`S01`, `S02`, ...) and never reused or renumbered; merging, splitting or reordering slices keeps the IDs of untouched ones.
+- A dependency is text, `Depends on: S01, S02` or `none`.
+- Status is `pending` or `completed`. Switch an item to `completed` and tick its box only after its code merges. Runtime state such as claimed, executor or retries is never written into the checklist.
+- A slice commit carries `Implements: S0X`.
 
 ## Estimation and capacity
 

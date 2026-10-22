@@ -5,7 +5,7 @@ const titleConfig = {
   rules: {
     ...base.rules,
     "body-empty": [0],
-    "blueprint-change-trailer": [0],
+    "change-branch-trailer": [0],
   },
 };
 

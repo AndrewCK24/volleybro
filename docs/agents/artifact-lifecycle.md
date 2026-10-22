@@ -13,7 +13,7 @@
 
 G2 evidence lives in the GitHub PR: reviewed head, verification and review results. The developer's explicit instruction to merge and clean up authorizes that exact reviewed revision; a direct human merge also constitutes acceptance. Native PR merge identity and Git ancestry prove completion. Do not add a second G2 event receiver, bot receipt or repository copy of the complete specification.
 
-Preserve the operational authorization and PR identity on the execution issue. Mark the issue and its slices Done only after merge. Platform credentials, Cloudflare resource creation, production activation remain separate approval/cleanup actions when their gate is not part of the accepted G1. Production activation requires separate approval after G2.
+Preserve the operational authorization and PR identity on the execution issue. Mark the issue Done and its checklist items completed only after merge. Platform credentials, Cloudflare resource creation, production activation remain separate approval/cleanup actions when their gate is not part of the accepted G1. Production activation requires separate approval after G2.
 
 ## Same-branch knowledge promotion
 

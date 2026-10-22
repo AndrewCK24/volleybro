@@ -44,7 +44,7 @@ This file is VolleyBro's canonical provider-neutral delivery contract. A develop
 | Change specification and G1            | The Linear execution issue; G1 is the `ready-for-human` → `ready-for-agent` label switch. A Blueprint Change page (EmDash) exists only on demand, see Lifecycle |
 | Code review surface                    | GitHub PR at G2; G2 reviews code and does not republish a Change page                                                                                           |
 | Canonical current capability knowledge | `blueprint/content/features/`                                                                                                                                   |
-| Execution plan                         | `to-tickets` after G1; Linear slice sub-issues under the Change's issue                                                                                         |
+| Execution plan                         | Slice checklist on the Linear execution issue, written by `to-tickets`; its schema lives in `docs/agents/issue-tracker.md`                                      |
 | Version and changelog evidence         | `.changeset/` through Changesets                                                                                                                                |
 | Provider-neutral workpad               | One persistent Linear comment, kept only by unattended runs                                                                                                     |
 | Optional orchestration                 | Symphony run evidence with `ephemeral_text` processing                                                                                                          |
@@ -220,13 +220,13 @@ The repository enables GitHub's automatic remote branch deletion after merge. Re
 
 Before local cleanup, independently confirm ownership from this chat's attached artifacts or explicit target authorization, the checkout's branch/HEAD and clean state, and that its commits are included in the verified merge. Remote deletion does not authorize local deletion. Preserve dirty, unrelated, shared or ownership-unknown worktrees and branches; report what remains.
 
-Move the issue and its slices to Done only after merge; update affected parent/related issues with what shipped and what remains. Merge performs no second knowledge-sync PR. From outside the owned worktree, fetch, fast-forward the local integration branch, remove only a clean owned worktree, then delete its merged local branch. Preserve dirty, unrelated or shared worktrees. Confirm the next Blueprint rebuild includes the landing revision when visual history was affected; accepted historical contents remain unchanged.
+Move the issue to Done and mark its checklist items completed only after merge; update affected parent/related issues with what shipped and what remains. Merge performs no second knowledge-sync PR. From outside the owned worktree, fetch, fast-forward the local integration branch, remove only a clean owned worktree, then delete its merged local branch. Preserve dirty, unrelated or shared worktrees. Confirm the next Blueprint rebuild includes the landing revision when visual history was affected; accepted historical contents remain unchanged.
 
 If a human gate sent the Change back or independent review needed more than three rounds, recommend `retro` on the Change sessions. Run it only when the developer invokes it; adopted bounded suggestions may use Fast path and other suggestions become issues.
 
 ## Implementation-slice contract
 
-Canonical execution data is one Linear sub-issue per slice, under the Change's operational issue, the same way in manual and Symphony mode. Each slice delivers a narrow complete behavior across its affected layers, is independently verifiable, and fits a fresh context window; splitting by file or layer alone is not sufficient. Each slice states a stable ID, capability references, dependencies, outcome, acceptance criteria, verification, and status (`pending` or `completed`). Use native parent and blocking relationships, created in dependency order. Runtime states such as `claimed`, `running`, executor identity, and retry count do not belong on the sub-issue.
+Canonical execution data is the slice checklist on the Change's execution issue, the single source of slice status, the same way in manual and Symphony mode; `docs/agents/issue-tracker.md` owns its schema. A Change that fits one session has no slices, and Symphony still dispatches the whole Change. Each slice delivers a narrow complete behavior across its affected layers, is independently verifiable, and fits a fresh context window; splitting by file or layer alone is not sufficient. A slice is `completed` only after its code merges. Runtime states such as `claimed`, `running`, executor identity, and retry count never go in the checklist.
 
 The root agent owns ticket granularity and may merge, split or reorder slices during Apply, updating the tracker without another human gate while preserving the G1 contract and completed evidence. A change to accepted scope, architecture or acceptance scenarios still requires Ingest. Slices are implementation units, not automatically separate releasable shards or pull requests. Wide mechanical refactors may use the playbook's expand–contract sequence; inseparable slices share the batch branch and a final integrate-and-verify slice.
 
@@ -240,7 +240,7 @@ A Change targets soft limits before it needs splitting: at most 5 slices and at 
 
 A Change is either a **structure** change (a behavior-preserving refactor, whose acceptance is the existing test suite plus a dependency-direction check) or a **behavior** change, never both.
 
-A **Mapped Change** starts as a `wayfinder` map of decision tickets. Each Change the map yields is specified, ticketed and accepted on its own, like any Change. A Change whose one accepted specification and G1 need several independently releasable delivery batches is delivered in shards: the specification covers the shared design, shard list, order, per-batch verification and completion criteria, and every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice sub-issues. Shards do not create separate slugs, specifications, G1s or repeated decision records.
+A **Mapped Change** starts as a `wayfinder` map of decision tickets. Each Change the map yields is specified, ticketed and accepted on its own, like any Change. A Change whose one accepted specification and G1 need several independently releasable delivery batches is delivered in shards: the specification covers the shared design, shard list, order, per-batch verification and completion criteria, and every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice checklist. Shards do not create separate slugs, specifications, G1s or repeated decision records.
 
 ### Fast path
 
@@ -253,7 +253,7 @@ Fast path sits beside Change and Mapped Change for work that fits in one session
 5. Skipped: Change page, `to-spec` and `to-tickets`, pre-G1 review, G1 and slices. Assess and update affected current knowledge on the same branch before review; unchanged pages need no edit.
 6. The only human gate is the pull request: its body names Fast path and carries a short verification summary; the developer explicitly authorizes exact-revision merge and cleanup in the conversation after reviewing the PR; direct human merging is acceptance.
 7. Upgrade to a Change — plan it, pass the pre-G1 review and G1 — when the work grows beyond one session, and re-estimate it provisionally. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
-8. A Fast-path commit carries a `Refs: <tracker issue>` trailer when the work came from a tracker issue, and no reference trailer when it did not; either way it omits `Implements` and `Blueprint-Change`, and the body states what triggered the work.
+8. A Fast-path commit carries a `Refs: <tracker issue>` trailer when the work came from a tracker issue, and no reference trailer when it did not; either way it omits `Implements`, `Linear-Issue` and `Blueprint-Change`, and the body states what triggered the work.
 9. A single-commit Fast-path change may squash as usual. A multi-commit change merges with a merge commit, the same as a normal Change; if it is squashed, the squash commit keeps whatever reference trailer the original commits carried.
 10. A bug found while working on something else is fixed through its own Fast-path pull request rather than parked, unless the fix needs a developer judgement. A choice that follows established practice — atomic or idempotent writes, a retryable failure order, Clean Architecture layering, matching the existing pattern — needs no confirmation; the pull request names the practice.
 
@@ -265,11 +265,11 @@ Read `docs/agents/domain.md` before changing vocabulary or adopted decisions. It
 
 One delivery batch uses one integration branch from the first slice commit through delivery. Each completed slice is a separate reviewable commit; use temporary slice branches only when truly independent work must run in parallel, then integrate them back into that batch's branch before final verification.
 
-Every commit on a Change branch carries a `Blueprint-Change: <slug>` trailer naming that Change; a slice commit also carries `Implements: S0X`, the stable slice ID recorded on its Linear sub-issue. A Mapped Change's commits use the shared slug and add `Shard: <N>` (see Change scope), and a Fast-path commit carries its own trailers instead (see Fast path). `CONTRIBUTING.md` covers how to write a trailer so git parses it.
+Every commit on a Change branch carries a `Linear-Issue: <ID>` trailer naming its execution issue; a slice commit also carries `Implements: S0X`, the stable slice ID in that issue's checklist. A `Blueprint-Change: <slug>` trailer is added only when a Change page exists. A Mapped Change's commits add `Shard: <N>` (see Change scope), and a Fast-path commit carries its own trailers instead (see Fast path). `CONTRIBUTING.md` covers how to write a trailer so git parses it.
 
 Change-page content lives in EmDash, not the Change branch. Git contains the Astro renderer, block schemas, publication policy and tests. EmDash content events request an automated SSG build without a Git commit. The build stages revision-bound public and private HTML in a separate private R2 bucket before deploying its matching renderer; requests stream only the currently authorized revision. Push the Change branch when another session or Symphony must resume it.
 
-Merge a Change into `main` with a merge commit. Squashing collapses the per-slice commits and discards the `Implements` and `Blueprint-Change` trailers that make delivery traceable, which is exactly the evidence Pre-PR code review and Archive depend on. Squash only work that carries no slice history — a single-commit fix or a tooling change — and say so in the pull request.
+Merge a Change into `main` with a merge commit. Squashing collapses the per-slice commits and discards the `Implements` and `Linear-Issue` trailers that make delivery traceable, which is exactly the evidence Pre-PR code review and Archive depend on. Squash only work that carries no slice history — a single-commit fix or a tooling change — and say so in the pull request.
 
 ## Execution modes
 
@@ -288,7 +288,7 @@ The second status check closes the race between the initial observation and the 
 
 ### Symphony workflow
 
-The developer's G1 switch to `ready-for-agent` moves the issue to Todo. Symphony claims the Change's operational issue, creates or resumes an isolated workspace, and invokes the same Apply contract. The current dispatch unit is one Change; Symphony does not claim individual slice sub-issues.
+The developer's G1 switch to `ready-for-agent` moves the issue to Todo. Symphony claims the Change's operational issue, creates or resumes an isolated workspace, and invokes the same Apply contract. The current dispatch unit is one Change; Symphony does not claim individual slices.
 
 Removing or replacing Symphony must not alter Change artifacts, slice status semantics, commits, or human approval gates.
 
@@ -309,7 +309,7 @@ next_action: "smallest concrete continuation step"
 
 The workpad may include tracker, run, workspace, commit and pull-request references while they are active. The EmDash `linear_issue` and `pull_requests` fields are intentional lookup indexes; do not copy other tracker/runtime references into page prose.
 
-A manual run keeps a lighter workpad: every field above except `blockers` and `next_action` is already recorded in the repository — slice status on the Linear sub-issues, validation in commit bodies — and a copy kept by hand drifts from them. A multi-session manual run hands off through the pushed branch and its commits plus the sub-issues, so another agent, worktree, or machine can pick up where the run stopped without a separate handoff file.
+A manual run keeps a lighter workpad: every field above except `blockers` and `next_action` is already recorded in the repository — slice status in the issue's checklist, validation in commit bodies — and a copy kept by hand drifts from them. A multi-session manual run hands off through the pushed branch and its commits plus the checklist, so another agent, worktree, or machine can pick up where the run stopped without a separate handoff file.
 
 ## Blueprint knowledge contract
 
