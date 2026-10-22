@@ -1,5 +1,19 @@
 # VolleyBro CHANGELOG
 
+## [0.18.2](https://github.com/andrewck24/volleybro/compare/v0.18.0...v0.18.2) 2026-10-22
+
+### Changed
+
+#### Infrastructure
+
+- Releases that change persisted data contracts without compatibility proof now ship as forward-only instead of being blocked; they cannot be rolled back or recovered to the previous production version.
+
+### Security
+
+#### Infrastructure
+
+- The app now runs on the Node.js 24.22.1 security release.
+
 ## [0.18.1](https://github.com/andrewck24/volleybro/compare/v0.18.0...v0.18.1) 2026-10-21
 
 ### Changed
