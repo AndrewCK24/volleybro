@@ -2350,6 +2350,6 @@ test("promote and rollback still reject an expired recovery receipt", async (t) 
   for (const action of ["promote", "rollback-if-compatible"]) {
     const denied = run(f, action, { RELEASE_STATE_FILE: accepted });
     assert.notEqual(denied.status, 0, action);
-    assert.match(denied.stderr, /expired/, action);
+    assert.match(denied.stderr, /Recovery receipt expired/, action);
   }
 });

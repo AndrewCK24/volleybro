@@ -921,6 +921,7 @@ async function recoveryReceiptFacts(state) {
 async function verifyRecoveryEvidence(
   state,
   expectedRunId = state.releaseRunId,
+  { ignoreExpiry = false } = {},
 ) {
   assertSourceQAReceipt(state, expectedRunId);
   const receipt = state.recoveryEvidence;
@@ -931,13 +932,12 @@ async function verifyRecoveryEvidence(
     !Number.isFinite(Date.parse(receipt.issuedAt)) ||
     !Number.isFinite(Date.parse(receipt.expiresAt)) ||
     Date.parse(receipt.issuedAt) > Date.now() + 5 * 60 * 1000 ||
-    Date.parse(receipt.expiresAt) <= Date.now() ||
     Date.parse(receipt.expiresAt) - Date.parse(receipt.issuedAt) >
       RECOVERY_RECEIPT_TTL_MS
   )
-    fail(
-      "Recovery receipt is missing, expired, or bound to another release run",
-    );
+    fail("Recovery receipt is missing or bound to another release run");
+  if (!ignoreExpiry && Date.parse(receipt.expiresAt) <= Date.now())
+    fail("Recovery receipt expired");
   const facts = await recoveryReceiptFacts(state);
   if (JSON.stringify(receipt.facts) !== JSON.stringify(facts))
     fail(
@@ -947,18 +947,6 @@ async function verifyRecoveryEvidence(
     await verifyReusableSourceQA(state, state.sourceQA.scopes[scope], name);
   }
   return receipt;
-}
-
-// Finalize and production QA never move production, so the receipt's 7-day expiry must not block them.
-function assertBoundRecoveryFacts(state) {
-  assertSourceQAReceipt(state);
-  const receipt = state.recoveryEvidence;
-  if (
-    receipt?.schemaVersion !== 2 ||
-    receipt.runId !== String(state.releaseRunId)
-  )
-    fail("Recovery receipt is missing or bound to another release run");
-  return receipt.facts;
 }
 
 async function assertRollbackAllowed(
@@ -1977,7 +1965,10 @@ function assertProductionQAReceipt(state) {
 async function recordProductionQA() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  assertBoundRecoveryFacts(state);
+  // Finalize and production QA never move production, so receipt expiry must not block them.
+  await verifyRecoveryEvidence(state, state.releaseRunId, {
+    ignoreExpiry: true,
+  });
   const production = await currentAlias();
   if (
     production.deploymentId !== state.candidateId ||
@@ -2000,7 +1991,9 @@ async function finalize() {
   const state = await loadState();
   validateConfiguredPlatform(state);
   assertProductionQAReceipt(state);
-  const facts = assertBoundRecoveryFacts(state);
+  const { facts } = await verifyRecoveryEvidence(state, state.releaseRunId, {
+    ignoreExpiry: true,
+  });
   await verifyProtectedJobReceipt(
     state.productionQA.approval,
     state.releaseRunId,
