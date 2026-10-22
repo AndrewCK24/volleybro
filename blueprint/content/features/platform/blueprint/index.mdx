@@ -11,7 +11,7 @@ Blueprint presents current capability knowledge, the Design System and published
 flowchart LR
     A[EmDash draft] --> B[Signed private preview]
     B --> C{Developer accepts G1}
-    C -->|Revision and content hash match| D[Publish to Blueprint]
+    C -->|Content passes the Change schema| D[Publish to Blueprint]
     C -->|Content changed| A
     D --> E[Public: 進行中]
     E --> F[GitHub code PR and G2 review]

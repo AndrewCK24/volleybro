@@ -8,6 +8,6 @@ Write a decision record the moment the decision is made — during a Change's Di
 
 The schema in `blueprint/src/lib/decision-record.ts` is the sole executable definition, version 2; unknown keys fail validation. `originChange` records provenance, while `supersededBy` links replacements: a decision id, or the URL of the pull request that retires a workflow rule without a successor decision. Blueprint rendering never creates a second editable decision source.
 
-A decision record's lifecycle has two events: birth, and replacement by setting `supersededBy` on the record being replaced, pointing at the record that replaces it. Archive does not promote, reconcile, or renumber decision records — a record already lives at its permanent path from the moment it was written.
+A decision record's lifecycle has two events: birth, and replacement by setting `supersededBy` on the record being replaced, pointing at the record that replaces it, or at the pull request that retires a workflow rule without a successor record. Archive does not promote, reconcile, or renumber decision records — a record already lives at its permanent path from the moment it was written.
 
 Before changing domain language or a decision, read the affected Feature pages, active Change, code, and tests. Surface contradictions rather than silently rewriting an authority.

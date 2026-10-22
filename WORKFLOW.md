@@ -134,11 +134,11 @@ Use ordinary issue statuses, parent/child relationships, duplicate relations, an
 
 Classify new work and every material scope expansion by size, creating no new tracker labels:
 
-| Mode              | When                            | Planning                                                                                              | Pre-G1 review |
-| ----------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------- |
-| **Fast path**     | Fits in one session             | None; the Linear issue description is the spec, confirmed once at intake                              | No            |
-| **Change**        | Needs planning                  | `plan-spec` and `plan-tickets` on the execution issue                                                 | Yes           |
-| **Mapped Change** | Too large or foggy for one spec | `wayfinder` map of decision tickets, then `plan-spec` / `plan-tickets` for each Change the map yields | Yes           |
+| Mode              | When                                                                | Planning                                                                                              | Pre-G1 review |
+| ----------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------- |
+| **Fast path**     | Needs no planning and fits one session                              | None; the Linear issue description is the spec, confirmed once at intake                              | No            |
+| **Change**        | Needs planning, even if it fits one session (then it has no slices) | `plan-spec` and `plan-tickets` on the execution issue                                                 | Yes           |
+| **Mapped Change** | Too large or foggy for one spec                                     | `wayfinder` map of decision tickets, then `plan-spec` / `plan-tickets` for each Change the map yields | Yes           |
 
 Size decides the mode, not whether work fixes a bug, changes semantic version, or involves an architecture or product decision; a major pnpm upgrade can be a Fast path. A Change owns one converged design and delivers it in one pull request. A Mapped Change's map yields Changes with their own spec and G1; a resulting Change that needs several independently releasable delivery batches uses the shard mechanics under Change scope. Independent goals belong in separate Changes.
 
@@ -193,7 +193,7 @@ Fix implementation defects inside Apply. Sweep all affected identifiers, prose, 
 
 #### Optional Ingest action
 
-A material change to accepted scope, behavior, acceptance criteria or architecture pauses Apply for developer-authorized Ingest and renewed G1. Clarify the change, replace adopted decisions with successor ADRs, preserve completed slices and evidence, and, when a Change page exists, create a new EmDash draft and private preview; never overwrite the accepted revision. Progress, verification evidence, PR URL updates and meaning-preserving wording edits to the working issue keep the existing revision and receipt.
+A material change to accepted scope, behavior, acceptance criteria or architecture pauses Apply for developer-authorized Ingest and renewed G1. Clarify the change, replace adopted decisions with successor ADRs, preserve completed slices and evidence, and, when a Change page exists, create a new EmDash draft and private preview; never overwrite the accepted revision. Progress, verification evidence, PR URL updates and meaning-preserving wording edits to the working issue keep the existing G1 acceptance and any published Change-page revision.
 
 ### 3. Pre-PR gate
 
@@ -241,7 +241,9 @@ A Change targets soft limits before it needs splitting: at most 5 slices and at 
 
 A Change is either a **structure** change (a behavior-preserving refactor, whose acceptance is the existing test suite plus a dependency-direction check) or a **behavior** change, never both.
 
-A **Mapped Change** starts as a `wayfinder` map of decision tickets. Each Change the map yields is specified, ticketed and accepted on its own, like any Change. A Change whose one accepted specification and G1 need several independently releasable delivery batches is delivered in shards: the specification covers the shared design, shard list, order, per-batch verification and completion criteria, and every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice checklist. Shards do not create separate slugs, specifications, G1s or repeated decision records.
+A **Mapped Change** starts as a `wayfinder` map of decision tickets. Each Change the map yields is specified, ticketed and accepted on its own, like any Change.
+
+A shard belongs to a single Change. A Change whose one accepted specification and G1 need several independently releasable delivery batches is delivered in shards: the specification covers the shared design, shard list, order, per-batch verification and completion criteria, and every acceptance scenario names its proving shard. Each independently releasable shard has a `<prefix>/<slug>-s<N>` branch, pull request and G2, the first included. Inseparable proposed shards form one delivery shard and share its branch and pull request; internal slices may still track their execution. A single Linear tracking issue owns the shared Change and its slice checklist. Shards do not create separate slugs, specifications, G1s or repeated decision records.
 
 ### Fast path
 
@@ -253,7 +255,7 @@ Fast path sits beside Change and Mapped Change for work that fits in one session
 4. Kept: `pnpm verify:all`, independent two-axis code review with the issue as the spec, Changeset when applicable, and migration verification when applicable. Bug work also keeps a regression demonstrating failure before repair and success after it.
 5. Skipped: Change page, `plan-spec` and `plan-tickets`, pre-G1 review, G1 and slices. Assess and update affected current knowledge on the same branch before review; unchanged pages need no edit.
 6. The only human gate is the pull request: its body names Fast path and carries a short verification summary; the developer explicitly authorizes exact-revision merge and cleanup in the conversation after reviewing the PR; direct human merging is acceptance.
-7. Upgrade to a Change — plan it, pass the pre-G1 review and G1 — when the work grows beyond one session, and re-estimate it provisionally. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
+7. Upgrade to a Change — plan it, pass the pre-G1 review and G1 — when the work grows beyond one session, and estimate it again per `docs/agents/issue-tracker.md`. Editing a decision record's `decision` body or setting `supersededBy` remains a new judgement and requires a normal Change.
 8. A Fast-path commit carries a `Refs: <tracker issue>` trailer when the work came from a tracker issue, and no reference trailer when it did not; either way it omits `Implements`, `Linear-Issue` and `Blueprint-Change`, and the body states what triggered the work.
 9. A single-commit Fast-path change may squash as usual. A multi-commit change merges with a merge commit, the same as a normal Change; if it is squashed, the squash commit keeps whatever reference trailer the original commits carried.
 10. A bug found while working on something else is fixed through its own Fast-path pull request rather than parked, unless the fix needs a developer judgement. A choice that follows established practice — atomic or idempotent writes, a retryable failure order, Clean Architecture layering, matching the existing pattern — needs no confirmation; the pull request names the practice.
@@ -266,7 +268,7 @@ Read `docs/agents/domain.md` before changing vocabulary or adopted decisions. It
 
 One delivery batch uses one integration branch from the first slice commit through delivery. Each completed slice is a separate reviewable commit; use temporary slice branches only when truly independent work must run in parallel, then integrate them back into that batch's branch before final verification.
 
-Every commit on a Change branch carries a `Linear-Issue: <ID>` trailer naming its execution issue; a slice commit also carries `Implements: S0X`, the stable slice ID in that issue's checklist. A `Blueprint-Change: <slug>` trailer is added only when a Change page exists. A Mapped Change's commits add `Shard: <N>` (see Change scope), and a Fast-path commit carries its own trailers instead (see Fast path). `CONTRIBUTING.md` covers how to write a trailer so git parses it.
+Every commit on a Change branch carries a `Linear-Issue: <ID>` trailer naming its execution issue; a slice commit also carries `Implements: S0X`, the stable slice ID in that issue's checklist. A `Blueprint-Change: <slug>` trailer is added only when a Change page exists. A shard's commits add `Shard: <N>` (see Change scope), and a Fast-path commit carries its own trailers instead (see Fast path). `CONTRIBUTING.md` covers how to write a trailer so git parses it.
 
 Change-page content lives in EmDash, not the Change branch. Git contains the Astro renderer, block schemas, publication policy and tests. EmDash content events request an automated SSG build without a Git commit. The build stages revision-bound public and private HTML in a separate private R2 bucket before deploying its matching renderer; requests stream only the currently authorized revision. Push the Change branch when another session or Symphony must resume it.
 
