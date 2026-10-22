@@ -467,7 +467,7 @@ export type ChangeBlock = z.infer<typeof blockSchema>;
 export type ChangeData = z.infer<typeof changeDataSchema>;
 export type EmDashChangeEntry = { id: string; data: ChangeData };
 
-const acceptedContentBaseSchema = z.strictObject({
+export const acceptedContentSchema = z.strictObject({
   title: z.string().trim().min(1),
   description: z.string().optional(),
   linear_issue: z
@@ -476,8 +476,6 @@ const acceptedContentBaseSchema = z.strictObject({
     .optional(),
   blocks: z.array(blockSchema),
 });
-
-export const acceptedContentSchema = acceptedContentBaseSchema;
 
 export function omitCmsKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(omitCmsKeys);
