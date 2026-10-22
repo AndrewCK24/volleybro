@@ -7,9 +7,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import type { DecisionRecord } from "@/lib/decision-record";
+import { pullRequestNumber, type DecisionRecord } from "@/lib/decision-record";
 import { renderInline } from "@/lib/render-inline";
 import { cn } from "@/lib/utils";
+
+function supersessionLabel(supersededBy: string, withAdrPrefix: boolean) {
+  const pr = pullRequestNumber(supersededBy);
+  if (pr) return `PR #${pr}`;
+  return withAdrPrefix ? `ADR-${supersededBy}` : supersededBy;
+}
 
 function VerdictBadge({ isAdopted }: { isAdopted: boolean }) {
   return (
@@ -49,7 +55,7 @@ export function DecisionCard({
             </span>
             {record.supersededBy && (
               <Badge variant="secondary">
-                被 ADR-{record.supersededBy} 取代
+                被 {supersessionLabel(record.supersededBy, true)} 取代
               </Badge>
             )}
           </>
@@ -57,7 +63,7 @@ export function DecisionCard({
       >
         {record.supersededBy && supersededHref && (
           <a href={supersededHref} className="text-sm">
-            查看取代它的 ADR-{record.supersededBy}
+            查看取代它的 {supersessionLabel(record.supersededBy, true)}
           </a>
         )}
         <div className="flex items-start gap-2">
@@ -94,7 +100,7 @@ export function DecisionCard({
           <span>{renderInline(record.title)}</span>
           {record.supersededBy && (
             <Badge variant="secondary">
-              Superseded by {record.supersededBy}
+              Superseded by {supersessionLabel(record.supersededBy, false)}
             </Badge>
           )}
         </span>

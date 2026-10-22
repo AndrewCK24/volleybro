@@ -10,9 +10,7 @@ Authors and Agents write Portable Text and typed blocks directly through EmDash 
 
 Before G1, use EmDash's signed private preview at the same Blueprint route. The page must identify the exact saved draft revision and accepted-content SHA-256. After the developer accepts G1 by the label switch, publishing makes the entry public. A later content change needs a new draft, preview and acceptance. Updating only the PR URL list or capability paths does not change the accepted content hash.
 
-The publication plugin requires its `linearApiKey` secret setting in EmDash's admin interface. Never store that key in Git or a checked-in Wrangler file.
-
-A newly published Change may have an empty PR URL list. It is public as **進行中** and shows no PR-derived metrics until URLs are added. PR badges link from the stored allowlisted URLs and do not depend on GitHub API availability. Add one URL for every required PR as it is created. A Change becomes **已合併** only when every required PR is merged, using the last required `merged_at`. Dates and summary order use `mergedAt ?? publishedAt`, descending. The page never shows G1/G2 acceptance badges or a separate discussion state. If a public Change is cancelled, unpublish it and retain its history.
+A newly published Change may have an empty PR URL list. It is public as **進行中** and shows no PR-derived metrics until URLs are added. PR badges link from the stored allowlisted URLs and do not depend on GitHub API availability. Add one URL for every required PR as it is created. A Change becomes **已完成** only when every required PR is merged, using the last required `merged_at`. Dates and summary order use `mergedAt ?? publishedAt`, descending. The page never shows G1/G2 acceptance badges or a separate discussion state. If a public Change is cancelled, unpublish it and retain its history.
 
 G2 reviews the code PR only. The G2 PR links the execution issue; do not republish the Change page at G2. Production activation requires separate approval after G2. When a code PR merges, GitHub-derived status updates on a short cache interval without a Git deployment. A Blueprint code merge to `main` deploys the renderer; content events also request an automated SSG build, artifact upload and deployment.
 
@@ -44,7 +42,7 @@ For the pinned EmDash/Cloudflare 1.2.0 media route, a GET performs one R2 `GetOb
 
 ## Deployment
 
-Cloudflare production deployment requires explicit post-G2 approval. Use the pinned Wrangler CLI and checked-in deployment configuration with Free-tier D1, private R2 and session KV bindings. Store `GITHUB_TOKEN` as a Worker secret and EmDash’s `linearApiKey` in plugin settings. Paid plans and overage remain disabled.
+Cloudflare production deployment requires explicit post-G2 approval. Use the pinned Wrangler CLI and checked-in deployment configuration with Free-tier D1, private R2 and session KV bindings. Store `GITHUB_TOKEN` as a Worker secret and the Cloudflare build hook URL in EmDash plugin settings. Paid plans and overage remain disabled.
 
 Verify that the target collection schema matches `.emdash/seed.json` before deploying readers. The optional JSON `capabilities` field contains only paths supported by the Change body and current Feature pages; an empty field produces no badges.
 

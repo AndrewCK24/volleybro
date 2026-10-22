@@ -458,25 +458,10 @@ const changeDataBaseSchema = z.strictObject({
   terms: z.record(z.string(), z.array(taxonomyTermSchema)).optional(),
 });
 
-function requireIssueForAuthoredContent(
-  value: { linear_issue?: string; blocks: ChangeBlock[] },
-  context: z.RefinementCtx,
-) {
-  if (!value.linear_issue) {
-    context.addIssue({
-      code: "custom",
-      path: ["linear_issue"],
-      message: "Authored Changes require a Linear issue.",
-    });
-  }
-}
-
-export const changeDataSchema = changeDataBaseSchema
-  .superRefine(requireIssueForAuthoredContent)
-  .transform((data) => ({
-    ...data,
-    description: data.description ?? undefined,
-  }));
+export const changeDataSchema = changeDataBaseSchema.transform((data) => ({
+  ...data,
+  description: data.description ?? undefined,
+}));
 
 export type ChangeBlock = z.infer<typeof blockSchema>;
 export type ChangeData = z.infer<typeof changeDataSchema>;
@@ -492,9 +477,7 @@ const acceptedContentBaseSchema = z.strictObject({
   blocks: z.array(blockSchema),
 });
 
-export const acceptedContentSchema = acceptedContentBaseSchema.superRefine(
-  requireIssueForAuthoredContent,
-);
+export const acceptedContentSchema = acceptedContentBaseSchema;
 
 export function omitCmsKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(omitCmsKeys);

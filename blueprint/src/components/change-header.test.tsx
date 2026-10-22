@@ -27,7 +27,7 @@ describe("ChangeHeader", () => {
       />,
     );
     expect(screen.getByText("讀取 PR 狀態中…")).toBeInTheDocument();
-    expect(await screen.findByText("已合併")).toBeInTheDocument();
+    expect(await screen.findByText("已完成")).toBeInTheDocument();
     expect(screen.getByText("2026-10-16")).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe("ChangeHeader", () => {
       />,
     );
     expect(await screen.findByText("暫時無法取得 PR 狀態")).toBeInTheDocument();
-    expect(screen.queryByText("已合併")).not.toBeInTheDocument();
+    expect(screen.queryByText("已完成")).not.toBeInTheDocument();
   });
   it("shows only the public in-progress status and derived figures", () => {
     render(
@@ -80,7 +80,7 @@ describe("ChangeHeader", () => {
       />,
     );
 
-    expect(screen.getByText("已合併")).toBeInTheDocument();
+    expect(screen.getByText("已完成")).toBeInTheDocument();
     expect(screen.getByText("2026-10-12")).toBeInTheDocument();
     expect(
       screen.queryByRole("list", { name: "Change figures" }),

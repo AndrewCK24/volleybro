@@ -34,6 +34,11 @@ describe("EmDash Change schema", () => {
     ).toBe(false);
   });
 
+  it("does not require a Linear issue", () => {
+    const { linear_issue: _linearIssue, ...withoutIssue } = content;
+    expect(changeDataSchema.safeParse(withoutIssue).success).toBe(true);
+  });
+
   it("fails closed on an unknown block type", () => {
     expect(
       blockSchema.safeParse({

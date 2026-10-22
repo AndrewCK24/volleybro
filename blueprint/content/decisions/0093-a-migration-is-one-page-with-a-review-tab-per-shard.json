@@ -24,5 +24,6 @@
     "An ordinary Change keeps its unsuffixed branch and a single Review tab.",
     "release-train generalizes the former Migration-only model; migrations remain a use case and do not maintain a separate delivery authority."
   ],
-  "originChange": "migration-single-page"
+  "originChange": "migration-single-page",
+  "supersededBy": "https://github.com/andrewck24/volleybro/pull/610"
 }
