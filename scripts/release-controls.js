@@ -35,6 +35,7 @@ const PERSISTED_CONTRACT_PATTERNS = [
 ];
 const KNOWN_UNRELATED_PATTERNS = [
   /^\.changeset\//,
+  /^\.nvmrc$/,
   /^\.github\//,
   /^blueprint\//,
   /^docs\/(?!migrations\/)/,

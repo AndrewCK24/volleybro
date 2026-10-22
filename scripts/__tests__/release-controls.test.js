@@ -2203,6 +2203,7 @@ test("tooling-only paths are unrelated to production data", async (t) => {
     "commitlint.config.js",
     ".worktreeinclude",
     ".markdownlint.jsonc",
+    ".nvmrc",
   ];
   const result = await classifyDiff(
     t,
