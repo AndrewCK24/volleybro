@@ -464,7 +464,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
-          # An empty report is a regression: fail closed when the smoke job never reported.
+          # A smoke job that never reported yields an empty report, which waits at the manual gate.
           SMOKE_RESULTS: ${{ needs.production-smoke.outputs.smoke_results || '[]' }}
           SMOKE_BEFORE_DEPLOYMENT_ID: ${{ needs.promote-and-smoke.outputs.production_deployment_id }}
           SMOKE_BEFORE_SHA: ${{ needs.promote-and-smoke.outputs.production_sha }}
@@ -476,8 +476,8 @@ jobs:
       - name: Explain the manual gate
         if: steps.classify.outputs.outcome == 'infrastructure'
         run: |
-          echo '::warning::Production smoke session was invalid before any check ran. The release is not rolled back; the manual review gate follows. Re-login the smoke test account and refresh the SMOKE_STORAGE_STATE secret per docs/release-runbook.md (Smoke session).'
-          echo 'Infrastructure failure: see docs/release-runbook.md, Smoke session, to re-login and refresh the session secret.' >> "$GITHUB_STEP_SUMMARY"
+          echo '::warning::Production smoke could not judge the release: either the smoke session was invalid or the smoke job produced no report. The release is not rolled back; the manual review gate follows. Check the Production smoke job log first; re-login only if the session check failed (docs/release-runbook.md, Smoke session).'
+          echo 'Infrastructure failure: check the Production smoke job log. If the session check failed, re-login and refresh the session secret (docs/release-runbook.md, Smoke session); if no report was produced, fix the runner or install step.' >> "$GITHUB_STEP_SUMMARY"
 
   accept-production-smoke:
     name: Accept production smoke

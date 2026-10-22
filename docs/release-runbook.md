@@ -20,7 +20,7 @@ If a normal release run failed, the version PR was merged by someone else, or a 
 
 ## Smoke session
 
-The smoke test uses a Google test account's real session, exported as Playwright `storageState` (the Better Auth session cookie only) and kept as the `SMOKE_STORAGE_STATE` secret of the `production-smoke` environment. A scheduled keepalive extends it every 3 days; GitHub's failure notification for that workflow, or a release run that reports a smoke infrastructure failure, means the session is no longer valid.
+The smoke test uses a Google test account's real session, exported as Playwright `storageState` (the Better Auth session cookie only) and kept as the `SMOKE_STORAGE_STATE` secret of the `production-smoke` environment. A scheduled keepalive extends it every 3 days; GitHub's failure notification for that workflow means the session is no longer valid. A release run that reports a smoke infrastructure failure has either a failed session check or no smoke report at all (runner or install failure); the Production smoke job log tells which, and only the first needs a re-login.
 
 Re-login and refresh:
 
@@ -28,7 +28,7 @@ Re-login and refresh:
 2. Export `storageState` (for example with `npx playwright codegen --save-storage=state.json https://<production alias>`), keep only the `better-auth.session_token` cookie and the suite injects it as a session cookie, so its expiry does not matter.
 3. Replace the `SMOKE_STORAGE_STATE` secret in the `production-smoke` environment, delete the local file, and dispatch the keepalive workflow from `main` to confirm it passes.
 
-A run stopped at the manual gate by an infrastructure failure is accepted normally; refresh the secret afterwards. Re-login does not need a release.
+A run stopped at the manual gate by an infrastructure failure is accepted normally; refresh the secret afterwards when the session check was the cause. Re-login does not need a release.
 
 ## Revoking a leaked smoke session
 
