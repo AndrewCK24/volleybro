@@ -152,6 +152,7 @@ test("skips non-visual paths and tests but runs for the classifier, its workflow
     "test/support/fixture.js": "next\n",
     "jest.config.ts": "next\n",
     ".nvmrc": "24.22.1\n",
+    "components.json": "{}\n",
   };
   for (const [files, skip] of [
     [skipped, true],
