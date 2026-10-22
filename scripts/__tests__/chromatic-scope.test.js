@@ -120,17 +120,6 @@ async function lockPair(
   );
 }
 
-test("skips documentation and Blueprint edits when the graph is unchanged", async (t) => {
-  const { cwd, base, head } = await commitPair(
-    t,
-    { "blueprint/content/features/example.md": "base\n" },
-    { "blueprint/content/features/example.md": "next\n" },
-  );
-  const result = await classify(cwd, compareArgs(base, head));
-  assert.match(result.stdout, /skip=true reason=/);
-  assert.equal(result.output, "skip=true\n");
-});
-
 test("skips agent tooling and root prose docs but still runs when mixed with src", async (t) => {
   const skipped = {
     ".agents/skills/x/SKILL.md": "next\n",
@@ -152,14 +141,16 @@ test("skips agent tooling and root prose docs but still runs when mixed with src
   }
 });
 
-test("skips non-visual directories and tests but runs for the classifier, its workflow, and src code", async (t) => {
+test("skips non-visual paths and tests but runs for the classifier, its workflow, and src code", async (t) => {
   const skipped = {
     "docs/images/shot.png": "next\n",
+    "blueprint/content/features/example.md": "next\n",
     ".github/workflows/ci.yml": "next\n",
     "scripts/verify.js": "next\n",
     "src/components/__tests__/Button.test.tsx": "next\n",
     "test/support/fixture.js": "next\n",
     "jest.config.ts": "next\n",
+    ".nvmrc": "24.22.1\n",
   };
   for (const [files, skip] of [
     [skipped, true],
@@ -175,17 +166,6 @@ test("skips non-visual directories and tests but runs for the classifier, its wo
     const result = await classify(cwd, compareArgs(base, head));
     assert.equal(result.output, `skip=${skip}\n`, Object.keys(files).join());
   }
-});
-
-test("skips a .nvmrc-only change because Node only affects the Storybook build host", async (t) => {
-  const { cwd, base, head } = await commitPair(
-    t,
-    { ".nvmrc": "24\n" },
-    { ".nvmrc": "24.22.1\n" },
-  );
-  const result = await classify(cwd, compareArgs(base, head));
-  assert.match(result.stdout, /skip=true reason=/);
-  assert.equal(result.output, "skip=true\n");
 });
 
 test("skips an allowlisted devDependency-only update, including a real npm alias graph", async (t) => {
