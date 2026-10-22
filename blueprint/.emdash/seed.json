@@ -51,6 +51,11 @@
           }
         },
         {
+          "slug": "capabilities",
+          "label": "Related Features",
+          "type": "json"
+        },
+        {
           "slug": "blocks",
           "label": "Page content",
           "type": "portableText"

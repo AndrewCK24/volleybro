@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  featureCapabilityLinks,
+  type FeatureCapabilityLink,
+} from "./feature-capabilities.ts";
 
 const PR_URL =
   /^https:\/\/github\.com\/andrewck24\/volleybro\/pull\/([1-9]\d*)$/u;
@@ -32,6 +36,8 @@ export type ChangeSummary = {
   mergedAt?: string;
   metrics?: ChangeMetrics;
   scenarioCount: number;
+  pullRequests?: Array<{ number: number; url: string }>;
+  capabilities?: FeatureCapabilityLink[];
 };
 
 type GithubEnv = {
@@ -45,6 +51,7 @@ export type ChangeEntryForSummary = {
     title?: string;
     description?: string;
     pull_requests?: Array<{ url?: string }>;
+    capabilities?: string[];
     blocks?: unknown[];
     scenarioCount?: number;
     publishedAt?: Date | string | null;
@@ -202,6 +209,8 @@ async function getJson<T>(
   const headers = new Headers({
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    // GitHub rejects requests without one with 403, and Workers fetch sends none.
+    "User-Agent": "volleybro-blueprint",
   });
   if (env.GITHUB_TOKEN)
     headers.set("Authorization", `Bearer ${env.GITHUB_TOKEN}`);
@@ -385,7 +394,12 @@ export async function readPullRequestSummaries(
 export function summarizeChange(
   input: ChangeEntryForSummary,
   prs: PullRequestSummary[],
+  featureTitles = new Map<string, string>(),
 ): ChangeSummary {
+  const pullRequests = (input.data.pull_requests ?? []).flatMap((pr) => {
+    const number = pr.url ? parseAllowedPullRequestUrl(pr.url) : null;
+    return number === null || !pr.url ? [] : [{ number, url: pr.url }];
+  });
   const requiredIds = [
     ...new Set(
       (input.data.pull_requests ?? [])
@@ -445,6 +459,11 @@ export function summarizeChange(
     mergedAt,
     metrics,
     scenarioCount: input.data.scenarioCount ?? scenarioCount(input.data.blocks),
+    pullRequests,
+    capabilities: featureCapabilityLinks(
+      input.data.capabilities ?? [],
+      featureTitles,
+    ),
   };
 }
 
@@ -458,6 +477,7 @@ export function sortChanges(changes: ChangeSummary[]): ChangeSummary[] {
 
 export async function listPublishedChangeSummaries(
   entries: ChangeEntryForSummary[],
+  featureTitles = new Map<string, string>(),
 ): Promise<ChangeSummary[]> {
   const runtime = await import("cloudflare:workers");
   const env = runtime.env as GithubEnv;
@@ -468,6 +488,6 @@ export async function listPublishedChangeSummaries(
   );
   const pullRequests = await readPullRequestSummaries(urls, { env });
   return sortChanges(
-    entries.map((entry) => summarizeChange(entry, pullRequests)),
+    entries.map((entry) => summarizeChange(entry, pullRequests, featureTitles)),
   );
 }

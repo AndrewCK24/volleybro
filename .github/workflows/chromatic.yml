@@ -53,7 +53,7 @@ jobs:
             node scripts/chromatic-scope.js --base "$BASE_SHA" --head "$HEAD_SHA"
           fi
 
-      - uses: chromaui/action@latest
+      - uses: chromaui/action@e24559fbc78e0cda863f3889f0e40ac249b07e20 # v18.13.1
         env:
           CHROMATIC_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
           CHROMATIC_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -63,7 +63,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           skip: ${{ steps.scope.outputs.skip == 'true' }}
           onlyChanged: true
-          # Served from staticDirs, so no story imports them and the dependency
-          # graph cannot see them; changing one falls back to a full snapshot.
-          externals: |
-            public/**

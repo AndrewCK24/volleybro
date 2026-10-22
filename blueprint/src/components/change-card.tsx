@@ -1,4 +1,5 @@
 import { ChangeMetricsBadges } from "@/components/change-metrics-badges";
+import { ChangeLinkBadges } from "@/components/change-link-badges";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -18,13 +19,18 @@ const STATUS_CLASS: Record<ChangeStatus, string> = {
 
 export function ChangeCard({ change }: { change: ChangeSummary }) {
   return (
-    <a href={change.href} className="block text-inherit no-underline!">
-      <Card className="gap-3 border-l-4 border-l-primary py-4 transition-colors hover:bg-muted/30">
+    <Card className="relative gap-3 border-l-4 border-l-primary py-4 transition-colors hover:bg-muted/30">
+      <a
+        href={change.href}
+        aria-label={change.title}
+        className="absolute inset-0 z-0 rounded-[inherit] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      />
+      <div className="pointer-events-none relative z-10 flex flex-col gap-3">
         <CardHeader className="gap-2 px-4">
           <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-base">{change.title}</CardTitle>
             <Badge variant="outline" className={STATUS_CLASS[change.status]}>
-              {change.status === "merged" ? "已合併" : "進行中"}
+              {change.status === "merged" ? "已完成" : "進行中"}
             </Badge>
             {(change.mergedAt ?? change.publishedAt) && (
               <span className="ml-auto text-xs text-muted-foreground tabular-nums">
@@ -38,16 +44,22 @@ export function ChangeCard({ change }: { change: ChangeSummary }) {
             </CardDescription>
           )}
         </CardHeader>
-        {(change.metrics || change.scenarioCount > 0) && (
-          <CardContent className="px-4">
+        <CardContent className="flex flex-col gap-3 px-4">
+          {(change.metrics || change.scenarioCount > 0) && (
             <ChangeMetricsBadges
               metrics={change.metrics}
               scenarioCount={change.scenarioCount}
             />
-          </CardContent>
-        )}
-      </Card>
-    </a>
+          )}
+          <div className="pointer-events-auto">
+            <ChangeLinkBadges
+              pullRequests={change.pullRequests}
+              capabilities={change.capabilities}
+            />
+          </div>
+        </CardContent>
+      </div>
+    </Card>
   );
 }
 

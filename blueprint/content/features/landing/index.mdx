@@ -3,24 +3,8 @@ title: Landing
 description: The public court-plan page at `/` — header, hero, record walkthrough, stats court, kit list, closing call to action, and footer.
 ---
 
-export const nodes = [
-  { id: "header", label: "Header", x: 70, y: 70 },
-  { id: "hero", label: "Hero", x: 200, y: 70, w: 100 },
-  { id: "record", label: "Record walkthrough", x: 350, y: 70, w: 150 },
-  { id: "stats", label: "Stats court", x: 520, y: 70, w: 120 },
-  { id: "kit", label: "Kit list", x: 200, y: 180, w: 100 },
-  { id: "cta", label: "Closing CTA", x: 350, y: 180, w: 130 },
-  { id: "footer", label: "Footer", x: 520, y: 180 },
-];
-
-export const edges = [
-  { from: "header", to: "hero" },
-  { from: "hero", to: "record" },
-  { from: "record", to: "stats" },
-  { from: "stats", to: "kit" },
-  { from: "kit", to: "cta" },
-  { from: "cta", to: "footer" },
-];
+export const source =
+  'flowchart LR\n  header["Header"]\n  hero["Hero"]\n  record["Record walkthrough"]\n  stats["Stats court"]\n  kit["Kit list"]\n  cta["Closing CTA"]\n  footer["Footer"]\n  header --> hero\n  hero --> record\n  record --> stats\n  stats --> kit\n  kit --> cta\n  cta --> footer';
 
 export const details = {
   header: {
@@ -55,7 +39,7 @@ export const details = {
 
 The landing page is the public front door: one flat volleyball court plan carries every section. Click a section for detail. Each behavior-bearing section has its own sub-capability page.
 
-<InteractiveFlowchart nodes={nodes} edges={edges} details={details} />
+<InteractiveFlowchart source={source} details={details} />
 
 ## Current behavior
 

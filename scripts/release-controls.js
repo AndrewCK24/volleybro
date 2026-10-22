@@ -11,7 +11,7 @@ const execFile = promisify(execFileCallback);
 const VERCEL_API = "https://api.vercel.com";
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const DIGEST_PATTERN = /^sha256:([0-9a-f]{64})$/;
-const RELEASE_STATE_VERSION = 3;
+const RELEASE_STATE_VERSION = 4;
 const PUSH_LOOKUP_ATTEMPTS = 12;
 const PUSH_LOOKUP_DELAY_MS = 5_000;
 const PRODUCTION_WORKFLOW = ".github/workflows/production-release.yml";
@@ -35,6 +35,7 @@ const PERSISTED_CONTRACT_PATTERNS = [
 ];
 const KNOWN_UNRELATED_PATTERNS = [
   /^\.changeset\//,
+  /^\.nvmrc$/,
   /^\.github\//,
   /^blueprint\//,
   /^docs\/(?!migrations\/)/,
@@ -47,7 +48,19 @@ const KNOWN_UNRELATED_PATTERNS = [
   /^(?:README|CONTRIBUTING|CODING_STANDARDS|WORKFLOW|LICENSE)(?:\.|$)/,
   /^(?:eslint|jest|next|postcss|prettier|tailwind|tsconfig)[^.]*\.config\./,
   /^\.?(?:editorconfig|gitignore|prettierignore)$/,
+  /^\.(?:agents|claude|storybook|husky|impeccable)\//,
+  /^(?:AGENTS|CLAUDE|DESIGN|GLOSSARY|PRODUCT)\.md$/,
+  /^README\.zh-TW\.md$/,
+  /^skills-lock\.json$/,
+  /^commitlint[^.]*\.config\./,
+  /^knip\.json$/,
+  /^\.(?:worktreeinclude|markdownlint[^/]*|diagram-design)$/,
 ];
+// Top-level keys that cannot affect persisted production data, per JSON manifest.
+const UNRELATED_MANIFEST_KEYS = {
+  "package.json": ["version", "devDependencies", "scripts", "packageManager"],
+  "vercel.json": ["git"],
+};
 const CANDIDATE_LEGACY_ASSERTION = "candidate reads legacy persisted records";
 const BASELINE_CANDIDATE_ASSERTION = (baselineSha) =>
   `production baseline ${baselineSha} reads candidate-written records`;
@@ -203,22 +216,6 @@ function validateStateSchema(state) {
     fail("Release state is missing its platform binding");
   if (!["normal", "normal-retry", "hotfix"].includes(state.releaseMode))
     fail("Release state has no trusted release mode");
-  if (typeof state.productionDatabaseActive !== "boolean")
-    fail("Release state has no production database lifecycle marker");
-}
-
-function configuredProductionDatabaseMode() {
-  const value = process.env.PRODUCTION_DB_ACTIVE;
-  if (value !== "true" && value !== "false")
-    fail("PRODUCTION_DB_ACTIVE must be explicitly set to true or false");
-  return value === "true";
-}
-
-function assertProductionDatabaseMode(state) {
-  if (state.productionDatabaseActive !== configuredProductionDatabaseMode())
-    fail(
-      "Production database lifecycle changed; start a fresh authorized release",
-    );
 }
 
 function validateConfiguredPlatform(state) {
@@ -563,7 +560,7 @@ function assertBaseline(actual, expected) {
     fail("Production baseline changed while candidate was being reviewed");
 }
 
-async function persistedContractChanges(state) {
+export async function persistedContractChanges(state) {
   const changedPaths = (
     await command("git", [
       "diff",
@@ -578,15 +575,15 @@ async function persistedContractChanges(state) {
   const contractPaths = changedPaths.filter((file) =>
     PERSISTED_CONTRACT_PATTERNS.some((pattern) => pattern.test(file)),
   );
-  let packageManifestClass = "unrelated";
-  if (changedPaths.includes("package.json")) {
+  const manifestClass = {};
+  for (const file of Object.keys(UNRELATED_MANIFEST_KEYS)) {
+    if (!changedPaths.includes(file)) continue;
     try {
-      const manifests = await Promise.all(
+      const [baseline, candidate] = await Promise.all(
         [state.baseline.sha, state.sha].map(async (sha) =>
-          JSON.parse(await command("git", ["show", `${sha}:package.json`])),
+          JSON.parse(await command("git", ["show", `${sha}:${file}`])),
         ),
       );
-      const [baseline, candidate] = manifests;
       const keys = new Set([
         ...Object.keys(baseline),
         ...Object.keys(candidate),
@@ -596,11 +593,11 @@ async function persistedContractChanges(state) {
       for (const key of keys) {
         if (
           JSON.stringify(baseline[key]) === JSON.stringify(candidate[key]) ||
-          key === "version" ||
-          key === "devDependencies"
+          UNRELATED_MANIFEST_KEYS[file].includes(key)
         )
           continue;
         if (
+          file === "package.json" &&
           [
             "dependencies",
             "optionalDependencies",
@@ -611,19 +608,20 @@ async function persistedContractChanges(state) {
           hasDependencyChange = true;
         else hasUnknownChange = true;
       }
-      packageManifestClass = hasUnknownChange
+      manifestClass[file] = hasUnknownChange
         ? "unclassified"
         : hasDependencyChange
           ? "contract"
           : "unrelated";
     } catch {
-      packageManifestClass = "unclassified";
+      manifestClass[file] = "unclassified";
     }
   }
-  if (packageManifestClass === "contract") contractPaths.push("package.json");
+  if (manifestClass["package.json"] === "contract")
+    contractPaths.push("package.json");
   const unclassifiedPaths = changedPaths.filter(
     (file) =>
-      !(file === "package.json" && packageManifestClass !== "unclassified") &&
+      !(file in manifestClass && manifestClass[file] !== "unclassified") &&
       !contractPaths.includes(file) &&
       !KNOWN_UNRELATED_PATTERNS.some((pattern) => pattern.test(file)),
   );
@@ -642,17 +640,15 @@ async function sourcePathExists(sha, sourcePath) {
 async function recoveryCompatibilityPlan(state) {
   const { changedPaths, contractPaths, unclassifiedPaths } =
     await persistedContractChanges(state);
-  if (state.productionDatabaseActive && unclassifiedPaths.length > 0)
+  if (unclassifiedPaths.length > 0)
     fail(
       `Cannot classify changed paths for production-data compatibility: ${unclassifiedPaths.join(", ")}`,
     );
-  const isCompatibilityRequired =
-    state.productionDatabaseActive && contractPaths.length > 0;
+  const isForwardOnly =
+    contractPaths.length > 0 &&
+    !(await sourcePathExists(state.sha, RECOVERY_COMPATIBILITY_TEST));
+  const isCompatibilityRequired = contractPaths.length > 0 && !isForwardOnly;
   if (isCompatibilityRequired) {
-    if (!(await sourcePathExists(state.sha, RECOVERY_COMPATIBILITY_TEST)))
-      fail(
-        `Persisted contract changed after production DB activation; ${RECOVERY_COMPATIBILITY_TEST} must exist in the exact release source`,
-      );
     const sourceTree = await command("git", [
       "rev-parse",
       `${exactSha(state.sha, "Release source SHA")}^{tree}`,
@@ -667,6 +663,7 @@ async function recoveryCompatibilityPlan(state) {
     contractPaths,
     unclassifiedPaths,
     required: isCompatibilityRequired,
+    forwardOnly: isForwardOnly,
   };
 }
 
@@ -848,6 +845,7 @@ async function recoveryReceiptFacts(state) {
     contractPaths,
     unclassifiedPaths,
     required: isCompatibilityRequired,
+    forwardOnly: isForwardOnly,
   } = await recoveryCompatibilityPlan(state);
   const integration = state.sourceQA?.scopes?.integration;
   if (
@@ -858,20 +856,13 @@ async function recoveryReceiptFacts(state) {
       "Recovery proof requires unit and integration receipts for one source tree",
     );
 
-  let policy, canRollback, compatibilityTest;
-  if (!state.productionDatabaseActive) {
-    policy = "pre-production-forward-only";
-    canRollback = contractPaths.length === 0 && unclassifiedPaths.length === 0;
-  } else if (contractPaths.length === 0) {
-    policy = "production-contract-unchanged";
-    canRollback = true;
-  } else {
-    policy = "production-targeted-integration-proof";
-    canRollback = true;
-    if (!isCompatibilityRequired)
-      fail(
-        "Production compatibility test is required for this contract change",
-      );
+  const policy = isForwardOnly
+    ? "production-forward-only"
+    : contractPaths.length === 0
+      ? "production-contract-unchanged"
+      : "production-targeted-integration-proof";
+  let compatibilityTest;
+  if (isCompatibilityRequired) {
     compatibilityTest = await verifyCompatibilityTestStep(
       state,
       state.compatibilityTest,
@@ -912,13 +903,13 @@ async function recoveryReceiptFacts(state) {
       projectId: state.projectId,
     },
     database: {
-      productionActive: state.productionDatabaseActive,
+      productionActive: true,
       policy,
       changedContractPaths: contractPaths,
       unclassifiedPaths,
       compatibilityTest,
       integration: scope(integration),
-      rollbackAllowed: canRollback,
+      rollbackAllowed: !isForwardOnly,
     },
     ci: {
       unit: scope(state.sourceQA.scopes.unit),
@@ -931,7 +922,6 @@ async function verifyRecoveryEvidence(
   state,
   expectedRunId = state.releaseRunId,
 ) {
-  assertProductionDatabaseMode(state);
   assertSourceQAReceipt(state, expectedRunId);
   const receipt = state.recoveryEvidence;
   if (
@@ -966,7 +956,7 @@ async function assertRollbackAllowed(
   const receipt = await verifyRecoveryEvidence(state, expectedRunId);
   if (!receipt.facts.database.rollbackAllowed)
     fail(
-      "The pre-production database has a forward-only contract change; do not restore old code against it. Use a forward fix",
+      "Production code rollback is not supported by the recovery receipt: forward-only release, unknown or incompatible database state",
     );
 }
 
@@ -1455,7 +1445,6 @@ async function stage() {
   const releaseMode = required("RELEASE_MODE");
   if (!["normal", "normal-retry", "hotfix"].includes(releaseMode))
     fail("Unsupported release mode");
-  const productionDatabaseActive = configuredProductionDatabaseMode();
   const authorization = process.env.RELEASE_AUTHORIZATION
     ? json(process.env.RELEASE_AUTHORIZATION, "manual release authorization")
     : undefined;
@@ -1535,7 +1524,6 @@ async function stage() {
       "Release run attempt",
     ),
     releaseMode,
-    productionDatabaseActive,
     baseline,
     ...(reviewedSource && { reviewedSource }),
     ...(authorization && { authorization }),
@@ -1911,10 +1899,15 @@ async function rollbackIfCompatible() {
   assertHealthySmoke(response.status, "Rolled-back production baseline");
 }
 
+function forwardOnlyNotice(facts) {
+  return facts.database.rollbackAllowed
+    ? ""
+    : ` Forward-only: no rollback to ${facts.baseline.sha}`;
+}
+
 async function recordRecoveryEvidence() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  assertProductionDatabaseMode(state);
   await verifySourceQANative(state);
   const plan = await recoveryCompatibilityPlan(state);
   state.compatibilityTest = await recordCompatibilityTest(state, plan);
@@ -1935,7 +1928,8 @@ async function recordRecoveryEvidence() {
     `Machine-verified recovery receipt created for ${facts.repository} ` +
     `run ${facts.release.runId}/${facts.release.runAttempt}, source ${facts.release.sourceSha}, ` +
     `baseline ${facts.baseline.deploymentId}, candidate ${facts.candidate.deploymentId}; ` +
-    `database policy ${facts.database.policy}, valid until ${state.recoveryEvidence.expiresAt}.`;
+    `database policy ${facts.database.policy}, valid until ${state.recoveryEvidence.expiresAt}.` +
+    forwardOnlyNotice(facts);
   if (process.env.GITHUB_STEP_SUMMARY)
     await (
       await import("node:fs/promises")
@@ -1946,7 +1940,6 @@ async function recordRecoveryEvidence() {
 async function planRecoveryCompatibility() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  assertProductionDatabaseMode(state);
   const plan = await recoveryCompatibilityPlan(state);
   await appendOutputs({
     required: String(plan.required),
@@ -2049,6 +2042,8 @@ async function finalize() {
       version,
     );
     // Keep the fallback: a version released without changesets has no entry.
+    const forwardOnly = forwardOnlyNotice(state.recoveryEvidence.facts).trim();
+    const text = [notes, forwardOnly].filter(Boolean).join("\n\n");
     await command("gh", [
       "release",
       "create",
@@ -2057,7 +2052,8 @@ async function finalize() {
       state.sha,
       "--title",
       tag,
-      ...(notes ? ["--notes", notes] : ["--generate-notes"]),
+      ...(text ? ["--notes", text] : []),
+      ...(notes ? [] : ["--generate-notes"]),
     ]);
   }
 }

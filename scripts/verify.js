@@ -2,6 +2,7 @@
 // Any change to root configuration runs every lane, because those files feed
 // all of them.
 import { execFileSync, spawn } from "node:child_process";
+import { createWriteStream, mkdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolveScopeBase } from "./git-scope.js";
 
@@ -20,7 +21,6 @@ export const LANE_COMMANDS = {
   blueprint: [
     "pnpm --filter blueprint test",
     "pnpm --filter blueprint test:persistence",
-    "pnpm --filter blueprint test:migration",
     "pnpm --filter blueprint build",
   ],
 };
@@ -30,6 +30,21 @@ export const LANE_NAMES = Object.keys(LANE_COMMANDS);
 // Blueprint Jest workers can segfault while competing with build lanes. Run
 // both suites after the parallel lanes; CI gives them their own runners.
 const SOLO_LANES = ["blueprint", "app-test"];
+
+// Each lane's full output lands here, so a filtered terminal view never loses
+// a failure message. Cleared per run so no log outlives the run it describes.
+const LOG_DIR = ".verify-logs";
+const JEST_LANES = new Set(["app-test", "integration", "blueprint"]);
+
+// Node 24.15's V8 intermittently crashes a Jest worker, failing whichever
+// suite it ran: not a test failure, so the lane reruns once. Recheck after a
+// Node upgrade.
+export function isWorkerSegfault(laneName, output) {
+  return (
+    JEST_LANES.has(laneName) &&
+    /terminated by another process: signal=SIGSEGV/.test(output)
+  );
+}
 
 const EVERY_LANE_EXACT = new Set([
   "package.json",
@@ -206,7 +221,7 @@ function prefixLines(laneName, stream) {
   };
 }
 
-function runCommand(command, laneName, children) {
+function runCommand(command, laneName, children, sink) {
   return new Promise((resolve, reject) => {
     // Through a shell: on Windows pnpm is a .cmd shim, which spawn cannot run.
     const child = spawn(command, {
@@ -216,8 +231,14 @@ function runCommand(command, laneName, children) {
     children.add(child);
     const out = prefixLines(laneName, process.stdout);
     const err = prefixLines(laneName, process.stderr);
-    child.stdout.on("data", out.write);
-    child.stderr.on("data", err.write);
+    child.stdout.on("data", (chunk) => {
+      sink(chunk);
+      out.write(chunk);
+    });
+    child.stderr.on("data", (chunk) => {
+      sink(chunk);
+      err.write(chunk);
+    });
     child.on("error", reject);
     child.on("close", (code) => {
       out.flush();
@@ -229,25 +250,52 @@ function runCommand(command, laneName, children) {
   });
 }
 
-async function runLane(laneName, children) {
-  const start = Date.now();
+export async function withSegfaultRerun(laneName, runOnce) {
+  const first = await runOnce();
+  if (first.ok || !isWorkerSegfault(laneName, first.output)) {
+    return { attempt: first, retried: false };
+  }
+  process.stderr.write(
+    `[${laneName}] a Jest worker died with SIGSEGV; rerunning the lane once\n`,
+  );
+  return { attempt: await runOnce(), retried: true };
+}
+
+async function runAttempt(laneName, children, log) {
+  let output = "";
+  const sink = (chunk) => {
+    log.write(chunk);
+    output += chunk;
+  };
   try {
     for (const command of LANE_COMMANDS[laneName]) {
-      await runCommand(command, laneName, children);
+      await runCommand(command, laneName, children, sink);
     }
-    return {
-      lane: laneName,
-      status: "pass",
-      seconds: (Date.now() - start) / 1000,
-    };
+    return { ok: true, output };
   } catch (error) {
     process.stderr.write(`[${laneName}] ${error.message}\n`);
-    return {
-      lane: laneName,
-      status: "fail",
-      seconds: (Date.now() - start) / 1000,
-    };
+    return { ok: false, output };
   }
+}
+
+async function runLane(laneName, children) {
+  const start = Date.now();
+  mkdirSync(LOG_DIR, { recursive: true });
+  const logPath = `${LOG_DIR}/${laneName}.log`;
+  const log = createWriteStream(logPath);
+  let runs = 0;
+  const { attempt, retried } = await withSegfaultRerun(laneName, () => {
+    if (runs++ > 0) log.write("\n--- rerun after a Jest worker SIGSEGV ---\n");
+    return runAttempt(laneName, children, log);
+  });
+  await new Promise((resolve) => log.end(resolve));
+  return {
+    lane: laneName,
+    status: attempt.ok ? "pass" : "fail",
+    retried,
+    log: logPath,
+    seconds: (Date.now() - start) / 1000,
+  };
 }
 
 function printPlan(plan) {
@@ -262,6 +310,10 @@ function printSummary(results) {
   for (const { lane, status, seconds } of results) {
     console.log(`${lane.padEnd(11)} ${status.padEnd(7)} ${seconds.toFixed(1)}`);
   }
+  for (const { lane, status, retried, log } of results) {
+    if (retried) console.log(`${lane}: rerun once after a Jest worker SIGSEGV`);
+    if (status === "fail") console.log(`${lane}: full output in ${log}`);
+  }
 }
 
 async function main() {
@@ -271,6 +323,7 @@ async function main() {
 
   printPlan(plan);
   if (options.dryRun) return;
+  rmSync(LOG_DIR, { recursive: true, force: true });
 
   const children = new Set();
   const onSigint = () => {

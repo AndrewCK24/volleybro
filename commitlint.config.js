@@ -22,7 +22,7 @@ const commitlintConfig = {
     // scope-enum matches exact-case; lower-casing first stops a retired name slipping past in another case.
     "scope-case": [2, "always", "lower-case"],
     "scope-enum": [2, "never", RETIRED_TOOL_SCOPES],
-    "blueprint-change-trailer": [2, "always"],
+    "change-branch-trailer": [2, "always"],
     "no-ai-attribution": [2, "always"],
     "footer-lookalike": [2, "always"],
   },

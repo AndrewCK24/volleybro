@@ -19,7 +19,7 @@ const ENTRY_SQL = `
 
 const LIVE_CONTENT_SQL = `
   SELECT id, slug, status, deleted_at, live_revision_id, published_at,
-         title, description, linear_issue, pull_requests, blocks
+         title, description, linear_issue, pull_requests, capabilities, blocks
   FROM ${CHANGE_TABLE}
   WHERE id = ?
 `;
@@ -152,6 +152,10 @@ function publishedContent(entry, changeDataSchema) {
     pull_requests: parseJsonArray(
       entry.pull_requests ?? [],
       `pull_requests for ${entry.slug}`,
+    ),
+    capabilities: parseJsonArray(
+      entry.capabilities ?? [],
+      `capabilities for ${entry.slug}`,
     ),
     blocks: parseJsonArray(entry.blocks, `blocks for ${entry.slug}`),
     publishedAt: entry.published_at,

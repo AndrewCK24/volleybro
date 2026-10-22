@@ -46,7 +46,7 @@ flowchart TB
 
 ## Test Value
 
-A test earns its maintenance cost only by protecting observable behaviour, a credible regression, or an independent contract. The `test-audit` skill (`.agents/skills/test-audit/`) holds the method; this section is the rule it serves.
+A test earns its maintenance cost only by protecting observable behaviour, a credible regression, or an independent contract. The `test-audit` skill (`.agents/skills/test-audit/`) holds the method, read through [its adapter](agents/test-audit.md); this section is the rule it serves.
 
 **Before writing a test,** answer five questions; a missing answer means the test is not written yet:
 
@@ -58,7 +58,7 @@ A test earns its maintenance cost only by protecting observable behaviour, a cre
 
 A test that asserts values it built itself, restates the implementation, or would break under a behaviour-preserving refactor fails the gate. A regression test must fail on the code before the fix.
 
-**Before deleting or moving a test,** record what it can detect, which test now owns that contract (the keeper), or why no contract exists. A Sharded Change batch that deletes or moves tests follows the skill's campaign: a per-test ledger, a keeper per contract, and a preservation review in which each contract left to its keeper is proven by one deliberate mutation of the production code that turns the keeper red. The ledger becomes the Review tab's deletion table. Per-file coverage shows code still runs; only the mutation shows a broken contract is still caught.
+**Before deleting or moving a test,** record what it can detect, which test now owns that contract (the keeper), or why no contract exists. A shard of a Change that deletes or moves tests follows the skill's campaign: a per-test ledger, a keeper per contract, and a preservation review in which each contract left to its keeper is proven by one deliberate mutation of the production code that turns the keeper red. The ledger becomes the Review tab's deletion table. Per-file coverage shows code still runs; only the mutation shows a broken contract is still caught.
 
 ---
 
@@ -228,6 +228,8 @@ New components in `ui/` and `custom/` must include a Storybook story before the 
 ## Where Tests Run
 
 CI runs every check on every pull request and is the authority (ADR-0092). Locally, `pnpm verify` runs format, lint, type checks, workflow conformance and unit tests. `pnpm verify:all` runs each other lane — the app build and unit tests, the workflow tests, the integration tests, the Blueprint tests — only when the diff against the remote default integration branch reaches it, and every lane when root configuration changed; `pnpm verify:all --full` runs everything. No local gate builds the Blueprint site. The integration tests download a `mongodb-memory-server` binary on first run.
+
+Each run replaces `.verify-logs/` with every lane's full output (`<lane>.log`, gitignored); read it rather than rerunning a failed gate. A Jest lane whose worker crashes with `SIGSEGV` reruns once on its own, and the summary says so.
 
 ---
 

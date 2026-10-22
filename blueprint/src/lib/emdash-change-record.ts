@@ -2,9 +2,14 @@ import { z } from "zod";
 import { diagramBlockSchema } from "./diagram-schema.ts";
 import { annotatedDiffBlockSchema } from "./annotated-diff-block.ts";
 import { stepWalkthroughBlockSchema } from "./step-walkthrough-block.ts";
+import {
+  interactiveFlowchartBlockFieldsSchema,
+  interactiveFlowchartBlockFieldsShape,
+} from "./interactive-flowchart-data.ts";
 
-const portableSpanSchema = z.strictObject({
-  _key: z.string().optional(),
+// Core Portable Text blocks are owned by EmDash, whose editor adds keys such as
+// listId and listStart. They stay loose: only the fields our renderer reads are checked.
+const portableSpanSchema = z.looseObject({
   _type: z.literal("span"),
   marks: z.array(z.string().min(1)).optional(),
   text: z.string(),
@@ -22,122 +27,50 @@ const documentAnchorIdSchema = z
   .string()
   .regex(/^[\p{L}\p{N}][\p{L}\p{M}\p{N}_:.-]*$/u);
 
-const markDefinitionSchema = z.strictObject({
-  _key: z.string().min(1),
-  _type: z.literal("link"),
-  href: safeHrefSchema,
-  blank: z.boolean().optional(),
-});
-
-const textBlockSchema = z
-  .strictObject({
-    _key: z.string().optional(),
-    id: documentAnchorIdSchema.optional(),
-    _type: z.literal("block"),
-    children: z.array(portableSpanSchema),
-    markDefs: z.array(markDefinitionSchema).optional(),
-    style: z
-      .enum(["normal", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"])
-      .optional(),
-    textAlign: z.enum(["left", "center", "right", "justify"]).optional(),
-    listItem: z.enum(["bullet", "number"]).optional(),
-    level: z.number().int().min(1).optional(),
-  })
-  .superRefine((block, context) => {
-    const linkKeys = new Set(
-      (block.markDefs ?? []).map((definition) => definition._key),
-    );
-    for (const [spanIndex, span] of block.children.entries()) {
-      for (const mark of span.marks ?? []) {
-        if (
-          [
-            "strong",
-            "em",
-            "code",
-            "underline",
-            "strike-through",
-            "superscript",
-            "subscript",
-          ].includes(mark)
-        )
-          continue;
-        if (!linkKeys.has(mark)) {
-          context.addIssue({
-            code: "custom",
-            path: ["children", spanIndex, "marks"],
-            message: "Unknown Portable Text mark.",
-          });
-        }
-      }
-    }
-  });
-
-const imageBlockSchema = z.strictObject({
-  _key: z.string().min(1).optional(),
-  _type: z.literal("image"),
-  asset: z.strictObject({
-    _type: z.literal("reference"),
-    _ref: z.string().min(1),
-    url: z.string().regex(/^\/_emdash\/api\/media\/file\/[A-Za-z0-9._-]+$/u),
-    provider: z.literal("local").optional(),
-  }),
-  alt: z.string().optional(),
-  caption: z.string().optional(),
-  title: z.string().optional(),
-  width: z.number().positive().optional(),
-  height: z.number().positive().optional(),
-  displayWidth: z.number().positive().optional(),
-  displayHeight: z.number().positive().optional(),
-  alignment: z.enum(["left", "center", "right", "wide", "full"]).optional(),
-  link: z
-    .union([
-      safeHrefSchema,
-      z.strictObject({
-        href: safeHrefSchema,
-        blank: z.boolean().optional(),
-      }),
-    ])
-    .optional(),
-});
-
-const codeBlockSchema = z.strictObject({
-  _key: z.string().min(1).optional(),
-  _type: z.literal("code"),
-  code: z.string(),
-  language: z.string().optional(),
-  filename: z.string().optional(),
-});
-
-const tableMarkDefinitionSchema = z.looseObject({
+const markDefinitionSchema = z.looseObject({
   _key: z.string().min(1),
   _type: z.string().min(1),
   href: safeHrefSchema.optional(),
 });
 
-const tableCellSchema = z.strictObject({
-  _type: z.literal("tableCell"),
-  _key: z.string().min(1),
-  content: z.array(portableSpanSchema),
-  markDefs: z.array(tableMarkDefinitionSchema).optional(),
-  isHeader: z.boolean().optional(),
-  colspan: z.number().int().min(1).optional(),
-  rowspan: z.number().int().min(1).optional(),
-  colwidth: z.array(z.number().positive()).optional(),
-  textAlign: z.enum(["left", "center", "right", "justify"]).optional(),
+const textBlockSchema = z.looseObject({
+  id: documentAnchorIdSchema.optional(),
+  _type: z.literal("block"),
+  children: z.array(portableSpanSchema),
+  markDefs: z.array(markDefinitionSchema).optional(),
 });
 
-const tableBlockSchema = z.strictObject({
-  _key: z.string().min(1).optional(),
+const imageBlockSchema = z.looseObject({
+  _type: z.literal("image"),
+  asset: z.looseObject({
+    _ref: z.string().min(1),
+    url: z
+      .string()
+      .regex(/^\/_emdash\/api\/media\/file\/[A-Za-z0-9._-]+$/u)
+      .optional(),
+  }),
+  link: z
+    .union([safeHrefSchema, z.looseObject({ href: safeHrefSchema })])
+    .optional(),
+});
+
+const codeBlockSchema = z.looseObject({
+  _type: z.literal("code"),
+  code: z.string(),
+});
+
+const tableBlockSchema = z.looseObject({
   _type: z.literal("table"),
   rows: z.array(
-    z.strictObject({
-      _type: z.literal("tableRow"),
-      _key: z.string().min(1),
-      cells: z.array(tableCellSchema),
+    z.looseObject({
+      cells: z.array(
+        z.looseObject({
+          content: z.array(portableSpanSchema),
+          markDefs: z.array(markDefinitionSchema).optional(),
+        }),
+      ),
     }),
   ),
-  hasHeaderRow: z.boolean().optional(),
-  markDefs: z.array(tableMarkDefinitionSchema).optional(),
 });
 
 const standardBlockSchema = z.discriminatedUnion("_type", [
@@ -158,12 +91,16 @@ export type PortableTextFrameBlock = z.infer<
   typeof portableTextFrameBlockSchema
 >;
 
-const versionedBlock = <S extends z.ZodRawShape>(shape: S) =>
-  z.strictObject({ ...shape, _key: z.string().min(1).optional() });
+// Stored content may still carry _version; it is accepted and never read.
+const typedBlock = <S extends z.ZodRawShape>(shape: S) =>
+  z.strictObject({
+    ...shape,
+    _key: z.string().min(1).optional(),
+    _version: z.number().optional(),
+  });
 
-const tldrBlockSchema = versionedBlock({
+const tldrBlockSchema = typedBlock({
   _type: z.literal("tldr"),
-  _version: z.literal(1),
   blocks: z.array(standardBlockSchema),
 });
 
@@ -173,7 +110,7 @@ const MAX_DISCLOSURE_DEPTH = 8;
 
 export interface DisclosureBlock {
   _type: "disclosure";
-  _version: 1;
+  _version?: number;
   _key?: string;
   id?: string;
   summary: string;
@@ -226,9 +163,8 @@ const disclosureBlockSchema: z.ZodType<DisclosureBlock> = z.preprocess(
     return input;
   },
   z.lazy(() =>
-    versionedBlock({
+    typedBlock({
       _type: z.literal("disclosure"),
-      _version: z.literal(1),
       id: documentAnchorIdSchema.optional(),
       summary: z.string().trim().min(1),
       blocks: z.array(blockSchema),
@@ -259,7 +195,7 @@ const variantChoiceSchema = z.strictObject({
     ),
 });
 
-export const variantGalleryBlockSchema = versionedBlock({
+export const variantGalleryBlockSchema = typedBlock({
   _type: z.literal("variant_gallery"),
   version: z.literal(1),
   title: z.string().min(1).max(200),
@@ -411,35 +347,39 @@ const blockSchemaBase = z.union([
   disclosureBlockSchema,
   annotatedDiffBlockSchema,
   stepWalkthroughBlockSchema,
-  versionedBlock({
+  typedBlock({
     _type: z.literal("decision_cards"),
-    _version: z.literal(1),
     records: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("risk_table"),
-    _version: z.literal(1),
     risks: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("scenario"),
-    _version: z.literal(1),
     id: z.string().min(1),
     given: z.string(),
     when: z.string(),
     then: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("scenario_cards"),
-    _version: z.literal(1),
     items: z.string(),
   }),
-  versionedBlock({
+  typedBlock({
     _type: z.literal("interactive_flowchart"),
-    _version: z.literal(1),
-    nodes: z.string(),
-    edges: z.string(),
-    details: z.string(),
+    ...interactiveFlowchartBlockFieldsShape,
+  }).superRefine((block, context) => {
+    const parsed = interactiveFlowchartBlockFieldsSchema.safeParse({
+      source: block.source,
+      details: block.details,
+      paths: block.paths,
+    });
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        context.addIssue({ ...issue, path: issue.path });
+      }
+    }
   }),
 ]);
 
@@ -470,6 +410,14 @@ const changeDataBaseSchema = z.strictObject({
             /^https:\/\/github\.com\/andrewck24\/volleybro\/pull\/[1-9]\d*$/u,
           ),
       }),
+    )
+    .max(12)
+    .default([]),
+  capabilities: z
+    .array(
+      z
+        .string()
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/u),
     )
     .max(12)
     .default([]),
@@ -510,31 +458,16 @@ const changeDataBaseSchema = z.strictObject({
   terms: z.record(z.string(), z.array(taxonomyTermSchema)).optional(),
 });
 
-function requireIssueForAuthoredContent(
-  value: { linear_issue?: string; blocks: ChangeBlock[] },
-  context: z.RefinementCtx,
-) {
-  if (!value.linear_issue) {
-    context.addIssue({
-      code: "custom",
-      path: ["linear_issue"],
-      message: "Authored Changes require a Linear issue.",
-    });
-  }
-}
-
-export const changeDataSchema = changeDataBaseSchema
-  .superRefine(requireIssueForAuthoredContent)
-  .transform((data) => ({
-    ...data,
-    description: data.description ?? undefined,
-  }));
+export const changeDataSchema = changeDataBaseSchema.transform((data) => ({
+  ...data,
+  description: data.description ?? undefined,
+}));
 
 export type ChangeBlock = z.infer<typeof blockSchema>;
 export type ChangeData = z.infer<typeof changeDataSchema>;
 export type EmDashChangeEntry = { id: string; data: ChangeData };
 
-const acceptedContentBaseSchema = z.strictObject({
+export const acceptedContentSchema = z.strictObject({
   title: z.string().trim().min(1),
   description: z.string().optional(),
   linear_issue: z
@@ -543,10 +476,6 @@ const acceptedContentBaseSchema = z.strictObject({
     .optional(),
   blocks: z.array(blockSchema),
 });
-
-export const acceptedContentSchema = acceptedContentBaseSchema.superRefine(
-  requireIssueForAuthoredContent,
-);
 
 export function omitCmsKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(omitCmsKeys);

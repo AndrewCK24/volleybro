@@ -6,6 +6,12 @@ z.config(z.locales.en());
 
 const nonEmptyText = z.string().min(1);
 const decisionId = z.string().regex(/^[0-9]{4}$/);
+const PULL_REQUEST_URL =
+  /^https:\/\/github\.com\/andrewck24\/volleybro\/pull\/([1-9]\d*)$/u;
+
+export function pullRequestNumber(value: string): string | undefined {
+  return value.match(PULL_REQUEST_URL)?.[1];
+}
 
 const decisionRecordSchema = z.strictObject({
   schemaVersion: z.literal(2),
@@ -28,7 +34,9 @@ const decisionRecordSchema = z.strictObject({
     .string()
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
     .optional(),
-  supersededBy: decisionId.optional(),
+  supersededBy: z
+    .union([decisionId, z.string().regex(PULL_REQUEST_URL)])
+    .optional(),
 });
 
 export type DecisionRecord = z.infer<typeof decisionRecordSchema>;

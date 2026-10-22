@@ -27,6 +27,7 @@ function createDatabase(t) {
       description TEXT,
       linear_issue TEXT,
       pull_requests TEXT NOT NULL DEFAULT '[]',
+      capabilities TEXT NOT NULL DEFAULT '[]',
       blocks TEXT NOT NULL DEFAULT '[]'
     );
   `);

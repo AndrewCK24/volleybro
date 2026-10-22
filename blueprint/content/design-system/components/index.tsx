@@ -4,35 +4,8 @@ import { RiskTable } from "@/components/risk-table";
 import { Scenario } from "@/components/scenario";
 import { TLDR } from "@/components/tldr";
 
-const flowchartNodes = [
-  { id: "propose", label: "Propose", x: 90, y: 60 },
-  { id: "review", label: "Review", x: 250, y: 190 },
-  {
-    id: "gate",
-    label: "Approved?",
-    x: 90,
-    y: 320,
-    shape: "diamond" as const,
-    w: 130,
-    h: 64,
-  },
-  {
-    id: "merge",
-    label: "Merge",
-    x: 90,
-    y: 450,
-    sublabel: "PR → main (integration)",
-  },
-  { id: "ship", label: "Ship", x: 90, y: 580 },
-];
-
-const flowchartEdges = [
-  { from: "propose", to: "review", label: "open PR" },
-  { from: "review", to: "gate" },
-  { from: "gate", to: "merge", label: "yes" },
-  { from: "merge", to: "ship", label: "version PR + release gates" },
-  { from: "gate", to: "propose", label: "changes", dashed: true },
-];
+const flowchartSource =
+  'flowchart TB\n  propose["Propose"]\n  review["Review"]\n  gate{"Approved?"}\n  merge["Merge\\nPR → main (integration)"]\n  ship["Ship"]\n  propose --> |"open PR"| review\n  review --> gate\n  gate --> |"yes"| merge\n  merge --> |"version PR + release gates"| ship\n  gate -.-> |"changes"| propose';
 
 export const flowchartDetails: Record<string, { title: string; body: string }> =
   {
@@ -93,7 +66,7 @@ export default function ComponentLibraryShowcase({
       <section>
         <h3>Change content and PR review</h3>
         <p>
-          An EmDash Change entry holds the accepted G1 specification. Ordinary
+          An EmDash Change entry holds the reader-facing Change page. Ordinary
           content uses Portable Text; Blueprint typed blocks present decisions,
           risks, scenarios and diagrams.
         </p>
@@ -152,8 +125,7 @@ export default function ComponentLibraryShowcase({
 
       <h3>InteractiveFlowchart</h3>
       <InteractiveFlowchart
-        nodes={flowchartNodes}
-        edges={flowchartEdges}
+        source={flowchartSource}
         details={flowchartDetails}
       />
     </div>

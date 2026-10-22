@@ -1,5 +1,5 @@
 import { decisionsByIdFrom } from "@/lib/decision-lookup";
-import type { DecisionRecord } from "@/lib/decision-record";
+import { pullRequestNumber, type DecisionRecord } from "@/lib/decision-record";
 
 export type DecisionCardEntry = {
   record: DecisionRecord;
@@ -14,6 +14,9 @@ export function decisionCardsFor(
   return decisionsByIdFrom(records, ids).map((record) => {
     const replacement = record.supersededBy;
     if (!replacement) return { record };
+    if (pullRequestNumber(replacement)) {
+      return { record, supersededHref: replacement };
+    }
     if (idsOnPage.has(replacement)) {
       return { record, supersededHref: `#adr-${replacement}` };
     }

@@ -27,8 +27,20 @@ describe("parseDecisionRecord", () => {
     expect(parseDecisionRecord(superseded)).toEqual(superseded);
   });
 
+  it("accepts a pull request of this repository as the replacement", () => {
+    const superseded = {
+      ...decision,
+      supersededBy: "https://github.com/andrewck24/volleybro/pull/610",
+    };
+    expect(parseDecisionRecord(superseded)).toEqual(superseded);
+  });
+
   it.each([
     { ...decision, supersededBy: "two-gate-workflow" },
+    {
+      ...decision,
+      supersededBy: "https://github.com/another/repo/pull/610",
+    },
     { ...decision, id: "decision-1" },
     { ...decision, schemaVersion: 3 },
     {

@@ -8,5 +8,6 @@
   "consequences": [
     "A major dependency version alone neither grants nor denies Fast-path eligibility."
   ],
-  "originChange": "release-train"
+  "originChange": "release-train",
+  "supersededBy": "https://github.com/andrewck24/volleybro/pull/610"
 }

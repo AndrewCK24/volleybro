@@ -1,7 +1,12 @@
 import { ChangeMetricsBadges } from "@/components/change-metrics-badges";
+import { ChangeLinkBadges } from "@/components/change-link-badges";
 import { useChangeSummaries } from "@/lib/change-summary-client";
 import { Badge } from "@/components/ui/badge";
-import type { ChangeMetrics, ChangeStatus } from "@/lib/github-change-data";
+import type {
+  ChangeMetrics,
+  ChangeStatus,
+  ChangeSummary,
+} from "@/lib/github-change-data";
 
 export function ChangeHeader({
   title,
@@ -10,6 +15,8 @@ export function ChangeHeader({
   mergedAt: initialMergedAt,
   metrics: initialMetrics,
   scenarioCount,
+  pullRequests: initialPullRequests,
+  capabilities: initialCapabilities,
 }: {
   title: string;
   slug?: string;
@@ -17,19 +24,23 @@ export function ChangeHeader({
   mergedAt?: string;
   metrics?: ChangeMetrics;
   scenarioCount: number;
+  pullRequests?: ChangeSummary["pullRequests"];
+  capabilities?: ChangeSummary["capabilities"];
 }) {
   const remote = useChangeSummaries(Boolean(slug));
   const live = remote.changes?.find((change) => change.slug === slug);
   const status = slug ? live?.status : initialStatus;
   const mergedAt = slug ? live?.mergedAt : initialMergedAt;
   const metrics = slug ? live?.metrics : initialMetrics;
+  const pullRequests = live?.pullRequests ?? initialPullRequests ?? [];
+  const capabilities = live?.capabilities ?? initialCapabilities ?? [];
   return (
     <header className="not-prose mb-6 flex flex-col gap-3">
       <h1 className="text-3xl font-semibold">{title}</h1>
       <div className="flex flex-wrap items-center gap-2">
         {status ? (
           <Badge variant={status === "merged" ? "secondary" : "outline"}>
-            {status === "merged" ? "已合併" : "進行中"}
+            {status === "merged" ? "已完成" : "進行中"}
           </Badge>
         ) : (
           <span className="text-xs text-muted-foreground" aria-live="polite">
@@ -48,6 +59,10 @@ export function ChangeHeader({
         )}
       </div>
       <ChangeMetricsBadges metrics={metrics} scenarioCount={scenarioCount} />
+      <ChangeLinkBadges
+        pullRequests={pullRequests}
+        capabilities={capabilities}
+      />
     </header>
   );
 }
