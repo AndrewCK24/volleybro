@@ -2278,3 +2278,78 @@ test("package.json scripts and packageManager changes are unrelated; unknown key
   );
   assert.deepEqual(unknown.unclassifiedPaths, ["package.json"]);
 });
+
+async function expireRecoveryReceipt(file, mutate = () => {}) {
+  const state = JSON.parse(await readFile(file, "utf8"));
+  const week = 7 * 24 * 60 * 60 * 1000;
+  state.recoveryEvidence.issuedAt = new Date(
+    Date.now() - 2 * week,
+  ).toISOString();
+  state.recoveryEvidence.expiresAt = new Date(Date.now() - week).toISOString();
+  mutate(state);
+  await writeFile(file, JSON.stringify(state));
+}
+
+test("finalize tags after the recovery receipt expired but rejects a receipt bound to another run", async (t) => {
+  const f = await fixture(t);
+  const { finalState } = await prepareFinalRelease(f);
+  const withProduction = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    jobs: {
+      ...withProduction.jobs,
+      9: withProduction.jobs[9].map((job) =>
+        job.id === 504
+          ? { ...job, status: "completed", conclusion: "success" }
+          : job,
+      ),
+    },
+  });
+  const foreign = path.join(f.root, "foreign-final.json");
+  await writeFile(foreign, await readFile(finalState, "utf8"));
+  await expireRecoveryReceipt(foreign, (state) => {
+    state.recoveryEvidence.runId = "10";
+  });
+  const denied = run(f, "finalize", { RELEASE_STATE_FILE: foreign });
+  assert.notEqual(denied.status, 0);
+  assert.match(denied.stderr, /bound to another release run/);
+  await expireRecoveryReceipt(finalState);
+  const result = run(f, "finalize", { RELEASE_STATE_FILE: finalState });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(f.git(["rev-parse", "v1.0.1"]), f.merge);
+});
+
+test("production QA recording survives an expired recovery receipt", async (t) => {
+  const f = await fixture(t);
+  const { accepted } = await prepareAcceptedRelease(f);
+  await expireRecoveryReceipt(accepted);
+  await updateApi(f, { alias: "dpl_cand" });
+  const api = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    jobs: {
+      ...api.jobs,
+      9: [
+        ...api.jobs[9],
+        workflowJob(504, "Accept production QA", "in_progress", null),
+      ],
+    },
+    approvals: { ...api.approvals, 9: [...api.approvals[9], approval("qa")] },
+  });
+  const result = run(f, "record-production-qa", {
+    RELEASE_STATE_FILE: accepted,
+    RELEASE_FINAL_STATE_FILE: path.join(f.root, "release-final-state.json"),
+    GITHUB_JOB: "production-acceptance",
+  });
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("promote and rollback still reject an expired recovery receipt", async (t) => {
+  const f = await fixture(t);
+  const { accepted } = await prepareAcceptedRelease(f);
+  await expireRecoveryReceipt(accepted);
+  await updateApi(f, { alias: "dpl_cand" });
+  for (const action of ["promote", "rollback-if-compatible"]) {
+    const denied = run(f, action, { RELEASE_STATE_FILE: accepted });
+    assert.notEqual(denied.status, 0, action);
+    assert.match(denied.stderr, /expired/, action);
+  }
+});

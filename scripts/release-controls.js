@@ -949,6 +949,18 @@ async function verifyRecoveryEvidence(
   return receipt;
 }
 
+// Finalize and production QA never move production, so the receipt's 7-day expiry must not block them.
+function assertBoundRecoveryFacts(state) {
+  assertSourceQAReceipt(state);
+  const receipt = state.recoveryEvidence;
+  if (
+    receipt?.schemaVersion !== 2 ||
+    receipt.runId !== String(state.releaseRunId)
+  )
+    fail("Recovery receipt is missing or bound to another release run");
+  return receipt.facts;
+}
+
 async function assertRollbackAllowed(
   state,
   expectedRunId = state.releaseRunId,
@@ -1965,7 +1977,7 @@ function assertProductionQAReceipt(state) {
 async function recordProductionQA() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  await verifyRecoveryEvidence(state);
+  assertBoundRecoveryFacts(state);
   const production = await currentAlias();
   if (
     production.deploymentId !== state.candidateId ||
@@ -1988,7 +2000,7 @@ async function finalize() {
   const state = await loadState();
   validateConfiguredPlatform(state);
   assertProductionQAReceipt(state);
-  await verifyRecoveryEvidence(state);
+  const facts = assertBoundRecoveryFacts(state);
   await verifyProtectedJobReceipt(
     state.productionQA.approval,
     state.releaseRunId,
@@ -2042,7 +2054,7 @@ async function finalize() {
       version,
     );
     // Keep the fallback: a version released without changesets has no entry.
-    const forwardOnly = forwardOnlyNotice(state.recoveryEvidence.facts).trim();
+    const forwardOnly = forwardOnlyNotice(facts).trim();
     const text = [notes, forwardOnly].filter(Boolean).join("\n\n");
     await command("gh", [
       "release",
