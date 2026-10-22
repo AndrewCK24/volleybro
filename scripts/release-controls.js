@@ -921,6 +921,7 @@ async function recoveryReceiptFacts(state) {
 async function verifyRecoveryEvidence(
   state,
   expectedRunId = state.releaseRunId,
+  { ignoreExpiry = false } = {},
 ) {
   assertSourceQAReceipt(state, expectedRunId);
   const receipt = state.recoveryEvidence;
@@ -931,13 +932,14 @@ async function verifyRecoveryEvidence(
     !Number.isFinite(Date.parse(receipt.issuedAt)) ||
     !Number.isFinite(Date.parse(receipt.expiresAt)) ||
     Date.parse(receipt.issuedAt) > Date.now() + 5 * 60 * 1000 ||
-    Date.parse(receipt.expiresAt) <= Date.now() ||
     Date.parse(receipt.expiresAt) - Date.parse(receipt.issuedAt) >
       RECOVERY_RECEIPT_TTL_MS
   )
     fail(
-      "Recovery receipt is missing, expired, or bound to another release run",
+      "Recovery receipt is missing, malformed, or bound to another release run",
     );
+  if (!ignoreExpiry && Date.parse(receipt.expiresAt) <= Date.now())
+    fail("Recovery receipt expired");
   const facts = await recoveryReceiptFacts(state);
   if (JSON.stringify(receipt.facts) !== JSON.stringify(facts))
     fail(
@@ -1965,7 +1967,10 @@ function assertProductionQAReceipt(state) {
 async function recordProductionQA() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  await verifyRecoveryEvidence(state);
+  // Finalize and production QA never move production, so receipt expiry must not block them.
+  await verifyRecoveryEvidence(state, state.releaseRunId, {
+    ignoreExpiry: true,
+  });
   const production = await currentAlias();
   if (
     production.deploymentId !== state.candidateId ||
@@ -1988,7 +1993,9 @@ async function finalize() {
   const state = await loadState();
   validateConfiguredPlatform(state);
   assertProductionQAReceipt(state);
-  await verifyRecoveryEvidence(state);
+  const { facts } = await verifyRecoveryEvidence(state, state.releaseRunId, {
+    ignoreExpiry: true,
+  });
   await verifyProtectedJobReceipt(
     state.productionQA.approval,
     state.releaseRunId,
@@ -2042,7 +2049,7 @@ async function finalize() {
       version,
     );
     // Keep the fallback: a version released without changesets has no entry.
-    const forwardOnly = forwardOnlyNotice(state.recoveryEvidence.facts).trim();
+    const forwardOnly = forwardOnlyNotice(facts).trim();
     const text = [notes, forwardOnly].filter(Boolean).join("\n\n");
     await command("gh", [
       "release",
