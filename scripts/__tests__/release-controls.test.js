@@ -738,6 +738,31 @@ test("recovery receipt binds the source run, attempt, baseline, candidate, and d
   assert.ok(Date.parse(state.recoveryEvidence.expiresAt) > Date.now());
 });
 
+test("persisted contract changes without a compatibility suite promote as forward-only and refuse rollback", async (t) => {
+  const f = await fixture(t, { persistedContract: true });
+  const { accepted } = await prepareAcceptedRelease(f);
+  const state = JSON.parse(await readFile(accepted, "utf8"));
+  assert.equal(
+    state.recoveryEvidence.facts.database.policy,
+    "production-forward-only",
+  );
+  assert.equal(state.recoveryEvidence.facts.database.rollbackAllowed, false);
+  assert.equal(
+    state.recoveryEvidence.facts.database.compatibilityTest,
+    undefined,
+  );
+  await updateApi(f, { alias: "dpl_cand" });
+  const callsBefore = JSON.parse(await readFile(f.statePath, "utf8")).calls;
+  const denied = run(f, "rollback-if-compatible", {
+    RELEASE_STATE_FILE: accepted,
+  });
+  assert.notEqual(denied.status, 0);
+  assert.match(denied.stderr, /forward-only release/);
+  const after = JSON.parse(await readFile(f.statePath, "utf8"));
+  assert.equal(after.alias, "dpl_cand");
+  assert.deepEqual(after.calls, callsBefore);
+});
+
 test("persisted contract changes require exact-source integration proof", async (t) => {
   const f = await fixture(t, { persistedContract: true });
   const { env: sourceEnv } = await prepareSourceRelease(f);
@@ -746,9 +771,8 @@ test("persisted contract changes require exact-source integration proof", async 
     ...sourceEnv,
     RELEASE_ACCEPTED_STATE_FILE: accepted,
   });
-  assert.notEqual(missing.status, 0);
-  assert.match(missing.stderr, /release-compatibility\.itest\.ts/);
-  assert.equal(await readFile(accepted, "utf8").catch(() => ""), "");
+  assert.equal(missing.status, 0, missing.stderr);
+  assert.match(missing.stdout, /Forward-only: no rollback to /);
 
   const proofFixture = await fixture(t, {
     persistedContract: true,
@@ -797,7 +821,7 @@ test("unclassified production source paths stop instead of implying compatibilit
   assert.match(result.stderr, /src\/app\/\(tabs\)\/teams\/page\.tsx/);
 });
 
-test("persisted application writers and dependency-lock changes require targeted proof", async (t) => {
+test("persisted application writers and dependency-lock changes without a suite are forward-only", async (t) => {
   for (const persistedContractPath of [
     "src/applications/usecases/game/update-set.usecase.ts",
     "pnpm-lock.yaml",
@@ -811,8 +835,8 @@ test("persisted application writers and dependency-lock changes require targeted
       ...source.env,
       RELEASE_ACCEPTED_STATE_FILE: path.join(f.root, "missing-suite.json"),
     });
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /release-compatibility\.itest\.ts must exist/);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /production-forward-only/);
   }
 });
 
@@ -972,7 +996,7 @@ test("recovery revalidates the native compatibility test before rolling back", a
   assert.deepEqual(after.calls, callsBeforeRollback);
 });
 
-test("active production data rejects compatibility coverage removed from the exact source", async (t) => {
+test("active production data marks a release forward-only when compatibility coverage is removed from the exact source", async (t) => {
   const f = await fixture(t, {
     persistedContract: true,
     removeCompatibilityTest: true,
@@ -983,9 +1007,8 @@ test("active production data rejects compatibility coverage removed from the exa
     ...source.env,
     RELEASE_ACCEPTED_STATE_FILE: accepted,
   });
-  assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /must exist in the exact release source/);
-  assert.equal(await readFile(accepted, "utf8").catch(() => ""), "");
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /production-forward-only/);
 });
 
 function hotfixAuthorization(f, current) {
