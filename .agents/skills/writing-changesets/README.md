@@ -4,7 +4,7 @@
 
 ## Authoring
 
-At the Pre-PR gate, assess the current delivery batch's actual impact using `SKILL.md`. Each applicable batch, including a Mapped Change shard, carries its own changeset in the same pull request. Do not wait until release time or repeat entries from previous batches.
+At the Pre-PR gate, assess the current delivery batch's actual impact using `SKILL.md`. Each applicable batch, including a shard of a Change, carries its own changeset in the same pull request. Do not wait until release time or repeat entries from previous batches.
 
 Run `pnpm changeset` on the work branch and select the package and semantic bump. Changesets name only `volleybro`: `blueprint` deploys separately, is listed in `.changeset/config.json` `ignore`, and a changeset naming it alone is never consumed. Its Markdown body becomes the changelog draft. Derive it from the execution issue's spec and delivered commits; follow [body-format.md](body-format.md).
 

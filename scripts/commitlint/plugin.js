@@ -36,7 +36,7 @@ const CHANGE_BRANCH = new RegExp(
   `^(${CHANGE_BRANCH_PREFIXES.join("|")})/(.+)$`,
 );
 const LINEAR_ISSUE = /^[A-Z][A-Z0-9]*-[1-9]\d*$/;
-// ADR-0093: a -s<N> suffix always names a Mapped Change shard.
+// A -s<N> suffix always names a shard of one Change (WORKFLOW.md, Change scope).
 const SHARD_SUFFIX = /^(.+)-s([1-9]\d*)$/;
 
 export function parseChangeBranch(branchName) {
@@ -86,14 +86,14 @@ export function evaluateChangeBranchTrailer(branchName, message) {
       ? { ok: true }
       : {
           ok: false,
-          message: `branch "${branchName}" is not a Mapped Change branch, so the commit must not carry "Shard: ${shardValue}"; a shard branch ends in -s<N>.`,
+          message: `branch "${branchName}" is not a shard branch, so the commit must not carry "Shard: ${shardValue}"; a shard branch ends in -s<N>.`,
         };
   }
 
   if (shardValue !== String(shard)) {
     return {
       ok: false,
-      message: `branch "${branchName}" is shard ${shard} of Mapped Change "${slug}" and needs a "Shard: ${shard}" trailer, but the commit carries ${shardValue === undefined ? "none" : `"Shard: ${shardValue}"`}.`,
+      message: `branch "${branchName}" is shard ${shard} of Change "${slug}" and needs a "Shard: ${shard}" trailer, but the commit carries ${shardValue === undefined ? "none" : `"Shard: ${shardValue}"`}.`,
     };
   }
   return { ok: true };

@@ -104,7 +104,7 @@ test("fix/ and refactor/ branches are Change branches too", () => {
   );
 });
 
-test("a Mapped Change branch needs its own shard number", () => {
+test("a shard branch needs its own shard number", () => {
   const body = `refactor(x): subject\n\nbody.\n\n${ISSUE}\n`;
   assert.deepEqual(
     evaluateChangeBranchTrailer("refactor/my-slug-s2", `${body}Shard: 2`),
@@ -134,7 +134,7 @@ test("a Shard trailer on an ordinary Change branch is rejected", () => {
     `refactor(x): subject\n\nbody.\n\n${ISSUE}\nShard: 2`,
   );
   assert.equal(verdict.ok, false);
-  assert.match(verdict.message, /not a Mapped Change branch/);
+  assert.match(verdict.message, /not a shard branch/);
 });
 
 test("no trailer on main, fast/*, hotfix/*, or any other non-Change branch passes", () => {

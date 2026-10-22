@@ -18,7 +18,7 @@ This project uses `@changesets/cli` with a custom verbatim formatter and a postp
 
 ## When to Create a Changeset
 
-Assess Changeset applicability at the Pre-PR gate for each delivery batch, including each Mapped Change shard. Include the applicable changeset in that batch's branch and pull request to the current integration branch defined in `WORKFLOW.md`, never deferred to release time:
+Assess Changeset applicability at the Pre-PR gate for each delivery batch, including each shard of a Change. Include the applicable changeset in that batch's branch and pull request to the current integration branch defined in `WORKFLOW.md`, never deferred to release time:
 
 ```
 implement -> Pre-PR Changeset assessment -> pnpm changeset when applicable -> same batch PR
