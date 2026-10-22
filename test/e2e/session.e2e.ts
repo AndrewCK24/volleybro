@@ -23,7 +23,8 @@ test("@smoke test team read-only page", async ({ page }) => {
   await page.goto(`/team/${teamId}`);
   const teamName = page.getByTestId("team-name");
   await expect(teamName).toBeVisible();
-  await expect(teamName).not.toHaveText("Loading...");
+  // Empty or still loading means the team did not resolve (wrong DB or ID).
+  await expect(teamName).not.toHaveText(/^(Loading\.\.\.)?$/);
   await expect(
     page
       .getByRole("link")
