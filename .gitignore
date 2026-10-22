@@ -75,3 +75,6 @@ package-lock.json
 !.impeccable/surfaces/
 !.impeccable/config.json
 !.impeccable/design.json
+
+# playwright
+/test-results/
