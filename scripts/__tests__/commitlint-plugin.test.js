@@ -29,39 +29,62 @@ function runCommitlint(message, branch, envOverrides = {}) {
   }
 }
 
-test("missing trailer on a Change branch is rejected, naming fast/<slug>", () => {
+const ISSUE = "Linear-Issue: ATE-323";
+
+test("a Change-branch commit with neither trailer is rejected, naming fast/<slug>", () => {
   const verdict = evaluateChangeBranchTrailer(
     "feat/my-slug",
     "feat(x): subject\n\nbody.",
   );
   assert.equal(verdict.ok, false);
+  assert.match(verdict.message, /needs a "Linear-Issue: <ID>" trailer/);
   assert.match(verdict.message, /fast\/my-slug/);
 });
 
-test("a trailer naming a different slug is rejected, distinct from a missing one", () => {
-  const message = "feat(x): subject\n\nbody.\n\nBlueprint-Change: wrong-slug";
+test("Linear-Issue alone is accepted: Blueprint-Change is only for a Change page", () => {
+  const message = `feat(x): subject\n\nbody.\n\n${ISSUE}`;
+  assert.deepEqual(evaluateChangeBranchTrailer("feat/my-slug", message), {
+    ok: true,
+  });
+});
+
+test("Blueprint-Change without Linear-Issue is rejected", () => {
+  const message = "feat(x): subject\n\nbody.\n\nBlueprint-Change: my-slug";
+  assert.equal(evaluateChangeBranchTrailer("feat/my-slug", message).ok, false);
+});
+
+test("a malformed Linear-Issue value is rejected", () => {
+  const verdict = evaluateChangeBranchTrailer(
+    "feat/my-slug",
+    "feat(x): subject\n\nbody.\n\nLinear-Issue: not-an-issue",
+  );
+  assert.equal(verdict.ok, false);
+  assert.match(verdict.message, /carries "Linear-Issue: not-an-issue"/);
+});
+
+test("a Blueprint-Change naming a different slug is rejected, distinct from a missing issue", () => {
+  const message = `feat(x): subject\n\nbody.\n\n${ISSUE}\nBlueprint-Change: wrong-slug`;
   const verdict = evaluateChangeBranchTrailer("feat/my-slug", message);
   assert.equal(verdict.ok, false);
   assert.match(verdict.message, /carries "Blueprint-Change: wrong-slug"/);
 });
 
-test("a matching trailer on a Change branch passes", () => {
-  const message = "feat(x): subject\n\nbody.\n\nBlueprint-Change: my-slug";
+test("a matching Blueprint-Change beside Linear-Issue passes", () => {
+  const message = `feat(x): subject\n\nbody.\n\n${ISSUE}\nBlueprint-Change: my-slug`;
   assert.deepEqual(evaluateChangeBranchTrailer("feat/my-slug", message), {
     ok: true,
   });
 });
 
 test("a trailer with no space after the colon still matches, per git's own parsing", () => {
-  const message = "feat(x): subject\n\nbody.\n\nBlueprint-Change:my-slug";
+  const message = "feat(x): subject\n\nbody.\n\nLinear-Issue:ATE-323";
   assert.deepEqual(evaluateChangeBranchTrailer("feat/my-slug", message), {
     ok: true,
   });
 });
 
 test("a trailer block mixed with Signed-off-by is still read correctly", () => {
-  const message =
-    "feat(x): subject\n\nbody.\n\nSigned-off-by: A <a@b.com>\nBlueprint-Change: my-slug";
+  const message = `feat(x): subject\n\nbody.\n\nSigned-off-by: A <a@b.com>\n${ISSUE}`;
   assert.deepEqual(evaluateChangeBranchTrailer("feat/my-slug", message), {
     ok: true,
   });
@@ -81,13 +104,10 @@ test("fix/ and refactor/ branches are Change branches too", () => {
   );
 });
 
-test("a Sharded Change branch needs the parent slug and its own shard number", () => {
-  const body = "refactor(x): subject\n\nbody.\n\n";
+test("a shard branch needs its own shard number", () => {
+  const body = `refactor(x): subject\n\nbody.\n\n${ISSUE}\n`;
   assert.deepEqual(
-    evaluateChangeBranchTrailer(
-      "refactor/my-slug-s2",
-      `${body}Blueprint-Change: my-slug\nShard: 2`,
-    ),
+    evaluateChangeBranchTrailer("refactor/my-slug-s2", `${body}Shard: 2`),
     { ok: true },
   );
   const wrongSlug = evaluateChangeBranchTrailer(
@@ -98,15 +118,12 @@ test("a Sharded Change branch needs the parent slug and its own shard number", (
   assert.match(wrongSlug.message, /needs "Blueprint-Change: my-slug"/);
   const wrongShard = evaluateChangeBranchTrailer(
     "refactor/my-slug-s2",
-    `${body}Blueprint-Change: my-slug\nShard: 1`,
+    `${body}Shard: 1`,
   );
   assert.equal(wrongShard.ok, false);
   assert.match(wrongShard.message, /needs a "Shard: 2" trailer/);
   assert.match(
-    evaluateChangeBranchTrailer(
-      "refactor/my-slug-s2",
-      `${body}Blueprint-Change: my-slug`,
-    ).message,
+    evaluateChangeBranchTrailer("refactor/my-slug-s2", body).message,
     /carries none/,
   );
 });
@@ -114,10 +131,10 @@ test("a Sharded Change branch needs the parent slug and its own shard number", (
 test("a Shard trailer on an ordinary Change branch is rejected", () => {
   const verdict = evaluateChangeBranchTrailer(
     "refactor/my-slug",
-    "refactor(x): subject\n\nbody.\n\nBlueprint-Change: my-slug\nShard: 2",
+    `refactor(x): subject\n\nbody.\n\n${ISSUE}\nShard: 2`,
   );
   assert.equal(verdict.ok, false);
-  assert.match(verdict.message, /not a Sharded Change branch/);
+  assert.match(verdict.message, /not a shard branch/);
 });
 
 test("no trailer on main, fast/*, hotfix/*, or any other non-Change branch passes", () => {
@@ -182,8 +199,7 @@ test("plain prose mentioning none of the AI names passes", () => {
 });
 
 test("a retired-tool scope is rejected by scope-enum, case-insensitively", () => {
-  const message =
-    "feat(x): subject\n\nbody.\n\nBlueprint-Change: commit-guardrails";
+  const message = "feat(x): subject\n\nbody.\n\nLinear-Issue: ATE-323";
   for (const scope of ["spectra", "Spectra"]) {
     const verdict = runCommitlint(
       message.replace("feat(x)", `feat(${scope})`),
@@ -200,12 +216,12 @@ test("a default revert message on a Change branch is rejected, not ignored", () 
     "feat/commit-guardrails",
   );
   assert.equal(verdict.ok, false);
-  assert.match(verdict.output, /blueprint-change-trailer/);
+  assert.match(verdict.output, /change-branch-trailer/);
 });
 
 test("a conventional revert with body and trailer is accepted", () => {
   const verdict = runCommitlint(
-    "revert: subject\n\nbody explaining why this is reverted.\n\nBlueprint-Change: commit-guardrails\n",
+    "revert: subject\n\nbody explaining why this is reverted.\n\nLinear-Issue: ATE-323\n",
     "feat/commit-guardrails",
   );
   assert.deepEqual(verdict, { ok: true });
@@ -236,7 +252,7 @@ test("a -v style message with 'generated by Claude' only in the diff passes", ()
     "",
     "body explaining why.",
     "",
-    "Blueprint-Change: commit-guardrails",
+    "Linear-Issue: ATE-323",
     "# ------------------------ >8 ------------------------",
     "diff --git a/foo.js b/foo.js",
     "-// generated by Claude",

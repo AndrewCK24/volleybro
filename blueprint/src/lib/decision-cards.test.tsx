@@ -33,6 +33,21 @@ describe("canonical compact decision cards", () => {
     expect(card?.supersededHref).toBe("#adr-0061");
   });
 
+  it("links a PR-valued supersededBy to the pull request", () => {
+    const prUrl = "https://github.com/andrewck24/volleybro/pull/610";
+    const cards = decisionCardsFor(
+      [parseDecisionRecord({ ...oldDecision, supersededBy: prUrl })],
+      ["0045"],
+    );
+    render(<DecisionCardsList cards={cards} />);
+
+    expect(screen.getByText("被 PR #610 取代")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /ADR-0045/ }));
+    expect(
+      screen.getByRole("link", { name: "查看取代它的 PR #610" }),
+    ).toHaveAttribute("href", prUrl);
+  });
+
   it("renders cards in the order requested", () => {
     const cards = decisionCardsFor(records, ["0061", "0045"]);
     render(<DecisionCardsList cards={cards} />);

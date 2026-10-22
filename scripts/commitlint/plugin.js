@@ -35,7 +35,8 @@ export const CHANGE_BRANCH_PREFIXES = ["feat", "fix", "refactor"];
 const CHANGE_BRANCH = new RegExp(
   `^(${CHANGE_BRANCH_PREFIXES.join("|")})/(.+)$`,
 );
-// ADR-0093: a -s<N> suffix always names a Sharded Change shard.
+const LINEAR_ISSUE = /^[A-Z][A-Z0-9]*-[1-9]\d*$/;
+// A -s<N> suffix always names a shard of one Change (WORKFLOW.md, Change scope).
 const SHARD_SUFFIX = /^(.+)-s([1-9]\d*)$/;
 
 export function parseChangeBranch(branchName) {
@@ -64,17 +65,19 @@ export function evaluateChangeBranchTrailer(branchName, message) {
   const { prefix, slug, shard } = branch;
 
   const trailers = parseTrailers(message);
-  const value = trailers.get("blueprint-change")?.[0];
-  if (value === undefined) {
+  const issue = trailers.get("linear-issue")?.[0];
+  if (issue === undefined || !LINEAR_ISSUE.test(issue)) {
     return {
       ok: false,
-      message: `branch "${branchName}" is a Change branch (slug "${slug}") and needs a "Blueprint-Change: ${slug}" trailer, but the commit has none. ${fastPathSuffix(prefix, slug)}`,
+      message: `branch "${branchName}" is a Change branch (slug "${slug}") and needs a "Linear-Issue: <ID>" trailer, but the commit carries ${issue === undefined ? "none" : `"Linear-Issue: ${issue}"`}. ${fastPathSuffix(prefix, slug)}`,
     };
   }
-  if (value !== slug) {
+  // Blueprint-Change names a Change page, so it is optional; when present it must match.
+  const value = trailers.get("blueprint-change")?.[0];
+  if (value !== undefined && value !== slug) {
     return {
       ok: false,
-      message: `branch "${branchName}" needs "Blueprint-Change: ${slug}", but the commit carries "Blueprint-Change: ${value}". ${fastPathSuffix(prefix, slug)}`,
+      message: `branch "${branchName}" needs "Blueprint-Change: ${slug}" or none, but the commit carries "Blueprint-Change: ${value}". ${fastPathSuffix(prefix, slug)}`,
     };
   }
   const shardValue = trailers.get("shard")?.[0];
@@ -83,14 +86,14 @@ export function evaluateChangeBranchTrailer(branchName, message) {
       ? { ok: true }
       : {
           ok: false,
-          message: `branch "${branchName}" is not a Sharded Change branch, so the commit must not carry "Shard: ${shardValue}"; a shard branch ends in -s<N>.`,
+          message: `branch "${branchName}" is not a shard branch, so the commit must not carry "Shard: ${shardValue}"; a shard branch ends in -s<N>.`,
         };
   }
 
   if (shardValue !== String(shard)) {
     return {
       ok: false,
-      message: `branch "${branchName}" is shard ${shard} of Sharded Change "${slug}" and needs a "Shard: ${shard}" trailer, but the commit carries ${shardValue === undefined ? "none" : `"Shard: ${shardValue}"`}.`,
+      message: `branch "${branchName}" is shard ${shard} of Change "${slug}" and needs a "Shard: ${shard}" trailer, but the commit carries ${shardValue === undefined ? "none" : `"Shard: ${shardValue}"`}.`,
     };
   }
   return { ok: true };
@@ -187,7 +190,7 @@ function toRuleOutcome(verdict) {
 // The one local plugin commitlint allows per project (ADR-0055).
 const plugin = {
   rules: {
-    "blueprint-change-trailer": (parsed) =>
+    "change-branch-trailer": (parsed) =>
       toRuleOutcome(evaluateChangeBranchTrailer(currentBranch(), parsed.raw)),
     "no-ai-attribution": (parsed) =>
       toRuleOutcome(evaluateAiAttribution(parsed.raw)),

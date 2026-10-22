@@ -9,5 +9,6 @@
     "Slices are working notes; nothing in the repository records them beyond commit trailers.",
     "check-workflow.js cannot count slices, so the slice soft target is written only."
   ],
-  "originChange": "two-gate-workflow"
+  "originChange": "two-gate-workflow",
+  "supersededBy": "https://github.com/andrewck24/volleybro/pull/610"
 }

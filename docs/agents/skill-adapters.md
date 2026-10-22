@@ -17,6 +17,8 @@ Most skills in `.agents/skills/` are vendored and written for any repository; an
 | `implement`                     | `docs/agents/issue-tracker.md`, `docs/agents/artifact-lifecycle.md`, `docs/agents/test-audit.md`                                                         |
 | `implement-spec`                | `docs/agents/issue-tracker.md`                                                                                                                           |
 | `improve-codebase-architecture` | `docs/agents/domain.md`                                                                                                                                  |
+| `plan-spec`                     | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/artifact-lifecycle.md`, `docs/agents/blueprint.md` |
+| `plan-tickets`                  | `docs/agents/domain.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/artifact-lifecycle.md`                             |
 | `pr`                            | `docs/agents/domain.md`, `docs/agents/artifact-lifecycle.md`                                                                                             |
 | `prototype`                     | no adapter                                                                                                                                               |
 | `research`                      | `docs/agents/artifact-lifecycle.md`                                                                                                                      |
@@ -35,4 +37,4 @@ Most skills in `.agents/skills/` are vendored and written for any repository; an
 | `writing-changesets`            | no adapter                                                                                                                                               |
 | `writing-for-agents`            | no adapter                                                                                                                                               |
 
-Some skills are user-only commands: `to-spec`, `to-tickets`, `implement` and `grill-with-docs`. When grilling converges, ask the developer once, naming every user-only command the next step needs in a single message, instead of asking before each.
+Agents enter planning through the repo-owned `plan-spec` and `plan-tickets`: each reads its vendored `to-spec` / `to-tickets` and applies only this repository's overrides. The vendored skills are the developer's manual entry point, typed by name, and stay untouched. `implement` and `grill-with-docs` are user-only commands. When grilling converges, ask the developer once, naming every user-only command the next step needs in a single message, instead of asking before each.

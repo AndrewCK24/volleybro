@@ -10,7 +10,7 @@ VolleyBro 管理排球隊伍與比賽紀錄。本文件是專案的共用詞彙�
 
 **Change**：一份共同設計與整體完成條件；一般 Change 由一張 PR 交付。
 
-**Sharded Change**：共同設計需要分批交付的 Change，包括大型 migration；各批共用完整 accepted specification 與整體 G1，不是各自獨立的 Change。
+**Mapped Change**：太大或太模糊、無法用一份 spec 承載的工作；先用 `wayfinder` 畫出決策地圖，再由地圖產出的各個 Change 各自走 `to-spec` / `to-tickets`。
 
 **Shard**：可安全交付的一批，對應 branch、G2 與一張 PR；不可分割的工作屬同一批。
 

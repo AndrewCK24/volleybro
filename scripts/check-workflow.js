@@ -410,11 +410,11 @@ async function checkFileCountScope(root, options) {
   }
 
   if (changedFiles.length <= CHANGE_SCOPE_SOFT_LIMIT) return [];
-  if (options.shardedChangeSlug ?? options.migrationSlug) return [];
+  if (options.changeShardsSlug) return [];
   if (await hasShardTrailer(root, base)) return [];
 
   return [
-    `src [change-scope]: ${changedFiles.length} files changed against ${base} exceeds the soft target of ${CHANGE_SCOPE_SOFT_LIMIT}; deliver it as a Sharded Change (branch <prefix>/<slug>-s<N>, commits carrying "Shard: <N>", or --sharded-change <slug>) or split the Change`,
+    `src [change-scope]: ${changedFiles.length} files changed against ${base} exceeds the soft target of ${CHANGE_SCOPE_SOFT_LIMIT}; split the Change into shards (branch <prefix>/<slug>-s<N>, commits carrying "Shard: <N>", or --change-shards <slug>), or upgrade to a Mapped Change if it needs a wayfinder map`,
   ];
 }
 
@@ -555,8 +555,7 @@ async function main() {
   const diagnostics = await checkWorkflow();
   const warnings = [
     ...(await checkChangeScope(process.cwd(), {
-      shardedChangeSlug:
-        flagValue(argv, "--sharded-change") ?? flagValue(argv, "--migration"),
+      changeShardsSlug: flagValue(argv, "--change-shards"),
     })),
     ...(await checkDecisionRecordLength(process.cwd())),
   ];

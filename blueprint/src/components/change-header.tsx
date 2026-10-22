@@ -40,7 +40,7 @@ export function ChangeHeader({
       <div className="flex flex-wrap items-center gap-2">
         {status ? (
           <Badge variant={status === "merged" ? "secondary" : "outline"}>
-            {status === "merged" ? "已合併" : "進行中"}
+            {status === "merged" ? "已完成" : "進行中"}
           </Badge>
         ) : (
           <span className="text-xs text-muted-foreground" aria-live="polite">

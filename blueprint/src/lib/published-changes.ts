@@ -30,7 +30,7 @@ const changeListDataSchema = z
   .strictObject({
     title: changeDataSchema.in.shape.title,
     description: changeDataSchema.in.shape.description,
-    linear_issue: changeDataSchema.in.shape.linear_issue.unwrap(),
+    linear_issue: changeDataSchema.in.shape.linear_issue,
     pull_requests: changeDataSchema.in.shape.pull_requests,
     capabilities: changeDataSchema.in.shape.capabilities,
     publishedAt: changeDataSchema.in.shape.publishedAt,
@@ -126,7 +126,7 @@ export async function readPublishedChanges(): Promise<EmDashPage[]> {
     }
     const parsed = changeListDataSchema.safeParse({
       title: entry.title,
-      linear_issue: entry.linear_issue,
+      linear_issue: entry.linear_issue ?? undefined,
       description: entry.description,
       pull_requests: pullRequests ?? [],
       capabilities: capabilities ?? [],

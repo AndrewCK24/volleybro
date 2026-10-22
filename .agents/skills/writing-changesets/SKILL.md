@@ -18,7 +18,7 @@ This project uses `@changesets/cli` with a custom verbatim formatter and a postp
 
 ## When to Create a Changeset
 
-Assess Changeset applicability at the Pre-PR gate for each delivery batch, including each Sharded Change shard. Include the applicable changeset in that batch's branch and pull request to the current integration branch defined in `WORKFLOW.md`, never deferred to release time:
+Assess Changeset applicability at the Pre-PR gate for each delivery batch, including each shard of a Change. Include the applicable changeset in that batch's branch and pull request to the current integration branch defined in `WORKFLOW.md`, never deferred to release time:
 
 ```
 implement -> Pre-PR Changeset assessment -> pnpm changeset when applicable -> same batch PR
@@ -53,7 +53,7 @@ When in doubt, prefer `minor` for features, `patch` for fixes.
 
 When writing the body at the Pre-PR gate, pull from the Change's own artifacts:
 
-1. Read the accepted EmDash Change page for scope and motivation
+1. Read the execution issue's spec (and the Change page when one exists) for scope and motivation
 2. Read the batch's commits against the current integration base for what was actually implemented; their bodies carry the outcome and verification per slice
 3. Map each user-visible change to a bullet under the correct `###` heading (see `body-format.md`)
 4. Ignore internal work (refactors, test infra, CI plumbing) unless it affects contributors

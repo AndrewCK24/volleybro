@@ -397,10 +397,10 @@ test("checkChangeScope accepts a Shard trailer", async () => {
   );
 });
 
-test("checkChangeScope accepts an explicit Sharded Change", async () => {
+test("checkChangeScope accepts an explicit Change shard flag", async () => {
   assert.deepEqual(
     await checkChangeScope(await makeScopeRepository(31), {
-      shardedChangeSlug: "two-gate-workflow",
+      changeShardsSlug: "two-gate-workflow",
     }),
     [],
   );
@@ -426,29 +426,13 @@ test("the workflow CLI keeps scope warnings non-blocking", async () => {
   assert.match(result.stderr, /Warning:.*31 files changed/is);
 });
 
-test("the CLI accepts --sharded-change for a large delivery batch", async () => {
-  const { root, git } = await initWorkflowRepository("workflow-sharded-cli");
+test("the CLI accepts --change-shards for a large delivery batch", async () => {
+  const { root, git } = await initWorkflowRepository("workflow-mapped-cli");
   await addSourceFiles(root, git, 31, "large source batch");
 
   const result = await execFileAsync(
     "node",
-    [
-      CHECK_WORKFLOW_SCRIPT,
-      "--sharded-change",
-      "emdash-blueprint-change-pages",
-    ],
-    { cwd: root },
-  );
-  assert.doesNotMatch(result.stderr, /Warning:.*change-scope/is);
-});
-
-test("the CLI accepts --migration as the documented compatibility alias", async () => {
-  const { root, git } = await initWorkflowRepository("workflow-migration-cli");
-  await addSourceFiles(root, git, 31, "large migration");
-
-  const result = await execFileAsync(
-    "node",
-    [CHECK_WORKFLOW_SCRIPT, "--migration", "emdash-blueprint-change-pages"],
+    [CHECK_WORKFLOW_SCRIPT, "--change-shards", "emdash-blueprint-change-pages"],
     { cwd: root },
   );
   assert.doesNotMatch(result.stderr, /Warning:.*change-scope/is);

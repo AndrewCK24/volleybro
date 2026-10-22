@@ -30,7 +30,7 @@ export function ChangeCard({ change }: { change: ChangeSummary }) {
           <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-base">{change.title}</CardTitle>
             <Badge variant="outline" className={STATUS_CLASS[change.status]}>
-              {change.status === "merged" ? "已合併" : "進行中"}
+              {change.status === "merged" ? "已完成" : "進行中"}
             </Badge>
             {(change.mergedAt ?? change.publishedAt) && (
               <span className="ml-auto text-xs text-muted-foreground tabular-nums">

@@ -29,7 +29,7 @@ describe("ChangeCard", () => {
     expect(screen.getByRole("link")).toHaveAttribute("href", "/changes/a");
     expect(screen.getByText("A Change")).toBeInTheDocument();
     expect(screen.getByText("What it does.")).toBeInTheDocument();
-    expect(screen.getByText("已合併")).toBeInTheDocument();
+    expect(screen.getByText("已完成")).toBeInTheDocument();
     expect(screen.getByText("2026-10-12")).toBeInTheDocument();
     expect(
       screen.getByRole("list", { name: "Change figures" }),

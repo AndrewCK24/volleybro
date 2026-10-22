@@ -28,5 +28,6 @@
     "Change branches start being created under a name that does not carry the slug.",
     "The Fix path is merged into the Change path or removed."
   ],
-  "originChange": "commit-guardrails"
+  "originChange": "commit-guardrails",
+  "supersededBy": "https://github.com/andrewck24/volleybro/pull/610"
 }
