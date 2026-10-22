@@ -37,7 +37,7 @@ const SAFE_PATHS = [
   /^docs\//,
   /^blueprint\//,
   /^\.(?:agents|claude|codex|impeccable|diagram-design)\//,
-  /^(?:AGENTS|CLAUDE|WORKFLOW|CONTRIBUTING|CODING_STANDARDS|CONTEXT|PRODUCT|DESIGN|CHANGELOG|README(?:\.[^/]+)?)\.md$/,
+  /^(?:AGENTS|CLAUDE|WORKFLOW|CONTRIBUTING|CODING_STANDARDS|CONTEXT|PRODUCT|DESIGN|GLOSSARY|CHANGELOG|README(?:\.[^/]+)?)\.md$/,
   /^\.changeset\//,
   // The classifier and its workflow must still run when they change.
   /^scripts\/(?!chromatic-scope\.js$)/,
@@ -45,7 +45,7 @@ const SAFE_PATHS = [
   // Storybook loads src/**/*.stories and never imports tests or test/.
   /^test\//,
   /^src\/(?:.*\/__tests__\/|.*\.test\.[jt]sx?$)/,
-  /^(?:jest\.config\.ts|knip\.json|\.nvmrc|commitlint\.title\.config\.js|\.markdownlint\.jsonc|vercel\.json|\.gitignore|\.worktreeinclude|\.env\.example|skills-lock\.json|LICENSE)$/,
+  /^(?:jest\.config\.ts|knip\.json|\.nvmrc|components\.json|commitlint\.title\.config\.js|\.markdownlint\.jsonc|vercel\.json|\.gitignore|\.worktreeinclude|\.env\.example|skills-lock\.json|LICENSE)$/,
   /^\.eslintrc(?:\.[^/]+)?$/,
   /^eslint\.config\.[^/]+$/,
   /^\.prettier(?:rc(?:\.[^/]+)?|ignore)$/,

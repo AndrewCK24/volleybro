@@ -125,6 +125,7 @@ test("skips agent tooling and root prose docs but still runs when mixed with src
     ".agents/skills/x/SKILL.md": "next\n",
     ".claude/launch.json": "{}\n",
     "AGENTS.md": "next\n",
+    "GLOSSARY.md": "next\n",
     "README.zh-TW.md": "next\n",
   };
   for (const [files, skip] of [
@@ -151,6 +152,7 @@ test("skips non-visual paths and tests but runs for the classifier, its workflow
     "test/support/fixture.js": "next\n",
     "jest.config.ts": "next\n",
     ".nvmrc": "24.22.1\n",
+    "components.json": "{}\n",
   };
   for (const [files, skip] of [
     [skipped, true],
