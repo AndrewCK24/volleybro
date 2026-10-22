@@ -538,10 +538,11 @@ jobs:
     needs: [candidate, classify-production-smoke]
     if: >-
       always() && !cancelled() && needs.candidate.result == 'success' &&
-      needs.classify-production-smoke.result == 'success' &&
+      (needs.classify-production-smoke.result == 'failure' ||
+      (needs.classify-production-smoke.result == 'success' &&
       (needs.classify-production-smoke.outputs.outcome == 'infrastructure' ||
       (needs.classify-production-smoke.outputs.outcome == 'pass' &&
-      needs.classify-production-smoke.outputs.auto_accept != 'true'))
+      needs.classify-production-smoke.outputs.auto_accept != 'true'))))
     runs-on: ubuntu-latest
     permissions:
       contents: read

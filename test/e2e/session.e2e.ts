@@ -4,24 +4,32 @@ import { required } from "./env";
 // A failed session check skips the team test.
 test.describe.configure({ mode: "serial" });
 
-test("@smoke session is valid", async ({ request }) => {
+test("@smoke session is valid", async ({ page }) => {
   const email = required("SMOKE_USER_EMAIL");
 
-  const response = await request.get("/api/auth/get-session");
-  expect(response.ok()).toBe(true);
-  expect((await response.json())?.user?.email).toBe(email);
+  // Through the page so the browser's own cookie handling (WebKit ITP) is exercised.
+  await page.goto("/");
+  const session = await page.evaluate(() =>
+    fetch("/api/auth/get-session", { credentials: "include" }).then((r) =>
+      r.json(),
+    ),
+  );
+  expect(session?.user?.email).toBe(email);
 });
 
 test("@smoke test team read-only page", async ({ page }) => {
   const teamId = required("SMOKE_TEAM_ID");
 
   await page.goto(`/team/${teamId}`);
-  await expect(page.locator("p.text-primary-foreground")).not.toHaveText(
-    /^(Loading\.\.\.)?$/,
-  );
+  const teamName = page.getByTestId("team-name");
+  await expect(teamName).toBeVisible();
+  await expect(teamName).not.toHaveText("Loading...");
   await expect(
     page
-      .locator(`a[href^="/team/${teamId}/players/"]:not([href$="/new"])`)
+      .getByRole("link")
+      .and(
+        page.locator(`[href^="/team/${teamId}/players/"]:not([href$="/new"])`),
+      )
       .first(),
   ).toBeVisible();
 });

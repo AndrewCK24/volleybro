@@ -2549,7 +2549,7 @@ test("classify-smoke separates pass, infrastructure and regression and fails clo
       smokeResults({ [key("oauth", "@smoke oauth configuration")]: "skipped" }),
     ],
     ["regression", smokeResults().slice(1)],
-    ["regression", []],
+    ["infrastructure", []],
   ];
   for (const [outcome, results] of cases) {
     const outputs = await classify(f, env, {
@@ -2789,7 +2789,7 @@ const loadWorkflow = async (name) =>
 
 // Evaluates the `needs`-only subset of GitHub expressions used by job `if` conditions.
 function evalIf(expression, needs) {
-  const n = Object.fromEntries(
+  const needsContext = Object.fromEntries(
     Object.entries(needs).map(([id, { result, outputs = {} }]) => [
       id,
       {
@@ -2799,10 +2799,10 @@ function evalIf(expression, needs) {
     ]),
   );
   const js = String(expression)
-    .replace(/needs\.([\w-]+)\./g, (_, id) => `n["${id}"].`)
+    .replace(/needs\.([\w-]+)\./g, (_, id) => `needs["${id}"].`)
     .replace(/always\(\)/g, "true")
     .replace(/cancelled\(\)/g, "false");
-  return new Function("n", `return (${js});`)(n);
+  return new Function("needs", `return (${js});`)(needsContext);
 }
 
 test("production release routes each smoke outcome to exactly one path", async () => {
@@ -2830,13 +2830,13 @@ test("production release routes each smoke outcome to exactly one path", async (
   assert.deepEqual(runs(classify("infrastructure")), ["production-acceptance"]);
   assert.deepEqual(runs(classify("pass", "false")), ["production-acceptance"]);
   assert.deepEqual(runs(classify("pass", "true")), ["accept-production-smoke"]);
-  // Unclassifiable or failed classification neither accepts nor rolls back on its own.
+  // A failed classification is undeterminable: human gate, never auto-accept or rollback.
   assert.deepEqual(
     runs({
       ...classify("pass", "true"),
       "classify-production-smoke": { result: "failure" },
     }),
-    [],
+    ["production-acceptance"],
   );
   // A failed human gate still rolls back; a skipped one does not.
   const gate = (result) => ({

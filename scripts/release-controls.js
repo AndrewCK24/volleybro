@@ -34,6 +34,7 @@ const SMOKE_EXPECTED = [
     [SMOKE_SESSION, SMOKE_TEAM].map((title) => [project, title]),
   ),
 ];
+const SMOKE_JOBS = ["Production smoke", "Classify production smoke"];
 const ACCEPTANCE_JOBS = {
   human: "Accept production QA",
   smoke: "Accept production smoke",
@@ -277,19 +278,22 @@ async function workflowJobs(id) {
   return response.jobs;
 }
 
-function successfulJob(jobs, name, attempt) {
+function uniqueCompletedJob(jobs, name, attempt) {
   const matches = jobs.filter(
     (job) =>
       job.name === name &&
       (!job.run_attempt || String(job.run_attempt) === String(attempt)),
   );
-  if (
-    matches.length !== 1 ||
-    matches[0].status !== "completed" ||
-    matches[0].conclusion !== "success"
-  )
+  return matches.length === 1 && matches[0].status === "completed"
+    ? matches[0]
+    : undefined;
+}
+
+function successfulJob(jobs, name, attempt) {
+  const job = uniqueCompletedJob(jobs, name, attempt);
+  if (job?.conclusion !== "success")
     fail(`${name} is not a unique successful native workflow job`);
-  return matches[0];
+  return job;
 }
 
 function jobEvidence(job) {
@@ -339,7 +343,7 @@ async function nativeApprovalHistory(runId, environment) {
 
 function protectedJobKey(name) {
   const key = {
-    "Accept production QA": "production-acceptance",
+    [ACCEPTANCE_JOBS.human]: "production-acceptance",
   }[name];
   if (!key) fail(`Unknown protected workflow job: ${name}`);
   return key;
@@ -1990,6 +1994,8 @@ function assertProductionQAReceipt(state) {
 
 function smokeOutcome(results) {
   if (!Array.isArray(results)) return "regression";
+  // No report at all means the run never produced results (install/runner failure), not a release defect.
+  if (!results.length) return "infrastructure";
   const found = (project, title) =>
     results.filter((r) => r.project === project && r.title === title);
   if (SMOKE_EXPECTED.some(([project, title]) => !found(project, title).length))
@@ -2130,7 +2136,7 @@ async function recordSmokeAcceptance() {
   const jobs = await workflowJobs(state.releaseRunId);
   state.productionQA = productionQAReceipt(state, {
     kind: "smoke",
-    jobs: ["Production smoke", "Classify production smoke"].map((name) =>
+    jobs: SMOKE_JOBS.map((name) =>
       jobEvidence(successfulJob(jobs, name, state.releaseRunAttempt)),
     ),
     before,
@@ -2151,7 +2157,7 @@ async function verifySmokeReceipt(state) {
     repository: required("GITHUB_REPOSITORY"),
     attempt: state.releaseRunAttempt,
   });
-  const names = ["Production smoke", "Classify production smoke"];
+  const names = SMOKE_JOBS;
   if (
     !Array.isArray(approval.jobs) ||
     approval.jobs.length !== names.length ||
@@ -2170,17 +2176,8 @@ async function verifySmokeReceipt(state) {
 
 async function assertSingleAcceptance(state, kind) {
   const jobs = await workflowJobs(state.releaseRunId);
-  const conclusion = (name) => {
-    const matches = jobs.filter(
-      (job) =>
-        job.name === name &&
-        (!job.run_attempt ||
-          String(job.run_attempt) === state.releaseRunAttempt),
-    );
-    return matches.length === 1 && matches[0].status === "completed"
-      ? matches[0].conclusion
-      : undefined;
-  };
+  const conclusion = (name) =>
+    uniqueCompletedJob(jobs, name, state.releaseRunAttempt)?.conclusion;
   const other = kind === "human" ? "smoke" : "human";
   if (
     conclusion(ACCEPTANCE_JOBS[kind]) !== "success" ||
@@ -2206,7 +2203,7 @@ async function recordProductionQA() {
     fail("Production QA does not target the promoted candidate");
   state.productionQA = productionQAReceipt(state, {
     kind: "human",
-    ...(await protectedJobReceipt("Accept production QA", REVIEW_ENVIRONMENT)),
+    ...(await protectedJobReceipt(ACCEPTANCE_JOBS.human, REVIEW_ENVIRONMENT)),
   });
   await writeState(required("RELEASE_FINAL_STATE_FILE"), state);
 }
