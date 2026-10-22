@@ -13,10 +13,30 @@ Use this runbook after the release-train platform cutover. Its one-time activati
 1. Inspect `changeset-release/main`, title `release: update versions`, its bot identity and latest required checks. Main pushes with pending changesets prepare it automatically when release automation is enabled. Without a new push, use `gh workflow run changesets.yml --ref main`; this prepares versions only, not release authorization.
 2. Inspect `pnpm changeset status` and the latest version PR. The developer merges or explicitly authorizes the Agent to merge it; that merge fixes the release source SHA. Later main commits do not replace this candidate. There is no scheduled automatic merge.
 3. The release owner's merge starts `production-release.yml` as a push to `main`; a push that merged any other PR ends without a release. If the run fails or someone else merged, the owner dispatches it from `main`: `mode=normal-retry`, `pull_request` set to the merged version PR number and `sha` to its full merge SHA. Actions stage the production-config deployment and assemble source evidence from native CI receipts. Reuse a scope only when its trusted producer tested the same complete Git tree as the authorized source. If an older exact application SHA lacks receipts, run `gh workflow run ci.yml --ref main -f source=<exact-application-SHA>` on the trusted main revision used by the fresh controller, then wait for Test and Integration; this CI-only mode uses no app secrets or environment and does not change the app tree/version. When production data is active, a contract-risk change runs only the dedicated exact-baseline compatibility suite when it exists, and it must report both required directional assertions as passed with none skipped; without the suite the release promotes as forward-only (no rollback or recover to the baseline; repair is a forward fix) and the run summary and Release say so; unclassified paths stop before promotion. Routine unit/integration suites are not rerun. Read the authorize and candidate jobs' API validation logs and the `Verify release recovery evidence` job summary. Missing, mismatched or stale source evidence is a hard stop: fix its source or coverage, then start a fresh authorized run. Do not create a release-only Preview, set per-release evidence variables or approve an evidence-only gate. WORKFLOW.md defines the recovery-proof contract and when an Agent is needed.
-4. Actions recheck the baseline under the lock, promote and run public smoke. At the post-promotion protected gate, the developer performs only live Google sign-in/session and read-only team smoke at the formal alias. HTTP success or a Preview session cannot replace this production-specific proof; no full functional retest is required.
+4. Actions recheck the baseline under the lock, promote and run the automated production smoke. The post-promotion acceptance rule in WORKFLOW.md decides whether the run finalizes by itself or waits at the protected gate; when it waits, the reviewer performs only live Google sign-in/session and read-only team checks at the formal alias. A Preview session cannot replace this production-specific proof; no full functional retest is required.
 5. Verify the final deployment/source SHA, exact-SHA tag and GitHub Release. Failed or pending QA is not release success. Record the run evidence on the operational issue.
 
 If a normal release run failed, the version PR was merged by someone else, or a controller-only correction was merged afterwards, dispatch `normal-retry` with the same inputs. Use the fresh run's candidate and production-QA gate; do not rerun the old controller or bump the app version just to retry deployment. Existing hotfix dispatches use `mode=hotfix` (the default).
+
+## Smoke session
+
+The smoke test uses a Google test account's real session, exported as Playwright `storageState` (the Better Auth session cookie only) and kept as the `SMOKE_STORAGE_STATE` secret of the `production-smoke` environment. A scheduled keepalive extends it every 3 days; GitHub's failure notification for that workflow, or a release run that reports a smoke infrastructure failure, means the session is no longer valid.
+
+Re-login and refresh:
+
+1. Sign in to the formal production site as the test account in a clean browser profile, using the real Google flow.
+2. Export `storageState` (for example with `npx playwright codegen --save-storage=state.json https://<production alias>`), keep only the `better-auth.session_token` cookie and the suite injects it as a session cookie, so its expiry does not matter.
+3. Replace the `SMOKE_STORAGE_STATE` secret in the `production-smoke` environment, delete the local file, and dispatch the keepalive workflow from `main` to confirm it passes.
+
+A run stopped at the manual gate by an infrastructure failure is accepted normally; refresh the secret afterwards. Re-login does not need a release.
+
+## Revoking a leaked smoke session
+
+The session secret is a bearer credential for the test account only: a read-only member of the test team, with no write rights elsewhere. If it may have leaked (printed in a log, an artifact, a screenshot or a shared file):
+
+1. Delete the leaked session from the production database, not the test one: in the `sessions` collection remove the document whose `token` equals the cookie value up to its first `.` (URL-decoded). If the token is unknown, delete every document with the test account's `userId`.
+2. Perform the re-login procedure above to create and store a new session. Confirm the old cookie now fails `get-session`.
+3. Rotate the production `BETTER_AUTH_SECRET` only when the signing secret itself may be exposed, since cookie signatures could then be forged for any user. Rotation signs every user out and needs a production redeploy, so treat it as an incident and not as routine cleanup.
 
 ## Dependency maintenance
 
