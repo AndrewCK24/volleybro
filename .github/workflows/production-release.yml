@@ -373,7 +373,7 @@ jobs:
             echo "- Authorized source SHA: \`$RELEASE_SHA\`"
             echo "- Previous production baseline: \`$BASELINE\`"
             echo "- Live alias: https://$PRODUCTION_ALIAS"
-            echo 'Automated production smoke now checks OAuth configuration, the test-account session and the read-only test team page. A manual review gate appears only when WORKFLOW.md requires it; smoke does not replace full OAuth or end-to-end verification.'
+            echo 'Production smoke now runs; the post-promotion acceptance rule in WORKFLOW.md decides whether a manual review gate follows.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   production-smoke:
@@ -401,7 +401,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm exec playwright install --with-deps chromium webkit
       - name: Mask session cookie values
         env:
@@ -442,6 +442,9 @@ jobs:
       actions: read
     outputs:
       outcome: ${{ steps.classify.outputs.outcome }}
+      auth: ${{ steps.classify.outputs.auth }}
+      after_deployment_id: ${{ steps.classify.outputs.after_deployment_id }}
+      after_sha: ${{ steps.classify.outputs.after_sha }}
       auto_accept: ${{ steps.classify.outputs.auto_accept }}
     steps:
       - uses: actions/download-artifact@v8
@@ -509,7 +512,6 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ needs.candidate.outputs.sha }}
-          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
@@ -518,12 +520,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_STATE_FILE: ${{ runner.temp }}/release-state.json
           RELEASE_FINAL_STATE_FILE: ${{ runner.temp }}/release-final-state.json
-          SMOKE_RESULTS: ${{ needs.production-smoke.outputs.smoke_results }}
           SMOKE_BEFORE_DEPLOYMENT_ID: ${{ needs.promote-and-smoke.outputs.production_deployment_id }}
           SMOKE_BEFORE_SHA: ${{ needs.promote-and-smoke.outputs.production_sha }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          SMOKE_AFTER_DEPLOYMENT_ID: ${{ needs.classify-production-smoke.outputs.after_deployment_id }}
+          SMOKE_AFTER_SHA: ${{ needs.classify-production-smoke.outputs.after_sha }}
+          SMOKE_OUTCOME: ${{ needs.classify-production-smoke.outputs.outcome }}
+          SMOKE_AUTH: ${{ needs.classify-production-smoke.outputs.auth }}
+          SMOKE_AUTO_ACCEPT: ${{ needs.classify-production-smoke.outputs.auto_accept }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
           PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
         run: node "$RUNNER_TEMP/release-controls.js" record-smoke-acceptance
       - uses: actions/upload-artifact@v7

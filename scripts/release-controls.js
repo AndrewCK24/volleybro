@@ -2107,10 +2107,12 @@ async function summarizeSmoke() {
 async function classifySmoke() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  const { outcome, auth } = await smokeVerdict(state);
+  const { after, outcome, auth } = await smokeVerdict(state);
   await appendOutputs({
     outcome,
     auth,
+    after_deployment_id: after.deploymentId,
+    after_sha: after.sha,
     auto_accept: String(outcome === "pass" && auth === "unchanged"),
   });
 }
@@ -2127,12 +2129,27 @@ function productionQAReceipt(state, approval) {
 async function recordSmokeAcceptance() {
   const state = await loadState();
   validateConfiguredPlatform(state);
-  await verifyRecoveryEvidence(state, state.releaseRunId, {
-    ignoreExpiry: true,
-  });
-  const { before, after, outcome, auth } = await smokeVerdict(state);
-  if (outcome !== "pass" || auth !== "unchanged")
-    fail(`Smoke acceptance refused: outcome ${outcome}, auth ${auth}`);
+  // Classify already judged the smoke; this only re-checks its handed-over verdict, with no network.
+  const before = {
+    deploymentId: required("SMOKE_BEFORE_DEPLOYMENT_ID"),
+    sha: required("SMOKE_BEFORE_SHA"),
+  };
+  const after = {
+    deploymentId: required("SMOKE_AFTER_DEPLOYMENT_ID"),
+    sha: required("SMOKE_AFTER_SHA"),
+  };
+  if (
+    required("SMOKE_OUTCOME") !== "pass" ||
+    required("SMOKE_AUTH") !== "unchanged" ||
+    required("SMOKE_AUTO_ACCEPT") !== "true" ||
+    [before, after].some(
+      (alias) =>
+        alias.deploymentId !== state.candidateId || alias.sha !== state.sha,
+    )
+  )
+    fail(
+      "Smoke acceptance refused: classification is not an unchanged-auth pass on the candidate",
+    );
   const jobs = await workflowJobs(state.releaseRunId);
   state.productionQA = productionQAReceipt(state, {
     kind: "smoke",

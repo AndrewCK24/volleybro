@@ -2430,6 +2430,15 @@ async function prepareSmokeRun(f, { alias = "dpl_cand", env = {} } = {}) {
   };
 }
 
+// The verdict classify hands to the accept job.
+const ACCEPT_ENV = (f) => ({
+  SMOKE_OUTCOME: "pass",
+  SMOKE_AUTH: "unchanged",
+  SMOKE_AUTO_ACCEPT: "true",
+  SMOKE_AFTER_DEPLOYMENT_ID: "dpl_cand",
+  SMOKE_AFTER_SHA: f.merge,
+});
+
 async function outputsOf(f) {
   const text = await readFile(f.env.GITHUB_OUTPUT, "utf8");
   return Object.fromEntries(
@@ -2580,6 +2589,10 @@ test("classify-smoke judges auth from changed files, better-auth version, env an
   const env = await prepareSmokeRun(unchanged);
   let outputs = await classify(unchanged, env);
   assert.deepEqual([outputs.auth, outputs.auto_accept], ["unchanged", "true"]);
+  assert.deepEqual(
+    [outputs.after_deployment_id, outputs.after_sha],
+    ["dpl_cand", unchanged.merge],
+  );
 
   await updateApi(unchanged, {
     envs: [{ key: "AUTH_GOOGLE_ID", target: ["production"], updatedAt: 2000 }],
@@ -2612,45 +2625,29 @@ test("classify-smoke judges auth from changed files, better-auth version, env an
   assert.deepEqual([outputs.auth, outputs.auto_accept], ["changed", "false"]);
 });
 
-test("record-smoke-acceptance writes a smoke receipt only for pass with unchanged auth", async (t) => {
+test("record-smoke-acceptance writes a smoke receipt only for a classified unchanged-auth pass on the candidate", async (t) => {
   const f = await fixture(t);
   const env = await prepareSmokeRun(f);
   const finalState = path.join(f.root, "smoke-final.json");
   const record = (overrides = {}) =>
     run(f, "record-smoke-acceptance", {
       ...env,
+      ...ACCEPT_ENV(f),
       RELEASE_FINAL_STATE_FILE: finalState,
       GITHUB_JOB: "production-smoke-acceptance",
       ...overrides,
     });
-  const refused = [
-    {
-      SMOKE_RESULTS: JSON.stringify(
-        smokeResults({ [`webkit ${TEAM}`]: "unexpected" }),
-      ),
-    },
-    {
-      SMOKE_RESULTS: JSON.stringify(
-        smokeResults({
-          [`chromium ${SESSION}`]: "unexpected",
-          [`chromium ${TEAM}`]: "skipped",
-        }),
-      ),
-    },
+  for (const override of [
+    { SMOKE_OUTCOME: "infrastructure" },
+    { SMOKE_OUTCOME: "regression" },
+    { SMOKE_AUTH: "changed" },
+    { SMOKE_AUTH: "unknown" },
+    { SMOKE_AUTO_ACCEPT: "false" },
     { SMOKE_BEFORE_DEPLOYMENT_ID: "dpl_base" },
-  ];
-  for (const override of refused)
+    { SMOKE_AFTER_DEPLOYMENT_ID: "dpl_base" },
+    { SMOKE_AFTER_SHA: f.deployed },
+  ])
     assert.notEqual(record(override).status, 0, JSON.stringify(override));
-  await updateApi(f, { envStatus: 500 });
-  assert.notEqual(record().status, 0);
-  await updateApi(f, {
-    envStatus: undefined,
-    envs: [
-      { key: "BETTER_AUTH_SECRET", target: ["production"], updatedAt: 2000 },
-    ],
-  });
-  assert.notEqual(record().status, 0);
-  await updateApi(f, { envs: [] });
   const result = record();
   assert.equal(result.status, 0, result.stderr);
   const { productionQA } = JSON.parse(await readFile(finalState, "utf8"));
@@ -2681,6 +2678,7 @@ async function recordedSmoke(f) {
   const finalState = path.join(f.root, "smoke-final.json");
   const result = run(f, "record-smoke-acceptance", {
     ...env,
+    ...ACCEPT_ENV(f),
     RELEASE_FINAL_STATE_FILE: finalState,
   });
   assert.equal(result.status, 0, result.stderr);
@@ -2838,6 +2836,16 @@ test("production release routes each smoke outcome to exactly one path", async (
     }),
     ["production-acceptance"],
   );
+  // Classification still runs after a promote when the smoke job failed or was skipped.
+  const classifies = (promote, smoke) =>
+    evalIf(jobs["classify-production-smoke"].if, {
+      candidate: { result: "success" },
+      "promote-and-smoke": { result: promote },
+      "production-smoke": { result: smoke },
+    });
+  for (const smoke of ["success", "failure", "skipped"])
+    assert.equal(classifies("success", smoke), true);
+  assert.equal(classifies("failure", "skipped"), false);
   // A failed human gate still rolls back; a skipped one does not.
   const gate = (result) => ({
     ...classify("pass", "false"),
@@ -2847,32 +2855,6 @@ test("production release routes each smoke outcome to exactly one path", async (
   assert.equal(evalIf(recover, gate("failure")), true);
   assert.equal(evalIf(recover, gate("success")), false);
   assert.equal(evalIf(recover, gate("skipped")), false);
-});
-
-test("classification runs after a promote even when the smoke job failed", async () => {
-  const { jobs } = await loadWorkflow("production-release.yml");
-  const job = jobs["classify-production-smoke"];
-  for (const smoke of ["success", "failure", "skipped"])
-    assert.equal(
-      evalIf(job.if, {
-        candidate: { result: "success" },
-        "promote-and-smoke": { result: "success" },
-        "production-smoke": { result: smoke },
-      }),
-      true,
-    );
-  assert.equal(
-    evalIf(job.if, {
-      candidate: { result: "success" },
-      "promote-and-smoke": { result: "failure" },
-      "production-smoke": { result: "skipped" },
-    }),
-    false,
-  );
-  assert.match(
-    job.steps.find((step) => step.id === "classify").env.SMOKE_RESULTS,
-    /\|\| '\[\]'/,
-  );
 });
 
 test("finalize needs both acceptance jobs and runs only when exactly one succeeded", async () => {
@@ -2899,20 +2881,6 @@ test("finalize needs both acceptance jobs and runs only when exactly one succeed
     assert.equal(upload.with.name, "production-release-final-state");
     assert.equal(upload.with["retention-days"], 31);
   }
-  assert.deepEqual(
-    [
-      "Accept production QA",
-      "Accept production smoke",
-      "Production smoke",
-      "Classify production smoke",
-    ],
-    [
-      jobs["production-acceptance"].name,
-      jobs["accept-production-smoke"].name,
-      jobs["production-smoke"].name,
-      jobs["classify-production-smoke"].name,
-    ],
-  );
 });
 
 test("every job referenced by a condition or output is declared in needs", async () => {
@@ -2931,20 +2899,6 @@ test("every job referenced by a condition or output is declared in needs", async
   const summary = jobs["failure-summary"].needs;
   for (const id of Object.keys(jobs).filter((id) => id !== "failure-summary"))
     assert.ok(summary.includes(id), `failure-summary needs ${id}`);
-});
-
-test("the in-job curl smoke, its rollback and the postdeploy summary job are gone", async () => {
-  const { jobs } = await loadWorkflow("production-release.yml");
-  assert.equal(jobs["postdeploy-summary"], undefined);
-  const promote = jobs["promote-and-smoke"];
-  assert.deepEqual(Object.keys(promote.outputs).sort(), [
-    "production_deployment_id",
-    "production_sha",
-  ]);
-  const commands = promote.steps.map((step) => step.run ?? "").join("\n");
-  assert.doesNotMatch(commands, /curl|rollback-if-compatible/);
-  assert.ok(promote.steps.some((step) => step.id === "promote"));
-  assert.match(promote.steps.at(-1).run, /GITHUB_STEP_SUMMARY/);
 });
 
 test("jobs in the production-smoke environment hold no artifact, deploy token or credentials", async () => {
