@@ -509,9 +509,13 @@ jobs:
         with:
           name: production-release-accepted-state
           path: ${{ runner.temp }}
+      # Only .nvmrc from trusted main: the receipt step needs no candidate code.
       - uses: actions/checkout@v7
         with:
-          ref: ${{ needs.candidate.outputs.sha }}
+          ref: ${{ github.workflow_sha }}
+          sparse-checkout: .nvmrc
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
