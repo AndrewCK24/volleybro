@@ -1,6 +1,6 @@
 # Testing Strategy
 
-This document defines which tier a test belongs to, what it may replace, and where it lives. Consult it before writing a new test file. The decisions behind it are ADR-0085 to ADR-0092 in `blueprint/content/decisions/`.
+This document defines which tier a test belongs to, what it may replace, and where it lives. Consult it before writing a new test file. The decisions behind it are ADR-0085 to ADR-0092 and ADR-0140 in `blueprint/content/decisions/`.
 
 See also: [Maintenance Policy](./maintenance-policy.md)
 
@@ -8,16 +8,15 @@ See also: [Maintenance Policy](./maintenance-policy.md)
 
 ## Test Tiers
 
-A test's tier follows from what it touches, not from its folder or its entry point (ADR-0085). The file name states the tier, and `pnpm check:workflow` fails on a test file whose suffix does not match its directory (ADR-0091).
+A test's tier follows from what it touches, not from its folder or its entry point (ADR-0085, ADR-0140). The file name states the tier, and `pnpm check:workflow` fails on a test file whose suffix does not match its directory (ADR-0091).
 
 | Tier        | What it touches                                                                             | File                                                         | Runs with                                            |
 | ----------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
 | Unit        | One process, no I/O, however many real collaborators                                        | `*.test.ts(x)` beside the code in `src/`                     | `pnpm test` (Jest `backend` and `frontend` projects) |
 | Integration | At least one real out-of-process dependency, the database here, and proving it is the point | `*.itest.ts` under `test/integration/api/` or `persistence/` | `pnpm test:integration` (Jest `integration` project) |
-| End-to-end  | A real client, the web app in a browser or a mobile app, against a deployed backend         | `*.e2e.ts` under `test/e2e/`                                 | Not built yet                                        |
-| API smoke   | A deployed backend with no client: real sign-in, HTTP handling, the hosted database         | —                                                            | Not built yet                                        |
+| End-to-end  | A real client, the web app in a browser or a mobile app, against a deployed backend         | `*.e2e.ts` under `test/e2e/`                                 | `pnpm exec playwright test` (Playwright)             |
 
-End-to-end tests cover critical paths only, one suite per client. API smoke proves once, for every client, what only a deployed backend can show. Both wait on a test-only sign-in path that must never reach production.
+End-to-end tests cover critical paths only, one suite per client. The production smoke test is the subset tagged `@smoke`, run by `pnpm test:smoke` against `PRODUCTION_ALIAS` after promotion; it uses a real session a person established once and never a test-only sign-in path. That path is for end-to-end tests outside production and must never reach production. A check against a deployed backend is an end-to-end test even when it sends HTTP requests without opening a page (ADR-0140).
 
 ```mermaid
 flowchart TB
@@ -38,9 +37,17 @@ flowchart TB
     persistence["integration persistence/<br/>at a repository or use case"] ==> Repo
     persistence ==> DB
     visual["visual<br/>Storybook / Chromatic"] -.->|"pixels of"| P
-    smoke["API smoke<br/>(not built)"] -.-> R
-    e2e["end-to-end<br/>(not built)"] -.-> P
+    e2e["end-to-end<br/>Playwright, incl. @smoke"] -.->|"in a browser"| P
+    e2e -.-> R
 ```
+
+### Deviations from Playwright best practice
+
+The production smoke test departs from Playwright's defaults on purpose:
+
+- **No Firefox.** Only Chromium and WebKit run; WebKit covers the cookie behaviour of the iOS app.
+- **One shared read-only account, no test isolation.** Every run signs in as the same account and reads the same team. A manual edit of that team reads as a regression and triggers a rollback.
+- **No trace, video or screenshot in CI.** The job holds a session secret, so it uploads no artifact; failures are read from the console report.
 
 ---
 

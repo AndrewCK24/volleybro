@@ -20,15 +20,32 @@ const REVIEW_ENVIRONMENT = "production-release-review";
 const RECOVERY_RECEIPT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const RECOVERY_COMPATIBILITY_TEST =
   "test/integration/persistence/release-compatibility.itest.ts";
-const PERSISTED_CONTRACT_PATTERNS = [
-  /^src\/infrastructure\/db\//,
+const AUTH_CONTRACT_PATTERNS = [
   /^src\/infrastructure\/services\/auth\//,
-  /^src\/applications\/(?:usecases|repositories)\//,
   /^src\/app\/api\/auth\//,
+  /^src\/lib\/auth\.ts$/,
+];
+const AUTH_ENV_PATTERN = /^(?:BETTER_AUTH|AUTH_GOOGLE)_/;
+const SMOKE_SESSION = "@smoke session is valid";
+const SMOKE_TEAM = "@smoke test team read-only page";
+const SMOKE_EXPECTED = [
+  ["oauth", "@smoke oauth configuration"],
+  ...["chromium", "webkit"].flatMap((project) =>
+    [SMOKE_SESSION, SMOKE_TEAM].map((title) => [project, title]),
+  ),
+];
+const SMOKE_JOBS = ["Production smoke", "Classify production smoke"];
+const ACCEPTANCE_JOBS = {
+  human: "Accept production QA",
+  smoke: "Accept production smoke",
+};
+const PERSISTED_CONTRACT_PATTERNS = [
+  ...AUTH_CONTRACT_PATTERNS,
+  /^src\/infrastructure\/db\//,
+  /^src\/applications\/(?:usecases|repositories)\//,
   /^src\/app\/api\//,
   /^src\/entities\//,
   /^src\/interface\//,
-  /^src\/lib\/auth\.ts$/,
   /^docs\/migrations\//,
   /^scripts\/migrations\//,
   /^(?:pnpm-lock\.yaml|pnpm-workspace\.yaml|\.npmrc)$/,
@@ -122,7 +139,7 @@ async function moveProduction(endpoint, expected, previous) {
       actual.deploymentId === expected.deploymentId &&
       actual.sha === expected.sha
     )
-      return;
+      return actual;
     if (
       actual.deploymentId !== previous.deploymentId ||
       actual.sha !== previous.sha
@@ -261,19 +278,22 @@ async function workflowJobs(id) {
   return response.jobs;
 }
 
-function successfulJob(jobs, name, attempt) {
+function uniqueCompletedJob(jobs, name, attempt) {
   const matches = jobs.filter(
     (job) =>
       job.name === name &&
       (!job.run_attempt || String(job.run_attempt) === String(attempt)),
   );
-  if (
-    matches.length !== 1 ||
-    matches[0].status !== "completed" ||
-    matches[0].conclusion !== "success"
-  )
+  return matches.length === 1 && matches[0].status === "completed"
+    ? matches[0]
+    : undefined;
+}
+
+function successfulJob(jobs, name, attempt) {
+  const job = uniqueCompletedJob(jobs, name, attempt);
+  if (job?.conclusion !== "success")
     fail(`${name} is not a unique successful native workflow job`);
-  return matches[0];
+  return job;
 }
 
 function jobEvidence(job) {
@@ -323,7 +343,7 @@ async function nativeApprovalHistory(runId, environment) {
 
 function protectedJobKey(name) {
   const key = {
-    "Accept production QA": "production-acceptance",
+    [ACCEPTANCE_JOBS.human]: "production-acceptance",
   }[name];
   if (!key) fail(`Unknown protected workflow job: ${name}`);
   return key;
@@ -560,8 +580,8 @@ function assertBaseline(actual, expected) {
     fail("Production baseline changed while candidate was being reviewed");
 }
 
-export async function persistedContractChanges(state) {
-  const changedPaths = (
+async function changedSourcePaths(state) {
+  return (
     await command("git", [
       "diff",
       "--name-only",
@@ -572,6 +592,10 @@ export async function persistedContractChanges(state) {
     .split("\n")
     .filter(Boolean)
     .sort();
+}
+
+export async function persistedContractChanges(state) {
+  const changedPaths = await changedSourcePaths(state);
   const contractPaths = changedPaths.filter((file) =>
     PERSISTED_CONTRACT_PATTERNS.some((pattern) => pattern.test(file)),
   );
@@ -1873,11 +1897,15 @@ async function promote() {
     state.sha,
     await stagingDomains(),
   );
-  await moveProduction(
+  const confirmed = await moveProduction(
     `/v10/projects/${required("VERCEL_PROJECT_ID")}/promote/${state.candidateId}`,
     { deploymentId: state.candidateId, sha: state.sha },
     state.baseline,
   );
+  await appendOutputs({
+    production_deployment_id: confirmed.deploymentId,
+    production_sha: confirmed.sha,
+  });
 }
 
 async function rollbackIfCompatible() {
@@ -1964,6 +1992,219 @@ function assertProductionQAReceipt(state) {
     fail("No production QA receipt is bound to the promoted candidate");
 }
 
+function smokeOutcome(results) {
+  if (!Array.isArray(results)) return "regression";
+  // No report at all means the run never produced results (install/runner failure), not a release defect.
+  if (!results.length) return "infrastructure";
+  const found = (project, title) =>
+    results.filter((r) => r.project === project && r.title === title);
+  if (SMOKE_EXPECTED.some(([project, title]) => !found(project, title).length))
+    return "regression";
+  const failed = results.filter(
+    (r) => !["expected", "flaky"].includes(r.status),
+  );
+  if (!failed.length) return "pass";
+  const sessionDown = new Set(
+    failed
+      .filter((r) => r.title === SMOKE_SESSION && r.status === "unexpected")
+      .map((r) => r.project),
+  );
+  return failed.every(
+    (r) =>
+      sessionDown.has(r.project) &&
+      (r.title === SMOKE_SESSION ||
+        (r.title === SMOKE_TEAM && r.status === "skipped")),
+  )
+    ? "infrastructure"
+    : "regression";
+}
+
+async function authLockVersion(sha) {
+  const version = (await shaAt(sha, "pnpm-lock.yaml")).match(
+    /^ {2}better-auth@([^\s:(]+)/m,
+  )?.[1];
+  if (!version) fail("better-auth version not found in pnpm-lock.yaml");
+  return version;
+}
+
+async function authEnvChanged(state) {
+  const created = Number(
+    (await deployment(state.baseline.deploymentId)).createdAt,
+  );
+  if (!Number.isFinite(created))
+    fail("Baseline deployment has no creation time");
+  // Metadata only: never request decrypted values.
+  const { envs, pagination } = await vercel(
+    `/v10/projects/${required("VERCEL_PROJECT_ID")}/env`,
+  );
+  if (!Array.isArray(envs) || pagination?.next)
+    fail("Vercel env inventory is incomplete");
+  return envs.some(
+    (env) =>
+      AUTH_ENV_PATTERN.test(env.key) &&
+      [].concat(env.target).includes("production") &&
+      !(Number(env.updatedAt) <= created),
+  );
+}
+
+async function authChange(state) {
+  try {
+    if (
+      (await changedSourcePaths(state)).some((file) =>
+        AUTH_CONTRACT_PATTERNS.some((pattern) => pattern.test(file)),
+      )
+    )
+      return "changed";
+    const [baseline, release] = await Promise.all(
+      [state.baseline.sha, state.sha].map(authLockVersion),
+    );
+    return baseline !== release || (await authEnvChanged(state))
+      ? "changed"
+      : "unchanged";
+  } catch {
+    return "unknown";
+  }
+}
+
+async function smokeVerdict(state) {
+  const before = {
+    deploymentId: required("SMOKE_BEFORE_DEPLOYMENT_ID"),
+    sha: required("SMOKE_BEFORE_SHA"),
+  };
+  const after = await currentAlias();
+  const isCandidate = (alias) =>
+    alias.deploymentId === state.candidateId && alias.sha === state.sha;
+  const outcome =
+    isCandidate(before) && isCandidate(after)
+      ? smokeOutcome(json(required("SMOKE_RESULTS"), "smoke results"))
+      : "regression";
+  return { before, after, outcome, auth: await authChange(state) };
+}
+
+async function summarizeSmoke() {
+  const report = json(
+    await readFile(required("SMOKE_REPORT_FILE"), "utf8").catch(
+      () => '{"suites":[]}',
+    ),
+    "Playwright report",
+  );
+  const results = [];
+  const walk = (suites = []) =>
+    suites.forEach((suite) => {
+      for (const spec of suite.specs || [])
+        for (const test of spec.tests || [])
+          results.push({
+            project: test.projectName,
+            title: spec.title,
+            status: test.status,
+          });
+      walk(suite.suites);
+    });
+  walk(report.suites);
+  await appendOutputs({ smoke_results: JSON.stringify(results) });
+}
+
+async function classifySmoke() {
+  const state = await loadState();
+  validateConfiguredPlatform(state);
+  const { after, outcome, auth } = await smokeVerdict(state);
+  await appendOutputs({
+    outcome,
+    auth,
+    after_deployment_id: after.deploymentId,
+    after_sha: after.sha,
+    auto_accept: String(outcome === "pass" && auth === "unchanged"),
+  });
+}
+
+function productionQAReceipt(state, approval) {
+  return {
+    binding: `${state.candidateId}:${state.sha}:${state.productionAlias}`,
+    runId: state.releaseRunId,
+    runAttempt: state.releaseRunAttempt,
+    approval,
+  };
+}
+
+async function recordSmokeAcceptance() {
+  const state = await loadState();
+  validateConfiguredPlatform(state);
+  // Classify already judged the smoke; this only re-checks its handed-over verdict, with no network.
+  const before = {
+    deploymentId: required("SMOKE_BEFORE_DEPLOYMENT_ID"),
+    sha: required("SMOKE_BEFORE_SHA"),
+  };
+  const after = {
+    deploymentId: required("SMOKE_AFTER_DEPLOYMENT_ID"),
+    sha: required("SMOKE_AFTER_SHA"),
+  };
+  if (
+    required("SMOKE_OUTCOME") !== "pass" ||
+    required("SMOKE_AUTH") !== "unchanged" ||
+    required("SMOKE_AUTO_ACCEPT") !== "true" ||
+    [before, after].some(
+      (alias) =>
+        alias.deploymentId !== state.candidateId || alias.sha !== state.sha,
+    )
+  )
+    fail(
+      "Smoke acceptance refused: classification is not an unchanged-auth pass on the candidate",
+    );
+  const jobs = await workflowJobs(state.releaseRunId);
+  state.productionQA = productionQAReceipt(state, {
+    kind: "smoke",
+    jobs: SMOKE_JOBS.map((name) =>
+      jobEvidence(successfulJob(jobs, name, state.releaseRunAttempt)),
+    ),
+    before,
+    after,
+  });
+  await writeState(required("RELEASE_FINAL_STATE_FILE"), state);
+}
+
+async function verifySmokeReceipt(state) {
+  const { approval } = state.productionQA;
+  const [run, jobs] = await Promise.all([
+    workflowRun(state.releaseRunId),
+    workflowJobs(state.releaseRunId),
+  ]);
+  validateWorkflowRun(run, {
+    id: state.releaseRunId,
+    path: PRODUCTION_WORKFLOW,
+    repository: required("GITHUB_REPOSITORY"),
+    attempt: state.releaseRunAttempt,
+  });
+  const names = SMOKE_JOBS;
+  if (
+    !Array.isArray(approval.jobs) ||
+    approval.jobs.length !== names.length ||
+    names.some((name, index) => {
+      const recorded = approval.jobs[index];
+      const job = successfulJob(jobs, name, state.releaseRunAttempt);
+      return recorded?.name !== name || recorded.id !== String(job.id);
+    }) ||
+    [approval.before, approval.after].some(
+      (alias) =>
+        alias?.deploymentId !== state.candidateId || alias.sha !== state.sha,
+    )
+  )
+    fail("Smoke receipt does not match this release run or candidate");
+}
+
+async function assertSingleAcceptance(state, kind) {
+  const jobs = await workflowJobs(state.releaseRunId);
+  const conclusion = (name) =>
+    uniqueCompletedJob(jobs, name, state.releaseRunAttempt)?.conclusion;
+  const other = kind === "human" ? "smoke" : "human";
+  if (
+    conclusion(ACCEPTANCE_JOBS[kind]) !== "success" ||
+    conclusion(ACCEPTANCE_JOBS[other]) !== "skipped"
+  )
+    fail(
+      `Exactly one of ${ACCEPTANCE_JOBS.human} or ${ACCEPTANCE_JOBS.smoke} must succeed and the other be skipped`,
+    );
+}
+
 async function recordProductionQA() {
   const state = await loadState();
   validateConfiguredPlatform(state);
@@ -1977,15 +2218,10 @@ async function recordProductionQA() {
     production.sha !== state.sha
   )
     fail("Production QA does not target the promoted candidate");
-  state.productionQA = {
-    binding: `${state.candidateId}:${state.sha}:${state.productionAlias}`,
-    runId: state.releaseRunId,
-    runAttempt: state.releaseRunAttempt,
-    approval: await protectedJobReceipt(
-      "Accept production QA",
-      REVIEW_ENVIRONMENT,
-    ),
-  };
+  state.productionQA = productionQAReceipt(state, {
+    kind: "human",
+    ...(await protectedJobReceipt(ACCEPTANCE_JOBS.human, REVIEW_ENVIRONMENT)),
+  });
   await writeState(required("RELEASE_FINAL_STATE_FILE"), state);
 }
 
@@ -1996,11 +2232,17 @@ async function finalize() {
   const { facts } = await verifyRecoveryEvidence(state, state.releaseRunId, {
     ignoreExpiry: true,
   });
-  await verifyProtectedJobReceipt(
-    state.productionQA.approval,
-    state.releaseRunId,
-    "Accept production QA",
-  );
+  const kind = state.productionQA.approval?.kind;
+  if (!Object.hasOwn(ACCEPTANCE_JOBS, kind))
+    fail("Production QA receipt has no known approval kind");
+  await assertSingleAcceptance(state, kind);
+  if (kind === "human")
+    await verifyProtectedJobReceipt(
+      state.productionQA.approval,
+      state.releaseRunId,
+      ACCEPTANCE_JOBS.human,
+    );
+  else await verifySmokeReceipt(state);
   const production = await currentAlias();
   if (
     production.deploymentId !== state.candidateId ||
@@ -2181,7 +2423,9 @@ async function recoverVerify() {
   if (
     originalJobs.some(
       (job) =>
-        ["Accept production QA", "finalize-release"].includes(job.name) &&
+        [...Object.values(ACCEPTANCE_JOBS), "finalize-release"].includes(
+          job.name,
+        ) &&
         (!job.run_attempt ||
           String(job.run_attempt) === String(originalRun.run_attempt)) &&
         job.status === "completed" &&
@@ -2536,6 +2780,9 @@ const actions = {
   "plan-recovery-compatibility": planRecoveryCompatibility,
   "verify-compatibility-report": verifyCompatibilityReport,
   promote,
+  "summarize-smoke": summarizeSmoke,
+  "classify-smoke": classifySmoke,
+  "record-smoke-acceptance": recordSmokeAcceptance,
   "rollback-if-compatible": rollbackIfCompatible,
   "record-recovery-evidence": recordRecoveryEvidence,
   "record-production-qa": recordProductionQA,

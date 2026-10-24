@@ -1,0 +1,30 @@
+name: Production smoke keepalive
+
+# Extends the smoke test account's session; a failure notification means the session needs a manual re-login (docs/release-runbook.md).
+on:
+  schedule:
+    - cron: "17 3 */3 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-smoke
+    steps:
+      - name: Call get-session with the smoke session
+        env:
+          PRODUCTION_ALIAS: ${{ vars.PRODUCTION_ALIAS }}
+          SMOKE_STORAGE_STATE: ${{ secrets.SMOKE_STORAGE_STATE }}
+          SMOKE_USER_EMAIL: ${{ vars.SMOKE_USER_EMAIL }}
+        run: |
+          set -euo pipefail
+          cookie=$(jq -er 'first(.cookies[] | select(.name | test("better-auth\\.session_token$"))) | "\(.name)=\(.value)"' <<<"$SMOKE_STORAGE_STATE")
+          echo "::add-mask::${cookie#*=}"
+          email=$(curl --fail --silent --show-error --retry 3 -H "Cookie: $cookie" "https://$PRODUCTION_ALIAS/api/auth/get-session" | jq -r '.user.email // empty')
+          if [ "$email" != "$SMOKE_USER_EMAIL" ]; then
+            echo '::error::get-session did not return the smoke test user; re-login and refresh SMOKE_STORAGE_STATE (docs/release-runbook.md)'
+            exit 1
+          fi

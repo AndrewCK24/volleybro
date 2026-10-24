@@ -14,10 +14,14 @@ import path from "node:path";
 import test from "node:test";
 import { persistedContractChanges } from "../release-controls.js";
 import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
 
 const cli =
   process.env.RELEASE_TEST_CLI ||
   fileURLToPath(new URL("../release-controls.js", import.meta.url));
+
+const lockfile = (version) =>
+  `packages:\n\n  better-auth@${version}:\n    resolution: {}\n`;
 
 async function fixture(
   t,
@@ -30,6 +34,7 @@ async function fixture(
     hotfixPath = "repair.js",
     hotfixDependency = "2.0.0",
     changelogEntry = true,
+    releaseAuthVersion,
   } = {},
 ) {
   const root = await mkdtemp(path.join(os.tmpdir(), "release-cli-"));
@@ -64,6 +69,7 @@ async function fixture(
     )}\n`,
   );
   await writeFile(path.join(repo, "CHANGELOG.md"), "# Changes\n");
+  await writeFile(path.join(repo, "pnpm-lock.yaml"), lockfile("1.7.12"));
   if (baselineCompatibilityTest) {
     await mkdir(path.dirname(compatibilityPath), { recursive: true });
     await writeFile(
@@ -92,7 +98,12 @@ async function fixture(
     path.join(repo, ".changeset", "one.md"),
     "---\\nfixture: patch\\n---\\n",
   );
-  git(["add", ".changeset/one.md"]);
+  if (releaseAuthVersion)
+    await writeFile(
+      path.join(repo, "pnpm-lock.yaml"),
+      lockfile(releaseAuthVersion),
+    );
+  git(["add", ".changeset/one.md", "pnpm-lock.yaml"]);
   git(["commit", "-m", "integrated change"]);
   const base = git(["rev-parse", "HEAD"]);
   git(["checkout", "-b", "changeset-release/main"]);
@@ -323,6 +334,7 @@ globalThis.fetch=async(u,options={})=>{
     if(id==='dpl_cand')return Response.json({id,projectId:'test',readyState:s.readiness||'READY',target:'production',meta:{releaseSha:process.env.RELEASE_SHA},alias:[],...s.candidate});
     return Response.json({id,projectId:'test',readyState:'READY',target:'production',meta:{releaseSha:(s.deploymentShas||{})[id]||s.baselineSha},...(s.deployments||{})[id]});
   }
+  if(url.pathname==='/v10/projects/test/env'){if(s.envStatus)return new Response('',{status:s.envStatus});return Response.json({envs:s.envs||[]});}
   if(url.pathname==='/v9/projects/test')return Response.json(s.project||{id:'test',ssoProtection:{deploymentType:'all_except_custom_domains'}});
   if(url.pathname==='/v9/projects/test/domains')return Response.json(s.domains||{domains:[{name:'app.test',gitBranch:null}]});
   return new Response('',{status:s.healthStatus||200});
@@ -703,6 +715,7 @@ async function prepareFinalRelease(f) {
       9: [
         ...api.jobs[9],
         workflowJob(504, "Accept production QA", "in_progress", null),
+        workflowJob(505, "Accept production smoke", "completed", "skipped"),
       ],
     },
     approvals: { ...api.approvals, 9: [...api.approvals[9], approval("qa")] },
@@ -1473,9 +1486,23 @@ test("owner recovery accepts only the original nonexpired proven artifact", asyn
   await updateApi(f, {
     jobs: {
       ...current.jobs,
+      9: [
+        ...current.jobs[9].filter((job) => job.name !== "Accept production QA"),
+        workflowJob(697, "Accept production smoke"),
+      ],
+    },
+  });
+  result = run(f, "recover-verify", recoveryEnv);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /passed production QA/);
+
+  current = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    jobs: {
+      ...current.jobs,
       9: current.jobs[9].filter(
         (job) =>
-          !["finalize-release", "Accept production QA"].includes(job.name),
+          !["finalize-release", "Accept production smoke"].includes(job.name),
       ),
     },
     candidate: { readyState: "CANCELED" },
@@ -2282,10 +2309,10 @@ test("package.json scripts and packageManager changes are unrelated; unknown key
 async function expireRecoveryReceipt(file, mutate = () => {}) {
   const state = JSON.parse(await readFile(file, "utf8"));
   const week = 7 * 24 * 60 * 60 * 1000;
-  state.recoveryEvidence.issuedAt = new Date(
-    Date.now() - 2 * week,
-  ).toISOString();
-  state.recoveryEvidence.expiresAt = new Date(Date.now() - week).toISOString();
+  // One clock read: two reads can drift 1 ms and break the exact TTL span.
+  const now = Date.now();
+  state.recoveryEvidence.issuedAt = new Date(now - 2 * week).toISOString();
+  state.recoveryEvidence.expiresAt = new Date(now - week).toISOString();
   mutate(state);
   await writeFile(file, JSON.stringify(state));
 }
@@ -2352,4 +2379,583 @@ test("promote and rollback still reject an expired recovery receipt", async (t) 
     assert.notEqual(denied.status, 0, action);
     assert.match(denied.stderr, /Recovery receipt expired/, action);
   }
+});
+
+const SMOKE_TESTS = [
+  ["oauth", "@smoke oauth configuration"],
+  ["chromium", "@smoke session is valid"],
+  ["chromium", "@smoke test team read-only page"],
+  ["webkit", "@smoke session is valid"],
+  ["webkit", "@smoke test team read-only page"],
+];
+
+function smokeResults(statuses = {}) {
+  return SMOKE_TESTS.map(([project, title]) => ({
+    project,
+    title,
+    status: statuses[`${project} ${title}`] ?? "expected",
+  }));
+}
+
+const SESSION = "@smoke session is valid";
+const TEAM = "@smoke test team read-only page";
+
+async function prepareSmokeRun(f, { alias = "dpl_cand", env = {} } = {}) {
+  const { accepted } = await prepareAcceptedRelease(f);
+  const api = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    alias,
+    deployments: { dpl_base: { createdAt: 1000 } },
+    envs: [
+      { key: "BETTER_AUTH_SECRET", target: ["production"], updatedAt: 500 },
+      { key: "MONGODB_URI", target: ["production"], updatedAt: 9000 },
+    ],
+    jobs: {
+      ...api.jobs,
+      9: [
+        ...api.jobs[9],
+        workflowJob(801, "Production smoke"),
+        workflowJob(802, "Classify production smoke"),
+        workflowJob(504, "Accept production QA", "completed", "skipped"),
+        workflowJob(803, "Accept production smoke", "in_progress", null),
+      ],
+    },
+  });
+  return {
+    RELEASE_STATE_FILE: accepted,
+    SMOKE_RESULTS: JSON.stringify(smokeResults()),
+    SMOKE_BEFORE_DEPLOYMENT_ID: "dpl_cand",
+    SMOKE_BEFORE_SHA: f.merge,
+    ...env,
+  };
+}
+
+// The verdict classify hands to the accept job.
+const ACCEPT_ENV = (f) => ({
+  SMOKE_OUTCOME: "pass",
+  SMOKE_AUTH: "unchanged",
+  SMOKE_AUTO_ACCEPT: "true",
+  SMOKE_AFTER_DEPLOYMENT_ID: "dpl_cand",
+  SMOKE_AFTER_SHA: f.merge,
+});
+
+async function outputsOf(f) {
+  const text = await readFile(f.env.GITHUB_OUTPUT, "utf8");
+  return Object.fromEntries(
+    text
+      .trim()
+      .split("\n")
+      .map((line) => [
+        line.slice(0, line.indexOf("=")),
+        line.slice(line.indexOf("=") + 1),
+      ]),
+  );
+}
+
+async function classify(f, env, overrides = {}) {
+  await writeFile(f.env.GITHUB_OUTPUT, "");
+  const result = run(f, "classify-smoke", { ...env, ...overrides });
+  assert.equal(result.status, 0, result.stderr);
+  return outputsOf(f);
+}
+
+test("summarize-smoke flattens nested Playwright suites into compact results", async (t) => {
+  const f = await fixture(t);
+  const report = path.join(f.root, "report.json");
+  await writeFile(
+    report,
+    JSON.stringify({
+      suites: [
+        {
+          title: "a.e2e.ts",
+          specs: [
+            {
+              title: SESSION,
+              tests: [{ projectName: "webkit", status: "flaky" }],
+            },
+          ],
+          suites: [
+            {
+              title: "nested",
+              specs: [
+                {
+                  title: TEAM,
+                  tests: [{ projectName: "chromium", status: "skipped" }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }),
+  );
+  await writeFile(f.env.GITHUB_OUTPUT, "");
+  const result = run(f, "summarize-smoke", { SMOKE_REPORT_FILE: report });
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse((await outputsOf(f)).smoke_results), [
+    { project: "webkit", title: SESSION, status: "flaky" },
+    { project: "chromium", title: TEAM, status: "skipped" },
+  ]);
+});
+
+test("promote outputs the confirmed production deployment and source SHA", async (t) => {
+  const f = await fixture(t);
+  const { accepted } = await prepareAcceptedRelease(f);
+  await writeFile(f.env.GITHUB_OUTPUT, "");
+  const result = run(f, "promote", { RELEASE_STATE_FILE: accepted });
+  assert.equal(result.status, 0, result.stderr);
+  const outputs = await outputsOf(f);
+  assert.equal(outputs.production_deployment_id, "dpl_cand");
+  assert.equal(outputs.production_sha, f.merge);
+});
+
+test("classify-smoke separates pass, infrastructure and regression and fails closed", async (t) => {
+  const f = await fixture(t);
+  const env = await prepareSmokeRun(f);
+  const key = (project, title) => `${project} ${title}`;
+  const cases = [
+    ["pass", smokeResults()],
+    ["pass", smokeResults({ [key("chromium", SESSION)]: "flaky" })],
+    [
+      "infrastructure",
+      smokeResults({
+        [key("chromium", SESSION)]: "unexpected",
+        [key("chromium", TEAM)]: "skipped",
+      }),
+    ],
+    [
+      "infrastructure",
+      smokeResults({
+        [key("chromium", SESSION)]: "unexpected",
+        [key("chromium", TEAM)]: "skipped",
+        [key("webkit", SESSION)]: "unexpected",
+        [key("webkit", TEAM)]: "skipped",
+      }),
+    ],
+    [
+      "regression",
+      smokeResults({
+        [key("oauth", "@smoke oauth configuration")]: "unexpected",
+      }),
+    ],
+    ["regression", smokeResults({ [key("webkit", TEAM)]: "unexpected" })],
+    [
+      "regression",
+      smokeResults({
+        [key("chromium", SESSION)]: "unexpected",
+        [key("chromium", TEAM)]: "unexpected",
+      }),
+    ],
+    [
+      "regression",
+      smokeResults({
+        [key("chromium", SESSION)]: "unexpected",
+        [key("webkit", TEAM)]: "skipped",
+      }),
+    ],
+    [
+      "regression",
+      smokeResults({ [key("oauth", "@smoke oauth configuration")]: "skipped" }),
+    ],
+    ["regression", smokeResults().slice(1)],
+    ["infrastructure", []],
+  ];
+  for (const [outcome, results] of cases) {
+    const outputs = await classify(f, env, {
+      SMOKE_RESULTS: JSON.stringify(results),
+    });
+    assert.equal(outputs.outcome, outcome, JSON.stringify(results));
+    assert.equal(outputs.auto_accept, String(outcome === "pass"));
+  }
+});
+
+test("classify-smoke treats a before or after alias that is not the candidate as regression", async (t) => {
+  const f = await fixture(t);
+  const env = await prepareSmokeRun(f);
+  for (const override of [
+    { SMOKE_BEFORE_DEPLOYMENT_ID: "dpl_base" },
+    { SMOKE_BEFORE_SHA: f.deployed },
+  ]) {
+    assert.equal((await classify(f, env, override)).outcome, "regression");
+  }
+  await updateApi(f, { alias: "dpl_base" });
+  const outputs = await classify(f, env);
+  assert.equal(outputs.outcome, "regression");
+  assert.equal(outputs.auto_accept, "false");
+});
+
+test("classify-smoke judges auth from changed files, better-auth version, env and query failures", async (t) => {
+  const unchanged = await fixture(t);
+  const env = await prepareSmokeRun(unchanged);
+  let outputs = await classify(unchanged, env);
+  assert.deepEqual([outputs.auth, outputs.auto_accept], ["unchanged", "true"]);
+  assert.deepEqual(
+    [outputs.after_deployment_id, outputs.after_sha],
+    ["dpl_cand", unchanged.merge],
+  );
+
+  await updateApi(unchanged, {
+    envs: [{ key: "AUTH_GOOGLE_ID", target: ["production"], updatedAt: 2000 }],
+  });
+  outputs = await classify(unchanged, env);
+  assert.deepEqual([outputs.auth, outputs.auto_accept], ["changed", "false"]);
+  await updateApi(unchanged, {
+    envs: [{ key: "AUTH_GOOGLE_ID", target: ["production"], updatedAt: 2000 }],
+    envStatus: 500,
+  });
+  assert.equal((await classify(unchanged, env)).auth, "unknown");
+
+  const file = await fixture(t, {
+    persistedContract: true,
+    persistedContractPath: "src/lib/auth.ts",
+  });
+  assert.equal(
+    (await classify(file, await prepareSmokeRun(file))).auth,
+    "changed",
+  );
+
+  const nonAuth = await fixture(t, { persistedContract: true });
+  assert.equal(
+    (await classify(nonAuth, await prepareSmokeRun(nonAuth))).auth,
+    "unchanged",
+  );
+
+  const version = await fixture(t, { releaseAuthVersion: "1.8.0" });
+  outputs = await classify(version, await prepareSmokeRun(version));
+  assert.deepEqual([outputs.auth, outputs.auto_accept], ["changed", "false"]);
+});
+
+test("record-smoke-acceptance writes a smoke receipt only for a classified unchanged-auth pass on the candidate", async (t) => {
+  const f = await fixture(t);
+  const env = await prepareSmokeRun(f);
+  const finalState = path.join(f.root, "smoke-final.json");
+  const record = (overrides = {}) =>
+    run(f, "record-smoke-acceptance", {
+      ...env,
+      ...ACCEPT_ENV(f),
+      RELEASE_FINAL_STATE_FILE: finalState,
+      GITHUB_JOB: "production-smoke-acceptance",
+      ...overrides,
+    });
+  for (const override of [
+    { SMOKE_OUTCOME: "infrastructure" },
+    { SMOKE_OUTCOME: "regression" },
+    { SMOKE_AUTH: "changed" },
+    { SMOKE_AUTH: "unknown" },
+    { SMOKE_AUTO_ACCEPT: "false" },
+    { SMOKE_BEFORE_DEPLOYMENT_ID: "dpl_base" },
+    { SMOKE_AFTER_DEPLOYMENT_ID: "dpl_base" },
+    { SMOKE_AFTER_SHA: f.deployed },
+  ])
+    assert.notEqual(record(override).status, 0, JSON.stringify(override));
+  const result = record();
+  assert.equal(result.status, 0, result.stderr);
+  const { productionQA } = JSON.parse(await readFile(finalState, "utf8"));
+  assert.equal(productionQA.approval.kind, "smoke");
+  assert.deepEqual(
+    productionQA.approval.jobs.map(({ id, name }) => [id, name]),
+    [
+      ["801", "Production smoke"],
+      ["802", "Classify production smoke"],
+    ],
+  );
+  assert.equal(productionQA.approval.after.deploymentId, "dpl_cand");
+  assert.equal(productionQA.approval.after.sha, f.merge);
+});
+
+async function setJobs(f, patches) {
+  const api = JSON.parse(await readFile(f.statePath, "utf8"));
+  await updateApi(f, {
+    jobs: {
+      ...api.jobs,
+      9: api.jobs[9].map((job) => ({ ...job, ...(patches[job.name] || {}) })),
+    },
+  });
+}
+
+async function recordedSmoke(f) {
+  const env = await prepareSmokeRun(f);
+  const finalState = path.join(f.root, "smoke-final.json");
+  const result = run(f, "record-smoke-acceptance", {
+    ...env,
+    ...ACCEPT_ENV(f),
+    RELEASE_FINAL_STATE_FILE: finalState,
+  });
+  assert.equal(result.status, 0, result.stderr);
+  await setJobs(f, {
+    "Accept production smoke": { status: "completed", conclusion: "success" },
+  });
+  return finalState;
+}
+
+async function mutatedReceipt(f, file, mutate) {
+  const state = JSON.parse(await readFile(file, "utf8"));
+  mutate(state.productionQA);
+  const out = path.join(f.root, `mutated-${Math.random()}.json`);
+  await writeFile(out, JSON.stringify(state));
+  return out;
+}
+
+test("finalize accepts a smoke receipt and rejects a receipt that does not match the run, jobs or alias", async (t) => {
+  const f = await fixture(t);
+  const finalState = await recordedSmoke(f);
+  const finalizeWith = (file = finalState) =>
+    run(f, "finalize", { RELEASE_STATE_FILE: file });
+  const mutations = [
+    (qa) => {
+      qa.approval.jobs[0].id = 999;
+    },
+    (qa) => {
+      qa.approval.jobs.pop();
+    },
+    (qa) => {
+      qa.approval.after.sha = f.deployed;
+    },
+    (qa) => {
+      qa.approval.before.deploymentId = "dpl_base";
+    },
+    (qa) => {
+      qa.runId = "10";
+    },
+    (qa) => {
+      delete qa.approval.kind;
+    },
+    (qa) => {
+      qa.approval.kind = "other";
+    },
+    (qa) => {
+      qa.approval.kind = "human";
+    },
+  ];
+  for (const mutate of mutations) {
+    const denied = finalizeWith(await mutatedReceipt(f, finalState, mutate));
+    assert.notEqual(denied.status, 0, String(mutate));
+  }
+  await setJobs(f, { "Classify production smoke": { conclusion: "failure" } });
+  assert.notEqual(finalizeWith().status, 0);
+  await setJobs(f, { "Classify production smoke": { conclusion: "success" } });
+  const result = finalizeWith();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(f.git(["rev-parse", "v1.0.1"]), f.merge);
+});
+
+test("finalize requires exactly one acceptance job to succeed and the other to be skipped", async (t) => {
+  const smoke = await fixture(t);
+  const smokeState = await recordedSmoke(smoke);
+  for (const [qa, auto] of [
+    ["success", "success"],
+    ["skipped", "skipped"],
+    ["failure", "success"],
+  ]) {
+    await setJobs(smoke, {
+      "Accept production QA": { conclusion: qa },
+      "Accept production smoke": { conclusion: auto },
+    });
+    const denied = run(smoke, "finalize", { RELEASE_STATE_FILE: smokeState });
+    assert.notEqual(denied.status, 0, `${qa}/${auto}`);
+    assert.match(denied.stderr, /Exactly one of/);
+  }
+
+  const human = await fixture(t);
+  const { finalState } = await prepareFinalRelease(human);
+  for (const [qa, auto] of [
+    ["success", "success"],
+    ["skipped", "skipped"],
+    ["skipped", "success"],
+  ]) {
+    await setJobs(human, {
+      "Accept production QA": { status: "completed", conclusion: qa },
+      "Accept production smoke": { conclusion: auto },
+    });
+    assert.notEqual(
+      run(human, "finalize", { RELEASE_STATE_FILE: finalState }).status,
+      0,
+      `${qa}/${auto}`,
+    );
+  }
+  await setJobs(human, {
+    "Accept production QA": { conclusion: "success" },
+    "Accept production smoke": { conclusion: "skipped" },
+  });
+  const accepted = run(human, "finalize", { RELEASE_STATE_FILE: finalState });
+  assert.equal(accepted.status, 0, accepted.stderr);
+});
+
+const workflowDir = new URL("../../.github/workflows/", import.meta.url);
+const loadWorkflow = async (name) =>
+  parseYaml(await readFile(new URL(name, workflowDir), "utf8"));
+
+// Evaluates the `needs`-only subset of GitHub expressions used by job `if` conditions.
+function evalIf(expression, needs) {
+  const needsContext = Object.fromEntries(
+    Object.entries(needs).map(([id, { result, outputs = {} }]) => [
+      id,
+      {
+        result,
+        outputs: new Proxy(outputs, { get: (o, key) => o[key] ?? "" }),
+      },
+    ]),
+  );
+  const js = String(expression)
+    .replace(/needs\.([\w-]+)\./g, (_, id) => `needs["${id}"].`)
+    .replace(/always\(\)/g, "true")
+    .replace(/cancelled\(\)/g, "false");
+  return new Function("needs", `return (${js});`)(needsContext);
+}
+
+test("production release routes each smoke outcome to exactly one path", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const classify = (outcome, auto_accept = "false") => ({
+    candidate: { result: "success" },
+    "promote-and-smoke": { result: "success" },
+    "production-smoke": { result: "success" },
+    "classify-production-smoke": {
+      result: "success",
+      outputs: { outcome, auto_accept },
+    },
+    "production-acceptance": { result: "skipped" },
+    "accept-production-smoke": { result: "skipped" },
+  });
+  const runs = (needs) =>
+    [
+      "recover-after-production-qa-failure",
+      "production-acceptance",
+      "accept-production-smoke",
+    ].filter((id) => evalIf(jobs[id].if, needs));
+  assert.deepEqual(runs(classify("regression")), [
+    "recover-after-production-qa-failure",
+  ]);
+  assert.deepEqual(runs(classify("infrastructure")), ["production-acceptance"]);
+  assert.deepEqual(runs(classify("pass", "false")), ["production-acceptance"]);
+  assert.deepEqual(runs(classify("pass", "true")), ["accept-production-smoke"]);
+  // A failed classification is undeterminable: human gate, never auto-accept or rollback.
+  assert.deepEqual(
+    runs({
+      ...classify("pass", "true"),
+      "classify-production-smoke": { result: "failure" },
+    }),
+    ["production-acceptance"],
+  );
+  // Classification still runs after a promote when the smoke job failed or was skipped.
+  const classifies = (promote, smoke) =>
+    evalIf(jobs["classify-production-smoke"].if, {
+      candidate: { result: "success" },
+      "promote-and-smoke": { result: promote },
+      "production-smoke": { result: smoke },
+    });
+  for (const smoke of ["success", "failure", "skipped"])
+    assert.equal(classifies("success", smoke), true);
+  assert.equal(classifies("failure", "skipped"), false);
+  // A failed human gate still rolls back; a skipped one does not.
+  const gate = (result) => ({
+    ...classify("pass", "false"),
+    "production-acceptance": { result },
+  });
+  const recover = jobs["recover-after-production-qa-failure"].if;
+  assert.equal(evalIf(recover, gate("failure")), true);
+  assert.equal(evalIf(recover, gate("success")), false);
+  assert.equal(evalIf(recover, gate("skipped")), false);
+});
+
+test("finalize needs both acceptance jobs and runs only when exactly one succeeded", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const job = jobs["finalize-release"];
+  assert.ok(job.needs.includes("production-acceptance"));
+  assert.ok(job.needs.includes("accept-production-smoke"));
+  const finalize = (human, smoke) =>
+    evalIf(job.if, {
+      candidate: { result: "success" },
+      "production-acceptance": { result: human },
+      "accept-production-smoke": { result: smoke },
+    });
+  assert.equal(finalize("success", "skipped"), true);
+  assert.equal(finalize("skipped", "success"), true);
+  assert.equal(finalize("success", "success"), false);
+  assert.equal(finalize("skipped", "skipped"), false);
+  assert.equal(finalize("failure", "skipped"), false);
+  assert.equal(finalize("skipped", "failure"), false);
+  for (const id of ["production-acceptance", "accept-production-smoke"]) {
+    const upload = jobs[id].steps.find((step) =>
+      step.uses?.startsWith("actions/upload-artifact"),
+    );
+    assert.equal(upload.with.name, "production-release-final-state");
+    assert.equal(upload.with["retention-days"], 31);
+  }
+});
+
+test("every job referenced by a condition or output is declared in needs", async () => {
+  const { jobs } = await loadWorkflow("production-release.yml");
+  for (const [id, job] of Object.entries(jobs)) {
+    const used = new Set(
+      [
+        ...JSON.stringify({ ...job, needs: undefined }).matchAll(
+          /needs\.([\w-]+)\./g,
+        ),
+      ].map((match) => match[1]),
+    );
+    for (const dep of used)
+      assert.ok([].concat(job.needs ?? []).includes(dep), `${id} uses ${dep}`);
+  }
+  const summary = jobs["failure-summary"].needs;
+  for (const id of Object.keys(jobs).filter((id) => id !== "failure-summary"))
+    assert.ok(summary.includes(id), `failure-summary needs ${id}`);
+});
+
+test("jobs in the production-smoke environment hold no artifact, deploy token or credentials", async () => {
+  let checked = 0;
+  for (const file of [
+    "production-release.yml",
+    "production-smoke-keepalive.yml",
+  ]) {
+    const workflow = await loadWorkflow(file);
+    for (const [id, job] of Object.entries(workflow.jobs)) {
+      if ((job.environment?.name ?? job.environment) !== "production-smoke")
+        continue;
+      checked += 1;
+      const text = JSON.stringify(job);
+      const where = `${file}:${id}`;
+      assert.doesNotMatch(text, /upload-artifact/, where);
+      assert.doesNotMatch(
+        text,
+        /VERCEL_TOKEN|GH_TOKEN|github\.token|RELEASE_TOKEN/,
+        where,
+      );
+      assert.equal(job.concurrency, undefined, where);
+      assert.ok(
+        Object.keys(job.permissions ?? {}).every((k) => k === "contents"),
+        where,
+      );
+      for (const step of job.steps.filter((s) =>
+        s.uses?.startsWith("actions/checkout"),
+      ))
+        assert.equal(step.with?.["persist-credentials"], false, where);
+    }
+    assert.doesNotMatch(
+      JSON.stringify(workflow.env ?? {}),
+      /VERCEL_TOKEN/,
+      file,
+    );
+  }
+  assert.equal(checked, 2);
+  const { jobs } = await loadWorkflow("production-release.yml");
+  const checkout = jobs["production-smoke"].steps.find((s) =>
+    s.uses?.startsWith("actions/checkout"),
+  );
+  assert.equal(checkout.with.ref, "${{ github.workflow_sha }}");
+  const cookieMask = jobs["production-smoke"].steps.findIndex((s) =>
+    s.run?.includes("::add-mask::"),
+  );
+  const smoke = jobs["production-smoke"].steps.findIndex(
+    (s) => s.id === "smoke",
+  );
+  assert.ok(cookieMask >= 0 && cookieMask < smoke);
+  assert.equal(
+    jobs["production-smoke"].steps[smoke]["continue-on-error"],
+    true,
+  );
+  assert.ok(
+    jobs["classify-production-smoke"].steps.some((s) =>
+      JSON.stringify(s).includes("VERCEL_TOKEN"),
+    ),
+  );
 });
