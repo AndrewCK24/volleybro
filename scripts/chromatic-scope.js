@@ -347,20 +347,22 @@ function runGit(args, cwd) {
   });
 }
 
-function assess({ base, head, force = false }) {
+function assess({ base: target, head, force = false }) {
   const cwd = process.cwd();
   if (force) return { skip: false, reason: "forced by --force" };
   if (
-    !base ||
+    !target ||
     !head ||
-    !/^[0-9a-f]{7,40}$/i.test(base) ||
+    !/^[0-9a-f]{7,40}$/i.test(target) ||
     !/^[0-9a-f]{7,40}$/i.test(head)
   ) {
     return { skip: false, reason: "base/head SHA is missing or malformed" };
   }
   try {
-    runGit(["cat-file", "-e", `${base}^{commit}`], cwd);
+    runGit(["cat-file", "-e", `${target}^{commit}`], cwd);
     runGit(["cat-file", "-e", `${head}^{commit}`], cwd);
+    // Commits that landed on the target after the branch point are not PR changes.
+    const base = runGit(["merge-base", target, head], cwd).trim();
     const paths = parseNameStatus(
       runGit(["diff", "--name-status", "-z", base, head], cwd),
     );

@@ -142,6 +142,16 @@ test("skips agent tooling and root prose docs but still runs when mixed with src
   }
 });
 
+test("compares from the merge-base, so base-only commits do not count as PR changes", async (t) => {
+  const cwd = await repository(t);
+  const fork = await commitFiles(cwd, { "docs/a.md": "a\n" }, "fork");
+  const base = await commitFiles(cwd, { "src/Button.tsx": "next\n" }, "main");
+  git(cwd, "checkout", "-q", "-b", "pr", fork);
+  const head = await commitFiles(cwd, { "docs/a.md": "b\n" }, "pr");
+  const result = await classify(cwd, compareArgs(base, head));
+  assert.equal(result.output, "skip=true\n");
+});
+
 test("skips non-visual paths and tests but runs for the classifier, its workflow, and src code", async (t) => {
   const skipped = {
     "docs/images/shot.png": "next\n",
